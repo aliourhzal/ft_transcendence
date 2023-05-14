@@ -1,0 +1,26 @@
+/* main colors
+	black: #222,
+	purpul: rgb(147, 130, 255)
+   main fonts 
+	'AeonicPro',
+	'system-ui'
+*/
+
+@font-face {
+	font-family: 'AeonicPro';
+	src: url('../../assets/TRIAL\ with\ GR\ and\ CY/AeonikProTRIAL-Regular.otf');
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgb(8, 6, 36);
+}

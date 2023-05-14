@@ -1,0 +1,19 @@
+.button {
+	border: none;
+	border-radius: 15px;
+	outline: none;
+	font-family: 'AeonicPro';
+	font-size: medium;
+	font-weight: 800;
+	background: none;
+	background: linear-gradient(180deg,rgba(60,8,126,0) 0%,rgba(60,8,126,.42) 100%),rgba(113,47,255,.24);;
+	backdrop-filter: blur(10px);
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.2), inset 0 0 12px #bf97ff70;
+	padding: 20px;
+	border: 1px solid rgba(192, 182, 255);
+	color: white;
+}
+
+.button::first-letter {
+	text-transform: capitalize;
+}
