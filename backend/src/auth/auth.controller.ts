@@ -1,7 +1,8 @@
-import { Controller, Post, Get, Request, UseGuards, Response } from '@nestjs/common';
+import { Controller, Post, Get, Request, UseGuards, Response, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { User } from '@prisma/client';
+import axios from 'axios';
 
 @Controller('auth')
 export class AuthController {
@@ -35,7 +36,7 @@ export class AuthController {
 		console.log('hello');
 		if (!req.user)
 			return 'no user from google'
-		return res.redirect('http://127.0.0.1:3001').json(req.user);
+		return res.redirect(process.env.FRONT_HOST).json(req.user);
 	}
 
 	@Get('42')
@@ -48,8 +49,19 @@ export class AuthController {
 	intra42AuthRedirect(@Request() req: any, @Response() res: any) {
 		if (!req.user)
 			return 'no user from google'
-		res.cookie('accessToken', req.user.accessToken, {httpOnly: true});
-		res.cookie('user_id', req.user.id, {httpOnly: true});
-		return res.redirect('http://127.0.0.1:3001/profile');
+		res.cookie('accessToken', req.user.accessToken);
+		res.cookie('user_id', req.user.id);
+		return res.redirect(`${process.env.FRONT_HOST}/profile`);
 	}
+
+	@Get('user')
+	async getUserData(@Query('id') id: String, @Query('accessToken') accessToken: String) {
+		const {data: userData} = await axios.get(`${process.env.API_42}/v2/users/${id}`, {
+			headers: {
+				Authorization: `Bearer ${accessToken}`
+			}
+		})
+		console.log(userData);
+		return (userData);
+	}	
 }

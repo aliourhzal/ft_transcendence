@@ -1,12 +1,11 @@
 import Image from 'next/image'
 import styles from './page.module.css'
-// import FormLogin from '@/components/authComponents/FormLogin'
-import IntraLogin from '@/components/authComponents/IntraLogin'
+import AuthForm from '@/components/authComponents/AuthForm'
 
 export default function Home() {
 	return (
 		<main className={styles.main}>
-			<IntraLogin />
+			<AuthForm />
 		</main>
 	)
 }

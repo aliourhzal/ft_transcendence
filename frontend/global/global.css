@@ -13,6 +13,8 @@
 
 * {
     box-sizing: border-box;
+    color: #E8EAEB;
+
 }
 
 body {
@@ -22,5 +24,5 @@ body {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-color: rgb(8, 6, 36);
+	background-color: #1B1F28;
 }

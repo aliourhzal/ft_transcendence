@@ -1,5 +1,5 @@
 // dbuser = admin
-// dbpasswd = Mata1234$@$
+// dbpasswd = Mata1234$$
 // dbname = pong_db
 
 datasource db {
