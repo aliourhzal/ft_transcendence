@@ -1,5 +1,9 @@
 
 import Link from 'next/link';
+
+import Input from '../UI/inputComponent/InputComponent';
+import Button from '../UI/button/ButtonComponent';
+
 import styles from './AuthForm.module.css'
 
 export default function AuthForm() {
@@ -8,9 +12,9 @@ export default function AuthForm() {
             <div className={styles.container}>
                 <h1 className={styles.title}>Login</h1>
                 <form className={styles.form}>
-                    <input type="text" placeholder='login'/>
-                    <input type="password" placeholder='password'/>
-                    <button type="submit">login</button>
+                    <Input type="text" placeholder='login'/>
+                    <Input type="password" placeholder='password'/>
+                    <Button type="submit" label="login"/>
                 </form>
                 <span className={styles.choice}>Or</span>
                 <hr />

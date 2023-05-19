@@ -14,8 +14,7 @@ generator client {
 model User {
     id String @id @default(uuid())
     username String
-    login String @unique
+    nickname String @unique
     password String
     img String
-    nickname String @unique @db.VarChar(255)
 }
