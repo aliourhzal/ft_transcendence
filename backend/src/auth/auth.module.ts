@@ -1,31 +1,22 @@
 import { Module } from '@nestjs/common';
-import { LocalStrategy } from './local.strategy';
 import { AuthController } from './auth.controller';
-import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
-import { JwtStrategy } from './jwtStrategy';
-import { GoogleStrategy } from './google.stategy';
-import { Intra42Strategy } from './42.strategy';
+import { PassportModule } from '@nestjs/passport';
+import { LocalStrategy } from './local.strategy';
+import { UsersModule } from 'src/users/users.module';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './jwt.strategy';
+import { Strategy42 } from './42.strategy';
 
 @Module({
 	imports: [
-		JwtModule.registerAsync({
-			useFactory: () => ({
-				secret: process.env.AUTH_SECRET,
-				signOptions: {
-					expiresIn: '60m'
-				}
-			})
+		UsersModule,
+		PassportModule,
+		JwtModule.register({
+			secret: process.env.JWT_SECRET
 		})
 	],
-    controllers: [AuthController],
-    providers: [LocalStrategy, AuthService, JwtStrategy, GoogleStrategy, Intra42Strategy]
+	controllers: [AuthController],
+	providers: [AuthService, LocalStrategy, JwtStrategy, Strategy42]
 })
 export class AuthModule {}
-
-/**
- * prisma client
- * import { PrismaClient } from '@prisma/client'
-import { AuthService } from './auth/auth.service';
-    const prisma = new PrismaClient()
- */

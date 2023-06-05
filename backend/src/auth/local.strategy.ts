@@ -1,29 +1,17 @@
-import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-local";
-import { prisma } from "src/app.module";
+import { AuthService } from "./auth.service";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 
 @Injectable()
-export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
-
-    private logger: Logger = new Logger(LocalStrategy.name);
-
-    public async validate(login: string, password: string): Promise<any> {
-        const user = await prisma.user.findUnique({
-            where: {
-                login
-            }
-        });
-
-        if (!user) {
-            this.logger.debug(`user ${login} not found`);
-            throw new UnauthorizedException('userNotFound');
-        }
-
-        if (user.password !== password) {
-            this.logger.debug(`Invalid credentials for user ${user.login}`);
-            throw new UnauthorizedException('InvalidPasswd');
-        }
-        return (user);
+export class LocalStrategy extends PassportStrategy(Strategy) {
+    constructor (private readonly authService: AuthService) {
+        super()
+    }
+    async validate(username: string, password: string) {
+        const user = await this.authService.validateUser(username, password);
+        if (!user)
+            throw new UnauthorizedException()
+        return user
     }
 }

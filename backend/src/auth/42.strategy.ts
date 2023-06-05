@@ -1,32 +1,40 @@
-import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
-import {Strategy, VerifyCallback} from 'passport-42';
-
-
+import { Strategy } from "passport-42";
+import { PrismaClient } from '@prisma/client'
+import { UsersService } from "src/users/users.service";
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export class Intra42Strategy extends PassportStrategy(Strategy, '42') {
-	constructor() {
+export class Strategy42 extends PassportStrategy(Strategy, '42') {
+	private prisma = new PrismaClient();
+
+	constructor(private readonly usersService: UsersService) {
 		super({
-			clientID: 'u-s4t2ud-43dac9394f6be2d48afb01d79edfb84cea3cf8706b52215019fb77de84ea3e17',
-			clientSecret: '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',
-			callbackURL: "http://10.11.100.162:3000/auth/42/callback",
-			scope: ['public'],
+			clientID: process.env.CLIENT_ID,
+			clientSecret: process.env.CLIENT_SECRET,
+			callbackURL: process.env.CALLBACK_URL,
+		})
+	}
+	extractUserData(profile: any, accessToken: string) {
+		return ({
+			intra_id: profile._json.id,
+			email: profile._json.email,
+			login: profile._json.login,
+			firstName: profile._json.first_name,
+			lastName: profile._json.last_name,
+			profilePic: profile._json.image.link,
+			wallet: profile._json.wallet,
+			level: profile._json.cursus_users[1].level,
+			grade: profile._json.cursus_users[1].grade,
+			access_token: accessToken
 		});
 	}
-
-	async validate(accessToken: string, refreshToken: string, profile: any, done: VerifyCallback): Promise<any> {
-		const {id, email, login, url, displayname, image} = profile._json;
-		const user = {
-			id,
-			email,
-			login,
-			url,
-			displayname,
-			image: image.link,
-			accessToken
-		}
-		done(null, user);
+	async validate(accessToken: string, refreshToken: string, profile: any, cb: Function) {
+		const user = this.extractUserData(profile, accessToken);
+		const storedUser = await this.usersService.findOneByIntraID(user.intra_id);
+		console.log(user);
+		if (!storedUser)
+			await this.usersService.createNewUser(user);
+		return cb(null, user);
 	}
 }
-
