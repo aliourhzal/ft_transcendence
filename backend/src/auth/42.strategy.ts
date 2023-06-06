@@ -15,6 +15,8 @@ export class Strategy42 extends PassportStrategy(Strategy, '42') {
 			callbackURL: process.env.CALLBACK_URL,
 		})
 	}
+
+	// extract the info from the profile object provided by the oauth
 	extractUserData(profile: any, accessToken: string) {
 		return ({
 			intra_id: profile._json.id,
@@ -29,10 +31,11 @@ export class Strategy42 extends PassportStrategy(Strategy, '42') {
 			access_token: accessToken
 		});
 	}
+
+	// this function is called by the oauth
 	async validate(accessToken: string, refreshToken: string, profile: any, cb: Function) {
 		const user = this.extractUserData(profile, accessToken);
 		const storedUser = await this.usersService.findOneByIntraID(user.intra_id);
-		console.log(user);
 		if (!storedUser)
 			await this.usersService.createNewUser(user);
 		return cb(null, user);

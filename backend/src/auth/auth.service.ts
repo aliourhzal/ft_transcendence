@@ -10,7 +10,8 @@ export class AuthService {
         private readonly userService: UsersService,
         private readonly jwtService: JwtService
     ) {}
-
+    
+    // this function fetch the user from the database by nickname and compare the password
     async validateUser(nickname: string, pass: string) {
         const user = await this.userService.findOneByNickname(nickname);
         if (user && comparePasswd(pass, user.password))
@@ -21,9 +22,10 @@ export class AuthService {
         return (null);
     }
 
+    // this function signs the jwt token
     async login(user: any) {
         const payload = {
-            username: user.username,
+            nickname: user.nickname,
             sub: user.id
         }
         return ({

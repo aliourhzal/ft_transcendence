@@ -10,6 +10,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             secretOrKey: process.env.JWT_SECRET
         });
     }
+
+    // this function is called by the jwt strategy after decoding the token: the payload is the object that contains the userid and nickname after the decoding
     async validate(payload: any) {
         return ({
             sub: payload.sub,
