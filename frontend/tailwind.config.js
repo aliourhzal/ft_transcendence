@@ -12,7 +12,9 @@ module.exports = {
         {
           100: '#232830',
           200 : '#1B1F28',
+          300 : '#353D49',
         },
+        whiteSmoke : "#E8EAEB",
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
