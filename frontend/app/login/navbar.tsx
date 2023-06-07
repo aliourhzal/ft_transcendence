@@ -1,10 +1,12 @@
+import './style.css'
+
 export default function Navbar()
 {
     let isCollapse:Boolean = false;
     return(
         <nav className="absolute top-0 left-0 w-full">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-            <a href="https://github.com/Asalek" className="flex items-center">
+            <a href="https://github.com/Asalek" className="hover:animate-pulse flex items-center">
                 <img src="images/ping.png" className="h-8 mr-3" alt="Pongy" />
                 <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">Pongy</span>
             </a>
