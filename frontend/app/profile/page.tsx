@@ -6,7 +6,7 @@ export default function Profile() {
     return (
         <main className='h-full w-full bg-darken-200 flex '>
             {/*side bar*/}
-            <SideBar />
+            <SideBar name="asalek"/>
             <ProfileContent />
         </main>
     );
