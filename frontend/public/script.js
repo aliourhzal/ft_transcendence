@@ -1,23 +1,22 @@
-const canvas = document.getElementById("ball");
+const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
 
 const FPS = 60;
-const radius = 50;
+const radius = 2;
 let x = 200;
 let y = 300;
 let xSpeed = 1;
 let ySpeed = 2;
 
 function clear() {
-    context.fillStyle = "rgba(1, 1, 1, 0.3)";
-    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 function draw() {
     context.beginPath();
     context.arc(x, y, radius, 0, 2 * Math.PI);
     context.closePath();
-    context.fillStyle = "yellow";
+    context.fillStyle = "#0c90f2";
     context.fill();
 }
 

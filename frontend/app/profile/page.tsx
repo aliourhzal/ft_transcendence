@@ -1,5 +1,11 @@
+
+import ProfileContent from "./profileContent";
+
 export default function Profile() {
     return (
-        <h1>hello there</h1>
+        <main className='h-full w-full bg-slate-800 flex '>
+            <div className='h-full w-1/12 bg-red-500'></div>{/*side bar*/}
+            <ProfileContent />
+        </main>
     );
 }
