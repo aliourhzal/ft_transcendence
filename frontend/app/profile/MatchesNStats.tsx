@@ -14,15 +14,15 @@ function MatchResult() {
         <div className='w-full rounded-xl flex items-center justify-between bg-slate-600 p-3 gap-2'>
             <div className='flex gap-2 items-center'>
                 <img className='w-10 h-10 rounded-full' src="images/42.jpg" alt="avatar1"/>
-                <span className='text-white font-medium'>Nickname</span>
+                <span className='text-white font-medium hidden min-[560px]:inline'>Nickname</span>
             </div>
-            <div className='text-white flex gap-1'>
+            <div className='text-white flex gap-1 '>
                 <span>15</span>
                 <span>:</span>
                 <span>12</span>
             </div>
             <div className='flex gap-2 items-center'>
-                <span className='text-white font-medium'>Nickname</span>
+                <span className='text-white font-medium hidden min-[560px]:inline'>Nickname</span>
                 <img className='w-10 h-10 rounded-full' src="images/42.jpg" alt="avatar1"/>
             </div>
         </div>
@@ -49,7 +49,7 @@ function StatsTemplate(props: StatsProps) {
     const winsPercent = props.wins * 100 / props.total
     const lossesPercent = props.losses * 100 / props.total
     return (
-        <div className='text-white flex flex-col gap-3 w-2/5 mb-2'>
+        <div className='text-white flex flex-col gap-5 min-[540px]:w-2/5 w-full mb-2'>
             <h3 className='font-semibold'>{props.for}</h3>
             <hr />
             <div className='flex justify-between'>
@@ -72,7 +72,7 @@ export function GameStats() {
     return (
         <Container>
             <h2 className='text-white'>Statistics</h2>
-            <div className='flex justify-evenly'>
+            <div className='flex justify-evenly flex-col min-[540px]:flex-row gap-4'>
                 <StatsTemplate for='Game' total={27} wins={16} losses={11}/>
                 <StatsTemplate for='Point' total={248} wins={150} losses={98}/>
             </div>
