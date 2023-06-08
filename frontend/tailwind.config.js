@@ -15,6 +15,7 @@ module.exports = {
           300 : '#353D49',
         },
         whiteSmoke : "#E8EAEB",
+        blueStrong : "#2978F2",
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
