@@ -33,7 +33,9 @@ export class Strategy42 extends PassportStrategy(Strategy, '42') {
 	}
 
 	// this function is called by the oauth
-	async validate(accessToken: string, refreshToken: string, profile: any, cb: Function) {
+	async validate(accessToken: string, refreshToken: string, profile: any, cb: Function)
+				//stayed for a week	,  stayed for a month use it to generate a new accessToken
+	{
 		const user = this.extractUserData(profile, accessToken);
 		const storedUser = await this.usersService.findOneByIntraID(user.intra_id);
 		if (!storedUser)

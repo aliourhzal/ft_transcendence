@@ -20,18 +20,20 @@ export class AuthController {
 		response.end('ok');
 	}
 
+	//direct you to the 42 authorize page
 	@Get('42')
 	@UseGuards(AuthGuard('42'))
 	intra42Auth(){}
 
-	// this is the callback url provided to the 42 oauth
+	// this is the callback url provided to the 42 oauth contains all 42_user data (login, wallet, ...)
 	@Get('42/callback')
-	@UseGuards(AuthGuard('42'))
-	async intra42AuthRedirect(@Request() request: any, @Res() response: Response) {
+	@UseGuards(AuthGuard('42'))//this authGuard will call the 42 stategy in 42.strategy.ts file
+	async intra42AuthRedirect(@Request() request: any, @Res() response: Response)
+	{//request contains user_data, response used to bake cookies
 		// pass the user data to the function that signs the jwt token
-		const { access_token } = await this.authService.login(request.user);
-		//set the cookie
-		response.cookie('access_token', request.user.access_token);
+		const { access_token: jwt_access_token } = await this.authService.login(request.user);
+		//create the cookie
+		response.cookie('access_token', jwt_access_token);
 		// to ridrect the user to the profile page
 		response.redirect(`${process.env.FRONT_HOST}/profile`);
 	}

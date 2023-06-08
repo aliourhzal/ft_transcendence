@@ -26,7 +26,8 @@ export class UsersService {
 	async createNewUser(userData: UserData) {
 		let user: any;
 		try {
-			user = await this.prisma.user.create({
+			user = await this.prisma.user.create(
+			{
 				data: {
 					intra_id: userData.intra_id,
 					firstName: userData.firstName,
@@ -41,7 +42,9 @@ export class UsersService {
 					password: ""
 				}
 			});
-		} catch {
+		}
+		catch
+		{
 			return (null);
 		}
 		const {password, ...ret} = user;
