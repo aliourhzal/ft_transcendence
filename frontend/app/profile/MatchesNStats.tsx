@@ -33,7 +33,7 @@ export function MatchHistory() {
     return(
         <Container className='p-5 bg-darken-100 rounded-xl flex flex-col gap-5'>
             <h2 className='text-white'>Matches History</h2>
-            <div className='matchHistoryBody flex flex-col gap-3 max-h-[25vh] overflow-y-scroll'>
+            <div className='matchHistoryBody flex flex-col gap-3 overflow-y-auto max-h-[266px]'>
                 <MatchResult />
                 <MatchResult />
                 <MatchResult />
@@ -49,7 +49,7 @@ function StatsTemplate(props: StatsProps) {
     const winsPercent = props.wins * 100 / props.total
     const lossesPercent = props.losses * 100 / props.total
     return (
-        <div className='text-white flex flex-col gap-5 min-[540px]:w-2/5 w-full mb-2'>
+        <div className='text-white flex flex-col gap-5 min-[540px]:w-2/5 mb-2'>
             <h3 className='font-semibold'>{props.for}</h3>
             <hr />
             <div className='flex justify-between'>

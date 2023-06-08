@@ -4,9 +4,9 @@ import Container from "@/components/UI/ProfileBoxs";
 function Informations(props:any)
 {
     return (
-        <div className="h-full w-5/6">
+        <div className="h-full w-full md:w-5/6">
             <p className="pb-2 text-blueStrong">{props.title}</p>
-            <div className="text-whiteSmoke flex container bg-darken-300 justify-start rounded-lg md:gap-24 p-3">
+            <div className="text-whiteSmoke flex container bg-darken-300 justify-start rounded-lg md:gap-24 p-3 overflow-x-auto infoContainer">
                 <h1>{props.attribute}</h1>
             </div>
         </div>
@@ -15,11 +15,10 @@ function Informations(props:any)
 
 export default function ProfileInfo() {
     return (
-        <Container className='items-center justify-center xl:w-3/6 w-3/4 max-h-2/3'>
+        <Container className='items-center justify-center xl:w-3/6 w-5/6 mb-[auto]'>
             <img className='w-5/12 h-auto' src="images/man.png" alt="avatar" />
-            <div className="flex flex-col items-center justify-center h-full w-full gap-8">
-                <div className="flex w-5/6 container bg-darken-300 justify-center rounded-lg
-                    md:gap-24  p-2">
+            <div className="flex flex-col items-center justify-center h-full w-full gap-8 ">
+                <div className="flex w-full md:w-5/6 container bg-darken-300 justify-evenly md:justify-evenly rounded-lg pr-3 pl-3 p-2">
                     <div className="flex flex-col items-center">
                         <h2 className="text-blueStrong">Grade</h2>
                         <p className="text-whiteSmoke font-sans">Learner</p>

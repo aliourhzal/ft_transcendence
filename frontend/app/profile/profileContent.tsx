@@ -4,11 +4,13 @@ import ProfileInfo from "./ProfileInfo";
 
 export default function ProfileContent() {
     return(
-        <section className='w-11/12 flex flex-col items-center justify-center gap-5 xl:flex-row'>
-            <ProfileInfo />{/* pass argument */}
-            <div className="flex flex-col xl:w-2/6 w-3/4 gap-5">
-                <MatchHistory />{/* pass argument */}
-                <GameStats />{/* pass argument */}
+        <section className='w-10/12 flex min-[1020px]:items-center justify-center h-screen ml-[auto]'>
+            <div className='flex flex-col items-center gap-8 lg:flex-row mb-10'>
+                <ProfileInfo />{/* pass argument */}
+                <div className="flex flex-col gap-8 xl:w-3/6 w-5/6">
+                    <MatchHistory />
+                    <GameStats />{/* pass argument */}
+                </div>
             </div>
         </section>
     );

@@ -6,3 +6,12 @@
 .matchHistoryBody {
     scrollbar-color: white transparent;
 }
+
+.infoContainer::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.infoContainer {
+    scrollbar-color: white transparent;
+    /* border-radius: 0 0 8px 8px; */
+}
