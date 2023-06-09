@@ -81,7 +81,7 @@ function MyModal() {
 					<div className="flex flex-col justify-center items-center gap-3">
 					<img id="avatar" className="h-1/4 w-1/4 mb-6" src="images/man.png" alt="avatar" />
             <div>
-              <input onChange={setImage} type="file" accept="image/png, image/gif, image/jpeg" className="hidden" id="avatarUpload" />
+              <input onClick={setImage} type="file" accept="image/png, image/gif, image/jpeg" className="hidden" id="avatarUpload" />
               <IoIosAddCircle onClick={clickUpload} className="absolute w-10 h-10 top-[19%] right-[37%] text-gray-600 " />
             </div>
           <input type="text" className="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500" placeholder="Display Name" required></input>
