@@ -47,7 +47,7 @@ export function MatchHistory() {
 
 function StatsTemplate(props: StatsProps) {
     const winsPercent = props.wins * 100 / props.total
-    const lossesPercent = props.losses * 100 / props.total
+    let lossesPercent = props.losses * 100 / props.total
     return (
         <div className='text-white flex flex-col gap-5 min-[540px]:w-2/5 mb-2'>
             <h3 className='font-semibold'>{props.for}</h3>
@@ -58,11 +58,11 @@ function StatsTemplate(props: StatsProps) {
             </div>
             <div className='flex flex-col gap-2'>
                 <span>Wins</span>
-                <progress className='rounded-full' value={winsPercent} max='100'></progress>
+                <progress className=" h-2 [&::-webkit-progress-bar]:rounded-lg [&::-webkit-progress-value]:rounded-lg   [&::-webkit-progress-bar]:bg-darken-300 [&::-webkit-progress-value]:bg-blueStrong [&::-moz-progress-bar]:bg-blueStrong" value={winsPercent} max='100'></progress>
             </div>
             <div className='flex flex-col gap-2'>
                 <span>Losses</span>
-                <progress className='rounded-full' value={lossesPercent} max='100'></progress>
+                <progress style={{color: "blue"}} className=" h-2 [&::-webkit-progress-bar]:rounded-lg [&::-webkit-progress-value]:rounded-lg   [&::-webkit-progress-bar]:bg-darken-300 [&::-webkit-progress-value]:bg-blueStrong [&::-moz-progress-bar]:bg-blueStrong" value={lossesPercent} max='100'></progress>
             </div>
         </div>
     );
