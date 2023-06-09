@@ -1,6 +1,7 @@
 "use client";
 import Container from "@/components/UI/ProfileBoxs";
 import { Dialog, Transition } from '@headlessui/react'
+import { Clicker_Script } from "next/font/google";
 import { Fragment, useState } from 'react';
 import { IoIosAddCircle } from "react-icons/io";
 
@@ -13,6 +14,11 @@ function MyModal() {
 
   function openModal() {
     setIsOpen(true)
+  }
+
+  function clickUpload()
+  {
+    document.getElementById("avatarUpload")?.click();
   }
 
   return (
@@ -50,8 +56,11 @@ function MyModal() {
 					<button onClick={closeModal} type="button" className=" absolute right-[7%] w-9 h-9 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-lg flex text-center justify-center items-center">x</button>
 					<div className="flex flex-col justify-center items-center gap-3">
 					<img className="h-1/4 w-1/4 mb-6" src="images/man.png" alt="avatar" />
-					{/* <IoIosAddCircle  className="absolute w-10 h-10 top-[60%] right-[37%] text-gray-600 " /> */}
-					<input type="text" className="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500" placeholder="Display Name" required></input>
+            <div>
+              <input type="file" accept="image/png, image/gif, image/jpeg" className="hidden" id="avatarUpload" />
+              <IoIosAddCircle onClick={clickUpload} className="absolute w-10 h-10 top-[19%] right-[37%] text-gray-600 " />
+            </div>
+          <input type="text" className="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500" placeholder="Display Name" required></input>
 					<input type="password" className="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500" placeholder="Password" required></input>
 					<input type="password" className="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500" placeholder="Confirm Password" required></input>
 						<div className="flex items-center mb-4">
