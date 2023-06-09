@@ -20,6 +20,30 @@ function MyModal() {
   {
     document.getElementById("avatarUpload")?.click();
   }
+  function setImage()
+  {
+          // Retrieve the input and image elements
+      const input = (document.getElementById("avatarUpload")!) as HTMLInputElement ;
+      const avatar = (document.getElementById("avatar")!) as HTMLImageElement;
+
+      // Add event listener for changes in the input field
+      input.addEventListener("change", function() {
+        // Check if any file is selected
+        if (input.files && input.files[0]) {
+          // Create a FileReader object to read the file
+          const reader = new FileReader();
+
+          // Define the onload event handler
+          reader.onload = function(e) {
+            // Set the source of the image to the selected file
+            avatar.src = e.target!.result as string;
+          };
+
+          // Read the selected file as a data URL
+          reader.readAsDataURL(input.files[0]);
+        }
+      });
+  }
 
   return (
     <div>
@@ -55,9 +79,9 @@ function MyModal() {
 				<Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-whiteSmoke p-6 text-left align-middle shadow-xl transition-all">
 					<button onClick={closeModal} type="button" className=" absolute right-[7%] w-9 h-9 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-lg flex text-center justify-center items-center">x</button>
 					<div className="flex flex-col justify-center items-center gap-3">
-					<img className="h-1/4 w-1/4 mb-6" src="images/man.png" alt="avatar" />
+					<img id="avatar" className="h-1/4 w-1/4 mb-6" src="images/man.png" alt="avatar" />
             <div>
-              <input type="file" accept="image/png, image/gif, image/jpeg" className="hidden" id="avatarUpload" />
+              <input onChange={setImage} type="file" accept="image/png, image/gif, image/jpeg" className="hidden" id="avatarUpload" />
               <IoIosAddCircle onClick={clickUpload} className="absolute w-10 h-10 top-[19%] right-[37%] text-gray-600 " />
             </div>
           <input type="text" className="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500" placeholder="Display Name" required></input>
