@@ -1,17 +1,17 @@
 
 import { MatchHistory, GameStats } from "./MatchesNStats";
 import ProfileInfo from "./ProfileInfo";
+import SideBar from "./sideBar";
 
 export default function ProfileContent() {
     return(
-        <section className='w-10/12 flex min-[1020px]:items-center justify-center h-screen ml-[auto]'>
-            <div className='flex flex-col items-center gap-8 lg:flex-row mb-10'>
-                <ProfileInfo />{/* pass argument */}
-                <div className="flex flex-col gap-8 xl:w-3/6 w-5/6">
-                    <MatchHistory />
-                    <GameStats />{/* pass argument */}
-                </div>
-            </div>
+        <section className='w-full flex flex-col items-center h-screen gap-5'>
+            <SideBar name="asalek"/>
+            <ProfileInfo />{/* pass argument */}
+            {/* <div className="grid md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-5 mb-10">
+                <MatchHistory />
+                <GameStats />
+            </div> */}
         </section>
     );
 }

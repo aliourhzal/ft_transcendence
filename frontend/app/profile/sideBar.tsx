@@ -5,7 +5,7 @@ import {FaTableTennis} from "react-icons/fa";
 export default function SideBar(props:any)
 {
     return (
-            <section className="h-full w-2/12 bg-darken-100 flex flex-col items-center max-w-[150px] absolute top-0 left-0">
+            <section className="h-full w-[20%] bg-darken-100 flex flex-col items-center max-w-[150px] fixed top-0 left-0">
                 <div className="flex flex-col items-center pt-[20%] gap-5">
                     <img className=" w-1/2" src="images/man.png" alt="user_pic" />
                     <h2 className="text-whiteSmoke sm:text-base lg:text-[20px] ">{props.name}</h2>
