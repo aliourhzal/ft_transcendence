@@ -41,12 +41,11 @@ export default function MyModal() {
 	}
 
     function formSubmitHandler(e: any) {
+		//prevent website reload
         e.preventDefault();
         const newNickname = e.target[1].value;
         const newPass = e.target[2].value;
-        const confirmPass = e.target[3].value
-
-
+        const confirmPass = e.target[3].value;
     }
 
   return (
@@ -109,3 +108,4 @@ export default function MyModal() {
 	</div>
 );
 }
+
