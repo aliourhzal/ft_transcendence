@@ -1,12 +1,32 @@
-"use client";
-import Container from "@/components/UI/ProfileBoxs";
-import MyModal from "./modalPopup";
 
-export default function ProfileInfo()
+import { useState } from "react";
+import ChangePicIcon from "./ChangePicIcon";
+
+export default function ProfileInfo(props: any)
 {
-	const levelProgress: string = "5%"; 
+	const levelProgress: string = "85%";
+	const [coverPic, setCoverPic] = useState("images/cyberpunk.png");
+
+	function changeProfilePic(e: any)
+	{
+        const reader = new FileReader();
+		reader.onload = function(e) {
+			props.changePic(e.target!.result);
+		}
+		reader.readAsDataURL(e.target.files[0]);
+	}
+
+	function changeCoverPic(e: any) {
+		const reader = new FileReader();
+		reader.onload = function(e) {
+			setCoverPic(e.target!.result as string);
+		}
+		reader.readAsDataURL(e.target.files[0]);
+	}
+
 	return (
-		<div style={{backgroundImage: 'url("images/cyberpunk.png")', backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundPosition: 'center'}} className="text-md flex flex-col justify-between items-center md:justify-end md:items-end gap-3 w-[90%] mt-[3%] min-h-[550px] h-1/3 rounded-3xl">
+		<div style={{backgroundImage: `url(${coverPic})`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundPosition: 'center'}} className="text-md flex flex-col justify-between items-center md:justify-end md:items-end gap-3 w-[90%] mt-[3%] min-h-[550px] h-1/3 rounded-3xl relative">
+			<ChangePicIcon inputId="coverPic" changePicFunc={changeCoverPic} className="absolute right-3 md:top-3 bottom-[41%] "/>
 			<div className="flex justify-center md:justify-start w-[100%] md:w-[70%] mt-4 md:mt-0">
 				<div className="flex w-[90%] md:w-[60%] bg-darken-100/70 backdrop-blur-md justify-around py-3 rounded-full">
 					<div className="flex gap-0 flex-col min-[500px]:flex-row items-center md:gap-2">
@@ -24,8 +44,10 @@ export default function ProfileInfo()
 				</div>
 			</div>
 			<div className="flex flex-col md:flex-row items-center w-[100%] bg-darken-100/70 backdrop-blur-md h-[40%] rounded-b-3xl">{/* the fname lname div */}
-				<div className="w-full md:w-[30%] h-[90px] md:h-full ">
-					<img className='translate-y-[-50%] max-w-[150px] md:max-w-[250px] min-w-[150px] md:w-[70%] w-[40%] h-[auto] aspect-square m-[auto] rounded-full' src="images/guyAvatar.jpeg" alt="avatar" />
+				<div className="w-full md:w-[30%] h-[90px] md:h-full">
+					<div style={{backgroundImage: `url(${props.pic as string})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundSize: 'cover'}} className=' flex items-end justify-center p-3 translate-y-[-50%] max-w-[150px] md:max-w-[250px] min-w-[150px] md:w-[70%] w-[40%] h-[auto] aspect-square m-[auto] rounded-full'>
+						<ChangePicIcon inputId="profilePic" changePicFunc={changeProfilePic} className="" />
+					</div>
 				</div>
 				<div className="flex flex-col justify-evenly items-center md:items-start w-[100%] md:w-[70%] h-full">
 					<div className="flex justify-between md:gap-20 md:justify-start w-[90%]">{/* row 1 */}

@@ -4,6 +4,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import { useRef } from "react";
 import { Fragment, useState } from 'react';
 import { IoIosAddCircle } from "react-icons/io";
+import { IoIosSettings } from "react-icons/io";
 
 interface InputTemplateProps {
 	id: string,
@@ -22,10 +23,9 @@ function InputTemplate(props: InputTemplateProps) {
 	);
 }
 
-export default function MyModal() {
+export default function MyModal(props: any) {
 	let [isOpen, setIsOpen] = useState(false);
 	const imageElement : any = useRef();
-	const imageInput : any = useRef();
 
 	function modalAppearance() {
 		setIsOpen(oldState => !oldState)
@@ -36,8 +36,9 @@ export default function MyModal() {
         const reader = new FileReader();
 		reader.onload = function(e) {
 			imageElement.current.src = e.target!.result as string;
+			props.changePic(e.target!.result);
 		}
-		reader.readAsDataURL(imageInput.current.files[0]);
+		reader.readAsDataURL(e.target.files[0]);
 	}
 
     function formSubmitHandler(e: any) {
@@ -50,22 +51,25 @@ export default function MyModal() {
 
   return (
 	<div>
-		<img onClick={modalAppearance} className='cursor-pointer' src="images/settings.png" alt="settings" />
+		<div className="flex flex-col md:flex-row items-center gap-5 cursor-pointer text-white" onClick={modalAppearance}>
+			<IoIosSettings style={{fontSize: '26px'}} />
+			<span>Settings</span>
+		</div>
 		{/* <button onClick={modalAppearance} className="btn bg-blue-700 hover:bg-blueStrong text-white font-bold py-3 px-9 border border-blue-900 rounded-md">
 					Settings
 		</button> */}
 		{/* password image displayName(login) X to close save to save */}
-	<Transition appear show={isOpen} as={Fragment}>
-		<Dialog as="div" className="relative z-10" onClose={modalAppearance}>
-		<Transition.Child as={Fragment}
-			enter="ease-out duration-300"
-			enterFrom="opacity-0"
-			enterTo="opacity-100"
-			leave="ease-in duration-200"
-			leaveFrom="opacity-100"
-			leaveTo="opacity-0"
-		>
-			<div className="fixed inset-0 bg-black bg-opacity-25" />
+		<Transition appear show={isOpen} as={Fragment}>
+			<Dialog as="div" className="relative z-10" onClose={modalAppearance}>
+			<Transition.Child as={Fragment}
+				enter="ease-out duration-300"
+				enterFrom="opacity-0"
+				enterTo="opacity-100"
+				leave="ease-in duration-200"
+				leaveFrom="opacity-100"
+				leaveTo="opacity-0"
+			>
+				<div className="fixed inset-0 bg-black bg-opacity-25"></div>
 			</Transition.Child>
 
 			<div className="fixed inset-0 overflow-y-auto">
@@ -84,10 +88,10 @@ export default function MyModal() {
 					<button onClick={modalAppearance} type="button" className=" absolute right-[7%] w-9 h-9 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-lg flex text-center justify-center items-center">x</button>
 					<form onSubmit={formSubmitHandler} className="flex flex-col justify-center items-center gap-3">
 						<div className="relative">
-							<img ref={imageElement} id="avatar" className="h-[100px] w-[auto] mb-6 rounded-full" src="images/man.png" alt="avatar" />
+							<img ref={imageElement} id="avatar" className="h-[100px] aspect-square mb-6 rounded-full" src="images/man.png" alt="avatar" />
 							<label htmlFor="avatarUpload" className="absolute bottom-[13%] right-0 w-10 h-10">
 								<IoIosAddCircle className="absolute w-full h-full top-0 left-0 text-gray-600 cursor-pointer" />
-								<input ref={imageInput} onChange={setImage} type="file" accept="image/png, image/gif, image/jpeg" className="hidden" id="avatarUpload"/>
+								<input onChange={setImage} type="file" accept="image/png, image/gif, image/jpeg" className="hidden" id="avatarUpload"/>
 							</label>
 						</div>
 						<InputTemplate id='newNick' label='new Nickname' type='text' placeholder='Nickname'/>
