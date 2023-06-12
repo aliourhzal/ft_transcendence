@@ -33,6 +33,7 @@ export default function MyModal(props: any) {
 
 	function setImage(e: any)
 	{
+		alert(props.pic);
         const reader = new FileReader();
 		reader.onload = function(e) {
 			imageElement.current.src = e.target!.result as string;
@@ -88,7 +89,8 @@ export default function MyModal(props: any) {
 					<button onClick={modalAppearance} type="button" className=" absolute right-[7%] w-9 h-9 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-lg flex text-center justify-center items-center">x</button>
 					<form onSubmit={formSubmitHandler} className="flex flex-col justify-center items-center gap-3">
 						<div className="relative">
-							<img ref={imageElement} id="avatar" className="h-[100px] aspect-square mb-6 rounded-full" src="images/man.png" alt="avatar" />
+							<img src={props.pic} alt="" />
+							<img ref={imageElement} id="avatar" className="h-[100px] aspect-square mb-6 rounded-full" src={props.avatar} alt="avatar" />
 							<label htmlFor="avatarUpload" className="absolute bottom-[13%] right-0 w-10 h-10">
 								<IoIosAddCircle className="absolute w-full h-full top-0 left-0 text-gray-600 cursor-pointer" />
 								<input onChange={setImage} type="file" accept="image/png, image/gif, image/jpeg" className="hidden" id="avatarUpload"/>

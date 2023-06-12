@@ -28,7 +28,7 @@ export default function SideBar(props:any)
 					<NavOption icon={FaTableTennis} option='game'/>
 				</div>
 				<div className="h-full w-[44%] flex justify-center items-end">
-					<MyModal changePic={props.changePic} /> 
+					<MyModal avatar={props.pic} changePic={props.changePic} /> 
 				</div>
 			</section>
 	);
