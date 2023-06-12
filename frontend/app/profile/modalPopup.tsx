@@ -1,4 +1,4 @@
-
+'use client'
 import { Dialog, Transition } from '@headlessui/react'
 // import { Clicker_Script } from "next/font/google";
 import { useRef } from "react";
@@ -50,9 +50,10 @@ export default function MyModal() {
 
   return (
 	<div>
-		<button onClick={modalAppearance} className="btn bg-blue-700 hover:bg-blueStrong text-white font-bold py-3 px-9 border border-blue-900 rounded-md">
+		<img onClick={modalAppearance} className='cursor-pointer' src="images/settings.png" alt="settings" />
+		{/* <button onClick={modalAppearance} className="btn bg-blue-700 hover:bg-blueStrong text-white font-bold py-3 px-9 border border-blue-900 rounded-md">
 					Settings
-		</button>
+		</button> */}
 		{/* password image displayName(login) X to close save to save */}
 	<Transition appear show={isOpen} as={Fragment}>
 		<Dialog as="div" className="relative z-10" onClose={modalAppearance}>
@@ -109,3 +110,4 @@ export default function MyModal() {
 );
 }
 
+// export {modalAppearance}

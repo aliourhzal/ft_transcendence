@@ -1,6 +1,7 @@
 import {BsFillPersonFill} from "react-icons/bs";
 import {BsFillChatSquareDotsFill} from "react-icons/bs";
 import {FaTableTennis} from "react-icons/fa";
+import MyModal from "./modalPopup";
 
 export default function SideBar(props:any)
 {
@@ -26,6 +27,9 @@ export default function SideBar(props:any)
                         <FaTableTennis  style={{color: 'white', fontSize: '24px'}}/>
                         <span className="text-md text-whiteSmoke hidden sm:inline">Game</span>
                     </a>
+                </div>
+                <div className="h-full w-[44%] flex justify-center items-end">
+                    <MyModal /> 
                 </div>
             </section>
     );
