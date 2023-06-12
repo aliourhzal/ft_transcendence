@@ -4,6 +4,21 @@ import { Missions } from "./MissionsNAchievements";
 import ProfileInfo from "./ProfileInfo";
 import SideBar from "./sideBar";
 
+interface infomations{
+	nickname: string,
+	wallet: number,
+	grade: string,
+	level: number,
+	fName: string,
+	lName: string,
+	nickName: string,
+	progress: number,
+	wins: number,
+	losses: number,
+	password: string,
+	avatar : File | string | HTMLImageElement
+}
+
 export default function ProfileContent() {
 	return(
 		<section className='w-full flex h-screen'>
