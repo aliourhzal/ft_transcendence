@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { MatchHistory, GameStats } from "./MatchesNStats";
-import { Missions } from "./MissionsNAchievements";
+import { Missions, Achievements } from "./MissionsNAchievements";
 import ProfileInfo from "./ProfileInfo";
 import SideBar from "./sideBar";
 import useAxiosFetch from "@/hooks/useAxiosFetch";
@@ -37,7 +37,7 @@ export default function ProfileContent() {
 					<MatchHistory />
 					<GameStats />
 					<Missions />
-					<GameStats />
+					<Achievements />
 				</div>
 			</div>
 		</section>
