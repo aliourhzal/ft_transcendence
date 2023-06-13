@@ -40,6 +40,6 @@ export class Strategy42 extends PassportStrategy(Strategy, '42') {
 		const storedUser = await this.usersService.findOneByIntraID(user.intra_id);
 		if (!storedUser)
 			await this.usersService.createNewUser(user);
-		return cb(null, user);
+		return cb(null, storedUser);
 	}
 }

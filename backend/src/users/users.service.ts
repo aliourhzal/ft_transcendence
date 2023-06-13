@@ -50,4 +50,14 @@ export class UsersService {
 		const {password, ...ret} = user;
         return (ret);
 	}
+
+	async fetchUserByNickname(nickname: string) {
+		const user = await this.findOneByNickname(nickname);
+		const {password, ...ret} = user;
+		if (user.password !== '')
+			ret["password"] = true;
+		else
+			ret["password"] = false;
+		return (ret);
+	}
 }

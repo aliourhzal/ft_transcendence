@@ -9,7 +9,7 @@ export class UsersController {
 
     @UseGuards(AuthGuard('jwt'))
     @Get('profile')
-    getProfile(@Req() request: any, @Res() response: Response) {
-        response.end('ok');
+    async getProfile(@Req() request: any) {
+        return await this.usersService.fetchUserByNickname(request.user.nickname);
     }   
 }

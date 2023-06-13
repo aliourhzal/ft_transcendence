@@ -9,7 +9,7 @@ export default function useAxiosFetch(url: string,) {
         setIsLoding(true);
         axios.get(url, {
             withCredentials: true
-        }).then(res => setData(res.data))
+        }).then(res => {console.log(res.data.profilePic); setData(res.data)})
         .catch((err) => console.log(err))
         .finally(() => setIsLoding(false))
     }, [url]);

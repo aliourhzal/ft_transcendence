@@ -2,3 +2,4 @@ node_modules
 frontend/.env
 backend/.env
 .DS_Store
+backend/*/test.ts
