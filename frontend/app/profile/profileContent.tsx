@@ -43,7 +43,7 @@ export default function ProfileContent() {
 			<SideBar name="asalek" pic={profilePic} changePic={setProfilePic} />
 			<div className="flex flex-col items-center gap-[3vh] w-[100vw] h-[100vh] overflow-y-auto m-[auto]">
 				<ProfileInfo changePic={setProfilePic} pic={profilePic} nickname={nicknameState} changeNickname={setNickname}/>{/* pass argument */}
-				<div className="grid md:grid-cols-2 2xl:grid-cols-4 gap-5 mb-10 w-[90%]">
+				<div className="grid grid-cols-1 min-[961px]:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 mb-10 w-[90%]">
 					<MatchHistory />
 					<GameStats />
 					<Missions />

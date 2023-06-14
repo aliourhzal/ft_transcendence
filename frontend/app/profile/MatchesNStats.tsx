@@ -14,7 +14,7 @@ function MatchResult() {
         <div className='w-full rounded-xl flex items-center justify-between bg-darken-300 p-3 gap-2'>
             <div className='flex gap-2 items-center'>
                 <img className='w-10 h-10 rounded-full' src="images/42.jpg" alt="avatar1"/>
-                <span className='text-white font-medium hidden min-[560px]:inline'>Nickname</span>
+                <span className='text-white font-medium hidden min-[1019px]:inline'>Nickname</span>
             </div>
             <div className='text-white flex gap-1 '>
                 <span>15</span>
@@ -22,7 +22,7 @@ function MatchResult() {
                 <span>12</span>
             </div>
             <div className='flex gap-2 items-center'>
-                <span className='text-white font-medium hidden min-[560px]:inline'>Nickname</span>
+                <span className='text-white font-medium hidden min-[1019px]:inline'>Nickname</span>
                 <img className='w-10 h-10 rounded-full' src="images/42.jpg" alt="avatar1"/>
             </div>
         </div>
@@ -49,7 +49,7 @@ function StatsTemplate(props: StatsProps) {
     const winsPercent = props.wins * 100 / props.total
     let lossesPercent = props.losses * 100 / props.total
     return (
-        <div className='text-white flex flex-col gap-5 min-[540px]:w-2/5 mb-2'>
+        <div className='text-white flex flex-col gap-5 min-[1375]:w-3/5 min-[540px]:w-2/5 mb-2'>
             <h3 className='font-semibold'>{props.for}</h3>
             <hr />
             <div className='flex justify-between'>
@@ -58,11 +58,11 @@ function StatsTemplate(props: StatsProps) {
             </div>
             <div className='flex flex-col gap-2'>
                 <span>Wins</span>
-                <progress className=" h-2 [&::-webkit-progress-bar]:rounded-lg [&::-webkit-progress-value]:rounded-lg   [&::-webkit-progress-bar]:bg-darken-300 [&::-webkit-progress-value]:bg-blueStrong [&::-moz-progress-bar]:bg-blueStrong" value={winsPercent} max='100'></progress>
+                <progress className="w-auto h-2 [&::-webkit-progress-bar]:rounded-lg [&::-webkit-progress-value]:rounded-lg   [&::-webkit-progress-bar]:bg-darken-300 [&::-webkit-progress-value]:bg-blueStrong [&::-moz-progress-bar]:bg-blueStrong" value={winsPercent} max='100'></progress>
             </div>
             <div className='flex flex-col gap-2'>
                 <span>Losses</span>
-                <progress style={{color: "blue"}} className=" h-2 [&::-webkit-progress-bar]:rounded-lg [&::-webkit-progress-value]:rounded-lg   [&::-webkit-progress-bar]:bg-darken-300 [&::-webkit-progress-value]:bg-blueStrong [&::-moz-progress-bar]:bg-blueStrong" value={lossesPercent} max='100'></progress>
+                <progress className="w-auto h-2 [&::-webkit-progress-bar]:rounded-lg [&::-webkit-progress-value]:rounded-lg   [&::-webkit-progress-bar]:bg-darken-300 [&::-webkit-progress-value]:bg-blueStrong [&::-moz-progress-bar]:bg-blueStrong" value={lossesPercent} max='100'></progress>
             </div>
         </div>
     );
