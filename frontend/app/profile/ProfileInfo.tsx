@@ -2,7 +2,16 @@
 import { useState } from "react";
 import ChangePicIcon from "./ChangePicIcon";
 
-export default function ProfileInfo(props: any)
+import { Informations } from "./profileContent";
+
+interface ProfileInfoProps {
+	pic: string,
+	nickname: string,
+	changePic: Function,
+	changeNickname: Function,
+}
+
+export default function ProfileInfo(props: ProfileInfoProps)
 {
 	const levelProgress: string = "85%";
 	const [coverPic, setCoverPic] = useState("images/cyberpunk.png");
@@ -28,16 +37,16 @@ export default function ProfileInfo(props: any)
 		<div style={{backgroundImage: `url(${coverPic})`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundPosition: 'center'}} className="text-md flex flex-col justify-between items-center md:justify-end md:items-end gap-3 w-[90%] mt-[3%] min-h-[550px] h-1/3 rounded-3xl relative">
 			<ChangePicIcon inputId="coverPic" changePicFunc={changeCoverPic} className="absolute right-3 md:top-3 bottom-[41%] "/>
 			<div className="flex justify-center md:justify-start w-[100%] md:w-[70%] mt-4 md:mt-0">
-				<div className="flex w-[90%] md:w-[60%] bg-darken-100/70 backdrop-blur-md justify-around py-3 rounded-full">
-					<div className="flex gap-0 flex-col min-[500px]:flex-row items-center md:gap-2">
+				<div className="flex w-[90%] md:w-[70%] bg-darken-100/70 backdrop-blur-md justify-around py-3 rounded-full">
+					<div className="flex gap-0 flex-col sm:flex-row items-center md:gap-2">
 						<h2 className="text-blueStrong">Grade:&nbsp;</h2>
 						<p className="text-whiteSmoke">Starter</p>
 					</div>
-					<div className="flex gap-0 flex-col min-[500px]:flex-row items-center md:gap-2">
+					<div className="flex gap-0 flex-col sm:flex-row items-center md:gap-2">
 						<h2 className="text-blueStrong">Wallet:&nbsp;</h2>
 						<p className="text-whiteSmoke">1337</p>
 					</div>
-					<div className="flex gap-0 flex-col min-[500px]:flex-row items-center md:gap-2">
+					<div className="flex gap-0 flex-col sm:flex-row items-center md:gap-2">
 						<h2 className="text-blueStrong">Level:&nbsp;</h2>
 						<p className="text-whiteSmoke">7</p>
 					</div>
@@ -62,6 +71,10 @@ export default function ProfileInfo(props: any)
 						<div className="flex flex-col items-center gap-1 md:items-start ">
 							<h2 className="text-gray-500 text-sm">Nick Name</h2>
 							<p className="text-whiteSmoke">asalek</p>
+						</div>
+						<div className="flex flex-col items-center gap-1 md:items-start ">
+							<h2 className="text-gray-500 text-sm">Email</h2>
+							<p className="text-whiteSmoke">asalek@student.1337.ma</p>
 						</div>
 					</div>
 					<div className=" w-[90%] rounded-full bg-darken-300 h-9">

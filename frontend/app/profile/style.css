@@ -15,3 +15,27 @@
     scrollbar-color: white transparent;
     /* border-radius: 0 0 8px 8px; */
 }
+
+@media (min-width: 550px) {
+    .avatarNickname {
+        display: inline;
+    }
+}
+
+@media (min-width: 1035px) {
+    .playerGameInfo {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1535px) {
+    .playerGameInfo {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1910px) {
+    .playerGameInfo {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}

@@ -54,7 +54,7 @@ export default function MyModal(props: any) {
 	<div>
 		<div className="flex flex-col md:flex-row items-center gap-5 cursor-pointer text-white" onClick={modalAppearance}>
 			<IoIosSettings style={{fontSize: '26px'}} />
-			<span>Settings</span>
+			<span className='text-md text-whiteSmoke hidden sm:inline capitalize'>Settings</span>
 		</div>
 		{/* <button onClick={modalAppearance} className="btn bg-blue-700 hover:bg-blueStrong text-white font-bold py-3 px-9 border border-blue-900 rounded-md">
 					Settings

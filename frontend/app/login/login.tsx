@@ -14,7 +14,7 @@ export default function Login()
                 <span className='text-white mb-6'>Or</span>
                 <hr className='border-slate-500 w-full mb-6'/>
                 <div className='flex items-cente justify-between w-full'>
-                    <AuthButton src="images/42.png" alt="42 intra" link="http://10.11.100.162:3000/auth/42"/>
+                    <AuthButton src="images/42.png" alt="42 intra" link="http://127.0.0.1:3000/auth/42"/>
                     <AuthButton src="images/google.png" alt="42 intra" link=""/>
                     <AuthButton src="images/facebook.png" alt="42 intra" link=""/>
                 </div>

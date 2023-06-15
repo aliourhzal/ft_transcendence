@@ -14,7 +14,7 @@ function MatchResult() {
         <div className='w-full rounded-xl flex items-center justify-between bg-darken-300 p-3 gap-2'>
             <div className='flex gap-2 items-center'>
                 <img className='w-10 h-10 rounded-full' src="images/42.jpg" alt="avatar1"/>
-                <span className='text-white font-medium hidden min-[1019px]:inline'>Nickname</span>
+                <span className='text-white font-medium hidden avatarNickname'>Nickname</span>
             </div>
             <div className='text-white flex gap-1 '>
                 <span>15</span>
@@ -22,7 +22,7 @@ function MatchResult() {
                 <span>12</span>
             </div>
             <div className='flex gap-2 items-center'>
-                <span className='text-white font-medium hidden min-[1019px]:inline'>Nickname</span>
+                <span className='text-white font-medium hidden avatarNickname'>Nickname</span>
                 <img className='w-10 h-10 rounded-full' src="images/42.jpg" alt="avatar1"/>
             </div>
         </div>
@@ -31,9 +31,18 @@ function MatchResult() {
 
 export function MatchHistory() {
     return(
-        <Container className='p-5 bg-darken-100 rounded-xl flex flex-col gap-5'>
+        <Container className='p-5 bg-darken-100 rounded-xl flex flex-col gap-5 h-full'>
             <h2 className='text-white'>Matches History</h2>
-            <div className='matchHistoryBody flex flex-col gap-3 overflow-y-auto max-h-[266px]'>
+            <div className='matchHistoryBody flex flex-col gap-3 overflow-y-auto max-h-[420px]'>
+                <MatchResult />
+                <MatchResult />
+                <MatchResult />
+                <MatchResult />
+                <MatchResult />
+                <MatchResult />
+                <MatchResult />
+                <MatchResult />
+                <MatchResult />
                 <MatchResult />
                 <MatchResult />
                 <MatchResult />

@@ -48,9 +48,12 @@ export function Achievements() {
     return (
         <Container className='p-5 bg-darken-100 rounded-xl flex flex-col gap-5'>
             <h2 className='text-white'>Achievements</h2>
-            <div className='matchHistoryBody flex flex-col gap-3 overflow-y-auto max-h-[266px]'>
+            <div className='matchHistoryBody flex flex-col gap-3 overflow-y-auto max-h-[420px]'>
                 <Achieve title="The Breaker" description="Win 3 matches in a row with different players" img={"images/man.png"}/>
                 <Achieve title="The Breaker" description="Play 1k Game" img={"images/man.png"}/>
+                <Achieve title="The Breaker" description="Win a game after gathering all effects" img={"images/man.png"}/>
+                <Achieve title="The Breaker" description="Win a game after gathering all effects" img={"images/man.png"}/>
+                <Achieve title="The Breaker" description="Win a game after gathering all effects" img={"images/man.png"}/>
                 <Achieve title="The Breaker" description="Win a game after gathering all effects" img={"images/man.png"}/>
             </div>
         </Container>
