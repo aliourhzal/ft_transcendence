@@ -1,11 +1,29 @@
 
 .ping-slow{
-    animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+	animation: shrink .5s;
+	animation-fill-mode: forwards;
+}
 
-    @keyframes ping {
-    5%, 10% {
-        transform: scale(20);
-        opacity: 10;
-    }
-    }
+.ping-slow:hover {
+	animation: ping .5s;
+	animation-fill-mode: forwards;
+}
+
+.ping-slow:hover div {
+	opacity: 1;
+}
+
+.ping-slow:hover span {
+	opacity: 1;
+	transition: all 2s;
+}
+
+
+@keyframes ping {
+    from   { width: 56px; }
+    to { width: 60%;}
+}
+@keyframes shrink {
+	0%   { width: 60%; }
+    100% { width: 56px; }
 }
