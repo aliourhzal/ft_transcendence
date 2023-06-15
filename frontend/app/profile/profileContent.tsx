@@ -27,16 +27,17 @@ export interface Informations {
 
 export default function ProfileContent() {
 	const [profilePic, setProfilePic] = useState('images/man.png');
-	const [nicknameState, setNickname] = useState('hello');
+	const [nicknameState, setNickname] = useState('undefined');
 	async function fetchUserData(url: string) {
 		const {data} = await axios.get(url, {
 			withCredentials: true
 		})
+		console.log(data);
 		setProfilePic(data.profilePic);
 		setNickname(data.nickname);
 	}
 	useEffect(() => {
-		// fetchUserData('http://127.0.0.1:3000/users/profile');
+		fetchUserData('http://127.0.0.1:3000/users/profile');
 	}, []);
 	return(
 		<section className='w-full flex h-screen'><SideBar nickname={nicknameState} changeNickname={setNickname} pic={profilePic} changePic={setProfilePic} />
