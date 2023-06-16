@@ -28,6 +28,7 @@ export default function ProfileInfo(props: ProfileInfoProps)
 			props.changePic(event.target!.result);
 			const formData = new FormData();
 			formData.append('avatar', e.target.files[0])
+			// call the api to change avatar
 			await axios.put('http://127.0.0.1:3000/users/profile/avatar', formData, {
 					withCredentials: true,
 				}
