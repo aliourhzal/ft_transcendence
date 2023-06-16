@@ -57,6 +57,8 @@ export default function ProfileContent()
 	const [profilePic, setProfilePic] = useState(visitor.avatar);
 	const [nicknameState, setNickname] = useState(visitor.nickName);
 	const [emailState, setEmail] = useState(visitor.email);
+	const [fNameState, setFname] = useState(visitor.fName);
+	const [lNameState, setLname] = useState(visitor.lName);
 
 	//data fetch
 	async function fetchUserData(url: string) {
@@ -69,6 +71,8 @@ export default function ProfileContent()
 		setProfilePic(visitor.avatar);
 		setNickname(visitor.nickName);
 		setEmail(visitor.email);
+		setFname(visitor.fName);
+		setLname(visitor.lName);
 	}
 	useEffect(() => {
 		fetchUserData('http://127.0.0.1:3000/users/profile');
@@ -78,7 +82,7 @@ export default function ProfileContent()
 		<section className='w-full flex h-screen'>
 			<SideBar nickname={nicknameState} changeNickname={setNickname} pic={profilePic} changePic={setProfilePic} />
 			<div className="flex flex-col items-center gap-[3vh] w-[100vw] h-[100vh] overflow-y-auto mb-10">
-				<ProfileInfo email={emailState} changePic={setProfilePic} pic={profilePic} nickname={nicknameState} changeNickname={setNickname} />{/* pass argument */}
+				<ProfileInfo fname={fNameState} lname={lNameState} email={emailState} changePic={setProfilePic} pic={profilePic} nickname={nicknameState} changeNickname={setNickname} />{/* pass argument */}
 				<div className=" playerGameInfo grid grid-cols-1 gap-5 mb-10 w-[90%] h-2/3">
 					<MatchHistory />
 					<GameStats />

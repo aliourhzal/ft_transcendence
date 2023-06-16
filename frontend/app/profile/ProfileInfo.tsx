@@ -5,6 +5,8 @@ import ChangePicIcon from "./ChangePicIcon";
 import { Informations } from "./profileContent";
 
 interface ProfileInfoProps {
+	fname: string,
+	lname:string,
 	email: string,
 	pic: string,
 	nickname: string,
@@ -63,15 +65,15 @@ export default function ProfileInfo(props: ProfileInfoProps)
 					<div className="flex justify-between md:gap-20 md:justify-start w-[90%]">{/* row 1 */}
 						<div className="flex flex-col items-center gap-1 md:items-start">
 							<h2 className="text-gray-500 text-sm">First Name</h2>
-							<p className="text-whiteSmoke">Ayoub</p>
+							<p className="text-whiteSmoke">{props.fname}</p>
 						</div>
 						<div className="flex flex-col items-center gap-1 md:items-start">
 							<h2 className="text-gray-500 text-sm">Last Name</h2>
-							<p className="text-whiteSmoke">Salek</p>
+							<p className="text-whiteSmoke">{props.lname}</p>
 						</div>
 						<div className="flex flex-col items-center gap-1 md:items-start ">
 							<h2 className="text-gray-500 text-sm">Nick Name</h2>
-							<p className="text-whiteSmoke">asalek</p>
+							<p className="text-whiteSmoke">{props.nickname}</p>
 						</div>
 						<div className="flex flex-col items-center gap-1 md:items-start ">
 							<h2 className="text-gray-500 text-sm">Email</h2>
