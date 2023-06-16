@@ -63,6 +63,11 @@ export default function ProfileContent()
 		})
 		console.log(data);
 		setValues(visitor, data);//fill visitor object with return server data
+		setProfilePic(visitor.avatar);
+		setNickname(visitor.nickName);
+		setEmail(visitor.email);
+		setFname(visitor.fName);
+		setLname(visitor.lName);
 	}
 	useEffect(() => {
 		fetchUserData('http://127.0.0.1:3000/users/profile');
