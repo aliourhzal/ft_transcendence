@@ -26,7 +26,7 @@ export interface Informations {
 
 function setValues(visitor:Informations, data:any)
 {
-	visitor.nickName = data.nickname;
+	visitor.nickName = (data.nickname ? data.nickname : undefined);
 	visitor.fName = data.firstName;
 	visitor.lName = data.lastName;
 	visitor.email = data.email;
@@ -37,28 +37,48 @@ function setValues(visitor:Informations, data:any)
 
 export default function ProfileContent()
 {
-	let visitor: Informations;
-	const [profilePic, setProfilePic] = useState('images/man.png');
-	const [nicknameState, setNickname] = useState('undefined');
+	let visitor: Informations = {
+		wallet: 0,
+		grade : '',
+		level : 0,
+		fName: '',
+		lName: '',
+		email: '',
+		nickName: '',
+		progress : 0,
+		wins : 0,
+		losses : 0,
+		password : false,
+		avatar : 'images/man.png',
+		coverPic : ''
+	};
+
+	//setates :
+	const [profilePic, setProfilePic] = useState(visitor.avatar);
+	const [nicknameState, setNickname] = useState(visitor.nickName);
+	const [emailState, setEmail] = useState(visitor.email);
+
+	//data fetch
 	async function fetchUserData(url: string) {
 		const {data} = await axios.get(url, {
 			withCredentials: true
 		})
 		console.log(data);
 		setValues(visitor, data);//fill visitor object with return server data
+
+		setProfilePic(visitor.avatar);
+		setNickname(visitor.nickName);
+		setEmail(visitor.email);
 	}
 	useEffect(() => {
 		fetchUserData('http://127.0.0.1:3000/users/profile');
 	}, []);
 
-	setProfilePic(visitor.avatar);
-	setNickname(visitor.nickName);
-
 	return(
 		<section className='w-full flex h-screen'>
 			<SideBar nickname={nicknameState} changeNickname={setNickname} pic={profilePic} changePic={setProfilePic} />
 			<div className="flex flex-col items-center gap-[3vh] w-[100vw] h-[100vh] overflow-y-auto mb-10">
-				<ProfileInfo changePic={setProfilePic} pic={profilePic} nickname={nicknameState} changeNickname={setNickname} />{/* pass argument */}
+				<ProfileInfo email={emailState} changePic={setProfilePic} pic={profilePic} nickname={nicknameState} changeNickname={setNickname} />{/* pass argument */}
 				<div className=" playerGameInfo grid grid-cols-1 gap-5 mb-10 w-[90%] h-2/3">
 					<MatchHistory />
 					<GameStats />

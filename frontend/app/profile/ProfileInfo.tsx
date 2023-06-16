@@ -5,6 +5,7 @@ import ChangePicIcon from "./ChangePicIcon";
 import { Informations } from "./profileContent";
 
 interface ProfileInfoProps {
+	email: string,
 	pic: string,
 	nickname: string,
 	changePic: Function,
@@ -74,7 +75,7 @@ export default function ProfileInfo(props: ProfileInfoProps)
 						</div>
 						<div className="flex flex-col items-center gap-1 md:items-start ">
 							<h2 className="text-gray-500 text-sm">Email</h2>
-							<p className="text-whiteSmoke">asalek@student.1337.ma</p>
+							<p className="text-whiteSmoke">{props.email}</p>
 						</div>
 					</div>
 					<div className=" w-[90%] rounded-full bg-darken-300 h-9">
