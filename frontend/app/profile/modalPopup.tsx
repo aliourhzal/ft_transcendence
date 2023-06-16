@@ -33,7 +33,6 @@ export default function MyModal(props: any) {
 
 	function setImage(e: any)
 	{
-		alert(props.pic);
         const reader = new FileReader();
 		reader.onload = function(e) {
 			imageElement.current.src = e.target!.result as string;
