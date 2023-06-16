@@ -1,8 +1,10 @@
+'use client'
 
 import { useState } from "react";
 import ChangePicIcon from "./ChangePicIcon";
 
 import { Informations } from "./profileContent";
+import axios from "axios";
 
 interface ProfileInfoProps {
 	pic: string,
@@ -19,15 +21,21 @@ export default function ProfileInfo(props: ProfileInfoProps)
 	function changeProfilePic(e: any)
 	{
         const reader = new FileReader();
-		reader.onload = function(e) {
-			props.changePic(e.target!.result);
+		reader.onload = async function(event) {
+			props.changePic(event.target!.result);
+			const formData = new FormData();
+			formData.append('avatar', e.target.files[0])
+			await axios.put('http://127.0.0.1:3000/users/profile/avatar', formData, {
+					withCredentials: true,
+				}
+			)
 		}
 		reader.readAsDataURL(e.target.files[0]);
 	}
 
 	function changeCoverPic(e: any) {
 		const reader = new FileReader();
-		reader.onload = function(e) {
+		reader.onload = async function(e) {
 			setCoverPic(e.target!.result as string);
 		}
 		reader.readAsDataURL(e.target.files[0]);
@@ -59,22 +67,18 @@ export default function ProfileInfo(props: ProfileInfoProps)
 					</div>
 				</div>
 				<div className="flex flex-col justify-evenly items-center md:items-start w-[100%] md:w-[70%] h-full">
-					<div className="flex justify-between md:gap-20 md:justify-start w-[90%]">{/* row 1 */}
-						<div className="flex flex-col items-center gap-1 md:items-start">
+					<div className="flex justify-evenly md:gap-20 md:justify-start w-[90%] ">{/* row 1 */}
+						<div className="flex flex-col gap-1 items-start">
 							<h2 className="text-gray-500 text-sm">First Name</h2>
 							<p className="text-whiteSmoke">Ayoub</p>
 						</div>
-						<div className="flex flex-col items-center gap-1 md:items-start">
+						<div className="flex flex-col gap-1 items-start">
 							<h2 className="text-gray-500 text-sm">Last Name</h2>
 							<p className="text-whiteSmoke">Salek</p>
 						</div>
-						<div className="flex flex-col items-center gap-1 md:items-start ">
+						<div className="flex flex-col gap-1 items-start ">
 							<h2 className="text-gray-500 text-sm">Nick Name</h2>
 							<p className="text-whiteSmoke">asalek</p>
-						</div>
-						<div className="flex flex-col items-center gap-1 md:items-start ">
-							<h2 className="text-gray-500 text-sm">Email</h2>
-							<p className="text-whiteSmoke">asalek@student.1337.ma</p>
 						</div>
 					</div>
 					<div className=" w-[90%] rounded-full bg-darken-300 h-9">

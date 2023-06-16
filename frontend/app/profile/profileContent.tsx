@@ -37,7 +37,7 @@ function setValues(visitor:Informations, data:any)
 
 export default function ProfileContent()
 {
-	let visitor: Informations;
+	// let visitor: Informations;
 	const [profilePic, setProfilePic] = useState('images/man.png');
 	const [nicknameState, setNickname] = useState('undefined');
 	async function fetchUserData(url: string) {
@@ -45,14 +45,13 @@ export default function ProfileContent()
 			withCredentials: true
 		})
 		console.log(data);
-		setValues(visitor, data);//fill visitor object with return server data
+		// setValues(visitor, data);//fill visitor object with return server data
+		setProfilePic(data.profilePic);
+		setNickname(data.nickname);
 	}
 	useEffect(() => {
 		fetchUserData('http://127.0.0.1:3000/users/profile');
 	}, []);
-
-	setProfilePic(visitor.avatar);
-	setNickname(visitor.nickName);
 
 	return(
 		<section className='w-full flex h-screen'>
