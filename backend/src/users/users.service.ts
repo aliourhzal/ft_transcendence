@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client'
+import { extname } from 'path';
+
 @Injectable()
 export class UsersService {
 	private readonly prisma = new PrismaClient()
@@ -59,5 +61,18 @@ export class UsersService {
 		else
 			ret["password"] = false;
 		return (ret);
+	}
+
+	async changeUserAvatar(nickname: string , file: Express.Multer.File) {
+		const ext = extname(file.originalname);
+		const path = `${process.env.BACK_HOST}/users/avatar/${nickname}.avatar${ext}`
+		await this.prisma.user.update({
+			where: {
+				nickname
+			},
+			data: {
+				profilePic: path
+			}
+		});
 	}
 }
