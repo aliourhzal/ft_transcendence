@@ -83,8 +83,12 @@ export class UsersService {
 				nickname
 			}
 		})
-		const oldAvatar = user.profilePic.split('/')[5];
-		unlinkSync(`uploads/${oldAvatar}`)
+		const provider = user.profilePic.split('/')[2]
+		if (provider !== 'cdn.intra.42.fr')
+		{
+			const oldAvatar = user.profilePic.split('/')[5];
+			unlinkSync(`uploads/${oldAvatar}`)
+		}
 	}
 	// http://127.0.0.1:3000/users/avatar/aourhzal.avatar.jpeg
 }
