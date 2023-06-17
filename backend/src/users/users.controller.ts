@@ -65,4 +65,10 @@ export class UsersController {
 			return new StreamableFile(file);
 		}
 	}
+
+	@Post('/profile/settings')
+	async setting(@Req() req: any)
+	{
+		console.log(req.body);
+	}
 }
