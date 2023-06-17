@@ -59,5 +59,10 @@ export class UsersController {
 			const file = createReadStream(`./uploads/${userFile}`);
 			return new StreamableFile(file);
 		}
+		else
+		{
+			const file = createReadStream('./uploads/man.png');
+			return new StreamableFile(file);
+		}
 	}
 }
