@@ -50,12 +50,17 @@ export default function MyModal(props: any) {
     function formSubmitHandler(e: any) {
 		//prevent website reload
         e.preventDefault();
+		let p : number = 2;
+		let oldPass : string;
         const newNickname = e.target[1].value;
-        const newPass = e.target[2].value;
+		if (props.pass)
+		{
+			oldPass = e.target[2].value;
+			p = 4;
+		}
+        const newPass = e.target[p].value;
         const confirmPass = e.target[3].value;
-    }
-
-
+	}
 	
   return (
 	<div>
@@ -104,7 +109,8 @@ export default function MyModal(props: any) {
 							</label>
 						</div>
 						<InputTemplate id='newNick' label='new Nickname' type='text' placeholder='Nickname'/>
-						<InputTemplate id='newPass' label='new Password' type='password' placeholder='Password'/>
+						{ props.pass && <InputTemplate id='old Password' label='old Password' type='password' placeholder='Old Password'/>}
+						<InputTemplate id='newPass' label='new Password' type='password' placeholder='New Password'/>
 						<InputTemplate id='confirmPass' label='Confirm Password' type='password' placeholder='Confirm Password'/>
 						<div className="flex items-center mb-4">
 							<input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 rounded ring-offset-gray-800 focus:ring-2bg-gray-700 border-gray-600"/>

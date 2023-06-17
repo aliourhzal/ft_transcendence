@@ -52,17 +52,21 @@ export default function ProfileContent()
 		avatar : 'images/man.png',
 		coverPic : ''
 	};
+
 	const [profilePic, setProfilePic] = useState(visitor.avatar);
 	const [nicknameState, setNickname] = useState(visitor.nickName);
 	const [emailState, setEmail] = useState(visitor.email);
 	const [fNameState, setFname] = useState(visitor.fName);
 	const [lNameState, setLname] = useState(visitor.lName);
 	const [walletState, setWallet] = useState(visitor.wallet);
+	const [passwdIs, setPasswd] = useState(visitor.password);
+
 	async function fetchUserData(url: string) {
 		const {data} = await axios.get(url, {
 			withCredentials: true
 		})
 		console.log(data);
+
 		setValues(visitor, data);//fill visitor object with return server data
 		setProfilePic(visitor.avatar);
 		setNickname(visitor.nickName);
@@ -70,6 +74,8 @@ export default function ProfileContent()
 		setFname(visitor.fName);
 		setLname(visitor.lName);
 		setWallet(visitor.wallet);
+		setPasswd(visitor.password);
+
 	}
 	useEffect(() => {
 		fetchUserData('http://127.0.0.1:3000/users/profile');
@@ -77,7 +83,7 @@ export default function ProfileContent()
 
 	return(
 		<section className='w-full flex h-screen'>
-			<SideBar nickname={nicknameState} changeNickname={setNickname} pic={profilePic} changePic={setProfilePic} />
+			<SideBar pass={passwdIs} nickname={nicknameState} changeNickname={setNickname} pic={profilePic} changePic={setProfilePic} />
 			<div className="flex flex-col items-center gap-[3vh] w-[100vw] h-[100vh] overflow-y-auto mb-10">
 				<ProfileInfo wallet={walletState} fname={fNameState} lname={lNameState} email={emailState} changePic={setProfilePic} pic={profilePic} nickname={nicknameState} changeNickname={setNickname} />{/* pass argument */}
 				<div className=" playerGameInfo grid grid-cols-1 gap-5 mb-10 w-[90%] h-2/3">
