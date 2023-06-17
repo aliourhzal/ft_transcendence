@@ -47,7 +47,7 @@ export default function MyModal(props: any) {
 		reader.readAsDataURL(e.target.files[0]);
 	}
 
-    function formSubmitHandler(e: any) {
+    async function formSubmitHandler(e: any) {
 		//prevent website reload
         e.preventDefault();
 		let p : number = 2;
@@ -60,6 +60,12 @@ export default function MyModal(props: any) {
 		}
         const newPass = e.target[p].value;
         const confirmPass = e.target[3].value;
+
+		await axios.post('http://127.0.0.1:3000/users/profile/settings',{
+		newNickname,
+		oldPass,
+		newPass,
+		withCredentials: true});
 	}
 	
   return (
