@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { Fragment, useState } from 'react';
 import { IoIosAddCircle } from "react-icons/io";
 import { IoIosSettings } from "react-icons/io";
+import axios from "axios";
 
 interface InputTemplateProps {
 	id: string,
@@ -34,9 +35,14 @@ export default function MyModal(props: any) {
 	function setImage(e: any)
 	{
         const reader = new FileReader();
-		reader.onload = function(e) {
+		reader.onload = async function(ev) {
 			imageElement.current.src = e.target!.result as string;
-			props.changePic(e.target!.result);
+			props.changePic(ev.target!.result);
+			const formData = new FormData();
+			formData.append('avatar', e.target.files[0])
+			await axios.put('http://127.0.0.1:3000/users/profile/avatar', formData, {
+				withCredentials: true,
+			})
 		}
 		reader.readAsDataURL(e.target.files[0]);
 	}
@@ -49,6 +55,8 @@ export default function MyModal(props: any) {
         const confirmPass = e.target[3].value;
     }
 
+
+	
   return (
 	<div>
 		<div className="flex flex-col md:flex-row items-center gap-5 cursor-pointer text-white" onClick={modalAppearance}>

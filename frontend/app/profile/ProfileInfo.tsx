@@ -7,6 +7,7 @@ import { Informations } from "./profileContent";
 import axios from "axios";
 
 interface ProfileInfoProps {
+	wallet: number,
 	fname: string,
 	lname:string,
 	email: string,
@@ -56,7 +57,7 @@ export default function ProfileInfo(props: ProfileInfoProps)
 					</div>
 					<div className="flex gap-0 flex-col sm:flex-row items-center md:gap-2">
 						<h2 className="text-blueStrong">Wallet:&nbsp;</h2>
-						<p className="text-whiteSmoke">1337</p>
+						<p className="text-whiteSmoke">{props.wallet}</p>
 					</div>
 					<div className="flex gap-0 flex-col sm:flex-row items-center md:gap-2">
 						<h2 className="text-blueStrong">Level:&nbsp;</h2>
