@@ -37,9 +37,9 @@ export class Strategy42 extends PassportStrategy(Strategy, '42') {
 				//stayed for a week	,  stayed for a month use it to generate a new accessToken
 	{
 		const user = this.extractUserData(profile, accessToken);
-		const storedUser = await this.usersService.findOneByIntraID(user.intra_id);
+		let storedUser = await this.usersService.findOneByIntraID(user.intra_id);
 		if (!storedUser)
-			await this.usersService.createNewUser(user);
+			storedUser = await this.usersService.createNewUser(user);
 		return cb(null, storedUser);
 	}
 }
