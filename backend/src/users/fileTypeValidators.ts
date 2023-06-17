@@ -1,6 +1,7 @@
 
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { UsersService } from './users.service';
 
 export const saveImageStorage = {
 	// diskStorage for complete controlle of the storage of the file uploaded
@@ -16,11 +17,15 @@ export const saveImageStorage = {
 			cb(null, filename);
 		}
 	}),
-	fileFilter(req: any, file: Express.Multer.File, callback: Function) {
+	async fileFilter(req: any, file: Express.Multer.File, callback: Function) {
 		const type = file.mimetype.split('/')[0];
 		if (type !== 'image')
 			callback(null, false);
-		else
+		else {
+			const usersService = new UsersService();
+			await usersService.deleteOldAvatar(req.user.nickname);
 			callback(null, true);
+		}
 	},
 }
+

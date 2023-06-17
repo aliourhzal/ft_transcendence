@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client'
+import { unlinkSync } from 'fs';
 import { extname } from 'path';
 
 @Injectable()
@@ -65,7 +66,7 @@ export class UsersService {
 
 	async changeUserAvatar(nickname: string , file: Express.Multer.File) {
 		const ext = extname(file.originalname);
-		const path = `${process.env.BACK_HOST}/users/avatar/${nickname}.avatar${ext}`
+		const path = `${process.env.BACK_HOST}/users/avatar/${nickname}.avatar${ext}`;
 		await this.prisma.user.update({
 			where: {
 				nickname
@@ -75,4 +76,15 @@ export class UsersService {
 			}
 		});
 	}
+
+	async deleteOldAvatar(nickname: string) {
+		const user = await this.prisma.user.findUnique({
+			where: {
+				nickname
+			}
+		})
+		const oldAvatar = user.profilePic.split('/')[5];
+		unlinkSync(`uploads/${oldAvatar}`)
+	}
+	// http://127.0.0.1:3000/users/avatar/aourhzal.avatar.jpeg
 }
