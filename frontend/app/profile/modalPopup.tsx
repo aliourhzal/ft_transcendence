@@ -18,7 +18,7 @@ interface InputTemplateProps {
 function InputTemplate(props: InputTemplateProps) {
 	return (
 		<label htmlFor={props.id} className={`${props.className} w-full font-medium flex flex-col gap-1`}>
-			<input type={props.type} id={props.id} placeholder={props.placeholder} required className={`${props.className} bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none border-none`} />
+			<input type={props.type} id={props.id} placeholder={props.placeholder}  className={`${props.className} bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none border-none`} />
 			<span className='text-red-500'>error</span>
 		</label>
 	);
@@ -27,6 +27,7 @@ function InputTemplate(props: InputTemplateProps) {
 export default function MyModal(props: any) {
 	let [isOpen, setIsOpen] = useState(false);
 	const imageElement : any = useRef();
+	const nickNameRef : any = useRef();
 
 	function modalAppearance() {
 		setIsOpen(oldState => !oldState)
@@ -61,11 +62,19 @@ export default function MyModal(props: any) {
         const newPass = e.target[p].value;
         const confirmPass = e.target[3].value;
 
-		await axios.post('http://127.0.0.1:3000/users/profile/settings',{
-		newNickname,
-		oldPass,
-		newPass,
-		withCredentials: true});
+		if (newNickname)
+			try
+			{
+				await axios.post('http://127.0.0.1:3000/users/profile/nickName',{
+				newNickname,
+				withCredentials: true});
+			}
+			catch(error)
+			{
+				nickNameRef.current.textContent = "Nick Name Already In Use";
+			}
+		else
+			alert("Can't save empty inputs");
 	}
 	
   return (
@@ -114,10 +123,45 @@ export default function MyModal(props: any) {
 								<input onChange={setImage} type="file" accept="image/png, image/gif, image/jpeg" className="hidden" id="avatarUpload"/>
 							</label>
 						</div>
-						<InputTemplate id='newNick' label='new Nickname' type='text' placeholder='Nickname'/>
-						{ props.pass && <InputTemplate id='old Password' label='old Password' type='password' placeholder='Old Password'/>}
-						<InputTemplate id='newPass' label='new Password' type='password' placeholder='New Password'/>
-						<InputTemplate id='confirmPass' label='Confirm Password' type='password' placeholder='Confirm Password'/>
+						
+						{/* <InputTemplate id='newNick' label='new Nickname' type='text' placeholder='Nickname'/> */}
+						
+						{/* NickName */}
+						<label htmlFor='newNick' className='w-full font-medium flex flex-col gap-1'>
+							<input type='text' id='newNick' placeholder='Nickname'  className='bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none border-none' />
+							<span ref={nickNameRef} id="nickNameError" className='text-red-500'></span>
+						</label>
+						
+						
+						{/* { props.pass && <InputTemplate id='old Password' label='old Password' type='password' placeholder='Old Password'/>} */}
+						
+						{/* Old Password */}
+						{props.pass && <label htmlFor='old Password' className='w-full font-medium flex flex-col gap-1'>
+							<input type='password' id='old Password' placeholder='Old Password'  className='bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none border-none' />
+							<span id="oldPasswordError" className='text-red-500'></span>
+						</label>}
+						
+						
+						{/* <InputTemplate id='newPass' label='new Password' type='password' placeholder='New Password'/> */}
+						
+						
+						{/* New Password */}
+						<label htmlFor='newPass' className='w-full font-medium flex flex-col gap-1'>
+							<input type='password' id='newPass' placeholder='New Password'  className='bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none border-none' />
+							<span id="newPasswordError" className='text-red-500'></span>
+						</label>
+					
+
+						{/* <InputTemplate id='confirmPass' label='Confirm Password' type='password' placeholder='Confirm Password'/> */}
+						
+						
+						{/* Confirm Password */}
+						<label htmlFor='confirmPass' className='w-full font-medium flex flex-col gap-1'>
+							<input type='password' id='confirmPass' placeholder='Confirm Password'  className='bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none border-none' />
+							<span id="confirmPasswordError" className='text-red-500'></span>
+						</label>
+						
+						{/* Two-Factor checkBox */}
 						<div className="flex items-center mb-4">
 							<input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 rounded ring-offset-gray-800 focus:ring-2bg-gray-700 border-gray-600"/>
 							<label htmlFor="default-checkbox" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Two-factor Authentication</label>
