@@ -1,11 +1,12 @@
 'use client'
 import { Dialog, Transition } from '@headlessui/react'
 // import { Clicker_Script } from "next/font/google";
-import { useRef } from "react";
+import { useContext, useRef } from "react";
 import { Fragment, useState } from 'react';
 import { IoIosAddCircle } from "react-icons/io";
 import { IoIosSettings } from "react-icons/io";
 import axios from "axios";
+import { Intra_Id_Context } from './profileContent';
 
 interface InputTemplateProps {
 	id: string,
@@ -28,6 +29,7 @@ export default function MyModal(props: any) {
 	let [isOpen, setIsOpen] = useState(false);
 	const imageElement : any = useRef();
 	const nickNameRef : any = useRef();
+	const intraId = useContext(Intra_Id_Context);
 
 	function modalAppearance() {
 		setIsOpen(oldState => !oldState)
@@ -66,12 +68,16 @@ export default function MyModal(props: any) {
 			try
 			{
 				await axios.post('http://127.0.0.1:3000/users/profile/nickName',{
+				intraId,
 				newNickname,
 				withCredentials: true});
+				nickNameRef.current.textContent = "Updated";
+				nickNameRef.current.style.color = "green";
 			}
 			catch(error)
 			{
 				nickNameRef.current.textContent = "Nick Name Already In Use";
+				nickNameRef.current.style.color = "red";
 			}
 		else
 			alert("Can't save empty inputs");

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { MatchHistory, GameStats } from "./MatchesNStats";
 import { Missions, Achievements } from "./MissionsNAchievements";
 import ProfileInfo from "./ProfileInfo";
@@ -8,7 +8,10 @@ import SideBar from "./sideBar";
 import useAxiosFetch from "@/hooks/useAxiosFetch";
 import axios from "axios";
 
+export const Intra_Id_Context = createContext(null);
+
 export interface Informations {
+	intra_Id: number,
 	wallet?: number,
 	grade?: string,
 	level?: number,
@@ -33,11 +36,13 @@ function setValues(visitor:Informations, data:any)
 	visitor.wallet = data.wallet;
 	visitor.progress = data.points;
 	visitor.avatar = data.profilePic;
+	visitor.intra_Id = data.intra_id;
 }
 
 export default function ProfileContent()
 {
 	let visitor: Informations = {
+		intra_Id: 90293,
 		wallet: 0,
 		grade : '',
 		level : 0,
@@ -82,6 +87,7 @@ export default function ProfileContent()
 	}, []);
 
 	return(
+		<Intra_Id_Context.Provider value={visitor.intra_Id}>
 		<section className='w-full flex h-screen'>
 			<SideBar pass={passwdIs} nickname={nicknameState} changeNickname={setNickname} pic={profilePic} changePic={setProfilePic} />
 			<div className="flex flex-col items-center gap-[3vh] w-[100vw] h-[100vh] overflow-y-auto mb-10">
@@ -94,5 +100,6 @@ export default function ProfileContent()
 				</div>
 			</div>
 		</section>
+		</Intra_Id_Context.Provider>
 	);
 }
