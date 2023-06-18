@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Post, Put, Req, StreamableFile, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { CustomError, UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { parse } from 'path';
@@ -52,9 +52,12 @@ export class UsersController {
 		}
 	}
 
-	@Post('/profile/settings')
+	@Post('/profile/nickName')
 	async setting(@Req() req: any)
 	{
+		// const err= new CustomError("test", "333");
+
 		console.log(req.body);
+		throw new Error("HI");
 	}
 }

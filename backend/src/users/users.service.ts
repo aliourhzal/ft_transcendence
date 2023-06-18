@@ -92,3 +92,12 @@ export class UsersService {
 	}
 	// http://127.0.0.1:3000/users/avatar/aourhzal.avatar.jpeg
 }
+
+export class CustomError extends Error {
+	code: string;
+  
+	constructor(message: string, code: string) {
+	  super(message);
+	  this.code = code;
+	}
+};
