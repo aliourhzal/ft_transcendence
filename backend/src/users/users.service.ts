@@ -7,6 +7,19 @@ import { extname } from 'path';
 export class UsersService {
 	private readonly prisma = new PrismaClient()
 
+	// update a user NickName
+	async updateUserNickName(id : number, newNick: string)
+	{
+		await this.prisma.user.update({
+			where: {
+				intra_id: id,
+			},
+			data: {
+				nickname: newNick,
+			}
+		});
+	}
+
 	// this function fetches the user from the database by nickname
 	async findOneByNickname(nickname: string) {
 		return await this.prisma.user.findUnique({

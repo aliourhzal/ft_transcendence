@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Put, Req, StreamableFile, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Param, Post, Put, Redirect, Req, StreamableFile, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CustomError, UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -6,6 +6,8 @@ import { parse } from 'path';
 import { createReadStream} from 'fs';
 import { readdir } from 'fs/promises';
 import { saveImageStorage } from './fileTypeValidators';
+import { AuthService } from '../auth/auth.service';
+import { response } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -14,6 +16,7 @@ export class UsersController {
 	@UseGuards(AuthGuard('jwt'))
 	@Get('profile')
 	async getProfile(@Req() request: any) {
+		console.log(request.user);
 		return await this.usersService.fetchUserByNickname(request.user.nickname);
 	}
 
@@ -52,12 +55,24 @@ export class UsersController {
 		}
 	}
 
+	@UseGuards(AuthGuard('jwt'))
 	@Post('/profile/nickName')
 	async setting(@Req() req: any)
 	{
 		// const err= new CustomError("test", "333");
-
-		console.log(req.body);
-		throw new Error("HI");
+		const intra_id = req.body.intraId;
+		const NickName = req.body.newNickname;
+		
+		if ((await this.usersService.findOneByNickname(NickName)))	
+			throw new Error("already in use NickName");
+		else
+		{
+			this.usersService.updateUserNickName(intra_id, NickName);
+			
+			// const user = await this.usersService.findOneByIntraID(intra_id);
+			// const { access_token } = await this.authService.login(user);
+			// response.cookie('access_token', access_token);
+			// response.end('ok');
+		}
 	}
 }
