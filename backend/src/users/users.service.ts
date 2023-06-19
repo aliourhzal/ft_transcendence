@@ -8,11 +8,11 @@ export class UsersService {
 	private readonly prisma = new PrismaClient()
 
 	// update a user NickName
-	async updateUserNickName(id : number, newNick: string)
+	async updateUserNickName(id : string , newNick: string)
 	{
 		await this.prisma.user.update({
 			where: {
-				intra_id: id,
+				id: id,
 			},
 			data: {
 				nickname: newNick,
