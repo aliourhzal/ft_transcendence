@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Put, Redirect, Req, StreamableFile, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Req, Res, StreamableFile, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CustomError, UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -6,12 +6,15 @@ import { parse } from 'path';
 import { createReadStream} from 'fs';
 import { readdir } from 'fs/promises';
 import { saveImageStorage } from './fileTypeValidators';
-import { AuthService } from '../auth/auth.service';
-import { response } from 'express';
+import { Response } from 'express';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('users')
-export class UsersController {
-	constructor (private readonly usersService: UsersService) {}
+export class UsersController{
+	constructor (
+		private readonly usersService: UsersService,
+		private readonly jwtService: JwtService
+	) {}
 
 	@UseGuards(AuthGuard('jwt'))
 	@Get('profile')
@@ -57,22 +60,26 @@ export class UsersController {
 
 	@UseGuards(AuthGuard('jwt'))
 	@Post('/profile/nickName')
-	async setting(@Req() req: any)
+	async setting(@Body('newNickname') newNickname: string, @Req() req: any, @Res() response: Response)
 	{
 		// const err= new CustomError("test", "333");
-		const intra_id = req.body.intraId;
-		const NickName = req.body.newNickname;
-		
-		if ((await this.usersService.findOneByNickname(NickName)))	
+		// console.log(req.user.sub);
+		// const intra_id = req.body.intraId;
+		// const NickName = newNickname;
+
+		if ((await this.usersService.findOneByNickname(newNickname)))
 			throw new Error("already in use NickName");
 		else
 		{
-			this.usersService.updateUserNickName(intra_id, NickName);
-			
-			// const user = await this.usersService.findOneByIntraID(intra_id);
-			// const { access_token } = await this.authService.login(user);
-			// response.cookie('access_token', access_token);
-			// response.end('ok');
+			// 	console.log("********" + req.user);
+			this.usersService.updateUserNickName(req.user.sub, newNickname);
+			const Pay = {
+					nickname : newNickname,
+					sub : req.user.sub
+			}
+			const access_token = await this.jwtService.signAsync(Pay);
+			response.cookie('access_token', access_token);
+			response.end('ok');
 		}
 	}
 }
