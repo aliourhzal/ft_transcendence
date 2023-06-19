@@ -67,12 +67,12 @@ export default function MyModal(props: any) {
 		if (newNickname)
 			try
 			{
-				await axios.post('http://127.0.0.1:3000/users/profile/nickName',{
-				intraId,
-				newNickname,
-				withCredentials: true});
+				await axios.post('http://127.0.0.1:3000/users/profile/nickName', {newNickname}, {
+					withCredentials: true
+				});
 				nickNameRef.current.textContent = "Updated";
 				nickNameRef.current.style.color = "green";
+				props.changeNickname(newNickname);
 			}
 			catch(error)
 			{
