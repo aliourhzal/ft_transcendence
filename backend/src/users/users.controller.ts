@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, Put, Req, Res, StreamableFile, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
-import { CustomError, UsersService } from './users.service';
+import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { parse } from 'path';
@@ -20,7 +20,6 @@ export class UsersController{
 	@UseGuards(AuthGuard('jwt'))
 	@Get('profile')
 	async getProfile(@Req() request: any) {
-		console.log(request.user);
 		return await this.usersService.fetchUserByNickname(request.user.nickname);
 	}
 
@@ -63,16 +62,10 @@ export class UsersController{
 	@Post('/profile/nickName')
 	async setting(@Body('newNickname') newNickname: string, @Req() req: any, @Res() response: Response)
 	{
-		// const err= new CustomError("test", "333");
-		// console.log(req.user.sub);
-		// const intra_id = req.body.intraId;
-		// const NickName = newNickname;
-
 		if ((await this.usersService.findOneByNickname(newNickname)))
 			throw new Error("already in use NickName");
 		else
 		{
-			// 	console.log("********" + req.user);
 			this.usersService.updateUserNickName(req.user.sub, newNickname);
 			const Pay = {
 					nickname : newNickname,
