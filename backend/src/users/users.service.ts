@@ -20,6 +20,19 @@ export class UsersService {
 		});
 	}
 
+	// set a password to the user
+	async setHashedPassword(id: string ,password: string)
+	{
+		await this.prisma.user.update({
+			where:{
+				id: password,
+			},
+			data: {
+				password: password,
+			}
+		});
+	}
+
 	// this function fetches the user from the database by nickname
 	async findOneByNickname(nickname: string) {
 		return await this.prisma.user.findUnique({

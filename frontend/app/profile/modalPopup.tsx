@@ -29,6 +29,8 @@ export default function MyModal(props: any) {
 	let [isOpen, setIsOpen] = useState(false);
 	const imageElement : any = useRef();
 	const nickNameRef : any = useRef();
+	const confirmPassRef : any = useRef();
+	const passwordRef : any = useRef();
 	const intraId = useContext(Intra_Id_Context);
 
 	function modalAppearance() {
@@ -64,21 +66,42 @@ export default function MyModal(props: any) {
         const newPass = e.target[p].value;
         const confirmPass = e.target[3].value;
 
-		if (newNickname)
-			try
-			{
-				await axios.post('http://127.0.0.1:3000/users/profile/nickName', {newNickname}, {
+		if (newPass && confirmPass)
+			try {
+				if (newPass === confirmPass)
+				{
+					await axios.post('http://127.0.0.1:3000/users/profile/password ', {confirmPass}, {
 					withCredentials: true
-				});
-				nickNameRef.current.textContent = "Updated";
-				nickNameRef.current.style.color = "green";
-				props.changeNickname(newNickname);
+					});
+					passwordRef.current.textContent = "Password Updated";
+					passwordRef.current.style.color = "#98D8AA";
+				}
+				else
+				{
+					confirmPassRef.current.textContent = "Password miss match";
+					confirmPassRef.current.style.color = "E76161";
+				}
 			}
-			catch(error)
-			{
-				nickNameRef.current.textContent = "Nick Name Already In Use";
-				nickNameRef.current.style.color = "red";
+			catch (error) {
+				passwordRef.current.textContent = "Wrong Password Syntax";
+				passwordRef.current.style.color = "#E76161";
 			}
+		else if (newNickname)
+
+		try
+		{
+			await axios.post('http://127.0.0.1:3000/users/profile/nickName', {newNickname}, {
+				withCredentials: true
+			});
+			nickNameRef.current.textContent = "Updated";
+			nickNameRef.current.style.color = "#98D8AA";
+			props.changeNickname(newNickname);
+		}
+		catch(error)
+		{
+			nickNameRef.current.textContent = "Nick Name Already In Use";
+			nickNameRef.current.style.color = "E76161";
+		}
 		else
 			alert("Can't save empty inputs");
 	}
@@ -154,7 +177,7 @@ export default function MyModal(props: any) {
 						{/* New Password */}
 						<label htmlFor='newPass' className='w-full font-medium flex flex-col gap-1'>
 							<input type='password' id='newPass' placeholder='New Password'  className='bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none border-none' />
-							<span id="newPasswordError" className='text-red-500'></span>
+							<span ref={passwordRef} id="newPasswordError" className='text-red-500'></span>
 						</label>
 					
 
@@ -164,7 +187,7 @@ export default function MyModal(props: any) {
 						{/* Confirm Password */}
 						<label htmlFor='confirmPass' className='w-full font-medium flex flex-col gap-1'>
 							<input type='password' id='confirmPass' placeholder='Confirm Password'  className='bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none border-none' />
-							<span id="confirmPasswordError" className='text-red-500'></span>
+							<span ref={confirmPassRef} id="confirmPasswordError" className='text-red-500'></span>
 						</label>
 						
 						{/* Two-Factor checkBox */}

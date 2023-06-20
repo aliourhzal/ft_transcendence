@@ -8,6 +8,7 @@ import { readdir } from 'fs/promises';
 import { saveImageStorage } from './fileTypeValidators';
 import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
+import { encodePasswd } from 'src/utils/bcrypt';
 
 @Controller('users')
 export class UsersController{
@@ -81,5 +82,20 @@ export class UsersController{
 			response.cookie('access_token', access_token);
 			response.end('ok');
 		}
+	}
+
+	@UseGuards(AuthGuard('jwt'))
+	@Post('/profile/password')
+	async passwordSetting(@Body('confirmPass') newPassword: string, @Req() req: any, @Res() response: Response)
+	{
+		const re: RegExp = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
+		if (!re.test(newPassword))
+			throw new Error("wrong password schema");
+		try{
+			this.usersService.setHashedPassword(req.user.sub, encodePasswd(newPassword));
+			response.end('ok');
+		}
+		catch(err)
+		{throw new Error("critical Error");}
 	}
 }
