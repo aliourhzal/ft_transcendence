@@ -8,7 +8,8 @@ import { readdir } from 'fs/promises';
 import { saveImageStorage } from './fileTypeValidators';
 import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
-import { encodePasswd } from 'src/utils/bcrypt';
+import { comparePasswd, encodePasswd } from 'src/utils/bcrypt';
+import { log } from 'console';
 
 @Controller('users')
 export class UsersController{
@@ -90,5 +91,18 @@ export class UsersController{
 		}
 		catch(err)
 		{throw new Error("critical Error");}
+	}
+
+	@UseGuards(AuthGuard('jwt'))
+	@Post('/profile/checkPassword')
+	async checkPassword(@Body('oldPass') oldPassword: string, @Req() req: any, @Res() response: Response)
+	{
+		const user = await this.usersService.findOneByNickname(req.user.nickname);
+		if (!comparePasswd(oldPassword, user.password))
+		{
+			throw new Error("wrong old password");
+		}
+		else
+			response.end('ok');
 	}
 }
