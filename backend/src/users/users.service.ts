@@ -25,7 +25,7 @@ export class UsersService {
 	{
 		await this.prisma.user.update({
 			where:{
-				id: password,
+				id: id,
 			},
 			data: {
 				password: password,
