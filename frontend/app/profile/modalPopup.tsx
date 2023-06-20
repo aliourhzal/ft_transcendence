@@ -31,6 +31,7 @@ export default function MyModal(props: any) {
 	const nickNameRef : any = useRef();
 	const confirmPassRef : any = useRef();
 	const passwordRef : any = useRef();
+	const oldPassRef : any = useRef();
 	const intraId = useContext(Intra_Id_Context);
 
 	function modalAppearance() {
@@ -67,7 +68,20 @@ export default function MyModal(props: any) {
         const confirmPass = e.target[3].value;
 
 		if (newPass && confirmPass)
+		{
 			try {
+				if (props.pass)
+				{
+					try{
+						await axios.post('http://127.0.0.1:3000/users/profile/checkPassword ', {oldPass}, {
+							withCredentials: true
+						});
+					}catch(err)
+					{
+						oldPassRef.current.textContent = "Password Incorrect";
+						oldPassRef.current.style.color = "E76161";
+					}
+				}
 				if (newPass === confirmPass)
 				{
 					await axios.post('http://127.0.0.1:3000/users/profile/password ', {confirmPass}, {
@@ -75,6 +89,7 @@ export default function MyModal(props: any) {
 					});
 					passwordRef.current.textContent = "Password Updated";
 					passwordRef.current.style.color = "#98D8AA";
+					props.changePasswd(true);
 				}
 				else
 				{
@@ -86,21 +101,23 @@ export default function MyModal(props: any) {
 				passwordRef.current.textContent = "Wrong Password Syntax";
 				passwordRef.current.style.color = "#E76161";
 			}
-		else if (newNickname)
-
-		try
-		{
-			await axios.post('http://127.0.0.1:3000/users/profile/nickName', {newNickname}, {
-				withCredentials: true
-			});
-			nickNameRef.current.textContent = "Updated";
-			nickNameRef.current.style.color = "#98D8AA";
-			props.changeNickname(newNickname);
 		}
-		catch(error)
+		else if (newNickname)
 		{
-			nickNameRef.current.textContent = "Nick Name Already In Use";
-			nickNameRef.current.style.color = "E76161";
+			try
+			{
+				await axios.post('http://127.0.0.1:3000/users/profile/nickName', {newNickname}, {
+					withCredentials: true
+				});
+				nickNameRef.current.textContent = "Updated";
+				nickNameRef.current.style.color = "#98D8AA";
+				props.changeNickname(newNickname);
+			}
+			catch(error)
+			{
+				nickNameRef.current.textContent = "Nick Name Already In Use";
+				nickNameRef.current.style.color = "E76161";
+			}
 		}
 		else
 			alert("Can't save empty inputs");
@@ -167,7 +184,7 @@ export default function MyModal(props: any) {
 						{/* Old Password */}
 						{props.pass && <label htmlFor='old Password' className='w-full font-medium flex flex-col gap-1'>
 							<input type='password' id='old Password' placeholder='Old Password'  className='bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none border-none' />
-							<span id="oldPasswordError" className='text-red-500'></span>
+							<span ref={oldPassRef} id="oldPasswordError" className='text-red-500'></span>
 						</label>}
 						
 						

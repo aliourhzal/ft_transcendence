@@ -29,6 +29,7 @@ export interface Informations {
 
 function setValues(visitor:Informations, data:any)
 {
+	console.log(data);
 	visitor.nickName = (data.nickname ? data.nickname : undefined);
 	visitor.fName = data.firstName;
 	visitor.lName = data.lastName;
@@ -37,6 +38,7 @@ function setValues(visitor:Informations, data:any)
 	visitor.progress = data.points;
 	visitor.avatar = data.profilePic;
 	visitor.intra_Id = data.intra_id;
+	visitor.password = data.password;
 }
 
 export default function ProfileContent()
@@ -70,7 +72,6 @@ export default function ProfileContent()
 		const {data} = await axios.get(url, {
 			withCredentials: true
 		})
-		console.log(data);
 
 		setValues(visitor, data);//fill visitor object with return server data
 		setProfilePic(visitor.avatar);
@@ -89,7 +90,7 @@ export default function ProfileContent()
 	return(
 		<Intra_Id_Context.Provider value={visitor.intra_Id}>
 		<section className='w-full flex h-screen'>
-			<SideBar pass={passwdIs} nickname={nicknameState} changeNickname={setNickname} pic={profilePic} changePic={setProfilePic} />
+			<SideBar pass={passwdIs} changePasswd={setPasswd} nickname={nicknameState} changeNickname={setNickname} pic={profilePic} changePic={setProfilePic} />
 			<div className="flex flex-col items-center gap-[3vh] w-[100vw] h-[100vh] overflow-y-auto mb-10">
 				<ProfileInfo wallet={walletState} fname={fNameState} lname={lNameState} email={emailState} changePic={setProfilePic} pic={profilePic} nickname={nicknameState} changeNickname={setNickname} />{/* pass argument */}
 				<div className=" playerGameInfo grid grid-cols-1 gap-5 mb-10 w-[90%] h-2/3">
