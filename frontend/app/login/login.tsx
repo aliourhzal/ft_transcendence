@@ -1,16 +1,52 @@
+"use client"
 import AuthButton from "@/components/UI/AuthButton";
 import Navbar from "./navbar"
 import Script from "next/script";
+import { useEffect, useRef } from "react";
+import axios from "axios";
 
+function useKey(key, cb)
+{
+    const callbackRef = useRef(cb);
+
+    useEffect(() => {
+        callbackRef.current = cb;
+    })
+
+    useEffect(() => {
+        function hundle(event)
+        {
+            if (event.code === key){
+                callbackRef.current(event);
+            }
+        }
+        document.addEventListener("keypress", hundle);
+        return () => document.removeEventListener("keypress", hundle);
+    })
+}
 export default function Login()
 {
+    const loginRef = useRef(null);
+    const PasswdRef = useRef(null);
+
+    async function hundleEnter()
+    {
+        const login = loginRef.current.value;
+        const passwd = PasswdRef.current.value;
+        alert(login + " " + passwd);
+        await axios.post('http://127.0.0.1:3000/auth/login ', {login, passwd}, {
+            withCredentials: true
+        });
+    }
+    useKey("Enter", hundleEnter);
+    useKey("NumpadEnter", hundleEnter);
     return (
         <main style={{backgroundImage: "url('images/pongTable.jpeg')"}}  className='h-full w-full flex flex-col items-center justify-center bg-slate-900 bg-center bg-cover'>
             <canvas id="canvas" className="bg-transparent h-1/2 w-full absolute left-0 top-0"></canvas>
             <Navbar />
             <div className='container relative flex items-center justify-center flex-col bg-slate-700/30 p-10 lg:w-1/4 rounded-xl backdrop-blur-[3px] hover:backdrop-blur-[9px]  md:w-2/4'>
-                <input className=' mb-6 pt-2 pb-2 w-4/5 rounded text-center bg-transparent border-white border text-white outline-none placeholder-white' type="text" placeholder='login'/>
-                <input className=' mb-6 pt-2 pb-2 w-4/5 rounded text-center bg-transparent border-white border text-white outline-none placeholder-white' type="text" placeholder='password'/>
+                <input ref={loginRef} className=' mb-6 pt-2 pb-2 w-4/5 rounded text-center bg-transparent border-white border text-white outline-none placeholder-white' type="text" placeholder='login'/>
+                <input ref={PasswdRef} className=' mb-6 pt-2 pb-2 w-4/5 rounded text-center bg-transparent border-white border text-white outline-none placeholder-white' type="text" placeholder='password'/>
                 <span className='text-white mb-6'>Or</span>
                 <hr className='border-slate-500 w-full mb-6'/>
                 <div className='flex items-cente justify-between w-full'>

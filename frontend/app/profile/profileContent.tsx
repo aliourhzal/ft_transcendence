@@ -7,6 +7,7 @@ import ProfileInfo from "./ProfileInfo";
 import SideBar from "./sideBar";
 import useAxiosFetch from "@/hooks/useAxiosFetch";
 import axios from "axios";
+import Router, { useRouter } from "next/navigation";
 
 export const Intra_Id_Context = createContext(null);
 
@@ -43,6 +44,7 @@ function setValues(visitor:Informations, data:any)
 
 export default function ProfileContent()
 {
+	const router = useRouter();
 	let visitor: Informations = {
 		intra_Id: 90293,
 		wallet: 0,
@@ -71,7 +73,9 @@ export default function ProfileContent()
 	async function fetchUserData(url: string) {
 		const {data} = await axios.get(url, {
 			withCredentials: true
-		})
+		});
+		// if (!data)
+		// 	router.push('http://127.0.0.1:3001/');
 
 		setValues(visitor, data);//fill visitor object with return server data
 		setProfilePic(visitor.avatar);
