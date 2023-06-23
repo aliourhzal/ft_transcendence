@@ -71,13 +71,21 @@ export default function ProfileContent()
 	const [passwdIs, setPasswd] = useState(visitor.password);
 
 	async function fetchUserData(url: string) {
-		const {data} = await axios.get(url, {
-			withCredentials: true
-		});
-		// if (!data)
-		// 	router.push('http://127.0.0.1:3001/');
+		//prevent /profile route from getting accessed if user doesn't have access token
+		try
+		{
+			const {data} = await axios.get(url, {
+				withCredentials: true
+			});
+			console.log(data.firstName);
+			setValues(visitor, data);//fill visitor object with return server data
+		}
+		catch(error)
+		{
+			console.log(error);
+			router.push('http://127.0.0.1:3001/');
+		}
 
-		setValues(visitor, data);//fill visitor object with return server data
 		setProfilePic(visitor.avatar);
 		setNickname(visitor.nickName);
 		setEmail(visitor.email);
