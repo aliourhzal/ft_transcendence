@@ -9,7 +9,8 @@ fi
 
 (cd ~/Desktop/ft_transcendence/backend && docker-compose up --build -d)
 
-
+(cd ~/Desktop/ft_transcendence/backend && npm i)
+(cd ~/Desktop/ft_transcendence/frontend && npm i)
 (cd backend/src/ && npx prisma migrate dev)
 osascript -e 'tell application "Terminal" to do script "cd ~/Desktop/ft_transcendence/frontend/ && npm run dev"'
 osascript -e 'tell application "Terminal" to do script "cd ~/Desktop/ft_transcendence/backend/src && npx prisma studio"'
