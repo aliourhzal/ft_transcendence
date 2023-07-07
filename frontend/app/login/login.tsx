@@ -4,6 +4,7 @@ import Navbar from "./navbar"
 import Script from "next/script";
 import { useEffect, useRef } from "react";
 import axios from "axios";
+import Router, { useRouter } from "next/navigation";
 
 function useKey(key, cb)
 {
@@ -28,15 +29,24 @@ export default function Login()
 {
     const loginRef = useRef(null);
     const PasswdRef = useRef(null);
+    const router = useRouter();
 
     async function hundleEnter()
     {
         const login = loginRef.current.value;
         const passwd = PasswdRef.current.value;
-        alert(login + " " + passwd);
-        await axios.post('http://127.0.0.1:3000/auth/login ', {login, passwd}, {
-            withCredentials: true
-        });
+        // alert(login + " " + passwd);
+        try
+        {
+            await axios.post('http://127.0.0.1:3000/auth/login ', {login, passwd}, {
+                withCredentials: true
+            });
+            router.push('http://127.0.0.1:3001/profile');
+        }
+        catch(err)
+        {
+            alert("User " + login + " not registered or wrong password");
+        }
     }
     useKey("Enter", hundleEnter);
     useKey("NumpadEnter", hundleEnter);

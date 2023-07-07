@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Request, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
@@ -10,15 +10,22 @@ export class AuthController {
 
 	// this function is to be call in the frontend to authenticate the user with login and password,
 	// the object passed with the request in the frontend should have the "username" and "password" properties
-	@UseGuards(AuthGuard('local'))
+	// @UseGuards(AuthGuard('local'))
 	@Post('login')
-	async logIn(@Request() request: any, @Res() response: Response) {
+	async logIn(@Body() signDto: Record<string, string>, @Request() request: any, @Res() response: Response) {
+		console.log(signDto.login);
+		console.log(signDto.passwd);
+		const user = await this.authService.validateUser(signDto.login, signDto.passwd);
+		if (!user)
+			throw new Error("user not found!!!!");
 		// sign the jwt token that contains the user id and user nickname
-		const { access_token } = await this.authService.login(request.user);
+		const { access_token } = await this.authService.login(user);
 		//set the cookie
 		response.cookie('access_token', access_token);
+		// response.redirect('https://127.0.0.1:3001/profile');
 		response.end('ok');
 	}
+
 
 	//direct you to the 42 authorize page
 	@Get('42')
