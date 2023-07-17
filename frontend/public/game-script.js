@@ -41,7 +41,7 @@ const com = {
     x : canvas.width - 10, // - width of paddle
     y : (canvas.height - 100)/2, // -100 the height of paddle
     width : 10,
-    height : 100,
+    height : 5,
     score : 0,
     color : "#E8EAEB"
 }

@@ -83,7 +83,7 @@ export default function ProfileContent()
 		catch(error)
 		{
 			console.log(error);
-			router.push('http://127.0.0.1:3001/');
+			// router.push('http://127.0.0.1:3001/');
 		}
 
 		setProfilePic(visitor.avatar);
@@ -101,9 +101,8 @@ export default function ProfileContent()
 
 	return(
 		<Intra_Id_Context.Provider value={visitor.intra_Id}>
-		<section className='w-full flex h-screen'>
-			<SideBar pass={passwdIs} changePasswd={setPasswd} nickname={nicknameState} changeNickname={setNickname} pic={profilePic} changePic={setProfilePic} />
-			<div className="flex flex-col items-center gap-[3vh] w-[100vw] h-[100vh] overflow-y-auto mb-10">
+			{/* <SideBar pass={passwdIs} changePasswd={setPasswd} nickname={nicknameState} changeNickname={setNickname} pic={profilePic} changePic={setProfilePic} /> */}
+			<div className="flex flex-col items-center gap-[3vh] flex-grow h-full overflow-y-auto">
 				<ProfileInfo wallet={walletState} fname={fNameState} lname={lNameState} email={emailState} changePic={setProfilePic} pic={profilePic} nickname={nicknameState} changeNickname={setNickname} />{/* pass argument */}
 				<div className=" playerGameInfo grid grid-cols-1 gap-5 mb-10 w-[90%] h-2/3">
 					<MatchHistory />
@@ -112,7 +111,6 @@ export default function ProfileContent()
 					<Achievements />
 				</div>
 			</div>
-		</section>
 		</Intra_Id_Context.Provider>
 	);
 }
