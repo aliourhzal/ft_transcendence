@@ -6,6 +6,7 @@ import {FaTableTennis} from "react-icons/fa";
 import MyModal from "./modalPopup";
 import { useContext } from "react";
 import { userDataContext } from "../layout";
+import { useRouter } from "next/navigation";
 
 interface SideBarProps {
 	nickname: string,
@@ -18,7 +19,9 @@ interface SideBarProps {
 
 export function NavOption(props: any) {
 	return (
-		<a className="flex flex-col md:flex-row items-center gap-5" href="/profile" onClick={() => console.log('helo')}>
+		<a className="cursor-pointer flex flex-col md:flex-row items-center gap-5" onClick={() => 
+			props.router.push("http://127.0.0.1:3001/" + props.nickname + '' + props.location)
+		}>
 			<props.icon  style={{color: 'white', fontSize: '24px'}}/>
 			<span className="text-md text-whiteSmoke hidden sm:inline capitalize">{props.option}</span>
 		</a>
@@ -27,6 +30,7 @@ export function NavOption(props: any) {
 
 export default function SideBar(props: any)
 {
+	const router = useRouter();
 	const userData = useContext(userDataContext);
 	return (
 			<section className="h-full py-4 bg-darken-100 flex flex-col items-center w-[20vw] max-w-[150px]">
@@ -35,9 +39,9 @@ export default function SideBar(props: any)
 					<h2 className="text-whiteSmoke sm:text-base lg:text-[20px] ">{userData.nickname}</h2>
 				</div>
 				<div className=" flex flex-col gap-9 mt-[55%]">
-					<NavOption icon={BsFillPersonFill} option='profile'/>
-					<NavOption icon={BsFillChatSquareDotsFill} option='chat'/>
-					<NavOption icon={FaTableTennis} option='game'/>
+					<NavOption icon={BsFillPersonFill} router={router} nickname={props.nickname} location='/' option='profile'/>
+					<NavOption icon={BsFillChatSquareDotsFill} nickname={props.nickname} router={router} location='/' option='chat'/>
+					<NavOption icon={FaTableTennis} router={router} nickname={props.nickname} location='/game' option='game'/>
 				</div>
 				<div className="h-full w-[44%] flex justify-center items-end">
 					<MyModal dispatch={props.dispatch}/>
