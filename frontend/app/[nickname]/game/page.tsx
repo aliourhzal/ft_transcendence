@@ -1,7 +1,7 @@
+'use client'
+
+import { WebsocketContext } from "@/app/context_sockets/gameWebSocket";
 import Script from "next/script";
-import Navbar from "../login/navbar";
-import SideBar from "../profile/sideBar";
-import { WebsocketContext } from "../context_sockets/gameWebSocket";
 import { useContext, useEffect } from "react";
 
 /*
@@ -248,7 +248,6 @@ export default function Game()
     let width:string = '800px';
     return (
         <section className="flex w-full h-full items-center bg-darken-200">
-            <SideBar/ >
             <div className="flex flex-col items-center w-full gap-5">
                 <div className="w-full flex justify-center gap-96">
                     <div className="flex items-center gap-x-5">
