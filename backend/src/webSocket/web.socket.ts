@@ -2,7 +2,7 @@ import { Body, OnModuleInit } from "@nestjs/common";
 import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server } from 'socket.io'
 
-@WebSocketGateway(3003) //tell's the class that it using socket not http and use the port 3003 instead of default one 3000
+@WebSocketGateway(3003, { cors: true } ) //tell's the class that it using socket not http and use the port 3003 instead of default one 3000
 export class myGateAway implements OnModuleInit
 {
     @WebSocketServer()
