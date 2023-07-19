@@ -3,20 +3,12 @@ import { Dialog, Transition } from '@headlessui/react'
 // import { Clicker_Script } from "next/font/google";
 import { useContext, useRef } from "react";
 import { Fragment, useState } from 'react';
-import { IoIosAddCircle } from "react-icons/io";
-import { IoIosSettings } from "react-icons/io";
+import { IoIosAddCircle, IoIosSettings } from "react-icons/io";
 import axios from "axios";
-import { Intra_Id_Context } from './profileContent';
+import { ACTIONS, userDataContext } from '../layout';
+import MyDisclosure from '@/components/UI/Disclosure';
 
-interface InputTemplateProps {
-	id: string,
-	className?: string,
-	type: string,
-	label: string,
-	placeholder: string
-}
-
-function InputTemplate(props: InputTemplateProps) {
+function InputTemplate(props: any) {
 	return (
 		<label htmlFor={props.id} className={`${props.className} w-full font-medium flex flex-col gap-1`}>
 			<input type={props.type} id={props.id} placeholder={props.placeholder}  className={`${props.className} bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none border-none`} />
@@ -32,8 +24,7 @@ export default function MyModal(props: any) {
 	const confirmPassRef : any = useRef();
 	const passwordRef : any = useRef();
 	const oldPassRef : any = useRef();
-	const intraId = useContext(Intra_Id_Context);
-
+	const userData = useContext(userDataContext);
 	function modalAppearance() {
 		setIsOpen(oldState => !oldState)
 	}
@@ -43,7 +34,7 @@ export default function MyModal(props: any) {
         const reader = new FileReader();
 		reader.onload = async function(ev) {
 			imageElement.current.src = e.target!.result as string;
-			props.changePic(ev.target!.result);
+			props.dispatch({type: ACTIONS.UPDATE_AVATAR, payload: ev.target!.result});
 			const formData = new FormData();
 			formData.append('avatar', e.target.files[0])
 			await axios.put('http://127.0.0.1:3000/users/profile/avatar', formData, {
@@ -89,7 +80,7 @@ export default function MyModal(props: any) {
 					});
 					passwordRef.current.textContent = "Password Updated";
 					passwordRef.current.style.color = "#98D8AA";
-					props.changePasswd(true);
+					props.dispatch({type: ACTIONS.UPDATE_PASSWD, payload: true})
 				}
 				else
 				{
@@ -111,7 +102,7 @@ export default function MyModal(props: any) {
 				});
 				nickNameRef.current.textContent = "Updated";
 				nickNameRef.current.style.color = "#98D8AA";
-				props.changeNickname(newNickname);
+				props.dispatch({type: ACTIONS.UPDATE_NICKNAME, payload: newNickname})
 			}
 			catch(error)
 			{
@@ -162,14 +153,12 @@ export default function MyModal(props: any) {
 					<button onClick={modalAppearance} type="button" className=" absolute right-[7%] w-9 h-9 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-lg flex text-center justify-center items-center">x</button>
 					<form onSubmit={formSubmitHandler} className="flex flex-col justify-center items-center gap-3">
 						<div className="relative">
-							<img src={props.pic} alt="" />
-							<img ref={imageElement} id="avatar" className="h-[100px] aspect-square mb-6 rounded-full" src={props.avatar} alt="avatar" />
+							<img ref={imageElement} id="avatar" className="h-[100px] aspect-square mb-6 rounded-full" src={userData.profilePic} alt="avatar" />
 							<label htmlFor="avatarUpload" className="absolute bottom-[13%] right-0 w-10 h-10">
 								<IoIosAddCircle className="absolute w-full h-full top-0 left-0 text-gray-600 cursor-pointer" />
 								<input onChange={setImage} type="file" accept="image/png, image/gif, image/jpeg" className="hidden" id="avatarUpload"/>
 							</label>
 						</div>
-						
 						{/* <InputTemplate id='newNick' label='new Nickname' type='text' placeholder='Nickname'/> */}
 						
 						{/* NickName */}
