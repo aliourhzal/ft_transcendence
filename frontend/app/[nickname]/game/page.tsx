@@ -259,7 +259,7 @@ export default function Game()
                         <img className="w-16 h-16" src="../images/man.png" alt="man_hhhh" />
                     </div>
                 </div>
-                <canvas id="pongy" className="bg-darken-300 mx-auto rounded-3xl w-[{width}] h-[450x]" width={width} height="450px"></canvas>
+                <canvas id="pongy" className="bg-darken-300 mx-auto rounded-md " width='800' height="450px"></canvas>
             </div>
             {/* <Navbar/ > */}
             {/* <Script src="../../game-script.js" defer></Script> */}

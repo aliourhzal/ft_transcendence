@@ -1,8 +1,10 @@
 'use client'
 import axios from "axios";
 
+import { useRouter } from "next/navigation";
 import SideBar from "./components/sideBar";
 import React, { useEffect, useState, useReducer, createContext } from "react";
+import { RedirectType } from "next/dist/client/components/redirect";
 
 export const ACTIONS = {
 	INIT: 'init',
@@ -41,7 +43,7 @@ export async function fetchUserData(url: string) {
 	}
 	catch(error)
 	{
-		console.log(error);
+		throw new Error(error);
 	}
 }
 
@@ -73,16 +75,25 @@ export default function ProfileLayout({
 }: {
 	children: React.ReactNode
 }) {
-	const [userDataState, dispatch] = useReducer(reducer, {})
+	const router = useRouter();
+	const [userDataState, dispatch] = useReducer(reducer, {});
+	const [completed, setCompleted] = useState(false);
+	console.log(completed);
 	useEffect(() => {
-		fetchUserData('http://127.0.0.1:3000/users/profile').then(res => {
+		fetchUserData('http://127.0.0.1:3000/users/profile')
+		.then(res => {
 			dispatch({type: ACTIONS.INIT, payload: res});
-		});
+			setCompleted(true);
+		})
+		.catch(err => {
+			console.log(err);
+			router.replace('/')
+		})
 	}, [])
 	return (
 		<userDataContext.Provider value={userDataState}>
 			{
-				userDataState.level && 
+				completed && 
 				<section className='w-full flex h-screen'> 
 					<SideBar dispatch={dispatch}/>
 					{children}
