@@ -60,6 +60,7 @@ export default function MyModal(props: any) {
 
 		if (newPass && confirmPass)
 		{
+			alert(props.pass);
 			try {
 				if (props.pass)
 				{
@@ -79,6 +80,8 @@ export default function MyModal(props: any) {
 					withCredentials: true
 					});
 					passwordRef.current.textContent = "Password Updated";
+					oldPassRef.current.textContent = "";
+					confirmPassRef.current.textContent = "";
 					passwordRef.current.style.color = "#98D8AA";
 					props.dispatch({type: ACTIONS.UPDATE_PASSWD, payload: true})
 				}
