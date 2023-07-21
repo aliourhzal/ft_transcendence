@@ -21,8 +21,8 @@ model User {
 	coverPic		String
 	level			Float
 	grade			String
-	friends         User[] @relation("friends")
-  	friendsRelation User[] @relation("friends")
+	friends			User[] @relation("userFriends")
+	friendsOf		User[] @relation("userFriends")
 	matches			Match[]
 }
 
