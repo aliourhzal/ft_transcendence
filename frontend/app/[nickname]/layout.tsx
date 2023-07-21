@@ -78,7 +78,6 @@ export default function ProfileLayout({
 	const router = useRouter();
 	const [userDataState, dispatch] = useReducer(reducer, {});
 	const [completed, setCompleted] = useState(false);
-	console.log(completed);
 	useEffect(() => {
 		fetchUserData('http://127.0.0.1:3000/users/profile')
 		.then(res => {
@@ -87,7 +86,7 @@ export default function ProfileLayout({
 		})
 		.catch(err => {
 			console.log(err);
-			router.replace('/')
+			router.push('/')
 		})
 	}, [])
 	return (

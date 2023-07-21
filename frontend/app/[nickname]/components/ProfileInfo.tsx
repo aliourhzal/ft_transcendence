@@ -9,7 +9,6 @@ import axios from "axios";
 
 export default function ProfileInfo(props: {data: UniversalData})
 {
-	console.log(props.data);
 	const levelProgress = `${props.data.level.toString().split('.')[1]}%`;
 	const [coverPic, setCoverPic] = useState("images/cyberpunk.png");
 

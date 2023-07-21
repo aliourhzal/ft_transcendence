@@ -39,9 +39,9 @@ export default function SideBar(props: any)
 					<h2 className="text-whiteSmoke sm:text-base lg:text-[20px] ">{userData.nickname}</h2>
 				</div>
 				<div className=" flex flex-col gap-9 mt-[55%]">
-					<NavOption icon={BsFillPersonFill} router={router} nickname={props.nickname} location='/' option='profile'/>
-					<NavOption icon={BsFillChatSquareDotsFill} nickname={props.nickname} router={router} location='/' option='chat'/>
-					<NavOption icon={FaTableTennis} router={router} nickname={props.nickname} location='/game' option='game'/>
+					<NavOption icon={BsFillPersonFill} router={router} nickname={userData.nickname} location='/' option='profile'/>
+					<NavOption icon={BsFillChatSquareDotsFill} nickname={userData.nickname} router={router} location='/' option='chat'/>
+					<NavOption icon={FaTableTennis} router={router} nickname={userData.nickname} location='/game' option='game'/>
 				</div>
 				<div className="h-full w-[44%] flex justify-center items-end">
 					<MyModal dispatch={props.dispatch}/>
