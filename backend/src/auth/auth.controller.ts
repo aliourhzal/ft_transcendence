@@ -13,17 +13,17 @@ export class AuthController {
 	// @UseGuards(AuthGuard('local'))
 	@Post('login')
 	async logIn(@Body() signDto: Record<string, string>, @Res() response: Response) {
-		console.log(signDto.login);
-		console.log(signDto.passwd);
+		
+		
 		const user = await this.authService.validateUser(signDto.login, signDto.passwd);
 		if (!user)
 			throw new UnauthorizedException('username or password not correct!');
 		// sign the jwt token that contains the user id and user nickname
-		const { access_token } = await this.authService.login(user);
+		const { access_token: jwt_access_token } = await this.authService.login(user);
 		//set the cookie
-		response.cookie('access_token', access_token);
+		response.cookie('access_token', jwt_access_token);
 		response.cookie('login', user.nickname);
-		// response.redirect('https://127.0.0.1:3001/profile');
+		// response.redirect('http://127.0.0.1:3001/profile');
 		response.end('ok');
 	}
 
@@ -46,4 +46,6 @@ export class AuthController {
 		// to ridrect the user to the profile page
 		response.redirect(`${process.env.FRONT_HOST}/${request.user.nickname}`);
 	}
+
+	
 }

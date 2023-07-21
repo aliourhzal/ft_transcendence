@@ -25,6 +25,7 @@ export class Strategy42 extends PassportStrategy(Strategy, '42') {
 			firstName: profile._json.first_name,
 			lastName: profile._json.last_name,
 			profilePic: profile._json.image.link,
+			coverPic: "",
 			wallet: profile._json.wallet,
 			level: profile._json.cursus_users[1].level,
 			grade: profile._json.cursus_users[1].grade,

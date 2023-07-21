@@ -1,7 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, StreamableFile } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client'
 import { unlinkSync } from 'fs';
 import { extname } from 'path';
+import { parse } from 'path';
+import { createReadStream} from 'fs';
+import { readdir } from 'fs/promises';
 
 @Injectable()
 export class UsersService {
@@ -68,7 +71,8 @@ export class UsersService {
 					level: userData.level,
 					grade: userData.grade,
 					profilePic: userData.profilePic,
-					password: ""
+					coverPic: userData.coverPic,
+					password: "",
 				}
 			});
 		}
@@ -90,15 +94,15 @@ export class UsersService {
 		return (ret);
 	}
 
-	async changeUserAvatar(nickname: string , file: Express.Multer.File) {
+	async changeUserCatalogue(nickname: string , file: Express.Multer.File, category: string) {
 		const ext = extname(file.originalname);
-		const path = `${process.env.BACK_HOST}/users/avatar/${nickname}.avatar${ext}`;
+		const path = `${process.env.BACK_HOST}/users/uploads/${nickname}.${category}${ext}`;
 		await this.prisma.user.update({
 			where: {
 				nickname
 			},
 			data: {
-				profilePic: path
+				[category === 'avatar' ? 'profilePic' : 'coverPic']: path
 			}
 		});
 	}
@@ -113,8 +117,32 @@ export class UsersService {
 		if (provider !== 'cdn.intra.42.fr')
 		{
 			const oldAvatar = user.profilePic.split('/')[5];
-			unlinkSync(`uploads/${oldAvatar}`)
+			unlinkSync(`uploads/avatar/${oldAvatar}`);
 		}
 	}
 	// http://127.0.0.1:3000/users/avatar/aourhzal.avatar.jpeg
+
+	async serveUploads(fileTarget: string) {
+		const category = fileTarget.split('.')[1];
+		let userFile: any = undefined;
+		const assets = await readdir(`./uploads/${category}`);
+		
+		// loop over the files in './uploads' and set the userFile var to the needed file 
+		for (const file of assets) {
+			const {base} = parse(file)
+			if (base === fileTarget) {
+				userFile = file;
+				break;
+			}
+		}
+		if (userFile) {
+			const file = createReadStream(`./uploads/${category}/${userFile}`);
+			return new StreamableFile(file);
+		}
+		else
+		{
+			const file = createReadStream(`./uploads/${category}/default.png`);
+			return new StreamableFile(file);
+		}
+	}
 }

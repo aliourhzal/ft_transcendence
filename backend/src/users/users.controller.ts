@@ -1,11 +1,8 @@
-import { Body, Controller, Get, Param, Post, Put, Req, Res, StreamableFile, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { parse } from 'path';
-import { createReadStream} from 'fs';
-import { readdir } from 'fs/promises';
-import { saveImageStorage } from './fileTypeValidators';
+import { saveAvatarStorage, saveCoverStorage } from './fileTypeValidators';
 import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { comparePasswd, encodePasswd } from 'src/utils/bcrypt';
@@ -27,36 +24,27 @@ export class UsersController{
 	// this endpoint is to be called when want to change the user avatar
 	@UseGuards(AuthGuard('jwt'))
 	@Put('profile/avatar')
-	@UseInterceptors(FileInterceptor('avatar', saveImageStorage))
+	@UseInterceptors(FileInterceptor('avatar', saveAvatarStorage))
 	async putUserAvatar(@Req() req: any, @UploadedFile() file: Express.Multer.File) {
 		// the changeUserAvatar carry the logic of changing the avatar in the database
 		if (file)
-			await this.usersService.changeUserAvatar(req.user.nickname, file);
+			await this.usersService.changeUserCatalogue(req.user.nickname, file, 'avatar');
+	}
+
+	// this endpoint is to be called when want to change the user avatar
+	@UseGuards(AuthGuard('jwt'))
+	@Put('profile/avatar')
+	@UseInterceptors(FileInterceptor('avatar', saveCoverStorage))
+	async putUserCover(@Req() req: any, @UploadedFile() file: Express.Multer.File) {
+		// the changeUserAvatar carry the logic of changing the avatar in the database
+		if (file)
+			await this.usersService.changeUserCatalogue(req.user.nickname, file, 'cover');
 	}
 
 	// this endpoint is responsible of returning the assets (avatars and cover pic): fileTarget is the name of the returned file
-	@Get('avatar/:fileTarget')
+	@Get('uploads/:fileTarget')
 	async getUserAvatar(@Param('fileTarget') fileTarget: string) {
-		let userFile: any = undefined;
-		const assets = await readdir('./uploads');
-		
-		// loop over the files in './uploads' and set the userFile var to the needed file 
-		for (const file of assets) {
-			const {base} = parse(file)
-			if (base === fileTarget) {
-				userFile = file;
-				break;
-			}
-		}
-		if (userFile) {
-			const file = createReadStream(`./uploads/${userFile}`);
-			return new StreamableFile(file);
-		}
-		else
-		{
-			const file = createReadStream('./uploads/man.png');
-			return new StreamableFile(file);
-		}
+		return this.usersService.serveUploads(fileTarget);
 	}
 
 	@UseGuards(AuthGuard('jwt'))
@@ -105,4 +93,9 @@ export class UsersController{
 		else
 			response.end('ok');
 	}
+
+	verifyJWT(jwtService: string) 
+    {
+        return this.jwtService.verify(jwtService,{ secret: process.env.JWT_SECRET })
+    }
 }

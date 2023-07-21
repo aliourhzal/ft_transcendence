@@ -4,12 +4,17 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { gateAwayModule } from './webSocket/web.module';
 
+
+import { GatewayGateway } from './chat/gateway/gateway.gateway';
+import { ChatModule } from './chat/chat.module';
+
 @Module({
   imports: [
     gateAwayModule, //socket module
     AuthModule,
     UsersModule,
-    ConfigModule.forRoot()
+    ConfigModule.forRoot(),
+    ChatModule
   ],
   controllers: [],
   providers: [],

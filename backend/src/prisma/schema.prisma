@@ -18,6 +18,7 @@ model User {
 	points			Int
 	password		String
 	profilePic		String
+	coverPic		String
 	level			Float
 	grade			String
 	friends         User[] @relation("friends")

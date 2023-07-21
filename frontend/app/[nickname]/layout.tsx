@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import SideBar from "./components/sideBar";
 import React, { useEffect, useState, useReducer, createContext } from "react";
 import { RedirectType } from "next/dist/client/components/redirect";
+import { io } from "socket.io-client";
 
 export const ACTIONS = {
 	INIT: 'init',
@@ -88,6 +89,12 @@ export default function ProfileLayout({
 			console.log(err);
 			router.push('/')
 		})
+		const socket = io('ws://127.0.0.1:3000',{
+			auth: {
+				token: document.cookie.split('; ')[0].split('=')[1],
+			},
+    });
+
 	}, [])
 	return (
 		<userDataContext.Provider value={userDataState}>
