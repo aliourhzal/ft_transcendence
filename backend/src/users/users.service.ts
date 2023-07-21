@@ -1,4 +1,4 @@
-import { Injectable, StreamableFile } from '@nestjs/common';
+import { Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client'
 import { unlinkSync } from 'fs';
 import { extname } from 'path';
@@ -144,5 +144,30 @@ export class UsersService {
 			const file = createReadStream(`./uploads/${category}/default.png`);
 			return new StreamableFile(file);
 		}
+	}
+	
+	async linkUserWithFriend()
+	{
+
+	}
+
+	async addFriend(friendNickname: string, nickname: string) {
+
+		const friend = await this.findOneByNickname(friendNickname);
+		const user =  await this.findOneByNickname(nickname);
+		if (!friend || !user) 
+		{
+			throw new NotFoundException('user not found!!')
+		}
+
+		// this.prisma.user.updacreatete({
+		// 	data: {
+		// 	  user: { connect: { id: user1.id } },
+		// 	  friend: { connect: { id: user2.id } },
+		// 	},
+		//   });
+ 
+		return "ok";
+		// this.prisma.
 	}
 }

@@ -3,7 +3,7 @@ import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { saveAvatarStorage, saveCoverStorage } from './fileTypeValidators';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { comparePasswd, encodePasswd } from 'src/utils/bcrypt';
 import { log } from 'console';
@@ -94,8 +94,13 @@ export class UsersController{
 			response.end('ok');
 	}
 
-	verifyJWT(jwtService: string) 
-    {
-        return this.jwtService.verify(jwtService,{ secret: process.env.JWT_SECRET })
-    }
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/friend/:nickname')
+	async addFriend(@Param('nickname') friendName:string, @Req() request: any)
+	{
+		return await this.usersService.addFriend(friendName, request.user.nickname);
+
+
+
+	}
 }
