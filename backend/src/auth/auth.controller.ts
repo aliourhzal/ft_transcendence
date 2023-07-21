@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Request, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
@@ -12,16 +12,17 @@ export class AuthController {
 	// the object passed with the request in the frontend should have the "username" and "password" properties
 	// @UseGuards(AuthGuard('local'))
 	@Post('login')
-	async logIn(@Body() signDto: Record<string, string>, @Request() request: any, @Res() response: Response) {
+	async logIn(@Body() signDto: Record<string, string>, @Res() response: Response) {
 		console.log(signDto.login);
 		console.log(signDto.passwd);
 		const user = await this.authService.validateUser(signDto.login, signDto.passwd);
 		if (!user)
-			throw new Error("user not found!!!!");
+			throw new UnauthorizedException('username or password not correct!');
 		// sign the jwt token that contains the user id and user nickname
 		const { access_token } = await this.authService.login(user);
 		//set the cookie
 		response.cookie('access_token', access_token);
+		response.cookie('login', user.nickname);
 		// response.redirect('https://127.0.0.1:3001/profile');
 		response.end('ok');
 	}
@@ -41,7 +42,8 @@ export class AuthController {
 		const { access_token: jwt_access_token } = await this.authService.login(request.user);
 		//create the cookie
 		response.cookie('access_token', jwt_access_token);
+		response.cookie('login', request.user.nickname);
 		// to ridrect the user to the profile page
-		response.redirect(`${process.env.FRONT_HOST}/profile`);
+		response.redirect(`${process.env.FRONT_HOST}/${request.user.nickname}`);
 	}
 }
