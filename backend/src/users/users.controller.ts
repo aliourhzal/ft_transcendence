@@ -99,8 +99,5 @@ export class UsersController{
 	async addFriend(@Param('nickname') friendName:string, @Req() request: any)
 	{
 		return await this.usersService.addFriend(friendName, request.user.nickname);
-
-
-
 	}
 }

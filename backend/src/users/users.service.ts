@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
 import { unlinkSync } from 'fs';
 import { extname } from 'path';
 import { parse } from 'path';
@@ -146,10 +146,6 @@ export class UsersService {
 		}
 	}
 	
-	async linkUserWithFriend()
-	{
-
-	}
 
 	async addFriend(friendNickname: string, nickname: string) {
 
@@ -160,14 +156,23 @@ export class UsersService {
 			throw new NotFoundException('user not found!!')
 		}
 
-		// this.prisma.user.updacreatete({
-		// 	data: {
-		// 	  user: { connect: { id: user1.id } },
-		// 	  friend: { connect: { id: user2.id } },
-		// 	},
-		//   });
- 
-		return "ok";
-		// this.prisma.
+		await this.prisma.user.update({
+            where: { id: user.id },
+            data: {
+                userFriends: {
+                connect: [{ id: friend.id }],
+              },
+            },
+        })
+
+		await this.prisma.user.update({
+            where: { id: friend.id },
+            data: {
+                userFriends: {
+                connect: [{ id: user.id }],
+              },
+            },
+        });
+  
 	}
 }
