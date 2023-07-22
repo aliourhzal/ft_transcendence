@@ -12,7 +12,7 @@ interface UserBoxProps {
 
 const UserBox: React.FC<UserBoxProps> = (data) => {
 
-  const {showConv, setShowConv, activeUserConv, setActiveUserConv} = useContext(Context)
+  const {showConv, setShowConv, activeUserConv, setActiveUserConv, rooms} = useContext(Context)
 
   const handleClick = () => {
     setShowConv(true)
@@ -30,7 +30,6 @@ const UserBox: React.FC<UserBoxProps> = (data) => {
       }
     }
   }
-
   return (
     <div className="convGroup z-1 bg-zinc-800 w-[70%] left-[15%] h-[100px] relative my-3 rounded-md active:bg-blue-500" onClick={(e) => {handleClick(); activeDiv(e.currentTarget)}}>
         <div className="left-[30%] top-[25%] absolute text-gray-200 font-medium">{data.data.name}</div>

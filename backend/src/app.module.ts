@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { gateAwayModule } from './webSocket/web.module';
 import { ChatModule } from './chat/chat.module';
 
+
 @Module({
   imports: [
     gateAwayModule, //socket module

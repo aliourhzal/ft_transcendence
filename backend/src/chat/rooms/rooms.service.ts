@@ -29,12 +29,13 @@ export class RoomsService
             if (!existingLink) 
             {
                 
-                const link = await this.prisma.joinedTable.create({
+                await this.prisma.joinedTable.create({
                   data: {
                     userId : usersIds[i],
                     roomId,
                   },
                 });
+                
             }
             else
             {
@@ -72,6 +73,7 @@ export class RoomsService
 
     async createRoom(roomandUsers:roomAndUsers, adminOfRoom:string)
     {
+
         const room = await this.adminCreateRoom(roomandUsers.roomName,adminOfRoom);// crete room and assign to it the admin
         
         if(room === 1)
@@ -79,7 +81,8 @@ export class RoomsService
 
         const usersIds = await this.getUsersId(adminOfRoom,roomandUsers.users);
     
-        if(usersIds === "user not found") // can be emit the error message here, pass the server obj to this function for use it for make it real time
+         
+        if(usersIds === null) // can be emit the error message here, pass the server obj to this function for use it for make it real time
             return 2;
 
         if(usersIds === "you try to enter the admin")
@@ -123,6 +126,7 @@ export class RoomsService
             
             if(existingUser)
             {
+               
                 if(existingUser.id === adminId)
                 {
                     return "you try to enter the admin"
@@ -141,7 +145,7 @@ export class RoomsService
             }   
             else
             {
-                return "user not found";
+                return null;
             } 
              
         }

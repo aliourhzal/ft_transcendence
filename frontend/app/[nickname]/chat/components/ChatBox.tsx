@@ -1,8 +1,11 @@
 import React from 'react'
+import user from '../page'
 
-const ChatBox = () => {
+const ChatBox = (props:any) => {
   return (
-    <div>ChatBox</div>
+    <div>
+      {props.msgs.map ((item:any) => (<div className={item.user == 'self' ? 'bg-blue-500' : 'bg-gray-500'} key={item.id}>{item.user} : {item.msg}</div>))}
+    </div>
   )
 }
 

@@ -18,8 +18,8 @@ const RoomForm = (props:any) => {
     }
     return (
         props.showForm &&
-        <div className='z-50 absolute w-[100%] bg-transparent h-[100vh]'>
-            <div className='absolute w-[50%] lg:w-[30%] top-[20%] mx-[25%] lg:mx-[35%]'>
+        <div className='z-50 absolute flex justify-center items-center w-[100%] bg-transparent h-[100vh]'>
+            <div className='w-[50%] lg:w-[30%] mb-[20%] transition-transform duration-300'>
                 <button className=' ml-[90%] bg-blue-500 text-white rounded-full w-7' type='button' onClick={ hideForm }>X</button>
                 <div className='text-center text-3xl mb-2'><h1>Create Chatroom</h1></div>
                 <div className="relative z-0 w-full mb-6 group">
@@ -54,6 +54,7 @@ const RoomForm = (props:any) => {
                 
                 () => { 
                     userData.chatSocket.emit("create-room",{roomName, users}) 
+                       
                     userData.chatSocket.on('error',(error:string) => {console.log(error)})    
                     setName('')
                     setUser('')

@@ -8,24 +8,25 @@ generator client {
 }
 
 model User {
-	id				String @id @default(uuid())
-	intra_id		Int	@unique
-	firstName		String
-	lastName		String
-	nickname		String @unique
-	email			String
-	wallet			Int
-	points			Int
-	password		String
-	profilePic		String
-	coverPic		String
-	level			Float
-	grade			String
+	id				            String          @id @default(uuid())
+	intra_id		            Int	            @unique
+	firstName		            String
+	lastName		            String
+	nickname		            String          @unique
+	email			            String
+	wallet			            Int
+	points			            Int
+	password		            String
+	profilePic		            String
+	coverPic		            String
+	level			            Float
+	grade			            String
 	
-	userFriends     User[]  @relation("friends")
-    friendOfUser    User[]  @relation("friends")
+	userFriends                 User[]              @relation("friends")
+    friendOfUser                User[]              @relation("friends")
 
     rooms                   JoinedTable[]
+    connectedUsers          ConnectedUsers[]
 	matches			Match[]
 }
 
@@ -39,6 +40,16 @@ model Room{
     users                       JoinedTable[]
 }
  
+model ConnectedUsers {
+    
+    id              String     @id @default(uuid())
+    socketId        String   
+    
+    user            User @relation(fields: [userId], references: [id])
+    userId          String
+ 
+}
+
 
 model JoinedTable{  
 
