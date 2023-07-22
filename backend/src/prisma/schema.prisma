@@ -21,8 +21,10 @@ model User {
 	coverPic		String
 	level			Float
 	grade			String
-	friends			User[] @relation("userFriends")
-	friendsOf		User[] @relation("userFriends")
+	
+	userFriends     User[]  @relation("friends")
+    friendOfUser    User[]  @relation("friends")
+
 	matches			Match[]
 }
 
@@ -31,5 +33,10 @@ model Match {
 	players		User[]
 	scores		Int[]
 	playerAt	DateTime @default(now())
+}
+
+model FriendRequest {
+	id			String @id @default(uuid())
+	
 }
 
