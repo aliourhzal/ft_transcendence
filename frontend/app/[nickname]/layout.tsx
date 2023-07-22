@@ -1,6 +1,5 @@
 'use client'
 import axios from "axios";
-
 import { useRouter } from "next/navigation";
 import SideBar from "./components/sideBar";
 import React, { useEffect, useState, useReducer, createContext } from "react";
@@ -71,6 +70,15 @@ function reducer(state, action) {
 		return state;
 }
 
+const getAccessToken = () => {
+    const cookies = document.cookie.split('; ');
+    for (const cookie of cookies) {
+        const [label, content] = cookie.split('=');
+        if (label === 'access_token')
+            return (content);
+    }
+}
+
 export default function ProfileLayout({
 	children,
 }: {
@@ -91,7 +99,7 @@ export default function ProfileLayout({
 		})
 		const socket = io('ws://127.0.0.1:3000',{
 			auth: {
-				token: document.cookie.split('; ')[0].split('=')[1],
+				token: getAccessToken(),
 			},
     });
 

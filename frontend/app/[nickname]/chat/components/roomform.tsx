@@ -1,8 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useContext, useState } from "react"
+import { Context } from '../page'
 
 const RoomForm = (props:any) => {
+    const {showConv, setShowConv, activeUserConv, setActiveUserConv, socket} = useContext(Context)
     // const [roomInfo, setRoomInfo] = useState({name:'', users:[], password:''})
     const [roomName, setName] = useState('')
     const [users, setUsers] = useState<string[]>([])
@@ -48,9 +50,9 @@ const RoomForm = (props:any) => {
                 </div>
                 <button type="button" className=" w-auto text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" onClick={
                 
-                () => {console.log({roomName, users})
-                    props.socket.emit("create-room",{roomName, users}) 
-                    props.socket.on('error',(error:string) => {console.log(error)})    
+                () => { 
+                    socket.emit("create-room",{roomName, users}) 
+                    socket.on('error',(error:string) => {console.log(error)})    
                     setName('')
                     setUser('')
                     setUsers([])

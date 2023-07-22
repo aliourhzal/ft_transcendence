@@ -3,9 +3,6 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { gateAwayModule } from './webSocket/web.module';
-
-
-import { GatewayGateway } from './chat/gateway/gateway.gateway';
 import { ChatModule } from './chat/chat.module';
 
 @Module({
@@ -14,7 +11,7 @@ import { ChatModule } from './chat/chat.module';
     AuthModule,
     UsersModule,
     ConfigModule.forRoot(),
-    ChatModule
+    ChatModule,
   ],
   controllers: [],
   providers: [],

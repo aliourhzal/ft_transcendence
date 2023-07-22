@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable prettier/prettier */
 import { Body, Controller, Get, Post, Request, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
@@ -41,6 +43,7 @@ export class AuthController {
 		// pass the user data to the function that signs the jwt token
 		const { access_token: jwt_access_token } = await this.authService.login(request.user);
 		//create the cookie
+        console.log(jwt_access_token);
 		response.cookie('access_token', jwt_access_token);
 		response.cookie('login', request.user.nickname);
 		// to ridrect the user to the profile page

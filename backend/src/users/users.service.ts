@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { unlinkSync } from 'fs';
@@ -5,6 +6,7 @@ import { extname } from 'path';
 import { parse } from 'path';
 import { createReadStream} from 'fs';
 import { readdir } from 'fs/promises';
+import { UserData } from 'src/utils/userData.interface';
 
 @Injectable()
 export class UsersService {

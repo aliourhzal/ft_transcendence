@@ -21,6 +21,15 @@ export const Context = createContext<any>(undefined)
 
 export default function Chat() {
   
+    const getAccessToken = () => {
+        const cookies = document.cookie.split('; ');
+        for (const cookie of cookies) {
+            const [label, content] = cookie.split('=');
+            if (label === 'access_token')
+                return (content);
+        }
+    }
+
   const [users, setUsers] = useState<user[]>([
     {name:"test", photo:"", last_msg:"yooo", id:0},
     {name:"lmfao", photo:"", last_msg:"yooo", id:1},
@@ -31,9 +40,9 @@ export default function Chat() {
   const [socket, setSocket] = useState<any>();
   
   useEffect( () => {
-    setSocket( io('ws://localhost:8080',{
+    setSocket(io('ws://localhost:3000',{
       auth: {
-        token: sessionStorage.getItem('jwt'),
+        token: getAccessToken(),
       },
     }) );
   }, [])
@@ -46,8 +55,8 @@ export default function Chat() {
   
   return (
     <main className='select-none'>
-      <Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, users, setUsers}}>
-        <RoomForm convUsers={users} setConvUsers={setUsers} showForm={showForm} setShowForm={setShowForm} socket={socket}/>
+      <Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, users, setUsers, socket}}>
+        <RoomForm convUsers={users} setConvUsers={setUsers} showForm={showForm} setShowForm={setShowForm}/>
         <div id='main' className="flex w-screen min-h-screen bg-gray-900 pt-10">
           <div className="absolute w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">
             <div className='z-10 relative w-[100%]'>
