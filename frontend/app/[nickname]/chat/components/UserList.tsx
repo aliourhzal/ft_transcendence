@@ -9,7 +9,7 @@ interface UserListProps {
 
 const UserList: React.FC<UserListProps> = ({items}) => {
     return (
-      <div className='group left-[10%] flex-col bg-transparent w-100% h-[70vh] mt-8 overflow-hidden overflow-y-scroll'>
+      <div className='group left-[10%] flex-col bg-transparent w-full h-[80%] bg-slate-500 mt-8 overflow-hidden overflow-y-scroll'>
           {items.map ((item:user) => (<UserBox key={item.id} data={item} />))}
       </div>
     )

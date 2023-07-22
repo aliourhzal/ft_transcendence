@@ -25,7 +25,7 @@ const Search = (props:any) => {
                 type='search'
                 placeholder="Search"
                 value={name}
-                className="text-white pl-10 pb-5 w-[70%] border-b border-blue-gray-200 bg-transparent pt-4 text-sm text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-blue-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
+                className="text-white pl-10 pb-5 pt-4 w-[70%] border-b border-blue-gray-200 bg-transparent  text-sm text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-blue-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
                 onChange={filter} onBlur={() => {setShow(false)}}
             />
             { show ?
