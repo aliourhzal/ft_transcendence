@@ -20,6 +20,7 @@ export default function MyModal(props: any) {
 	let [isOpen, setIsOpen] = useState(false);
 	const imageElement : any = useRef();
 	const nickNameRef : any = useRef();
+	const addFriendRef : any = useRef();
 	const confirmPassRef : any = useRef();
 	const passwordRef : any = useRef();
 	const oldPassRef : any = useRef();
@@ -56,64 +57,68 @@ export default function MyModal(props: any) {
 		}
         const newPass = e.target[p].value;
         const confirmPass = e.target[3].value;
-
-		if (newPass && confirmPass)
-		{
-			alert(props.pass);
-			try {
-				if (props.pass)
-				{
-					try{
-						await axios.post('http://127.0.0.1:3000/users/profile/checkPassword ', {oldPass}, {
-							withCredentials: true
-						});
-					}catch(err)
-					{
-						oldPassRef.current.textContent = "Password Incorrect";
-						oldPassRef.current.style.color = "E76161";
-					}
-				}
-				if (newPass === confirmPass)
-				{
-					await axios.post('http://127.0.0.1:3000/users/profile/password ', {confirmPass}, {
-					withCredentials: true
-					});
-					passwordRef.current.textContent = "Password Updated";
-					oldPassRef.current.textContent = "";
-					confirmPassRef.current.textContent = "";
-					passwordRef.current.style.color = "#98D8AA";
-					props.dispatch({type: ACTIONS.UPDATE_PASSWD, payload: true})
-				}
-				else
-				{
-					confirmPassRef.current.textContent = "Password miss match";
-					confirmPassRef.current.style.color = "E76161";
-				}
-			}
-			catch (error) {
-				passwordRef.current.textContent = "Wrong Password Syntax";
-				passwordRef.current.style.color = "#E76161";
-			}
-		}
-		else if (newNickname)
-		{
-			try
-			{
-				await axios.post('http://127.0.0.1:3000/users/profile/nickName', {newNickname}, {
-					withCredentials: true
-				});
-				nickNameRef.current.textContent = "Updated";
-				nickNameRef.current.style.color = "#98D8AA";
-				props.dispatch({type: ACTIONS.UPDATE_NICKNAME, payload: newNickname})
-			}
-			catch(error)
-			{
-				nickNameRef.current.textContent = "Nick Name Already In Use";
-				nickNameRef.current.style.color = "E76161";
-			}
-		}
-		else
-			alert("Can't save empty inputs");
+		const friendNickname = e.target[2].value;
+		console.log(friendNickname);
+		await axios.get(`http://127.0.0.1:3000/users/friend/${friendNickname}`, {
+			withCredentials: true
+		});
+		// if (newPass && confirmPass)
+		// {
+		// 	alert(props.pass);
+		// 	try {
+		// 		if (props.pass)
+		// 		{
+		// 			try{
+		// 				await axios.post('http://127.0.0.1:3000/users/profile/checkPassword ', {oldPass}, {
+		// 					withCredentials: true
+		// 				});
+		// 			}catch(err)
+		// 			{
+		// 				oldPassRef.current.textContent = "Password Incorrect";
+		// 				oldPassRef.current.style.color = "E76161";
+		// 			}
+		// 		}
+		// 		if (newPass === confirmPass)
+		// 		{
+		// 			await axios.post('http://127.0.0.1:3000/users/profile/password ', {confirmPass}, {
+		// 			withCredentials: true
+		// 			});
+		// 			passwordRef.current.textContent = "Password Updated";
+		// 			oldPassRef.current.textContent = "";
+		// 			confirmPassRef.current.textContent = "";
+		// 			passwordRef.current.style.color = "#98D8AA";
+		// 			props.dispatch({type: ACTIONS.UPDATE_PASSWD, payload: true})
+		// 		}
+		// 		else
+		// 		{
+		// 			confirmPassRef.current.textContent = "Password miss match";
+		// 			confirmPassRef.current.style.color = "E76161";
+		// 		}
+		// 	}
+		// 	catch (error) {
+		// 		passwordRef.current.textContent = "Wrong Password Syntax";
+		// 		passwordRef.current.style.color = "#E76161";
+		// 	}
+		// }
+		// else if (newNickname)
+		// {
+		// 	try
+		// 	{
+		// 		await axios.post('http://127.0.0.1:3000/users/profile/nickName', {newNickname}, {
+		// 			withCredentials: true
+		// 		});
+		// 		nickNameRef.current.textContent = "Updated";
+		// 		nickNameRef.current.style.color = "#98D8AA";
+		// 		props.dispatch({type: ACTIONS.UPDATE_NICKNAME, payload: newNickname})
+		// 	}
+		// 	catch(error)
+		// 	{
+		// 		nickNameRef.current.textContent = "Nick Name Already In Use";
+		// 		nickNameRef.current.style.color = "E76161";
+		// 	}
+		// }
+		// else
+		// 	alert("Can't save empty inputs");
 	}
 	
   return (
@@ -169,6 +174,11 @@ export default function MyModal(props: any) {
 						<label htmlFor='newNick' className='w-full font-medium flex flex-col gap-1'>
 							<input type='text' id='newNick' placeholder='Nickname'  className='bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none border-none' />
 							<span ref={nickNameRef} id="nickNameError" className='text-red-500'></span>
+						</label>
+
+						<label htmlFor='addFriend' className='w-full font-medium flex flex-col gap-1'>
+							<input type='text' id='addFriend' placeholder='addFriend'  className='bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none border-none' />
+							<span ref={addFriendRef} id="nickNameError" className='text-red-500'></span>
 						</label>
 						
 						
