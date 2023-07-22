@@ -1,7 +1,8 @@
 import React, { useContext } from 'react'
 // import Image from 'next/image'
 import { user } from '../page'
-import { Avatar } from '@nextui-org/react'
+// import { Avatar } from '@nextui-org/react'
+import {Avatar} from '@nextui-org/react'
 import { useRouter } from 'next/navigation'
 import { Context } from '../page'
 

@@ -3,6 +3,7 @@
 import { WebsocketContext } from "@/app/context_sockets/gameWebSocket";
 import Script from "next/script";
 import { useContext, useEffect } from "react";
+import { userDataContext } from "../layout";
 
 /*
     send via socket emit :  
@@ -228,6 +229,8 @@ function render(){
 export default function Game()
 {
     const socket = useContext(WebsocketContext);
+    const userData = useContext(userDataContext);
+    console.log('test', userData);
     socket.on('connect', () => {
         console.log('connected');
         // socket.emit('newMessageAsalek', 'i\'m connected');

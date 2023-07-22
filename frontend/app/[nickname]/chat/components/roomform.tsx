@@ -2,9 +2,11 @@
 
 import { useContext, useState } from "react"
 import { Context } from '../page'
+import { userDataContext } from "../../layout"
 
 const RoomForm = (props:any) => {
-    const {showConv, setShowConv, activeUserConv, setActiveUserConv, socket} = useContext(Context)
+    const {showConv, setShowConv, activeUserConv, setActiveUserConv} = useContext(Context)
+    const userData = useContext(userDataContext);
     // const [roomInfo, setRoomInfo] = useState({name:'', users:[], password:''})
     const [roomName, setName] = useState('')
     const [users, setUsers] = useState<string[]>([])
@@ -51,8 +53,8 @@ const RoomForm = (props:any) => {
                 <button type="button" className=" w-auto text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" onClick={
                 
                 () => { 
-                    socket.emit("create-room",{roomName, users}) 
-                    socket.on('error',(error:string) => {console.log(error)})    
+                    userData.chatSocket.emit("create-room",{roomName, users}) 
+                    userData.chatSocket.on('error',(error:string) => {console.log(error)})    
                     setName('')
                     setUser('')
                     setUsers([])

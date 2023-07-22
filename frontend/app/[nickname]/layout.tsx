@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import SideBar from "./components/sideBar";
 import React, { useEffect, useState, useReducer, createContext } from "react";
 import { RedirectType } from "next/dist/client/components/redirect";
-import { io } from "socket.io-client";
+import { Socket, io } from "socket.io-client";
+import { CgNotes } from "react-icons/cg";
 
 export const ACTIONS = {
 	INIT: 'init',
@@ -27,7 +28,8 @@ export interface UniversalData {
 	losses?: number,
 	password?: boolean,
 	profilePic?: string,
-	coverPic?: File | string | HTMLImageElement
+	coverPic?: File | string | HTMLImageElement,
+	chatSocket: Socket
 }
 
 export const userDataContext = createContext<UniversalData>(null);
@@ -49,7 +51,9 @@ export async function fetchUserData(url: string) {
 
 function reducer(state, action) {
 	if (action.type === ACTIONS.INIT) {
-		return ({...action.payload})
+		const user: UniversalData = {...action.payload.data};
+		user.chatSocket = action.payload.socket;
+		return({...user});
 	}
 	else if (action.type === ACTIONS.UPDATE_AVATAR) {
 		const update = {...state};
@@ -88,20 +92,23 @@ export default function ProfileLayout({
 	const [userDataState, dispatch] = useReducer(reducer, {});
 	const [completed, setCompleted] = useState(false);
 	useEffect(() => {
+		const socket = io('ws://127.0.0.1:3000',{
+			auth: {
+				token: getAccessToken(),
+			},
+		});
 		fetchUserData('http://127.0.0.1:3000/users/profile')
 		.then(res => {
-			dispatch({type: ACTIONS.INIT, payload: res});
+			dispatch({type: ACTIONS.INIT, payload: {
+				data: res,
+				socket
+			}});
 			setCompleted(true);
 		})
 		.catch(err => {
 			console.log(err);
 			router.push('/')
 		})
-		const socket = io('ws://127.0.0.1:3000',{
-			auth: {
-				token: getAccessToken(),
-			},
-    });
 
 	}, [])
 	return (

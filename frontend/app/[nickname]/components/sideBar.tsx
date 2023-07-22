@@ -40,7 +40,7 @@ export default function SideBar(props: any)
 				</div>
 				<div className=" flex flex-col gap-9 mt-[55%]">
 					<NavOption icon={BsFillPersonFill} router={router} nickname={userData.nickname} location='/' option='profile'/>
-					<NavOption icon={BsFillChatSquareDotsFill} nickname={userData.nickname} router={router} location='/' option='chat'/>
+					<NavOption icon={BsFillChatSquareDotsFill} nickname={userData.nickname} router={router} location='/chat' option='chat'/>
 					<NavOption icon={FaTableTennis} router={router} nickname={userData.nickname} location='/game' option='game'/>
 				</div>
 				<div className="h-full w-[44%] flex justify-center items-end">
