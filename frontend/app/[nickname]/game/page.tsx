@@ -4,6 +4,7 @@ import { WebsocketContext } from "@/app/context_sockets/gameWebSocket";
 import Script from "next/script";
 import { useContext, useEffect } from "react";
 import { userDataContext } from "../layout";
+import { Socket } from "socket.io-client";
 
 /*
     send via socket emit :  
@@ -12,8 +13,11 @@ import { userDataContext } from "../layout";
         Score
 */
 
-export function startGame()
+export function startGame( data : gameData, socket: Socket )
 {
+    // declare interval ID
+    let loop:NodeJS.Timer = null;
+
 // select canvas element
 const canvas = document.getElementById("pongy") as HTMLCanvasElement;
 
@@ -21,6 +25,7 @@ const canvas = document.getElementById("pongy") as HTMLCanvasElement;
 const ctx = canvas.getContext('2d');
 
 // load sounds
+let sound_ret: any;
 let hit = new Audio();
 let wall = new Audio();
 let userScore = new Audio();
@@ -89,10 +94,12 @@ function drawArc(x, y, r, color){
 // listening to the mouse
 canvas.addEventListener("mousemove", getMousePos);
 
-function getMousePos(evt){
+function getMousePos(evt: { clientY: number; }){
     let rect = canvas.getBoundingClientRect();
-    
-    user.y = evt.clientY - rect.top - user.height/2;
+    if (evt.clientY < rect.bottom - user.height)
+        user.y = evt.clientY - rect.top + 2; 
+    else
+        return ;
 }
 
 // when COM or USER scores, we reset the ball
@@ -138,11 +145,17 @@ function update(){
     // change the score of players, if the ball goes to the left "ball.x<0" computer win, else if "ball.x > canvas.width" the user win
     if( ball.x - ball.radius < 0 ){
         com.score++;
-        comScore.play();
+        sound_ret = comScore.play();
+        if (sound_ret !== undefined) {
+        sound_ret.then(() => {}).catch(error => {});
+        }
         resetBall();
     }else if( ball.x + ball.radius > canvas.width){
         user.score++;
-        userScore.play();
+        sound_ret = userScore.play();
+        if (sound_ret !== undefined) {
+            sound_ret.then(() => {}).catch(error => {});
+        }
         resetBall();
     }
     
@@ -157,7 +170,10 @@ function update(){
     // when the ball collides with bottom and top walls we inverse the y velocity.
     if(ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height){
         ball.velocityY = -ball.velocityY;
-        wall.play();
+        sound_ret = wall.play();
+        if (sound_ret !== undefined) {
+            sound_ret.then(() => {}).catch(error => {});
+        }
     }
     
     // we check if the paddle hit the user or the com paddle
@@ -166,7 +182,10 @@ function update(){
     // if the ball hits a paddle
     if(collision(ball,player)){
         // play sound
-        hit.play();
+        sound_ret = hit.play();
+        if (sound_ret !== undefined) {
+            sound_ret.then(() => {}).catch(error => {});
+        }
         // we check where the ball hits the paddle
         let collidePoint = (ball.y - (player.y + player.height/2));
         // normalize the value of collidePoint, we need to get numbers between -1 and 1.
@@ -213,7 +232,11 @@ function render(){
     // draw the ball
     drawArc(ball.x, ball.y, ball.radius, ball.color);
 } 
-    function game(){
+    function game()
+    {
+        data.Ballx++;
+        if (com.score === 5 || user.score === 5)
+            clearInterval(loop);
         update();
         render();
     }
@@ -221,9 +244,17 @@ function render(){
     let framePerSecond = 50;
 
     //call the game function 50 times every 1 Sec
-    let loop = setInterval(game,1000/framePerSecond);
-
+    loop = setInterval(game,1000/framePerSecond);
     return ;
+}
+
+interface gameData {
+    Ballx: number,
+    Bally: number,
+    Playerx: number,
+    Playery: number,
+    Playerw: number,
+    Playerh: number
 }
 
 export default function Game()
@@ -231,12 +262,29 @@ export default function Game()
     const socket = useContext(WebsocketContext);
     const userData = useContext(userDataContext);
     console.log('test', userData);
-    socket.on('connect', () => {
-        console.log('connected');
-        // socket.emit('newMessageAsalek', 'i\'m connected');
-    });
+
+    let data: gameData = {
+        Ballx: 0,
+        Bally: 0,
+        Playerx: 0,
+        Playery: 0,
+        Playerw: 0,
+        Playerh: 0
+    }
+    
+    useEffect(()=> {
+        console.log(data.Ballx);
+    }
+    , [data.Ballx]);//each time player Y or Ball X | Y change trigger this effect
+    
+    // this hook used to start the game and connect to the socket
     useEffect(() => {
-            startGame();
+        startGame(data, socket);
+
+        socket.on('connect', () => {
+            console.log('connected');
+            // socket.emit('newMessageAsalek', 'i\'m connected');
+        });
             socket.on('onMessage', (data) => {
                 console.log(data);
             });
@@ -246,7 +294,7 @@ export default function Game()
                 console.log("disconnect");
             }
         }
-    , []);//each time player Y or Ball X | Y change trigger this effect
+    , []);
 
     let width:string = '800px';
     return (
