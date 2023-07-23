@@ -3,13 +3,12 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import SideBar from "./components/sideBar";
 import React, { useEffect, useState, useReducer, createContext } from "react";
-import { RedirectType } from "next/dist/client/components/redirect";
 import { Socket, io } from "socket.io-client";
-import { CgNotes } from "react-icons/cg";
 
 export const ACTIONS = {
 	INIT: 'init',
 	UPDATE_AVATAR: 'avatar',
+	UPDATE_COVER: 'cover',
 	UPDATE_NICKNAME: 'nickname',
 	UPDATE_PASSWD: 'passwd'
 }
@@ -28,7 +27,7 @@ export interface UniversalData {
 	losses?: number,
 	password?: boolean,
 	profilePic?: string,
-	coverPic?: File | string | HTMLImageElement,
+	coverPic?: string,
 	chatSocket: Socket
 }
 
@@ -58,6 +57,12 @@ function reducer(state, action) {
 	else if (action.type === ACTIONS.UPDATE_AVATAR) {
 		const update = {...state};
 		update.profilePic = action.payload;
+		return ({...update});
+	}
+	else if (action.type === ACTIONS.UPDATE_COVER) {
+		console.log(action.payload);
+		const update = {...state};
+		update.coverPic = action.payload;
 		return ({...update});
 	}
 	else if (action.type === ACTIONS.UPDATE_NICKNAME) {

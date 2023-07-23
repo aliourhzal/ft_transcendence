@@ -18,9 +18,9 @@ function InputTemplate(props: any) {
 
 export default function MyModal(props: any) {
 	let [isOpen, setIsOpen] = useState(false);
-	const imageElement : any = useRef();
+	const avatarElement : any = useRef();
+	const coverElement : any = useRef();
 	const nickNameRef : any = useRef();
-	const addFriendRef : any = useRef();
 	const confirmPassRef : any = useRef();
 	const passwordRef : any = useRef();
 	const oldPassRef : any = useRef();
@@ -31,9 +31,9 @@ export default function MyModal(props: any) {
 
 	function setImage(e: any)
 	{
-        const reader = new FileReader();
+		const reader = new FileReader();
 		reader.onload = async function(ev) {
-			imageElement.current.src = e.target!.result as string;
+			avatarElement.current.src = e.target!.result as string;
 			props.dispatch({type: ACTIONS.UPDATE_AVATAR, payload: ev.target!.result});
 			const formData = new FormData();
 			formData.append('avatar', e.target.files[0])
@@ -44,81 +44,92 @@ export default function MyModal(props: any) {
 		reader.readAsDataURL(e.target.files[0]);
 	}
 
+	function setCover(e: any)
+	{
+		const reader = new FileReader();
+		reader.onload = async function(ev) {
+			coverElement.current.src = e.target!.result as string;
+			props.dispatch({type: ACTIONS.UPDATE_COVER, payload: ev.target!.result});
+			const formData = new FormData();
+			formData.append('cover', e.target.files[0])
+			await axios.put('http://127.0.0.1:3000/users/profile/cover', formData, {
+				withCredentials: true,
+			})
+		}
+		reader.readAsDataURL(e.target.files[0]);
+	}
+
     async function formSubmitHandler(e: any) {
 		//prevent website reload
         e.preventDefault();
-		let p : number = 2;
+		let p : number = 3;
 		let oldPass : string;
-        const newNickname = e.target[1].value;
-		if (props.pass)
+        const newNickname = e.target[2].value;
+		if (userData.password)
 		{
 			oldPass = e.target[2].value;
-			p = 4;
+			p = 5;
 		}
         const newPass = e.target[p].value;
-        const confirmPass = e.target[3].value;
-		const friendNickname = e.target[2].value;
-		console.log(friendNickname);
-		await axios.get(`http://127.0.0.1:3000/users/friend/${friendNickname}`, {
-			withCredentials: true
-		});
-		// if (newPass && confirmPass)
-		// {
-		// 	alert(props.pass);
-		// 	try {
-		// 		if (props.pass)
-		// 		{
-		// 			try{
-		// 				await axios.post('http://127.0.0.1:3000/users/profile/checkPassword ', {oldPass}, {
-		// 					withCredentials: true
-		// 				});
-		// 			}catch(err)
-		// 			{
-		// 				oldPassRef.current.textContent = "Password Incorrect";
-		// 				oldPassRef.current.style.color = "E76161";
-		// 			}
-		// 		}
-		// 		if (newPass === confirmPass)
-		// 		{
-		// 			await axios.post('http://127.0.0.1:3000/users/profile/password ', {confirmPass}, {
-		// 			withCredentials: true
-		// 			});
-		// 			passwordRef.current.textContent = "Password Updated";
-		// 			oldPassRef.current.textContent = "";
-		// 			confirmPassRef.current.textContent = "";
-		// 			passwordRef.current.style.color = "#98D8AA";
-		// 			props.dispatch({type: ACTIONS.UPDATE_PASSWD, payload: true})
-		// 		}
-		// 		else
-		// 		{
-		// 			confirmPassRef.current.textContent = "Password miss match";
-		// 			confirmPassRef.current.style.color = "E76161";
-		// 		}
-		// 	}
-		// 	catch (error) {
-		// 		passwordRef.current.textContent = "Wrong Password Syntax";
-		// 		passwordRef.current.style.color = "#E76161";
-		// 	}
-		// }
-		// else if (newNickname)
-		// {
-		// 	try
-		// 	{
-		// 		await axios.post('http://127.0.0.1:3000/users/profile/nickName', {newNickname}, {
-		// 			withCredentials: true
-		// 		});
-		// 		nickNameRef.current.textContent = "Updated";
-		// 		nickNameRef.current.style.color = "#98D8AA";
-		// 		props.dispatch({type: ACTIONS.UPDATE_NICKNAME, payload: newNickname})
-		// 	}
-		// 	catch(error)
-		// 	{
-		// 		nickNameRef.current.textContent = "Nick Name Already In Use";
-		// 		nickNameRef.current.style.color = "E76161";
-		// 	}
-		// }
-		// else
-		// 	alert("Can't save empty inputs");
+        const confirmPass = e.target[4].value;
+		console.log(newNickname, newPass, confirmPass);
+		if (newPass && confirmPass)
+		{
+			try {
+				if (userData.password)
+				{
+					try{
+						await axios.post('http://127.0.0.1:3000/users/profile/checkPassword ', {oldPass}, {
+							withCredentials: true
+						});
+					}catch(err)
+					{
+						oldPassRef.current.textContent = "Password Incorrect";
+						oldPassRef.current.style.color = "E76161";
+					}
+				}
+				if (newPass === confirmPass)
+				{
+					await axios.post('http://127.0.0.1:3000/users/profile/password ', {confirmPass}, {
+						withCredentials: true
+					});
+					passwordRef.current.textContent = "Password Updated";
+					oldPassRef.current.textContent = "";
+					confirmPassRef.current.textContent = "";
+					passwordRef.current.style.color = "#98D8AA";
+					props.dispatch({type: ACTIONS.UPDATE_PASSWD, payload: true})
+				}
+				else
+				{
+					confirmPassRef.current.textContent = "Password miss match";
+					confirmPassRef.current.style.color = "E76161";
+				}
+			}
+			catch (error) {
+				passwordRef.current.textContent = "Wrong Password Syntax";
+				passwordRef.current.style.color = "#E76161";
+				console.log(error);
+			}
+		}
+		else if (newNickname)
+		{
+			try
+			{
+				await axios.post('http://127.0.0.1:3000/users/profile/nickName', {newNickname}, {
+					withCredentials: true
+				});
+				nickNameRef.current.textContent = "Updated";
+				nickNameRef.current.style.color = "#98D8AA";
+				props.dispatch({type: ACTIONS.UPDATE_NICKNAME, payload: newNickname})
+			}
+			catch(error)
+			{
+				nickNameRef.current.textContent = "Nick Name Already In Use";
+				nickNameRef.current.style.color = "E76161";
+			}
+		}
+		else
+			alert("Can't save empty inputs");
 	}
 	
   return (
@@ -157,13 +168,20 @@ export default function MyModal(props: any) {
 				>
 				{/* inside pop Up */}
 				<Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-whiteSmoke p-6 text-left align-middle shadow-xl transition-all">
-					<button onClick={modalAppearance} type="button" className=" absolute right-[7%] w-9 h-9 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-lg flex text-center justify-center items-center">x</button>
+					<button onClick={modalAppearance} type="button" className="ml-[auto] mb-5 w-9 h-9 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-lg flex text-center justify-center items-center">x</button>
 					<form onSubmit={formSubmitHandler} className="flex flex-col justify-center items-center gap-3">
-						<div className="relative bg-red-500 w-full">
-							<div className="relative left-1/2 translate-x-[-50%] h-[100px] aspect-square bg-green-500">
-								<img ref={imageElement} id="avatar" className="h-[100px] aspect-square mb-6 rounded-full" src={userData.profilePic} alt="avatar" />
+						<div className="flex flex-col items-center justify-center w-full">
+							<div ref={coverElement} className='w-full h-[150px] rounded-xl relative overflow-hidden'>
+								<img ref={coverElement} src={userData.coverPic} alt="cover picture" className='object-cover mt-[auto] mb-[auto]'/>
+								<label htmlFor="coverUpload" className="absolute bottom-0 right-0 w-10 h-10">
+									<IoIosAddCircle className="absolute w-full h-full top-0 left-0 text-white cursor-pointer" />
+									<input onChange={setCover} type="file" accept="image/png, image/gif, image/jpeg" className="hidden" id="coverUpload"/>
+								</label>
+							</div>
+							<div className="relative h-[100px] aspect-square mt-[-50px] ">
+								<img ref={avatarElement} id="avatar" className="h-full aspect-square mb-6 rounded-full" src={userData.profilePic} alt="avatar" />
 								<label htmlFor="avatarUpload" className="absolute bottom-0 right-0 w-10 h-10">
-									<IoIosAddCircle className="absolute w-full h-full top-0 left-0 text-gray-600 cursor-pointer" />
+									<IoIosAddCircle className="absolute w-full h-full top-0 left-0 text-white cursor-pointer" />
 									<input onChange={setImage} type="file" accept="image/png, image/gif, image/jpeg" className="hidden" id="avatarUpload"/>
 								</label>
 							</div>
@@ -175,17 +193,11 @@ export default function MyModal(props: any) {
 							<input type='text' id='newNick' placeholder='Nickname'  className='bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none border-none' />
 							<span ref={nickNameRef} id="nickNameError" className='text-red-500'></span>
 						</label>
-
-						<label htmlFor='addFriend' className='w-full font-medium flex flex-col gap-1'>
-							<input type='text' id='addFriend' placeholder='addFriend'  className='bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none border-none' />
-							<span ref={addFriendRef} id="nickNameError" className='text-red-500'></span>
-						</label>
 						
-						
-						{/* { props.pass && <InputTemplate id='old Password' label='old Password' type='password' placeholder='Old Password'/>} */}
+						{/* { userData.password && <InputTemplate id='old Password' label='old Password' type='password' placeholder='Old Password'/>} */}
 						
 						{/* Old Password */}
-						{props.pass && <label htmlFor='old Password' className='w-full font-medium flex flex-col gap-1'>
+						{userData.password && <label htmlFor='old Password' className='w-full font-medium flex flex-col gap-1'>
 							<input type='password' id='old Password' placeholder='Old Password'  className='bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none border-none' />
 							<span ref={oldPassRef} id="oldPasswordError" className='text-red-500'></span>
 						</label>}
