@@ -109,23 +109,29 @@ export class UsersService {
 		});
 	}
 
-	async deleteOldAvatar(nickname: string) {
+	async deletePreviousImage(nickname: string, category: string) {
+		let provider: string;
 		const user = await this.prisma.user.findUnique({
 			where: {
 				nickname
 			}
 		})
-		const provider = user.profilePic.split('/')[2]
-		if (provider !== 'cdn.intra.42.fr')
+		if (category === 'avatar')
+			provider = user.profilePic.split('/')[2];
+		else
+			provider = user.coverPic;
+		console.log(provider);
+		if (provider !== 'cdn.intra.42.fr' && provider !== 'http://127.0.0.1:3000/users/uploads/default.cover.jpeg')
 		{
-			const oldAvatar = user.profilePic.split('/')[5];
-			unlinkSync(`uploads/avatar/${oldAvatar}`);
+			const oldImage = category === 'avatar' ? user.profilePic.split('/')[5] :  user.coverPic.split('/')[5] 
+			unlinkSync(`uploads/${category}/${oldImage}`);
 		}
 	}
 	// http://127.0.0.1:3000/users/avatar/aourhzal.avatar.jpeg
 
 	async serveUploads(fileTarget: string) {
 		const category = fileTarget.split('.')[1];
+		console.log(fileTarget);
 		let userFile: any = undefined;
 		const assets = await readdir(`./uploads/${category}`);
 		
@@ -143,8 +149,10 @@ export class UsersService {
 		}
 		else
 		{
-			const file = createReadStream(`./uploads/${category}/default.png`);
-			return new StreamableFile(file);
+			if (category === 'cover') {
+				const file = createReadStream(`./uploads/${category}/default.jpeg`);
+				return new StreamableFile(file);
+			}
 		}
 	}
 	

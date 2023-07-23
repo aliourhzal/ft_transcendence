@@ -23,7 +23,7 @@ export const saveAvatarStorage = {
 			callback(null, false);
 		else {
 			const usersService = new UsersService();
-			await usersService.deleteOldAvatar(req.user.nickname);
+			await usersService.deletePreviousImage(req.user.nickname, 'avatar');
 			callback(null, true);
 		}
 	},
@@ -49,7 +49,7 @@ export const saveCoverStorage = {
 			callback(null, false);
 		else {
 			const usersService = new UsersService();
-			await usersService.deleteOldAvatar(req.user.nickname);
+			await usersService.deletePreviousImage(req.user.nickname, 'cover');
 			callback(null, true);
 		}
 	},

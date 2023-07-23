@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, Post, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -6,7 +6,6 @@ import { saveAvatarStorage, saveCoverStorage } from './fileTypeValidators';
 import { Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { comparePasswd, encodePasswd } from 'src/utils/bcrypt';
-import { log } from 'console';
 
 @Controller('users')
 export class UsersController{
@@ -33,8 +32,8 @@ export class UsersController{
 
 	// this endpoint is to be called when want to change the user avatar
 	@UseGuards(AuthGuard('jwt'))
-	@Put('profile/avatar')
-	@UseInterceptors(FileInterceptor('avatar', saveCoverStorage))
+	@Put('profile/cover')
+	@UseInterceptors(FileInterceptor('cover', saveCoverStorage))
 	async putUserCover(@Req() req: any, @UploadedFile() file: Express.Multer.File) {
 		// the changeUserAvatar carry the logic of changing the avatar in the database
 		if (file)
@@ -72,13 +71,13 @@ export class UsersController{
 	{
 		const re: RegExp = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
 		if (!re.test(newPassword))
-			throw new Error("wrong password schema");
+			throw new BadRequestException('this password is weak choose another')
 		try{
 			this.usersService.setHashedPassword(req.user.sub, encodePasswd(newPassword));
 			response.end('ok');
 		}
 		catch(err)
-		{throw new Error("critical Error");}
+		{throw new Error("this error from users.controller.ts/passwordSetting()");}
 	}
 
 	@UseGuards(AuthGuard('jwt'))
