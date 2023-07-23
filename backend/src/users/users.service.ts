@@ -120,7 +120,6 @@ export class UsersService {
 			provider = user.profilePic.split('/')[2];
 		else
 			provider = user.coverPic;
-		console.log(provider);
 		if (provider !== 'cdn.intra.42.fr' && provider !== 'http://127.0.0.1:3000/users/uploads/default.cover.jpeg')
 		{
 			const oldImage = category === 'avatar' ? user.profilePic.split('/')[5] :  user.coverPic.split('/')[5] 

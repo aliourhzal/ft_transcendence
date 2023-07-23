@@ -79,11 +79,11 @@ function reducer(state, action) {
 		return state;
 }
 
-const getAccessToken = () => {
+export const getCookie = (cookieLable: string) => {
     const cookies = document.cookie.split('; ');
     for (const cookie of cookies) {
         const [label, content] = cookie.split('=');
-        if (label === 'access_token')
+        if (label === cookieLable)
             return (content);
     }
 }
@@ -99,7 +99,7 @@ export default function ProfileLayout({
 	useEffect(() => {
 		const socket = io('ws://127.0.0.1:3000',{
 			auth: {
-				token: getAccessToken(),
+				token: getCookie('access_token'),
 			},
 		});
 		fetchUserData('http://127.0.0.1:3000/users/profile')
