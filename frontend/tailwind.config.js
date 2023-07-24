@@ -7,6 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      animation: {
+        'ping-it': 'ping 0.35s',
+      },
       colors: {
         darken: 
         {
