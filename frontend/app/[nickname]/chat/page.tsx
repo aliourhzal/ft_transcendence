@@ -35,7 +35,7 @@ export default function Chat() {
         for (var i = 0; i < listOfRoomsOfUser.length; i++) {
             var temp = users
             temp.push({name:listOfRoomsOfUser[i], photo:'', last_msg:'lol', id:0})
-            setUsers(temp)
+            setUsers([...temp])
             // console.log(users)
         }
     })
