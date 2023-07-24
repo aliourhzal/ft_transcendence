@@ -130,7 +130,6 @@ export class UsersService {
 
 	async serveUploads(fileTarget: string) {
 		const category = fileTarget.split('.')[1];
-		console.log(fileTarget);
 		let userFile: any = undefined;
 		const assets = await readdir(`./uploads/${category}`);
 		
@@ -149,6 +148,11 @@ export class UsersService {
 		else
 		{
 			if (category === 'cover') {
+				const file = createReadStream(`./uploads/${category}/default.png`);
+				return new StreamableFile(file);
+			}
+			if (category === 'avatar')
+			{
 				const file = createReadStream(`./uploads/${category}/default.png`);
 				return new StreamableFile(file);
 			}
