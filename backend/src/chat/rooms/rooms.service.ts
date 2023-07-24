@@ -73,6 +73,7 @@ export class RoomsService
 
     async createRoom(roomandUsers:roomAndUsers, adminOfRoom:string)
     {
+    
 
         const room = await this.adminCreateRoom(roomandUsers.roomName,adminOfRoom);// crete room and assign to it the admin
         
@@ -115,7 +116,7 @@ export class RoomsService
     {
         let usersFounding: string[] = [];
 
-         
+          
         for (let i = 0; i < users.length; i++) 
         {
             const existingUser = await this.prisma.user.findUnique({

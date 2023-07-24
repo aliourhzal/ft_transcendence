@@ -3,6 +3,7 @@
 import { useContext, useState } from "react"
 import { Context } from '../page'
 import { userDataContext } from "../../layout"
+import axios from "axios"
 
 const RoomForm = (props:any) => {
     const {showConv, setShowConv, activeUserConv, setActiveUserConv} = useContext(Context)
@@ -52,9 +53,12 @@ const RoomForm = (props:any) => {
                 </div>
                 <button type="button" className=" w-auto text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" onClick={
                 
-                () => { 
-                    userData.chatSocket.emit("create-room",{roomName, users}) 
-                       
+                async () => {
+                    // await axios.post('ws://127.0.0.1 ', {roomName, users}, {
+					// 	withCredentials: true
+					// });
+                    userData.chatSocket.emit("create-room",{roomName, users, auth: userData.chatSocket.auth}) 
+                    
                     userData.chatSocket.on('error',(error:string) => {console.log(error)})    
                     setName('')
                     setUser('')

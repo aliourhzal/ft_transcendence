@@ -31,14 +31,16 @@ export default function Chat() {
 
 	const userData = useContext(userDataContext);
 
-    userData.chatSocket.on('list-rooms',(listOfRoomsOfUser: string[]) => {
-        for (var i = 0; i < listOfRoomsOfUser.length; i++) {
-            var temp = users
-            temp.push({name:listOfRoomsOfUser[i], photo:'', last_msg:'lol', id:0})
-            setUsers(temp)
-            // console.log(users)
-        }
-    })
+    
+    useEffect ( () => {
+        userData.chatSocket.on('list-rooms',(listOfRoomsOfUser: any) => {
+            setUsers([])
+            listOfRoomsOfUser.listOfRoomsOfUser.map( (room: any) => setUsers(old => [{name:room, photo:'', last_msg:'lol', id:listOfRoomsOfUser.indexes}, ...old]))
+        })
+        userData.chatSocket.on('rooms',(room: string) => {
+            setUsers(old => [{name:room, photo:'', last_msg:'lol', id:0}, ...old])
+        })
+    }, [userData.chatSocket, users])
 
 	const [chatBoxMessages, setChatBoxMessages] = useState<any>([
 		{user:'lmao', msg:'yo'},

@@ -43,6 +43,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             else
             { 
                 console.log("connected")
+                
+                // console.log(userInfos)
                  
                 this.user =  userInfos;
 
@@ -57,13 +59,16 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 await this.connectedUsersService.create(socket.id, idOfuser) // set evry client an (multi )socket id
 
                 let listOfRoomsOfUser:string[] = [];
+                let indexes:number[] = [];
 
+                
                 for(let i = 0; i < rooms.length; i++)
                 {
                     listOfRoomsOfUser.push(rooms[i]['room']['room_name']);
+                    indexes.push(i);
                 }
                 
-                this.server.to(socket.id).emit("list-rooms",listOfRoomsOfUser);  //  evry client will connected will display the rooms who is member into it
+                this.server.to(socket.id).emit("list-rooms",{listOfRoomsOfUser,indexes });  //  evry client will connected will display the rooms who is member into it
             }
              
         } 
@@ -77,16 +82,17 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     @SubscribeMessage('create-room')  // after entred the in infos in create room form should reload the  page => this is bug
     async onCreateRoom(@MessageBody() roomandUsers: roomAndUsers) 
     {
-        const idOfuser = await this.roomService.getUserIdByEmail(this.user.email)
-        const ifUserExist = await this.roomService.getUsersId(idOfuser,roomandUsers.users)
+        const idOfuser =   this.jwtService.verify(roomandUsers['auth']['token'],{ secret: process.env.JWT_SECRET })
+        
+        const ifUserExist = await this.roomService.getUsersId(idOfuser['sub'],roomandUsers.users)
          
         if(roomandUsers.roomName !== '' && ifUserExist) // if room name is not empty and users  exist
         {
             
-            const rtn = await this.roomService.createRoom(roomandUsers, idOfuser); // return all the room who the admin is member into it
+            const rtn = await this.roomService.createRoom(roomandUsers, idOfuser['sub']); // return all the room who the admin is member into it
            
-            // console.log(rtn)
 
+            
             if(rtn === 1)
                 this.server.to(this.socketOfcurrentUser.id).emit("error",` ${roomandUsers.roomName} room name is aleredy in use.`)
            
@@ -96,7 +102,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             if(rtn === 4)
                 this.server.to(this.socketOfcurrentUser.id).emit("error",`the user is aleredy in this room.`)
             
-            const adminRooms = await this.roomService.getRoomsForUser(idOfuser) // return all the room who the admin is member into it
+            const adminRooms = await this.roomService.getRoomsForUser(idOfuser['sub']) // return all the room who the admin is member into it
     
             
             for(const room of adminRooms)
