@@ -41,7 +41,7 @@ const ball = {
     x : canvas.width/2,
     y : canvas.height/2,
     radius : 10,//ball size
-    velocityX : 5,
+    velocityX : 5, //ball direction
     velocityY : 5,
     speed : 7,
     color : "WHITE"
@@ -104,10 +104,10 @@ function getMousePos(evt: { clientY: number; }){
 
 // when COM or USER scores, we reset the ball
 function resetBall(){
+    ball.speed = 7;
     ball.x = canvas.width/2;
     ball.y = canvas.height/2;
     ball.velocityX = -ball.velocityX;
-    ball.speed = 7;
 }
 
 // draw the net
@@ -136,21 +136,21 @@ function collision(b,p){
     b.left = b.x - b.radius;
     b.right = b.x + b.radius;
     
-    return p.left < b.right && p.top < b.bottom && p.right > b.left && p.bottom > b.top;
+    return b.right > p.left && b.top < p.bottom && b.left < p.right && b.bottom
 }
 
 // update function, the function that does all calculations
 function update(){
     
     // change the score of players, if the ball goes to the left "ball.x<0" computer win, else if "ball.x > canvas.width" the user win
-    if( ball.x - ball.radius < 0 ){
+    if( ball.x - ball.radius < -20 ){
         com.score++;
         sound_ret = comScore.play();
         if (sound_ret !== undefined) {
         sound_ret.then(() => {}).catch(error => {});
         }
         resetBall();
-    }else if( ball.x + ball.radius > canvas.width){
+    }else if( ball.x + ball.radius > canvas.width + 20){
         user.score++;
         sound_ret = userScore.play();
         if (sound_ret !== undefined) {
@@ -204,7 +204,7 @@ function update(){
         ball.velocityY = ball.speed * Math.sin(angleRad);
         
         // speed up the ball everytime a paddle hits it.
-        ball.speed += 0.3;
+        ball.speed += 0.7;
     }
 }
 
@@ -241,7 +241,7 @@ function render(){
         render();
     }
     // number of frames per second
-    let framePerSecond = 150;
+    let framePerSecond = 50;
 
     //call the game function 50 times every 1 Sec
     loop = setInterval(game,1000/framePerSecond);
