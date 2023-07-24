@@ -1,18 +1,18 @@
 import React, { useContext } from 'react'
 // import Image from 'next/image'
-import { user } from '../page'
+import { conversation } from '../page'
 // import { Avatar } from '@nextui-org/react'
 import {Avatar} from '@nextui-org/react'
 import { useRouter } from 'next/navigation'
 import { Context } from '../page'
 
-interface UserBoxProps {
-    data : user
+interface ConvBoxProps {
+    data : conversation
 }
 
-const UserBox: React.FC<UserBoxProps> = (data) => {
+const ConvBox: React.FC<ConvBoxProps> = (data) => {
 
-  const {showConv, setShowConv, activeUserConv, setActiveUserConv, rooms} = useContext(Context)
+  const {showConv, setShowConv, activeUserConv, setActiveUserConv} = useContext(Context)
 
   const handleClick = () => {
     setShowConv(true)
@@ -42,4 +42,4 @@ const UserBox: React.FC<UserBoxProps> = (data) => {
   )
 }
 
-export default UserBox
+export default ConvBox

@@ -7,40 +7,35 @@ import { Component } from 'react';
 import Conversation from './components/conversation';
 import RoomForm from './components/roomform';
 import Search from './components/search';
-import UserList from './components/UserList';
+import UserList from './components/ConvList';
 import { Socket } from "dgram";
 import { userDataContext } from "../layout";
 
-export interface user {
+export interface conversation {
 	readonly name: string,
 	readonly photo: string,
 	readonly last_msg: string, 
 	readonly id: number,
 }
 
-export interface conversation {
-    name: string
-}
-
 export const Context = createContext<any>(undefined)
 
 export default function Chat() {
-	
-    const [rooms, setRooms] = useState<string[]>([])
-    const [users, setUsers] = useState<user[]>([])
+
+    const [convs, setConvs] = useState<conversation[]>([])
 
 	const userData = useContext(userDataContext);
 
     
     useEffect ( () => {
         userData.chatSocket.on('list-rooms',(listOfRoomsOfUser: any) => {
-            setUsers([])
-            listOfRoomsOfUser.listOfRoomsOfUser.map( (room: any) => setUsers(old => [{name:room, photo:'', last_msg:'lol', id:listOfRoomsOfUser.indexes}, ...old]))
+            setConvs([])
+            listOfRoomsOfUser.listOfRoomsOfUser.map( (room: any) => setConvs(old => [{name:room, photo:'', last_msg:'welcome to group chat', id:listOfRoomsOfUser.indexes}, ...old]))
         })
         userData.chatSocket.on('rooms',(room: string) => {
-            setUsers(old => [{name:room, photo:'', last_msg:'lol', id:0}, ...old])
+            setConvs(old => [{name:room, photo:'', last_msg:'welcome to group chat', id:0}, ...old])
         })
-    }, [userData.chatSocket, users])
+    }, [userData.chatSocket, convs])
 
 	const [chatBoxMessages, setChatBoxMessages] = useState<any>([
 		{user:'lmao', msg:'yo'},
@@ -52,25 +47,19 @@ export default function Chat() {
 	
 	const [showConv, setShowConv] = useState(false)
 
-	const [activeUserConv, setActiveUserConv] = useState<user | undefined>(undefined)
+	const [activeUserConv, setActiveUserConv] = useState<conversation | undefined>(undefined)
 	return (
 		<main className='select-none h-full w-full overflow-y-auto'>
-			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, users, setUsers, chatBoxMessages, setChatBoxMessages, rooms}}>
-				<RoomForm convUsers={users} setConvUsers={setUsers} showForm={showForm} setShowForm={setShowForm}/>
+			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, convs, setConvs, chatBoxMessages, setChatBoxMessages}}>
+				<RoomForm convUsers={convs} setConvUsers={setConvs} showForm={showForm} setShowForm={setShowForm}/>
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200 ">
 			<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">
 				<div className=' flex items-center justify-center w-[100%]'>
 					<Image  alt='search' src='/images/loupe.svg' width={20} height={20}/>
-					<Search users={users} />
+					<Search users={convs} />
 				</div>
 
-				<UserList items={users} />
-				{/* {handle_convs("mustapha", "/assets/images/profile.png", "yoooo whassup nigga lmaolmfoahiehwo", 0)} */}
-				{/* <Conversation user={ users[0] } setState={setState} setShowConv={setShowConv}/> */}
-				{/* {handle_convs("ali", "/assets/images/profile.png", "yoooo whassup nigga", 1)}
-				{handle_convs("ayoub", "/assets/images/profile.png", "yoooo whassup nigga", 2)}
-				{handle_convs("taha", "/assets/images/profile.png", "yoooo whassup nigga", 3)}
-				{handle_convs("lmfao", "/assets/images/profile.png", "yoooo whassup nigga", 4)}  */}
+				<UserList items={convs} />
 
 				<div className='flex justify-between items-center w-[50%] h-[8%]'>
 					<div className='border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center'>
