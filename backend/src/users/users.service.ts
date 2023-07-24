@@ -149,7 +149,7 @@ export class UsersService {
 		else
 		{
 			if (category === 'cover') {
-				const file = createReadStream(`./uploads/${category}/default.jpeg`);
+				const file = createReadStream(`./uploads/${category}/default.png`);
 				return new StreamableFile(file);
 			}
 		}
