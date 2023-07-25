@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react"
 import { Context, conversation } from "../page"
-import UserBox from "./ConvBox"
+import ConvBox from "./ConvBox"
 // import { useContext } from "react"
 // import { Context } from "../page"
 
@@ -16,15 +16,14 @@ const ConvList: React.FC<ConvListProps> = ({items}) => {
     }
   
       useEffect( () => {
-      if (socket) {
-        socket.on('list-rooms',(listOfRoomsOfUser: any) => {
+        socket?.on('list-rooms',(listOfRoomsOfUser: any) => {
           fillUserList(listOfRoomsOfUser)
         })
-      }
-    }, [])
+        console.log('there')
+    })
     return (
       <div className='group left-[10%] flex-col bg-transparent w-full h-[80%] bg-slate-500 mt-8 overflow-hidden overflow-y-scroll'>
-          {items.map ((item:conversation) =>  (<UserBox key={item.name} data={item} />))}
+          {items.map ((item:conversation) =>  (<ConvBox key={item.name} data={item} />))}
       </div>
     )
   }

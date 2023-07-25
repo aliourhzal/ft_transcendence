@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { Context } from '../page'
 import ChatBox from './ChatBox'
 
-const Conversation = (props:any) => {
+const Conversation = () => {
 
     const [deviceType, setDeviceType] = useState('normal')
 
@@ -26,7 +26,7 @@ const Conversation = (props:any) => {
     const [msg, setMsg] = useState<string>('')
     const sendMessage = () => {
         setChatBoxMessages( (old: any) => [...old, {user:'self', msg}])
-        socket.emit('send-message', {message:msg, user:socket.auth['token']})
+        socket.emit('send-message', {message:msg, user:socket.auth['token'], roomName:activeUserConv.name, socketId:socket.id})
         setMsg('')
     }
 

@@ -8,8 +8,8 @@ import { Socket, Server } from  'socket.io';
 import { UsersService } from 'src/users/users.service';
 import { ArrayOfClinets, UserData, roomAndUsers } from 'src/utils/userData.interface';
 import { RoomsService } from '../rooms/rooms.service';
-import { ConnectedUsersService } from '../connected-users/connected-users.service';
 import { UtilsService } from 'src/utils/utils.service';
+import { MessagesService } from '../messages/messages.service';
 
 @WebSocketGateway(3004)
 export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
@@ -18,8 +18,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     constructor(private readonly jwtService:JwtService, 
         private readonly usersService:UsersService,
         private readonly roomService:RoomsService,
-        private readonly connectedUsersService:ConnectedUsersService,
-        private readonly utils:UtilsService
+        private readonly utils:UtilsService,
+        private readonly messagesService:MessagesService
         ){}
 
     @WebSocketServer()
@@ -51,19 +51,15 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 
                 console.log("connected from chat.")
                 
-                
                 this.user =  userInfos;
                 
                 this.arrayOfClinets.push({Nickname:userInfos.nickname, socketIds:socket.id})
 
-                this.socketOfcurrentUser = socket
-                 
                 const rooms = await this.utils.getRoomsForUser(userInfos.id); // all rooms who this user is member into it
 
-                 
-                await this.connectedUsersService.create(socket.id, userInfos.id) // set evry client an (multi )socket id
 
                 let listOfRoomsOfUser:string[] = [];
+
                 let indexes:number[] = [];
 
                 
@@ -88,12 +84,38 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     @SubscribeMessage('send-message') // on emit the message input get the message and the room name
     async sendMessage(@MessageBody() infos: object)
     {
-        console.log(infos)
-        // const roomId =  await this.roomService.getRoomIdByName("samara");
         
+        const idOfuser =   this.jwtService.verify(infos['user'],{ secret: process.env.JWT_SECRET });
+
+        const roomId =  await this.utils.getRoomIdByName(infos['roomName']);
+        
+        if(idOfuser &&  roomId)
+        {
+            const createdMsg = await this.messagesService.createMessages(infos['message'],idOfuser['sub'],roomId);
+            
+            await this.messagesService.linkUsersWithSocketIdAndRooms(idOfuser['sub'],infos['socketId'],roomId);
+
+            const connectedUsersInRoom = await this.messagesService.usersConnectedInRoom(roomId);
+           
+            
+            for(const user of connectedUsersInRoom) // broad cast the message for all members of the room
+            {
+                this.server.to(user.socketId).emit("add-message",createdMsg.username)// can send here the username and her msg
+            }
+        }
+        else
+        {
+            console.log("error")
+        }
+        
+
+       
+        
+
+         
         // if(roomId)
         // {
-        //     const createdMsg = await this.messagesService.createMessages(message,this.user.id,roomId,this.socketOfcurrentUser.id); 
+            // const createdMsg = await this.messagesService.createMessages(message,this.user.id,roomId,this.socketOfcurrentUser.id); 
         //     if(roomId)// if room found
         //         await this.messagesService.linkUsersWithSocketIdAndRooms(this.user.id,this.socketOfcurrentUser.id,roomId);
           

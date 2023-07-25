@@ -1,0 +1,148 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable prettier/prettier */
+import { Injectable } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
+// import { PrismaService } from 'src/prisma/prisma.service';
+
+@Injectable()
+export class MessagesService 
+{
+
+    // constructor(private prisma:PrismaService){}
+    private readonly prisma = new PrismaClient();
+
+    // async getAllMessagesofRoom(room_name : string)
+    // {
+    //     const messages = await this.prisma.room.findUnique({
+    //         where: { room_name },
+    //         include: {
+    //           messages: true,
+    //           users: true,
+    //         },
+    //     });
+    //     if(messages)
+    //     { 
+    //         for (let i = 0; i < messages.messages.length; i++) {// put them in map or array of obj and return it
+                
+    //             console.log(`${(await this.findUserById(messages.messages[i].userId)).username}: ${messages.messages[i].text}`)
+                
+    //         }
+
+
+    //         // return {username:this.findUserById(messages.users[0].userId) , message:messages.messages};
+    //     }
+    //     else
+    //     {
+    //         // room name not found
+    //     }
+    //     // return messages;
+    // }
+   
+    async linkUsersWithSocketIdAndRooms(userId:string, socketId: string, roomId: string)
+    {
+
+        const existingEntry = await this.prisma.joinedTable.findFirst({ // because when insert it with socket id 
+            where: {
+                userId,
+                roomId,
+            },
+        });
+          
+        if (existingEntry) 
+        {
+
+            await this.prisma.joinedTable.update({ // because when want to inset the userid and roomId is aleredy exist so error, should update the userId and roomId
+
+                where: {
+                    userId_roomId: {
+                        userId: existingEntry.userId,
+                        roomId: existingEntry.roomId,
+                    },
+                },
+                data: {
+                    socketId,
+                },
+            });
+        } 
+        else {
+            
+            await this.prisma.joinedTable.create({
+                data: {
+                    userId: userId,
+                    roomId: roomId,
+                    socketId: socketId,
+                },
+            });
+        }
+          
+    }
+
+    async  linkUserWithMessageAndRoom(message: string, userId: string, roomId:string) 
+    {
+         
+
+        return await this.prisma.messages.create({ //  
+            data: {
+              text: message,
+              user: { connect: { id: userId } },
+              room: { connect: { id: roomId } },
+              
+            },
+          });
+
+    }
+
+    async usersConnectedInRoom(roomId: string) 
+    {
+        const usersConnectedInRoom = await this.prisma.joinedTable.findMany({
+            where: {
+                roomId,  
+            },
+            include: {
+                user: true,
+            }
+        });
+        
+        
+        return usersConnectedInRoom;
+    }
+      
+    
+    async createMessages(message: string, userId: string, roomId: string)
+    {
+        const rtn =  await this.linkUserWithMessageAndRoom(message, userId, roomId); // link user with message and room
+        
+
+        const userAndText = {userId: rtn.id, msg: rtn.text}
+
+        const username = (await this.findUserById(userId)).nickname;
+
+        if(username)
+        {
+            return { 
+                username, 
+                msg: userAndText.msg
+            }
+        }
+        else
+        {
+            // user not found
+                // error
+        }
+    }
+                
+                
+    async findUserById(userId: string)
+    {
+
+        const username = await this.prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+        });
+        if(username)
+            return username;
+        else
+            return null;
+    }
+}
