@@ -32,7 +32,10 @@ export default function Chat() {
 		}))
 	}, [])
 
-
+	const [chatBoxMessages, setChatBoxMessages] = useState<any>([
+		{user:'lmao', msg:'yo'},
+		{user:'self', msg:'hello'}
+	])
 
 	const [showForm, setShowForm] = useState(false)
 	
@@ -42,7 +45,7 @@ export default function Chat() {
 	return (
 		<main className='select-none h-full w-full overflow-y-auto'>
 			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, convs, setConvs, socket,
-				showForm, setShowForm}}>
+				showForm, setShowForm, setChatBoxMessages, chatBoxMessages}}>
 				<RoomForm />
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200 ">
 					<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">
