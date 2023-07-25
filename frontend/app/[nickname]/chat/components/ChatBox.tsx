@@ -1,10 +1,24 @@
-import React from 'react'
-import user from '../page'
+import React, { useContext, useEffect, useState } from 'react'
+import user, { Context } from '../page'
 
 const ChatBox = (props:any) => {
+
+  const {socket} = useContext(Context)
+
+	const [chatBoxMessages, setChatBoxMessages] = useState<any>([
+		{user:'lmao', msg:'yo'},
+		{user:'self', msg:'hello'}
+	])
+
+  useEffect( () => {
+    socket.on('')
+    // setChatBoxMessages
+  })
+
   return (
     <div>
-      {props.msgs.map ((item:any) => (<div className={item.user == 'self' ? 'bg-blue-500' : 'bg-gray-500'} key={item.msg}>{item.user} : {item.msg}</div>))}
+      {chatBoxMessages.map ((chatBoxMessages) => (<div className={chatBoxMessages.user == 'self' ? 'bg-blue-500' : 'bg-gray-500'}
+      key={chatBoxMessages.msg}>{chatBoxMessages.user} : {chatBoxMessages.msg}</div>))}
     </div>
   )
 }
