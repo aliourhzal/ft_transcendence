@@ -85,6 +85,35 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         }
     }
    
+    @SubscribeMessage('send-message') // on emit the message input get the message and the room name
+    async sendMessage(@MessageBody() infos: object)
+    {
+        console.log(infos)
+        // const roomId =  await this.roomService.getRoomIdByName("samara");
+        
+        // if(roomId)
+        // {
+        //     const createdMsg = await this.messagesService.createMessages(message,this.user.id,roomId,this.socketOfcurrentUser.id); 
+        //     if(roomId)// if room found
+        //         await this.messagesService.linkUsersWithSocketIdAndRooms(this.user.id,this.socketOfcurrentUser.id,roomId);
+          
+
+        //    const connectedUsersInRoom = await this.messagesService.usersConnectedInRoom(roomId);
+           
+            
+        //     for(const user of connectedUsersInRoom) // broad cast the message for all members of the room
+        //     {
+        //         this.server.to(user.socketId).emit("add-message",createdMsg.username)// can send here the username and her msg
+        //     }
+
+        // }
+        // else
+        // {
+        //     //  room not found
+        // }
+
+
+    }
    
 
     OnWebSocektError(socket:Socket)

@@ -47,7 +47,7 @@ export class RoomController {
         if(ifUsersExist) // if room name is not empty and users  exist
         {
             // make it in creating set room status and user staus
-            const room = await this.roomService.createRoom({roomName: dto.roomName, users: dto.users}, idOfuser['sub'], "PROTECTED","123");
+            const room = await this.roomService.createRoom({roomName: dto.roomName, users: dto.users}, idOfuser['sub'],"PUBLIC");
 
             
             //  await this.utils.getRoomsForUser(idOfuser['sub']); to get user and room role

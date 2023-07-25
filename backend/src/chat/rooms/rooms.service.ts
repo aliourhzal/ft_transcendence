@@ -100,6 +100,8 @@ export class RoomsService
   
         const room = await this.adminCreateRoom(roomandUsers.roomName,adminOfRoom,roomStatus,password);// crete room and assign to it the admin
         
+        if(room === 0 )
+            return 0;
         if(room === 1)
         {
             // emit error
@@ -115,6 +117,7 @@ export class RoomsService
         if(usersIds === "you try to enter the admin")
             return 3;
 
+       
         if(await this.linkBetweenUsersAndRooms(room['id'],usersIds) === 4) // add users to the room
             return 4;
 
