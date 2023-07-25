@@ -21,15 +21,12 @@ export const Context = createContext<any>(undefined)
 
 export default function Chat() {
 
-	let socket;
     const [convs, setConvs] = useState<conversation[]>([])
-	useEffect(() => {
-		socket = io('ws://127.0.0.1:3004',{
-			auth: {
-				token: getCookie('access_token'),
-			},
-		})
-	}, [])
+    const socket = io('ws://127.0.0.1:3004',{
+						auth: {
+							token: getCookie('access_token'),
+						},
+					})
 
 	const [chatBoxMessages, setChatBoxMessages] = useState<any>([
 		{user:'lmao', msg:'yo'},
