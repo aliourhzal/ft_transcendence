@@ -17,6 +17,9 @@ module.exports = {
         whiteSmoke : "#E8EAEB",
         blueStrong : "#2978F2",
       },
+      animation: {
+        'ping-it': 'ping 0.4s linear',
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
