@@ -26,7 +26,6 @@ const Conversation = () => {
     const [msg, setMsg] = useState<string>('')
     const sendMessage = () => {
         setChatBoxMessages( (old: any) => [...old, {user:'self', msg}])
-        console.log(activeUserConv.name)
         socket.emit('send-message', {message:msg, user:socket.auth['token'], roomName:activeUserConv.name})
         setMsg('')
     }
