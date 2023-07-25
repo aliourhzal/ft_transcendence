@@ -104,10 +104,12 @@ function getMousePos(evt: { clientY: number; }){
 
 // when COM or USER scores, we reset the ball
 function resetBall(){
+    // console.log(ball.speed);
     ball.speed = 7;
     ball.x = canvas.width/2;
     ball.y = canvas.height/2;
     ball.velocityX = -ball.velocityX;
+    ball.velocityY = 5;
 }
 
 // draw the net
@@ -150,6 +152,7 @@ function update(){
         sound_ret.then(() => {}).catch(error => {});
         }
         resetBall();
+        return ;
     }else if( ball.x + ball.radius > canvas.width + 20){
         user.score++;
         sound_ret = userScore.play();
@@ -157,6 +160,7 @@ function update(){
             sound_ret.then(() => {}).catch(error => {});
         }
         resetBall();
+        return ;
     }
     
     // the ball has a velocity
