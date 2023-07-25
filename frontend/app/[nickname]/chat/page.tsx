@@ -9,6 +9,7 @@ import RoomForm from './components/roomform';
 import Search from './components/search';
 import UserList from './components/ConvList';
 import { getCookie, userDataContext } from "../layout";
+import ConvList from "./components/ConvList";
 
 export interface conversation {
 	readonly name: string,
@@ -21,14 +22,15 @@ export const Context = createContext<any>(undefined)
 
 export default function Chat() {
 
-	let socket;
+	const [socket, setSocket] = useState<Socket>();
     const [convs, setConvs] = useState<conversation[]>([])
 	useEffect(() => {
-		socket = io('ws://127.0.0.1:3004',{
+		setSocket(io('ws://127.0.0.1:3004',{
 			auth: {
 				token: getCookie('access_token'),
 			},
-		})
+		}))
+		console.log('hello');
 	}, [])
 
 	const [chatBoxMessages, setChatBoxMessages] = useState<any>([
@@ -54,7 +56,7 @@ export default function Chat() {
 							<Search users={convs} />
 						</div>
 
-						<UserList items={convs} />
+						<ConvList items={convs} />
 
 						<div className='flex justify-between items-center w-[50%] h-[8%]'>
 							<div className='border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center'>
