@@ -33,7 +33,7 @@ const Conversation = () => {
     if (showConv) {
     return (
         deviceType == 'normal' ?
-            <div className='flex flex-col h-[90vh] w-[calc(120%/2)] items-center justify-center '>
+            <div className='flex flex-col h-[90vh] w-[55%] items-center justify-center '>
 				<div className=" text-white pl-10 pb-5 pt-4 w-[100%] border-blue-gray-200 text-blue-gray-700 outline border-b outline-0 placeholder-shown:border-blue-gray-200 focus:outline-0">
 					<div className=''>{activeUserConv.name}</div>
 				</div>

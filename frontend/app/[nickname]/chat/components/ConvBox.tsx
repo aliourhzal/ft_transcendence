@@ -17,7 +17,7 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
   const handleClick = async () => {
     setShowConv(true)
     setActiveUserConv(data.data)
-    const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:activeUserConv, auth: socket.auth['token'], socket:socket.id})})
+    const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})})
     console.log(response)
   }
 

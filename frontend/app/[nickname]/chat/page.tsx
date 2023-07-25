@@ -47,8 +47,8 @@ export default function Chat() {
 			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, convs, setConvs, socket,
 				showForm, setShowForm, setChatBoxMessages, chatBoxMessages}}>
 				<RoomForm />
-				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200 ">
-					<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">
+				<div id='main' className="flex items-center flex-grow h-full overflow-y-auto bg-darken-200 ">
+					<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[45%] h-[90vh] text-center">
 						<div className=' flex items-center justify-center w-[100%]'>
 							<Image  alt='search' src='/images/loupe.svg' width={20} height={20}/>
 							<Search users={convs} />
@@ -71,7 +71,7 @@ export default function Chat() {
 								<Image className='w-auto h-auto' alt='new channel' src='/images/groupe.svg' width={25} height={25}/>
 							</div>
 						</div>
-								</div>
+					</div>
 					<Conversation />
 				</div>
 		</Context.Provider>
