@@ -53,3 +53,8 @@ export enum UserStatus {
     ADMIN = "ADMIN",
     OWNER = "OWNER"
 }
+
+export interface AllMessages {
+    user: string;
+    msg: string;
+  }

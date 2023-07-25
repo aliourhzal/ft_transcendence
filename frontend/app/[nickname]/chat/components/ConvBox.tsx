@@ -12,12 +12,17 @@ interface ConvBoxProps {
 
 const ConvBox: React.FC<ConvBoxProps> = (data) => {
 
-  const {showConv, setShowConv, activeUserConv, setActiveUserConv} = useContext(Context)
+  const {showConv, setShowConv, activeUserConv, setActiveUserConv, socket} = useContext(Context)
 
-  const handleClick = () => {
+  const handleClick = async () => {
     setShowConv(true)
     setActiveUserConv(data.data)
-  }
+    const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
+    .then((data) => {
+      // Handle the data received from the server
+      console.log(data);
+    
+  })}
 
   const activeDiv = (div:HTMLDivElement) => {
     var divs = document.getElementsByClassName('convGroup') as HTMLCollectionOf<HTMLElement>

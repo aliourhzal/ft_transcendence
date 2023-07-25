@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { AllMessages } from 'src/utils/userData.interface';
 // import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -10,33 +12,38 @@ export class MessagesService
 
     // constructor(private prisma:PrismaService){}
     private readonly prisma = new PrismaClient();
+    
+    async getAllMessagesofRoom(room_name : string)
+    {
+        const allMessages: AllMessages[] = [];
+        const messages = await this.prisma.room.findUnique({
+            where: { room_name },
+            include: {
+              messages: true,
+              users: true,
+            },
+        });
+        if(messages)
+        { 
 
-    // async getAllMessagesofRoom(room_name : string)
-    // {
-    //     const messages = await this.prisma.room.findUnique({
-    //         where: { room_name },
-    //         include: {
-    //           messages: true,
-    //           users: true,
-    //         },
-    //     });
-    //     if(messages)
-    //     { 
-    //         for (let i = 0; i < messages.messages.length; i++) {// put them in map or array of obj and return it
+            for (let i = 0; i < messages.messages.length; i++) {// put them in map or array of obj and return it
                 
-    //             console.log(`${(await this.findUserById(messages.messages[i].userId)).username}: ${messages.messages[i].text}`)
-                
-    //         }
+                const msg: AllMessages = {
+                    user: (await this.findUserById(messages.messages[i].userId)).nickname,
+                    msg: messages.messages[i].text
+                };
+                allMessages.push(msg);
+            }
+            return allMessages;
 
-
-    //         // return {username:this.findUserById(messages.users[0].userId) , message:messages.messages};
-    //     }
-    //     else
-    //     {
-    //         // room name not found
-    //     }
-    //     // return messages;
-    // }
+            // return {username:this.findUserById(messages.users[0].userId) , message:messages.messages};
+        }
+        else
+        {
+            // room name not found
+        }
+        // return messages;
+    }
    
     async linkUsersWithSocketIdAndRooms(userId:string, socketId: string, roomId: string)
     {

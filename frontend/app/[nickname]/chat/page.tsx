@@ -30,14 +30,12 @@ export default function Chat() {
 				token: getCookie('access_token'),
 			},
 		}))
-		console.log('hello');
 	}, [])
 
 	const [chatBoxMessages, setChatBoxMessages] = useState<any>([
 		{user:'lmao', msg:'yo'},
 		{user:'self', msg:'hello'}
 	])
-
 
 	const [showForm, setShowForm] = useState(false)
 	
@@ -46,8 +44,8 @@ export default function Chat() {
 	const [activeUserConv, setActiveUserConv] = useState<conversation | undefined>(undefined)
 	return (
 		<main className='select-none h-full w-full overflow-y-auto'>
-			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, convs, setConvs, chatBoxMessages, setChatBoxMessages, socket,
-				showForm, setShowForm}}>
+			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, convs, setConvs, socket,
+				showForm, setShowForm, setChatBoxMessages, chatBoxMessages}}>
 				<RoomForm />
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200 ">
 					<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">
@@ -56,7 +54,7 @@ export default function Chat() {
 							<Search users={convs} />
 						</div>
 
-						<ConvList items={convs} />
+						<ConvList />
 
 						<div className='flex justify-between items-center w-[50%] h-[8%]'>
 							<div className='border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center'>

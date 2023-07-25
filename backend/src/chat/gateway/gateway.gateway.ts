@@ -91,50 +91,24 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         
         if(idOfuser &&  roomId)
         {
+            // handle on join the room
+            
             const createdMsg = await this.messagesService.createMessages(infos['message'],idOfuser['sub'],roomId);
             
             await this.messagesService.linkUsersWithSocketIdAndRooms(idOfuser['sub'],infos['socketId'],roomId);
 
             const connectedUsersInRoom = await this.messagesService.usersConnectedInRoom(roomId);
-           
+            
             
             for(const user of connectedUsersInRoom) // broad cast the message for all members of the room
             {
-                this.server.to(user.socketId).emit("add-message",createdMsg.username)// can send here the username and her msg
+                this.server.to(user.socketId).emit("add-message",{user: createdMsg.username, message: createdMsg.msg})// can send here the username and her msg
             }
         }
         else
         {
-            console.log("error")
+            console.log("room not found")
         }
-        
-
-       
-        
-
-         
-        // if(roomId)
-        // {
-            // const createdMsg = await this.messagesService.createMessages(message,this.user.id,roomId,this.socketOfcurrentUser.id); 
-        //     if(roomId)// if room found
-        //         await this.messagesService.linkUsersWithSocketIdAndRooms(this.user.id,this.socketOfcurrentUser.id,roomId);
-          
-
-        //    const connectedUsersInRoom = await this.messagesService.usersConnectedInRoom(roomId);
-           
-            
-        //     for(const user of connectedUsersInRoom) // broad cast the message for all members of the room
-        //     {
-        //         this.server.to(user.socketId).emit("add-message",createdMsg.username)// can send here the username and her msg
-        //     }
-
-        // }
-        // else
-        // {
-        //     //  room not found
-        // }
-
-
     }
    
 

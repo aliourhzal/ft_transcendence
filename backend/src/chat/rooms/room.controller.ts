@@ -10,6 +10,8 @@ import { WebSocketServer } from '@nestjs/websockets';
 
 import { Server, Socket } from  'socket.io';
 import { UtilsService } from 'src/utils/utils.service';
+import { JoinRoomDto } from 'src/dto/join-room.dto';
+import { MessagesService } from '../messages/messages.service';
 
 
    
@@ -23,10 +25,10 @@ export class RoomController {
  
 	
     constructor(private readonly jwtService:JwtService, 
-        private readonly usersService:UsersService,
         private readonly roomService:RoomsService,
-        private readonly connectedUsersService:ConnectedUsersService,
-        private readonly utils:UtilsService) {}
+        private readonly utils:UtilsService,
+        private readonly messagesService:MessagesService
+        ) {}
 
     @Post()
     async createRoom(@Body() dto:CreateUserDto, @Res() res:any)
@@ -58,7 +60,30 @@ export class RoomController {
         }
         return res.send("ok")
     }
-    
+   
+    @Post('/join-room') 
+    async onJoinedRoom(@Body() dto:any, @Res() res:any)
+    {
+          
+        // // check the user
+        const idOfuser =   this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET });
+        const roomId = await this.utils.getRoomIdByName(dto.roomName);
+
+      
+        if(idOfuser && roomId)
+        {
+            const messageAndUserName = await this.messagesService.getAllMessagesofRoom(dto.roomName); // should return messages and username who send message
+             
+            await this.messagesService.linkUsersWithSocketIdAndRooms(idOfuser['sub'],dto.socketId,roomId); // link user with socket id and room
+            
+            return res.status(200).send({ message: messageAndUserName });
+        }
+        else
+        {
+            // errr
+        }
+     }
+
     async setUsersRoles()
     {
         // this.roomService.setUsersRoles(room, "PROTECTED", {asalek:"ADMIN",tnamir: "ADMIN"})
