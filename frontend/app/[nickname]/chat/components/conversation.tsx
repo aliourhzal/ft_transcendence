@@ -9,7 +9,7 @@ const Conversation = (props:any) => {
 
     const [deviceType, setDeviceType] = useState('normal')
 
-    const {showConv, setShowConv, activeUserConv, setActiveUserConv, chatBoxMessages, setChatBoxMessages, rooms} = useContext(Context)
+    const {showConv, setShowConv, activeUserConv, setActiveUserConv, chatBoxMessages, setChatBoxMessages, rooms, socket} = useContext(Context)
 
     useEffect( () => {
       typeof window != 'undefined' ? (window.innerWidth <= 768 ? setDeviceType('small') : setDeviceType('normal')) : setDeviceType('normal')
@@ -25,11 +25,10 @@ const Conversation = (props:any) => {
         if (e.key === 'Enter')
             sendMessage()
     }
-    const [msg, setMsg] = useState<string>()
+    const [msg, setMsg] = useState<string>('')
     const sendMessage = () => {
-        var temp = chatBoxMessages
-        temp.push({user:'self', msg})
-        setChatBoxMessages(temp)
+        setChatBoxMessages( (old: any) => [...old, {user:'self', msg}])
+        socket.emit('send-message', {message:msg, })
         setMsg('')
     }
 

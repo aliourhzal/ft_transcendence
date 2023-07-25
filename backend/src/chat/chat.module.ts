@@ -5,10 +5,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from 'src/users/users.module';
 import { RoomsService } from './rooms/rooms.service';
 import { ConnectedUsersService } from './connected-users/connected-users.service';
+import { RoomController } from './rooms/room.controller';
+import { UtilsService } from 'src/utils/utils.service';
 
 @Module({
     imports: [JwtModule,UsersModule],
-    providers: [GatewayGateway,RoomsService,ConnectedUsersService],
+    providers: [GatewayGateway,RoomsService,ConnectedUsersService,UtilsService],
+    controllers: [RoomController]
 
 })
 export class ChatModule {}

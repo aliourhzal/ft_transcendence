@@ -2,18 +2,22 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, RoomStatus } from '@prisma/client';
 import { AuthService } from 'src/auth/auth.service';
-import { roomAndUsers } from 'src/utils/userData.interface';
+import { encodePasswd } from 'src/utils/bcrypt';
+import { roomAndUsers, roomShape } from 'src/utils/userData.interface';
+import { UtilsService } from 'src/utils/utils.service';
 
 @Injectable()
 export class RoomsService 
 {
     private readonly prisma = new PrismaClient();
 
-    constructor(){}
+    constructor(private readonly utils:UtilsService){}
 
     
+    
+    // ----------------------------------------------Create Room---------------------------------------------- //
 
     async linkBetweenUsersAndRooms(roomId: string, usersIds:string[])  
     {
@@ -48,19 +52,39 @@ export class RoomsService
         return 1;
     }
 
-    async adminCreateRoom(room_name: string, adminOfRoom:string)
+    async adminCreateRoom(room_name: string, adminOfRoom:string, roomStatus: RoomStatus , password?: string)  
     {
+        const existingRoom = await this.utils.getRoomIdByName(room_name)
         
-        const existingRoom = await this.getRoomIdByName(room_name)
-       
         if(!existingRoom)
         {   
-            const room = await this.prisma.room.create({data: {room_name}}) // create the room
+            if(roomStatus === "PROTECTED")
+            {
+                if(!password)
+                {
+                    console.log("should set password for this protected room");
+                    return 0;
+                }
+
+               const room = await this.prisma.room.create({data: {room_name , roomStauts : roomStatus , password: encodePasswd(password)}});
+
+                await this.prisma.joinedTable.create({ // set admin for the room
+                    data: {
+                      userId : adminOfRoom,
+                      roomId: room.id,
+                      userStatus: "ADMIN"
+                    },
+                });
+
+                return room;
+            }
+            const room = await this.prisma.room.create({data: {room_name , roomStauts : roomStatus  }}) // create the room
              
             await this.prisma.joinedTable.create({ // set admin for the room
                 data: {
                   userId : adminOfRoom,
                   roomId: room.id,
+                  userStatus: "ADMIN"
                 },
             });
 
@@ -71,16 +95,18 @@ export class RoomsService
             return 1;
     }
 
-    async createRoom(roomandUsers:roomAndUsers, adminOfRoom:string)
+    async createRoom(roomandUsers:roomAndUsers, adminOfRoom:string, roomStatus:RoomStatus, password? : string) 
     {
-    
-
-        const room = await this.adminCreateRoom(roomandUsers.roomName,adminOfRoom);// crete room and assign to it the admin
+  
+        const room = await this.adminCreateRoom(roomandUsers.roomName,adminOfRoom,roomStatus,password);// crete room and assign to it the admin
         
         if(room === 1)
+        {
+            // emit error
             return 1;
+        }
 
-        const usersIds = await this.getUsersId(adminOfRoom,roomandUsers.users);
+        const usersIds = await this.utils.getUsersId(adminOfRoom,roomandUsers.users);
     
          
         if(usersIds === null) // can be emit the error message here, pass the server obj to this function for use it for make it real time
@@ -91,115 +117,21 @@ export class RoomsService
 
         if(await this.linkBetweenUsersAndRooms(room['id'],usersIds) === 4) // add users to the room
             return 4;
+
         return room;
     }
 
 
-    // utils function
+    // ---------------------------------------------------------Set Roles Of Rooms ---------------------------------------------- //
 
-    async   getUserIdByEmail(email: string)
+
+    async setUsersRoles(room:roomShape | number, roomStatus:string, usersStatus:object)
     {
-        const user = await this.prisma.user.findFirst({
-          where: {
-            email,
-          },
-          select: {
-            id: true,
-          },
-        });
-      
-        return user.id || null;
-    }
-   
-
-    async getUsersId(adminId: string, users: string[])
-    {
-        let usersFounding: string[] = [];
-
-          
-        for (let i = 0; i < users.length; i++) 
-        {
-            const existingUser = await this.prisma.user.findUnique({
-                where: {
-                    nickname : users[i],
-                },
-            });
-            
-            if(existingUser)
-            {
-               
-                if(existingUser.id === adminId)
-                {
-                    return "you try to enter the admin"
-                    // emit message to frontend you try to insert the admin
-                }
-                else
-                { 
-                    // here check if enter the user multi time
-                    
-                    // const unique = this.checkIfArrayIsUnique(usersFounding);
-                    // if(!unique)
-                        usersFounding.push(existingUser.id);
-                    // else
-                    //     console.log(unique)
-                }
-            }   
-            else
-            {
-                return null;
-            } 
-             
-        }
-        return usersFounding; // return users id
-    }
-
-    async getRoomIdByName (room_name: string) {
-        const room = await this.prisma.room.findUnique({
-          where: { room_name },
-        });
-      
-        if (room) {
-          return room.id;
-        } else {
-          // Handle case when room is not found
-          return null;
-        }
-      };
-
-    async getRoomsForUser(userId: string)
-    {
-        return await this.prisma.joinedTable.findMany({
-            where: {
-                userId,
-            },
-            include: {
-                room:true,
-            },
-        }); 
-    }
-
-    async  getUsersInRooms(roomId: string) 
-    {
-        let usersInRooms;
         
-        const rooms = await this.prisma.joinedTable.findMany({
-            where: {
-                roomId,
-              },
-              include: {
-                user: true,
-              },
-        });
-        
-        for (const room of rooms) {
-            usersInRooms = await this.prisma.room.findUnique({
-            where: { id: roomId },
-            include: {
-              users: true,
-            },
-          });
-      
-        }
-        return usersInRooms.users;
+
+
     }
+                                                                                                                                        
+
+    
 }

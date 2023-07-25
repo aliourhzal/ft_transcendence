@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-interface */
 /* eslint-disable prettier/prettier */
 
 // the type of the user data provided by the 42 oauth
@@ -20,4 +21,35 @@ export interface roomAndUsers {
 
     roomName: string;
     users : string[];
+}
+
+
+
+export interface ArrayOfClinets{
+    
+    Nickname:string;
+    socketIds : string;
+}
+
+
+export interface roomShape{
+
+    id: string;
+    room_name: string;
+    password: string;
+    roomStauts: string;
+
+}
+
+
+export enum RoomStatus {
+    PUBLIC = "PUBLIC",
+    PROTECTED = "PROTECTED",
+    PRIVATE = "PRIVATE"
+}
+
+export enum UserStatus {
+    USER = 'USER',
+    ADMIN = "ADMIN",
+    OWNER = "OWNER"
 }

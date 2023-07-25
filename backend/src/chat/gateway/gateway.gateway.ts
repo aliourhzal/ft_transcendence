@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prefer-const */
 /* eslint-disable prettier/prettier */
 import { UnauthorizedException } from '@nestjs/common';
@@ -5,18 +6,20 @@ import { JwtService } from '@nestjs/jwt';
 import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket, Server } from  'socket.io';
 import { UsersService } from 'src/users/users.service';
-import { UserData, roomAndUsers } from 'src/utils/userData.interface';
+import { ArrayOfClinets, UserData, roomAndUsers } from 'src/utils/userData.interface';
 import { RoomsService } from '../rooms/rooms.service';
 import { ConnectedUsersService } from '../connected-users/connected-users.service';
+import { UtilsService } from 'src/utils/utils.service';
 
-@WebSocketGateway()
+@WebSocketGateway(3004)
 export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 {
     
     constructor(private readonly jwtService:JwtService, 
         private readonly usersService:UsersService,
         private readonly roomService:RoomsService,
-        private readonly connectedUsersService:ConnectedUsersService
+        private readonly connectedUsersService:ConnectedUsersService,
+        private readonly utils:UtilsService
         ){}
 
     @WebSocketServer()
@@ -24,39 +27,41 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     
     user : UserData;
     
-    socketOfcurrentUser:Socket
-    
+    socketOfcurrentUser:Socket;
+
+    arrayOfClinets :ArrayOfClinets[] = [];
+
+
     async handleConnection(socket: Socket) 
     {
         try 
         {
             // connect to socket with jwt
             const decodeJWt =   this.jwtService.verify(socket.handshake.auth['token'],{ secret: process.env.JWT_SECRET })
-    
             // verify the user
             const userInfos = await this.usersService.findOneByNickname(decodeJWt['nickname']);
-    
+            
             if(!userInfos)
             {
+                 
                 this.OnWebSocektError(socket);
             }
             else
             { 
-                console.log("connected")
                 
-                // console.log(userInfos)
-                 
+                console.log("connected from chat.")
+                
+                
                 this.user =  userInfos;
+                
+                this.arrayOfClinets.push({Nickname:userInfos.nickname, socketIds:socket.id})
 
                 this.socketOfcurrentUser = socket
-
-                const idOfuser = await this.roomService.getUserIdByEmail(this.user.email);
+                 
+                const rooms = await this.utils.getRoomsForUser(userInfos.id); // all rooms who this user is member into it
 
                  
-                const rooms = await this.roomService.getRoomsForUser(idOfuser); // all rooms who this user is member into it
-
-                 
-                await this.connectedUsersService.create(socket.id, idOfuser) // set evry client an (multi )socket id
+                await this.connectedUsersService.create(socket.id, userInfos.id) // set evry client an (multi )socket id
 
                 let listOfRoomsOfUser:string[] = [];
                 let indexes:number[] = [];
@@ -69,6 +74,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 }
                 
                 this.server.to(socket.id).emit("list-rooms",{listOfRoomsOfUser,indexes });  //  evry client will connected will display the rooms who is member into it
+            
             }
              
         } 
@@ -79,67 +85,23 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         }
     }
    
-    @SubscribeMessage('create-room')  // after entred the in infos in create room form should reload the  page => this is bug
-    async onCreateRoom(@MessageBody() roomandUsers: roomAndUsers) 
-    {
-        const idOfuser =   this.jwtService.verify(roomandUsers['auth']['token'],{ secret: process.env.JWT_SECRET })
-        
-        const ifUserExist = await this.roomService.getUsersId(idOfuser['sub'],roomandUsers.users)
-         
-        if(roomandUsers.roomName !== '' && ifUserExist) // if room name is not empty and users  exist
-        {
-            
-            const rtn = await this.roomService.createRoom(roomandUsers, idOfuser['sub']); // return all the room who the admin is member into it
-           
-
-            
-            if(rtn === 1)
-                this.server.to(this.socketOfcurrentUser.id).emit("error",` ${roomandUsers.roomName} room name is aleredy in use.`)
-           
-            if(rtn === 3)
-                this.server.to(this.socketOfcurrentUser.id).emit("error",`you try to enter the admin`)
-        
-            if(rtn === 4)
-                this.server.to(this.socketOfcurrentUser.id).emit("error",`the user is aleredy in this room.`)
-            
-            const adminRooms = await this.roomService.getRoomsForUser(idOfuser['sub']) // return all the room who the admin is member into it
-    
-            
-            for(const room of adminRooms)
-            {
-                const usersInRooms = await this.roomService.getUsersInRooms(room.roomId) // return all users in evry room
-
-                for(const usersInRoom of usersInRooms) // send to evry user the rooms who is member into it
-                {
-                    const sockerIds = await this.connectedUsersService.getSocketIdsByUserId(usersInRoom['userId']);
-                    
-                    for(const socketId of sockerIds)
-                    {
-                        this.server.to(socketId['socketId']).emit("rooms",room.room.room_name);
-                    }
-                }
-            }
-
-        }
-
-
-        
-    }
-
-    
+   
 
     OnWebSocektError(socket:Socket)
     { 
         
-        console.log("disconnected")
+       
         socket.emit("error", new UnauthorizedException());
         socket.disconnect();
     }
 
 
     async handleDisconnect(socket: Socket) {
-        console.log("disconnected");
-        await this.connectedUsersService.deleteSocketId(socket.id);
+        
+        console.log("disconnected from chat");
+        
+        this.arrayOfClinets = []; // clear socket ids 
+
         this.OnWebSocektError(socket);
     }
 

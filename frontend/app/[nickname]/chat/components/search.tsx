@@ -1,5 +1,5 @@
 import React from 'react'
-import { user } from '../page'
+import { conversation } from '../page'
 import { useState } from 'react'
 import Image from 'next/image'
 import { Avatar } from '@nextui-org/react'
@@ -13,7 +13,7 @@ const Search = (props:any) => {
         setShow(true)
         const keyword = e.target.value;
         if (keyword !== '') {
-            const results = props.users.filter((user:user) => (user.name.startsWith(keyword)))
+            const results = props.users.filter((user:conversation) => (user.name.startsWith(keyword)))
             setFoundUsers(results);
         } else { if (e.target.value != '' ) setFoundUsers(props.users); else {setFoundUsers([]); setShow(false)}
         }
@@ -31,7 +31,7 @@ const Search = (props:any) => {
             { show ?
                 <div className='bg-transparent absolute w-[70%] z-10 mx-[15%] border-white h-70 overflow-scroll '>
                     {foundUsers && foundUsers.length > 0 ? (
-                        foundUsers.map((user:user) => (
+                        foundUsers.map((user:conversation) => (
                             <div className='flex justify-start h-14 bg-white text-black border-4 border-gray-800' key={user.id}>
                                 <Avatar zoomed text={user.name} bordered color={"gradient"} className='my-2 mx-5 w-auto h-auto' src={user.photo} alt={user.name} />
                                 <span className='my-4' >{user.name}</span>

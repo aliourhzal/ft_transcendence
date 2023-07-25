@@ -1,5 +1,5 @@
 "use client";
-import { io } from "socket.io-client";
+import { Socket,io } from "socket.io-client";
 
 import Image from 'next/image'
 import { useEffect, useState, createContext, useContext } from 'react';
@@ -8,8 +8,7 @@ import Conversation from './components/conversation';
 import RoomForm from './components/roomform';
 import Search from './components/search';
 import UserList from './components/ConvList';
-import { Socket } from "dgram";
-import { userDataContext } from "../layout";
+import { getCookie, userDataContext } from "../layout";
 
 export interface conversation {
 	readonly name: string,
@@ -24,18 +23,20 @@ export default function Chat() {
 
     const [convs, setConvs] = useState<conversation[]>([])
 
-	const userData = useContext(userDataContext);
+    const socket = io('ws://127.0.0.1:3004',{
+						auth: {
+							token: getCookie('access_token'),
+						},
+					})
 
-    
-    useEffect ( () => {
-        userData.chatSocket.on('list-rooms',(listOfRoomsOfUser: any) => {
-            setConvs([])
-            listOfRoomsOfUser.listOfRoomsOfUser.map( (room: any) => setConvs(old => [{name:room, photo:'', last_msg:'welcome to group chat', id:listOfRoomsOfUser.indexes}, ...old]))
-        })
-        userData.chatSocket.on('rooms',(room: string) => {
-            setConvs(old => [{name:room, photo:'', last_msg:'welcome to group chat', id:0}, ...old])
-        })
-    }, [userData.chatSocket, convs])
+    useEffect( () => {
+		if (socket) {
+			socket.on('list-rooms',(listOfRoomsOfUser: any) => {
+				setConvs([])
+				listOfRoomsOfUser.listOfRoomsOfUser.map( (room: any) => setConvs(old => [{name:room, photo:'', last_msg:'welcome to group chat', id:listOfRoomsOfUser.indexes}, ...old]))
+			})
+		}
+	}, [])
 
 	const [chatBoxMessages, setChatBoxMessages] = useState<any>([
 		{user:'lmao', msg:'yo'},
@@ -50,7 +51,7 @@ export default function Chat() {
 	const [activeUserConv, setActiveUserConv] = useState<conversation | undefined>(undefined)
 	return (
 		<main className='select-none h-full w-full overflow-y-auto'>
-			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, convs, setConvs, chatBoxMessages, setChatBoxMessages,
+			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, convs, setConvs, chatBoxMessages, setChatBoxMessages, socket,
 				showForm, setShowForm}}>
 				<RoomForm />
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200 ">

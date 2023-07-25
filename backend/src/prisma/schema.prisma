@@ -25,6 +25,8 @@ model User {
 	userFriends                 User[]              @relation("friends")
     friendOfUser                User[]              @relation("friends")
 
+ 
+	messages                    Messages[]
     rooms                   JoinedTable[]
     connectedUsers          ConnectedUsers[]
 	matches			Match[]
@@ -35,7 +37,10 @@ model Room{
     id              String      @id @default(uuid())
     room_name       String      @unique    
     password        String?
-    
+
+	roomStauts    RoomStatus     	@default(PUBLIC)
+
+	messages                    Messages[]
 
     users                       JoinedTable[]
 }
@@ -51,10 +56,24 @@ model ConnectedUsers {
 }
 
 
+model Messages {
+
+    id                  Int     @default(autoincrement()) @id
+    text                String
+
+    user                User	 @relation(fields: [userId], references: [id])
+    userId              String  
+    
+    room                Room @relation(fields: [roomId], references: [id])
+    roomId              String  
+
+}
+
 model JoinedTable{  
 
     user                User       @relation(fields: [userId], references: [id])
     userId              String  
+	userStatus    UserStatus     	@default(USER)
 
     room                Room        @relation(fields: [roomId], references: [id]) // not compile in the query
     roomId              String 
@@ -76,3 +95,14 @@ model FriendRequest {
 	
 }
 
+enum RoomStatus {
+    PUBLIC 
+    PROTECTED 
+    PRIVATE 
+}
+
+enum UserStatus {
+    USER
+    ADMIN
+    OWNER
+}
