@@ -21,7 +21,7 @@ const ConvList: React.FC<ConvListProps> = ({items}) => {
           fillUserList(listOfRoomsOfUser)
         })
       }
-    }, [convs])
+    }, [])
     return (
       <div className='group left-[10%] flex-col bg-transparent w-full h-[80%] bg-slate-500 mt-8 overflow-hidden overflow-y-scroll'>
           {items.map ((item:conversation) =>  (<UserBox key={item.name} data={item} />))}

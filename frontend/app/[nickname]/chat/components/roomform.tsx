@@ -1,5 +1,3 @@
-"use client"
-
 import { useContext, useEffect, useState } from "react"
 import { Context } from '../page'
 import axios from "axios"
