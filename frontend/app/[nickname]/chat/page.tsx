@@ -22,21 +22,11 @@ export const Context = createContext<any>(undefined)
 export default function Chat() {
 
     const [convs, setConvs] = useState<conversation[]>([])
-
     const socket = io('ws://127.0.0.1:3004',{
 						auth: {
 							token: getCookie('access_token'),
 						},
 					})
-
-    useEffect( () => {
-		if (socket) {
-			socket.on('list-rooms',(listOfRoomsOfUser: any) => {
-				setConvs([])
-				listOfRoomsOfUser.listOfRoomsOfUser.map( (room: any) => setConvs(old => [{name:room, photo:'', last_msg:'welcome to group chat', id:listOfRoomsOfUser.indexes}, ...old]))
-			})
-		}
-	}, [])
 
 	const [chatBoxMessages, setChatBoxMessages] = useState<any>([
 		{user:'lmao', msg:'yo'},
