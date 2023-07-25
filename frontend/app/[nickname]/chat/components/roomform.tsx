@@ -35,7 +35,7 @@ const RoomForm = () => {
     }
     return (
         showForm &&
-            <div className="absolute z-10 flex justify-center flex-row flex-nowrap min-w-[80vw] w-[calc(100vw-150px)]">
+            <div className="bg-transparent absolute z-10 flex justify-center flex-row flex-nowrap min-w-[80vw] w-[calc(100vw-150px)]">
                 <div className={Anim ? Anim+' flex flex-col items-center justify-center w-[50vw] lg:w-[30vw] h-[100vh]'
                     : ''+' flex flex-col items-center justify-center w-[50vw] lg:w-[30vw] h-[100vh]'}>
                     <div className="mb-20 w-[60vw] lg:w-[40vw] border-4 rounded-lg px-10 pb-12 border-white" onBlur={ () => {console.log("lmao")}}>
