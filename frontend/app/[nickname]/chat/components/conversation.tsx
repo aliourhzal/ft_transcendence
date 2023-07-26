@@ -32,13 +32,13 @@ const Conversation = () => {
     if (showConv) {
     return (
         deviceType == 'normal' ?
-            <div className='flex flex-col h-[90vh] w-[calc(120%/2)] items-center justify-center '>
+            <div className='flex flex-grow-[1] flex-col h-[90vh] w-[calc(120%/2)] items-center justify-center '>
 				<div className=" text-white pl-10 pb-5 pt-4 w-[100%] border-blue-gray-200 text-blue-gray-700 outline border-b outline-0 placeholder-shown:border-blue-gray-200 focus:outline-0">
 					<div className=''>{activeUserConv.name}</div>
 				</div>
 
-                <div className='flex-col w-full h-[80%] mt-8 overflow-hidden overflow-y-scroll'>
-                    <ChatBox msgs={chatBoxMessages}/>
+                <div id='chatbox' className='flex flex-col w-full mt-8 overflow-y-scroll basis-[80%]'>
+                    <ChatBox/>
                     {/* <Image className=' object-contain' alt='bg' src='/assets/images/conv_bg.gif' width={500} height={500}/> */}
                 </div>
 
@@ -62,7 +62,7 @@ const Conversation = () => {
                 </div>
 
                 <div className='my-[3%] w-[100%] h-[80vh] border-white border-4 bg-gray-900'>
-                    <ChatBox msgs={chatBoxMessages}/>
+                    <ChatBox/>
                 {/* <Image className=' object-contain' alt='bg' src='/assets/images/conv_bg.gif' width={500} height={500}/> */}
                 </div>
 

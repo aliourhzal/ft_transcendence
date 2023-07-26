@@ -1,24 +1,35 @@
 import React, { useContext, useEffect, useState } from 'react'
 import user, { Context, gimmeRandom } from '../page'
 import { Socket } from 'socket.io-client'
+import SelfChatBox from './selfChatBox'
+import OthersChatBox from './othersChatBox'
 
-const ChatBox = (props:any) => {
-
+const ChatBox = () => {
+  
   const {socket, chatBoxMessages, setChatBoxMessages, userData} = useContext(Context)
+  
 
   useEffect( () => {
-		socket.on('add-message', msg => {
+		  socket.on('add-message', msg => {
 		  setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.message}] )
 		  console.log(msg)
 		})
-	  }, [socket])
-
+	  }, [setChatBoxMessages])
+  
+    let temp = document.getElementById('chatbox')
+    useEffect ( () => {
+      if (temp)
+        temp.scrollTop = temp.scrollHeight
+    }, [temp, chatBoxMessages])
+  
   return (
     <div>
-      {chatBoxMessages.map ((chatBoxMessage) => (<div className={""+chatBoxMessage.user == userData.nickname ? 'bg-blue-500' : 'bg-gray-500'}
-      key={gimmeRandom()}>{chatBoxMessage.user} : {chatBoxMessage.msg}</div>))}
+      {chatBoxMessages.map ((BoxMessage) => 
+        (BoxMessage.user == userData.nickname ? <SelfChatBox msg={BoxMessage.message} user={BoxMessage.user}/>
+          : <OthersChatBox msg={BoxMessage.msg} user={BoxMessage.user}/>))}
     </div>
   )
 }
+
 
 export default ChatBox

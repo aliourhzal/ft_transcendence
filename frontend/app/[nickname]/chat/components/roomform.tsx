@@ -12,8 +12,10 @@ const RoomForm = () => {
     const [roomName, setName] = useState('')
     const [users, setUsers] = useState<string[]>([])
     const [user, setUser] = useState('')
-
+    const [pass, setPass] = useState('')
+    const [isPrivate, setPrivate] = useState(false)
     const [Anim, setAnim] = useState('')
+    const [roomType, setRoomType] = useState('public')
 
     const hideForm = () => {
         const timeOUUUT = setTimeout(() => {
@@ -22,13 +24,19 @@ const RoomForm = () => {
             clearTimeout(timeOUUUT)
             var temp = document.getElementById('main')
             temp ? temp.style.filter = 'blur(0)' : ''
-            setName(''); setUser(''); setUsers([])
+            setName(''); setUser(''); setUsers([]); setPass('')
         }, 300)
         setAnim('animate-ping-it')
     }
 
     const confirmForm = async () => {
-        const response = await fetch('http://127.0.0.1:3000/rooms', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:roomName, users:users, auth: socket.auth['token']})})
+        if (!isPrivate)
+            if (pass != '')
+                setRoomType('protected')
+        else
+            setRoomType('private')
+
+        const response = await fetch('http://127.0.0.1:3000/rooms', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:roomName, users:users, auth: socket.auth['token'], type:{roomType}})})
         if (response.ok)
             hideForm()
         else console.log("wrong stuff")
@@ -38,7 +46,7 @@ const RoomForm = () => {
             <div className="bg-transparent absolute z-10 flex justify-center flex-row flex-nowrap min-w-[80vw] w-[calc(100vw-150px)]">
                 <div className={Anim ? Anim+' flex flex-col items-center justify-center w-[50vw] lg:w-[30vw] h-[100vh]'
                     : ''+' flex flex-col items-center justify-center w-[50vw] lg:w-[30vw] h-[100vh]'}>
-                    <div className="mb-20 w-[60vw] lg:w-[40vw] border-4 rounded-lg px-10 pb-12 border-white" onBlur={ () => {console.log("lmao")}}>
+                    <div className="mb-20 w-[60vw] lg:w-[40vw] border-4 rounded-lg px-10 pb-12 border-white" onBlur={ () => {console.log("BLUR FOORM DONT FORGET, mustapha mat7iydch had text khlih")}}>
                         <button type="button" className="ml-[100%] bg-white rounded-s-sm p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 w-10 h-10" onClick={ hideForm }>x
                         </button>
                         <div className='text-center text-3xl mb-2 drop-shadow-[0px_0px_5px_rgba(255,255,255,1)]'><h1>Create Chatroom</h1></div>
@@ -66,10 +74,20 @@ const RoomForm = () => {
                                 }
                                 }>Add user</button>
                             </div>
+
                             <AddedUsersForm users={users}/>
+
+                            <div className="text-gray-200 my-5">
+                                <input id="checkbox" name="checkbox" type="checkbox" onChange={ () =>  setPrivate(old => !old) }/>
+                                <label htmlFor="checkbox" className="mx-3">private</label>
+                            </div>
+
                             <div className="flex relative z-0 w-full mb-6 group">
-                            <input type="password" name="password" id="password" className="text-gray-300 block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-                            <label htmlFor="password" className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Password (optional)</label>
+                                <input value={pass} type="password" name="password" id="password" className="text-gray-300 block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required
+                                onChange={
+                                    (e) => setPass(e.target.value)
+                                }/>
+                                <label htmlFor="password" className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Password (optional)</label>
                             </div>
                             <form onSubmit={confirmForm}>
                                 <button type="submit" className="w-auto text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" >Submit</button>
