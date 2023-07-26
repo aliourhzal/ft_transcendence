@@ -20,10 +20,18 @@ export interface conversation {
 
 export const Context = createContext<any>(undefined)
 
+export const gimmeRandom = () => {
+	const date = new Date();
+	return Math.random()
+};
+
 export default function Chat() {
 
+	const userData = useContext(userDataContext);
+
 	const [socket, setSocket] = useState<Socket>();
-    const [convs, setConvs] = useState<conversation[]>([])
+    
+	const [convs, setConvs] = useState<conversation[]>([])
 	useEffect(() => {
 		setSocket(io('ws://127.0.0.1:3004',{
 			auth: {
@@ -32,10 +40,7 @@ export default function Chat() {
 		}))
 	}, [])
 
-	const [chatBoxMessages, setChatBoxMessages] = useState<any>([
-		{user:'lmao', msg:'yo'},
-		{user:'self', msg:'hello'}
-	])
+	const [chatBoxMessages, setChatBoxMessages] = useState<any>([])
 
 	const [showForm, setShowForm] = useState(false)
 	
@@ -45,7 +50,7 @@ export default function Chat() {
 	return (
 		<main className='select-none h-full w-full overflow-y-auto'>
 			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, convs, setConvs, socket,
-				showForm, setShowForm, setChatBoxMessages, chatBoxMessages}}>
+				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData}}>
 				<RoomForm />
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200 ">
 					<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">

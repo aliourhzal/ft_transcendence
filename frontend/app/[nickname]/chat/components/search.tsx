@@ -1,5 +1,5 @@
 import React from 'react'
-import { conversation } from '../page'
+import { conversation, gimmeRandom } from '../page'
 import { useState } from 'react'
 import Image from 'next/image'
 import { Avatar } from '@nextui-org/react'
@@ -32,7 +32,7 @@ const Search = (props:any) => {
                 <div className='bg-transparent absolute w-[70%] z-10 mx-[15%] border-white h-70 overflow-scroll '>
                     {foundUsers && foundUsers.length > 0 ? (
                         foundUsers.map((user:conversation) => (
-                            <div className='flex justify-start h-14 bg-white text-black border-4 border-gray-800' key={user.id}>
+                            <div className='flex justify-start h-14 bg-white text-black border-4 border-gray-800' key={gimmeRandom()}>
                                 <Avatar zoomed text={user.name} bordered color={"gradient"} className='my-2 mx-5 w-auto h-auto' src={user.photo} alt={user.name} />
                                 <span className='my-4' >{user.name}</span>
                             </div>
