@@ -108,8 +108,9 @@ function resetBall(){
     ball.speed = 7;
     ball.x = canvas.width/2;
     ball.y = canvas.height/2;
-    ball.velocityX = -ball.velocityX;
+    // ball.velocityX = -ball.velocityX;
     ball.velocityY = 5;
+    ball.velocityX = 5;
 }
 
 // draw the net
@@ -138,7 +139,7 @@ function collision(b,p){
     b.left = b.x - b.radius;
     b.right = b.x + b.radius;
     
-    return b.right > p.left && b.top < p.bottom && b.left < p.right && b.bottom
+    return p.left < b.right && p.top < b.bottom && p.right > b.left && p.bottom > b.top;
 }
 
 // update function, the function that does all calculations
