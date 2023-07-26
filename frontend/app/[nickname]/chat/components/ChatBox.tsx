@@ -7,15 +7,15 @@ const ChatBox = (props:any) => {
   const {socket, chatBoxMessages, setChatBoxMessages, userData} = useContext(Context)
 
   useEffect( () => {
-    socket.on('add-message', msg => {
-      setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.message}] )
-      console.log(msg)
-    })
-  }, [socket])
+		socket.on('add-message', msg => {
+		  setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.message}] )
+		  console.log(msg)
+		})
+	  }, [socket])
 
   return (
     <div>
-      {chatBoxMessages.map ((chatBoxMessage) => (<div className={chatBoxMessage.user == userData.nickname ? 'bg-blue-500' : 'bg-gray-500'}
+      {chatBoxMessages.map ((chatBoxMessage) => (<div className={""+chatBoxMessage.user == userData.nickname ? 'bg-blue-500' : 'bg-gray-500'}
       key={gimmeRandom()}>{chatBoxMessage.user} : {chatBoxMessage.msg}</div>))}
     </div>
   )
