@@ -1,14 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react'
 import user, { Context, gimmeRandom } from '../page'
+import { Socket } from 'socket.io-client'
 
 const ChatBox = (props:any) => {
 
-  const {chatBoxMessages, setChatBoxMessages, userData} = useContext(Context)
+  const {socket, chatBoxMessages, setChatBoxMessages, userData} = useContext(Context)
 
-  // useEffect( () => {
-  //   socket
-  //   setChatBoxMessages
-  // } )
+  useEffect( () => {
+    socket.on('add-message', msg => {
+      setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.message}] )
+      console.log(msg)
+    })
+  }, [socket])
 
   return (
     <div>

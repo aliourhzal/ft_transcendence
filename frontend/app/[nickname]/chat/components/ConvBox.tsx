@@ -19,7 +19,6 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
     setActiveUserConv(data.data)
     const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
     .then((data) => {
-      console.log(data)
       // Handle the data received from the server
       setChatBoxMessages([])
       data.message.map ((dt: { user: any; msg: any }) => setChatBoxMessages((old: any) => [...old, {user:dt.user, msg:dt.msg}]))
