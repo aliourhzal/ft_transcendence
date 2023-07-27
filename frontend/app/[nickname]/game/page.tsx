@@ -38,6 +38,7 @@ comScore.src = "../sounds/comScore.mp3";
 userScore.src = "../sounds/userScore.mp3";
 
 // Ball object
+ballPos.x = canvas.width/2;
 const ball = {
     x : canvas.width/2,
     y : canvas.height/2,
@@ -176,7 +177,12 @@ function update(){
     
     // when the ball collides with bottom and top walls we inverse the y velocity.
     if(ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height){
+        if (ball.y - ball.radius < 0)
+            ball.y = 11
+        else
+            ball.y = canvas.height - 11;
         ball.velocityY = -ball.velocityY;
+     
         sound_ret = wall.play();
         if (sound_ret !== undefined) {
             sound_ret.then(() => {}).catch(error => {});
@@ -262,7 +268,7 @@ export default function Game()
     const socket = useContext(WebsocketContext);
     const userData = useContext(userDataContext);
     console.log('test', userData);
-    
+
     // this hook used to start the game and connect to the socket
     useEffect(() => {
         StartGame();
