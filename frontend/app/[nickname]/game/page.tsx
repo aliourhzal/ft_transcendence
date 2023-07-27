@@ -5,6 +5,7 @@ import Script from "next/script";
 import { useContext, useEffect } from "react";
 import { userDataContext } from "../layout";
 import { Socket } from "socket.io-client";
+import { useEffectmod } from "@/hooks/useAxiosFetch";
 
 /*
     send via socket emit :  
@@ -13,23 +14,23 @@ import { Socket } from "socket.io-client";
         Score
 */
 
-export function startGame( data : gameData, socket: Socket )
+export function StartGame()
 {
     // declare interval ID
     let loop:NodeJS.Timer = null;
 
 // select canvas element
-const canvas = document.getElementById("pongy") as HTMLCanvasElement;
+const canvas:HTMLCanvasElement = document.getElementById("pongy") as HTMLCanvasElement;
 
 // getContext of canvas = methods and properties to draw and do a lot of thing to the canvas
-const ctx = canvas.getContext('2d');
+const ctx:CanvasRenderingContext2D = canvas.getContext('2d');
 
 // load sounds
 let sound_ret: any;
-let hit = new Audio();
-let wall = new Audio();
-let userScore = new Audio();
-let comScore = new Audio();
+let hit:HTMLAudioElement = new Audio();
+let wall:HTMLAudioElement = new Audio();
+let userScore:HTMLAudioElement = new Audio();
+let comScore:HTMLAudioElement = new Audio();
 
 hit.src = "../sounds/hit.mp3";
 wall.src = "../sounds/wall.mp3";
@@ -146,15 +147,16 @@ function collision(b,p){
 function update(){
     
     // change the score of players, if the ball goes to the left "ball.x<0" computer win, else if "ball.x > canvas.width" the user win
-    if( ball.x - ball.radius < -20 ){
+    if (ball.x - ball.radius < -20){
         com.score++;
         sound_ret = comScore.play();
         if (sound_ret !== undefined) {
-        sound_ret.then(() => {}).catch(error => {});
+            sound_ret.then(() => {}).catch(error => {});
         }
         resetBall();
         return ;
-    }else if( ball.x + ball.radius > canvas.width + 20){
+    }
+    else if (ball.x + ball.radius > canvas.width + 20){
         user.score++;
         sound_ret = userScore.play();
         if (sound_ret !== undefined) {
@@ -214,32 +216,31 @@ function update(){
 }
 
 // render function, the function that does al the drawing
-function render(){
-
-    // clear the canvas
-    drawRect(0, 0, canvas.width, canvas.height, "#353D49");
-    
-    // draw the user score to the left
-    drawText(user.score,canvas.width/4,canvas.height/5);
-    
-    // draw the COM score to the right
-    drawText(com.score,3*canvas.width/4,canvas.height/5);
-    
-    // draw the net
-    drawNet();
-    
-    // draw the user's paddle
-    drawRect(user.x, user.y, user.width, user.height, user.color);
-    
-    // draw the COM's paddle
-    drawRect(com.x, com.y, com.width, com.height, com.color);
-    
-    // draw the ball
-    drawArc(ball.x, ball.y, ball.radius, ball.color);
-} 
+function render()
+{
+        // clear the canvas
+        drawRect(0, 0, canvas.width, canvas.height, "#353D49");
+        
+        // draw the user score to the left
+        drawText(user.score,canvas.width/4,canvas.height/5);
+        
+        // draw the COM score to the right
+        drawText(com.score,3*canvas.width/4,canvas.height/5);
+        
+        // draw the net
+        drawNet();
+        
+        // draw the user's paddle
+        drawRect(user.x, user.y, user.width, user.height, user.color);
+        
+        // draw the COM's paddle
+        drawRect(com.x, com.y, com.width, com.height, com.color);
+        
+        // draw the ball
+        drawArc(ball.x, ball.y, ball.radius, ball.color);
+    } 
     function game()
     {
-        data.Ballx++;
         if (com.score === 5 || user.score === 5)
             clearInterval(loop);
         update();
@@ -247,19 +248,13 @@ function render(){
     }
     // number of frames per second
     let framePerSecond = 50;
-
+    // useEffect(()=>{
+    //     console.log("hh");
+    // }, [])
+    // useEffectmod(ball.x, socket);
     //call the game function 50 times every 1 Sec
     loop = setInterval(game,1000/framePerSecond);
     return ;
-}
-
-interface gameData {
-    Ballx: number,
-    Bally: number,
-    Playerx: number,
-    Playery: number,
-    Playerw: number,
-    Playerh: number
 }
 
 export default function Game()
@@ -267,37 +262,23 @@ export default function Game()
     const socket = useContext(WebsocketContext);
     const userData = useContext(userDataContext);
     console.log('test', userData);
-
-    let data: gameData = {
-        Ballx: 0,
-        Bally: 0,
-        Playerx: 0,
-        Playery: 0,
-        Playerw: 0,
-        Playerh: 0
-    }
-    
-    useEffect(()=> {
-        console.log(data.Ballx);
-    }
-    , [data.Ballx]);//each time player Y or Ball X | Y change trigger this effect
     
     // this hook used to start the game and connect to the socket
     useEffect(() => {
-        startGame(data, socket);
+        StartGame();
 
         socket.on('connect', () => {
-            console.log('connected');
+            console.log("connected");
             // socket.emit('newMessageAsalek', 'i\'m connected');
         });
-            socket.on('onMessage', (data) => {
-                console.log(data);
-            });
-            return () => {
-                socket.off('connect');
-                socket.off('onMessage');
-                console.log("disconnect");
-            }
+        socket.on('onMessage', (data) => {
+            console.log(data);
+        });
+        return () => {
+            socket.off('connect');
+            socket.off('onMessage');
+            console.log("disconnect");
+        }
         }
     , []);
 
@@ -315,7 +296,7 @@ export default function Game()
                         <img className="w-16 h-16" src="../images/man.png" alt="man_hhhh" />
                     </div>
                 </div>
-                <canvas id="pongy" className="bg-darken-300 mx-auto rounded-md " width='800' height="450px"></canvas>
+                <canvas id="pongy" className="bg-darken-300 mx-auto rounded-md " width={width} height="450px"></canvas>
             </div>
             {/* <Navbar/ > */}
             {/* <Script src="../../game-script.js" defer></Script> */}
