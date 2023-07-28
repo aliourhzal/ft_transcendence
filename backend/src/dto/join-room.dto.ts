@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prettier/prettier */
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 
 
@@ -19,6 +19,9 @@ export class JoinRoomDto {
     @IsNotEmpty()
     @IsString()
     socket: string;
- 
-  }
+    
+    @IsString()
+    @IsOptional() 
+    password?: string;
+}
  

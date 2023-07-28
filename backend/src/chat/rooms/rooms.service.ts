@@ -21,16 +21,17 @@ export class RoomsService
 
     async linkBetweenUsersAndRooms(roomId: string, usersIds:string[])  
     {
+       
         for(let i = 0; i < usersIds.length; i++)
         {
-            const existingLink = await this.prisma.joinedTable.findFirst({
+            const existingUsers = await this.prisma.joinedTable.findFirst({
                 where: {
-                  userId:usersIds[i],
+                  userId: usersIds[i],
                   roomId,
                 },
             });
             
-            if (!existingLink) 
+            if (!existingUsers) 
             {
                 
                 await this.prisma.joinedTable.create({
@@ -57,15 +58,18 @@ export class RoomsService
      
         const existingRoom = await this.utils.getRoomIdByName(room_name)
         
+        
         if(!existingRoom)
         {   
             if(roomType_ === "PROTECTED")
             {
+                 
                 if(!password)
                 {
                     console.log("should set password for this protected room");
                     return 0;
                 }
+                
                 const room = await this.prisma.room.create({data: {room_name , roomType : roomType_ , password: encodePasswd(password)}});
                  
 
@@ -88,7 +92,6 @@ export class RoomsService
                   userType: "OWNER"
                 },
             });
-
             
             return room;
         }
@@ -99,27 +102,19 @@ export class RoomsService
     async createRoom(roomandUsers:roomAndUsers, adminOfRoom:string, roomType_:RoomType, password? : string) 
     {
         
-        const room = await this.OWNERCreateRoom(roomandUsers.roomName, adminOfRoom, roomType_,password);// crete room and assign to it the admin
+        const room = await this.OWNERCreateRoom(roomandUsers.roomName, adminOfRoom, roomType_, password);// crete room and assign to it the admin
         
         if(room === 0 )
             return 0;
+
         if(room === 1)
         {
             // emit error
             return 1;
         }
-
-        const usersIds = await this.utils.getUsersId(adminOfRoom,roomandUsers.users);
-    
-         
-        if(usersIds === null) // can be emit the error message here, pass the server obj to this function for use it for make it real time
-            return 2;
-
-        if(usersIds === "you try to enter the admin")
-            return 3;
-
+ 
        
-        if(await this.linkBetweenUsersAndRooms(room['id'],usersIds) === 4) // add users to the room
+        if(await this.linkBetweenUsersAndRooms(room['id'], roomandUsers.users ) === 4 ) // add users to the room
             return 4;
 
         return room;
@@ -129,13 +124,14 @@ export class RoomsService
     // ---------------------------------------------------------Set Roles Of Rooms ---------------------------------------------- //
 
     
-    async setNewAdmins(roomId: string, usersIds: any , ownerId:string)
+    async setNewAdmins(roomId: string, usersIds:any, ownerId:string)
     {
         for(const user of usersIds) 
         {
             if(user === ownerId)
                 return 0;
         }
+        
         
         // if pass the same users to change to admins will pass unique ids
 
@@ -150,11 +146,10 @@ export class RoomsService
             
             if (!existingLink) 
             {
-                throw new Error("The specified user is not linked to the room.");
+                return 1;
             }
             if (existingLink.userType === 'USER') // check if the user is admin dont change her Type to admin in db
             {
-                
                 await this.prisma.joinedTable.update({
                     where: {
                         userId_roomId: {
@@ -168,17 +163,17 @@ export class RoomsService
                 });
             }
         }
-        return 1;
+        return 2;
     }   
 
-    async changeToUsers(roomId: string, usersIds: any , ownerId:string )
+    async changeToUsers(roomId: string, usersIds: any, ownerId:string)
     {
         for(const user of usersIds) 
         {
             if(user === ownerId)
                 return 0;
         }
-         
+        
         for (let i = 0; i < usersIds.length; i++) 
         {
             const existingLink = await this.prisma.joinedTable.findFirst({
@@ -190,25 +185,24 @@ export class RoomsService
             
             if (!existingLink) 
             {
-                throw new Error("The specified user is not linked to the room.");
+                return 1;
             }
-
-        if (existingLink.userType === 'ADMIN')
-        {
-            await this.prisma.joinedTable.update({
-                where: {
-                    userId_roomId: {
-                        userId: usersIds[i],
-                        roomId,
+            if (existingLink.userType === 'ADMIN')  
+            {
+                await this.prisma.joinedTable.update({
+                    where: {
+                        userId_roomId: {
+                            userId: usersIds[i],
+                            roomId,
+                        },
                     },
-                },
-                data: {
-                    userType: "USER",
-                },
-            });
-
+                    data: {
+                        userType: "USER",
+                    },
+                });
+            }
         }
-        }
+        return 2;
     }                                                                                                                            
 
     async changeRoomType(roomType_: RoomType, roomId:string, password?: string )
@@ -217,7 +211,7 @@ export class RoomsService
         {
             if(!password)
             {
-                console.log("should set password for this protected room");
+                
                 return 0;
             }
 
@@ -239,7 +233,6 @@ export class RoomsService
                 },
                 data: {
                   roomType : roomType_,
-           
                 },
             });
         }

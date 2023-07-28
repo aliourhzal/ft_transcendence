@@ -26,3 +26,58 @@
     - if this room dont have admin make first user the owner
  
 - A user who is an administrator of a channel can kick, ban or mute (for a limited time) other users, but not the channel owners.
+
+
+
+const idOfuser =   this.jwtService.verify(body.auth,{ secret: process.env.JWT_SECRET });
+        
+        if(!idOfuser)
+        {
+            console.log("user not found");
+            return 
+        }
+     
+        const roomId = await this.utils.getRoomIdByName(body.roomName);
+ 
+        if (roomId) 
+        {
+            const userType = await this.utils.getUserType(roomId, idOfuser['sub']); // 
+            if(userType)
+            {
+                if (userType.userType === 'ADMIN' || userType.userType === 'OWNER') 
+                {
+                    
+                    if(body.roomStatus === RoomType.PRIVATE || body.roomStatus === RoomType.PROTECTED || body.roomStatus === RoomType.PUBLIC)
+                    {
+                        const roomType = await this.utils.getRoomById(roomId);
+
+                        if(roomType.roomType !== body.roomType)
+                        {
+                            if(body.roomType === 'PROTECTED')
+                                await this.roomService.changeRoomType(body.roomType,roomId, "1234");
+                            else
+                                await this.roomService.changeRoomType(body.roomType,roomId);
+                        }
+                        else
+                        {
+                            console.log("you enter the same Type of the room.")
+                        }
+                    }
+                    else
+                    {
+                        console.log("room Type you entered is not found.")
+                    }
+                    
+                }
+                else
+                {
+                    console.log("cannot have the permission to change room Type.")
+                }
+            }
+
+        }
+        else
+        {
+            console.log("roomm not found")
+            return res.status(404).send({ message: "roomm not found" });
+        }

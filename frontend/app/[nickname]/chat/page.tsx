@@ -1,5 +1,5 @@
 "use client";
-import { Socket,io } from "socket.io-client";
+import { io } from "socket.io-client";
 
 import Image from 'next/image'
 import { useEffect, useState, createContext, useContext } from 'react';
@@ -7,12 +7,11 @@ import { Component } from 'react';
 import Conversation from './components/conversation';
 import RoomForm from './components/roomform';
 import Search from './components/search';
-import UserList from './components/ConvList';
-import { getCookie, userDataContext } from "../layout";
-import ConvList from "./components/ConvList";
-import axios from "axios";
+import UserList from './components/UserList';
+import { Socket } from "dgram";
+import { userDataContext } from "../layout";
 
-export interface conversation {
+export interface user {
 	readonly name: string,
 	readonly photo: string,
 	readonly last_msg: string, 
@@ -21,75 +20,66 @@ export interface conversation {
 
 export const Context = createContext<any>(undefined)
 
-export const gimmeRandom = () => {
-	const date = new Date();
-	return Math.random()
-};
-
 export default function Chat() {
-
+	
 	const userData = useContext(userDataContext);
+	
+	// userData.chatSocket.
 
-	const [socket, setSocket] = useState<Socket>();
-    
-	const [convs, setConvs] = useState<conversation[]>([])
+	const [chatBoxMessages, setChatBoxMessages] = useState<any>([
+		{user:'lmao', msg:'yo'},
+		{user:'self', msg:'hello'}
+	])
 
-	const getConvs = async () => {
-		// try {
-		// 	await axios.get('http://127.0.0.1:3000/rooms').then(data => console.log(data))
-		// }
-		// catch(error) {alert(error)}
-	}
-
-	useEffect(() => {
-		setSocket(io('ws://127.0.0.1:3004',{
-			auth: {
-				token: getCookie('access_token'),
-			},
-		}))
-
-		getConvs()
-
-	}, [])
-
-	const [chatBoxMessages, setChatBoxMessages] = useState<any>([])
+	const [users, setUsers] = useState<user[]>([
+		{name:"test", photo:"", last_msg:"yooo", id:0},
+		{name:"lmfao", photo:"", last_msg:"yooo", id:1},
+		{name:"lol", photo:"", last_msg:"yooo", id:2},
+		{name:"xd", photo:"", last_msg:"yooo", id:3},
+	])
 
 	const [showForm, setShowForm] = useState(false)
 	
 	const [showConv, setShowConv] = useState(false)
 
-	const [activeUserConv, setActiveUserConv] = useState<conversation | undefined>(undefined)
+	const [activeUserConv, setActiveUserConv] = useState<user | undefined>(undefined)
+	
 	return (
 		<main className='select-none h-full w-full overflow-y-auto'>
-			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, convs, setConvs, socket,
-				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData}}>
-				<RoomForm />
+			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, users, setUsers, chatBoxMessages, setChatBoxMessages}}>
+				<RoomForm convUsers={users} setConvUsers={setUsers} showForm={showForm} setShowForm={setShowForm}/>
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200 ">
-					<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">
-						<div className=' flex items-center justify-center w-[100%]'>
-							<Image  alt='search' src='/images/loupe.svg' width={20} height={20}/>
-							<Search users={convs} />
-						</div>
+			<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">
+				<div className=' flex items-center justify-center w-[100%]'>
+					<Image  alt='search' src='/images/loupe.svg' width={20} height={20}/>
+					<Search users={users} />
+				</div>
 
-						<ConvList />
+				<UserList items={users} />
+				{/* {handle_convs("mustapha", "/assets/images/profile.png", "yoooo whassup nigga lmaolmfoahiehwo", 0)} */}
+				{/* <Conversation user={ users[0] } setState={setState} setShowConv={setShowConv}/> */}
+				{/* {handle_convs("ali", "/assets/images/profile.png", "yoooo whassup nigga", 1)}
+				{handle_convs("ayoub", "/assets/images/profile.png", "yoooo whassup nigga", 2)}
+				{handle_convs("taha", "/assets/images/profile.png", "yoooo whassup nigga", 3)}
+				{handle_convs("lmfao", "/assets/images/profile.png", "yoooo whassup nigga", 4)}  */}
 
-						<div className='flex justify-between items-center w-[50%] h-[8%]'>
-							<div className='border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center'>
-								<Image className='cursor-pointer w-auto h-auto' alt='new channel' title='CreateChannel' src='/images/channel.svg' onClick={ () => {
-								setShowForm(true);
-								var temp = document.getElementById('main')
-								temp ? temp.style.filter = 'blur(1.5rem)' : ''
-								}} width={30} height={30}/>
-							</div>
-							<div className='border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center'>
-								<Image title='JoinChannel' className='w-auto h-auto' alt='new channel' src='/images/channel.svg' width={30} height={30}/>
-							</div>
-							<div className='border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center'>
-								<Image className='w-auto h-auto' alt='new channel' src='/images/groupe.svg' width={25} height={25}/>
-							</div>
+				<div className='flex justify-between items-center w-[50%] h-[8%]'>
+					<div className='border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center'>
+						<Image className='cursor-pointer w-auto h-auto' alt='new channel' title='CreateChannel' src='/images/channel.svg' onClick={ () => {
+						setShowForm(true);
+						var temp = document.getElementById('main')
+						temp ? temp.style.filter = 'blur(1.5rem)' : ''
+						}} width={30} height={30}/>
+					</div>
+					<div className='border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center'>
+						<Image title='JoinChannel' className='w-auto h-auto' alt='new channel' src='/images/channel.svg' width={30} height={30}/>
+					</div>
+					<div className='border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center'>
+						<Image className='w-auto h-auto' alt='new channel' src='/images/groupe.svg' width={25} height={25}/>
+					</div>
+				</div>
 						</div>
-								</div>
-					<Conversation />
+			<Conversation />
 				</div>
 		</Context.Provider>
 		</main>

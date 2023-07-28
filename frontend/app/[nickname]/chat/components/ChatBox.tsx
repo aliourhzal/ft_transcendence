@@ -8,13 +8,12 @@ const ChatBox = () => {
   
   const {socket, chatBoxMessages, setChatBoxMessages, userData} = useContext(Context)
   
-
   useEffect( () => {
-		  socket.on('add-message', msg => {
+		  socket.on('add-message', (msg: { user: string; message: string }) => {
 		  setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.message}] )
-		 
+		  console.log(msg)
 		})
-	  }, [setChatBoxMessages])
+	  }, [chatBoxMessages])
   
     let temp = document.getElementById('chatbox')
     useEffect ( () => {
@@ -25,11 +24,10 @@ const ChatBox = () => {
   return (
     <div>
       {chatBoxMessages.map ((BoxMessage) => 
-        (BoxMessage.user == userData.nickname ? <SelfChatBox msg={BoxMessage.msg} user={BoxMessage.user}/>
-          : <OthersChatBox msg={BoxMessage.msg} user={BoxMessage.user}/>))}
+        (BoxMessage.user == userData.nickname ? <SelfChatBox msg={BoxMessage.msg} user={BoxMessage.user} key={gimmeRandom()}/>
+          : <OthersChatBox msg={BoxMessage.msg} user={BoxMessage.user} key={gimmeRandom()}/>))}
     </div>
   )
 }
-
 
 export default ChatBox
