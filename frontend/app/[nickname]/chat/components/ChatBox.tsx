@@ -12,7 +12,7 @@ const ChatBox = () => {
   useEffect( () => {
 		  socket.on('add-message', msg => {
 		  setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.message}] )
-		  console.log(msg)
+		 
 		})
 	  }, [setChatBoxMessages])
   
@@ -25,7 +25,7 @@ const ChatBox = () => {
   return (
     <div>
       {chatBoxMessages.map ((BoxMessage) => 
-        (BoxMessage.user == userData.nickname ? <SelfChatBox msg={BoxMessage.message} user={BoxMessage.user}/>
+        (BoxMessage.user == userData.nickname ? <SelfChatBox msg={BoxMessage.msg} user={BoxMessage.user}/>
           : <OthersChatBox msg={BoxMessage.msg} user={BoxMessage.user}/>))}
     </div>
   )

@@ -28,7 +28,7 @@ model User {
  
 	messages                    Messages[]
     rooms                   JoinedTable[]
-    connectedUsers          ConnectedUsers[]
+
 	matches			Match[]
 }
 
@@ -38,22 +38,14 @@ model Room{
     room_name       String      @unique    
     password        String?
 
-	roomStauts    RoomStatus     	@default(PUBLIC)
+	roomType    RoomType     	@default(PUBLIC)
 
 	messages                    Messages[]
 
     users                       JoinedTable[]
 }
  
-model ConnectedUsers {
-    
-    id              String     @id @default(uuid())
-    socketId        String   
-    
-    user            User @relation(fields: [userId], references: [id])
-    userId          String
- 
-}
+
 
 
 model Messages {
@@ -73,7 +65,7 @@ model JoinedTable{
 
     user                User       @relation(fields: [userId], references: [id])
     userId              String  
-	userStatus    UserStatus     	@default(USER)
+	userType    UserType     	@default(USER)
 
     room                Room        @relation(fields: [roomId], references: [id]) // not compile in the query
     roomId              String 
@@ -91,17 +83,18 @@ model Match {
 }
 
 model FriendRequest {
+    
 	id			String @id @default(uuid())
 	
 }
 
-enum RoomStatus {
+enum RoomType {
     PUBLIC 
     PROTECTED 
     PRIVATE 
 }
 
-enum UserStatus {
+enum UserType {
     USER
     ADMIN
     OWNER

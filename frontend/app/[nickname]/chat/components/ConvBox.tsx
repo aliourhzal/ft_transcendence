@@ -1,10 +1,11 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 // import Image from 'next/image'
 import { conversation } from '../page'
 // import { Avatar } from '@nextui-org/react'
 import {Avatar} from '@nextui-org/react'
 import { useRouter } from 'next/navigation'
 import { Context } from '../page'
+import axios from 'axios'
 
 interface ConvBoxProps {
     data : conversation
@@ -17,12 +18,15 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
   const handleClick = async () => {
     setShowConv(true)
     setActiveUserConv(data.data)
-    const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
+    await axios.post('http://127.0.0.1:3000/rooms/join-room', {roomName:data.data.name, auth: socket.auth['token'], socket:socket.id}, {withCredentials: true})
     .then((data) => {
       // Handle the data received from the server
       setChatBoxMessages([])
-      data.message.map ((dt: { user: any; msg: any }) => setChatBoxMessages((old: any) => [...old, {user:dt.user, msg:dt.msg}]))
-  })}
+      data.data.message.map ((dt: { user: any; msg: any }) => setChatBoxMessages((old: any) => [...old, {user:dt.user, msg:dt.msg}]))
+    }
+    )
+    // const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
+}
 
   const activeDiv = (div:HTMLDivElement) => {
     var divs = document.getElementsByClassName('convGroup') as HTMLCollectionOf<HTMLElement>

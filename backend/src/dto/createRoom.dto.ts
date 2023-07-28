@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prettier/prettier */
 import { IsArray, IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { RoomType } from 'src/utils/userData.interface';
 
 
 
@@ -10,7 +11,7 @@ export class CreateUserDto {
     @IsString()
     roomName: string;
   
-    @IsNotEmpty()
+    // @IsNotEmpty()
     @IsString()
     @IsOptional() 
     password?: string;
@@ -23,6 +24,10 @@ export class CreateUserDto {
     @IsNotEmpty()
     @IsString()
     auth: string;
+  
+    @IsNotEmpty()
+    @IsString()
+    type: RoomType;
  
-  }
+}
  

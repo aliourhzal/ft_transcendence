@@ -126,7 +126,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         console.log("disconnected from chat");
         
         this.arrayOfClinets = []; // clear socket ids 
-
+        // remove sockets from room
         this.OnWebSocektError(socket);
     }
 

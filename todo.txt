@@ -1,0 +1,28 @@
+- The channel owner is a channel administrator. They can set other users as administrators.
+
+
+- before add users who want to be administrators:
+
+=>  chcek if current user is admin or owner
+        - if it is can set 
+    else
+        dont have permission
+
+
+=> if the room is dual room dont change anything
+
+
+- create function change status of room , if is protected should create password , remove the password , change the password
+
+=> return in first the staus of room
+    - if wawnt to be protected should set a password
+
+
+- create function return boolean value if leave the room or not
+
+
+- when owner who create room if leave it
+    - make the first admin added the owner
+    - if this room dont have admin make first user the owner
+ 
+- A user who is an administrator of a channel can kick, ban or mute (for a limited time) other users, but not the channel owners.

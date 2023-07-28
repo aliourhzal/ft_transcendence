@@ -42,13 +42,13 @@ export interface roomShape{
 }
 
 
-export enum RoomStatus {
+export enum RoomType {
     PUBLIC = "PUBLIC",
     PROTECTED = "PROTECTED",
     PRIVATE = "PRIVATE"
 }
 
-export enum UserStatus {
+export enum UserTypRoomType {
     USER = 'USER',
     ADMIN = "ADMIN",
     OWNER = "OWNER"

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
-import { PrismaClient, RoomStatus } from '@prisma/client';
+import { PrismaClient, RoomType } from '@prisma/client';
 import { AuthService } from 'src/auth/auth.service';
 import { encodePasswd } from 'src/utils/bcrypt';
 import { roomAndUsers, roomShape } from 'src/utils/userData.interface';
@@ -52,39 +52,40 @@ export class RoomsService
         return 1;
     }
 
-    async adminCreateRoom(room_name: string, adminOfRoom:string, roomStatus: RoomStatus , password?: string)  
+    async OWNERCreateRoom(room_name: string, adminOfRoom:string, roomType_: RoomType , password?: string)  
     {
+     
         const existingRoom = await this.utils.getRoomIdByName(room_name)
         
         if(!existingRoom)
         {   
-            if(roomStatus === "PROTECTED")
+            if(roomType_ === "PROTECTED")
             {
                 if(!password)
                 {
                     console.log("should set password for this protected room");
                     return 0;
                 }
+                const room = await this.prisma.room.create({data: {room_name , roomType : roomType_ , password: encodePasswd(password)}});
+                 
 
-               const room = await this.prisma.room.create({data: {room_name , roomStauts : roomStatus , password: encodePasswd(password)}});
-
-                await this.prisma.joinedTable.create({ // set admin for the room
+                await this.prisma.joinedTable.create({ // set OWNER for the room
                     data: {
                       userId : adminOfRoom,
                       roomId: room.id,
-                      userStatus: "ADMIN"
+                      userType: "OWNER"
                     },
                 });
 
                 return room;
             }
-            const room = await this.prisma.room.create({data: {room_name , roomStauts : roomStatus  }}) // create the room
+            const room = await this.prisma.room.create({data: {room_name , roomType : roomType_  }}) // create the room
              
-            await this.prisma.joinedTable.create({ // set admin for the room
+            await this.prisma.joinedTable.create({ // set OWNER for the room
                 data: {
                   userId : adminOfRoom,
                   roomId: room.id,
-                  userStatus: "ADMIN"
+                  userType: "OWNER"
                 },
             });
 
@@ -95,10 +96,10 @@ export class RoomsService
             return 1;
     }
 
-    async createRoom(roomandUsers:roomAndUsers, adminOfRoom:string, roomStatus:RoomStatus, password? : string) 
+    async createRoom(roomandUsers:roomAndUsers, adminOfRoom:string, roomType_:RoomType, password? : string) 
     {
-  
-        const room = await this.adminCreateRoom(roomandUsers.roomName,adminOfRoom,roomStatus,password);// crete room and assign to it the admin
+        
+        const room = await this.OWNERCreateRoom(roomandUsers.roomName, adminOfRoom, roomType_,password);// crete room and assign to it the admin
         
         if(room === 0 )
             return 0;
@@ -127,14 +128,123 @@ export class RoomsService
 
     // ---------------------------------------------------------Set Roles Of Rooms ---------------------------------------------- //
 
-
-    async setUsersRoles(room:roomShape | number, roomStatus:string, usersStatus:object)
+    
+    async setNewAdmins(roomId: string, usersIds: any , ownerId:string)
     {
+        for(const user of usersIds) 
+        {
+            if(user === ownerId)
+                return 0;
+        }
         
+        // if pass the same users to change to admins will pass unique ids
 
+        for (let i = 0; i < usersIds.length; i++) 
+        {
+            const existingLink = await this.prisma.joinedTable.findFirst({
+                where: {
+                  userId : usersIds[i],
+                  roomId,
+                },
+            });
+            
+            if (!existingLink) 
+            {
+                throw new Error("The specified user is not linked to the room.");
+            }
+            if (existingLink.userType === 'USER') // check if the user is admin dont change her Type to admin in db
+            {
+                
+                await this.prisma.joinedTable.update({
+                    where: {
+                        userId_roomId: {
+                            userId: usersIds[i],
+                            roomId,
+                        },
+                    },
+                    data: {
+                        userType: "ADMIN",
+                    },
+                });
+            }
+        }
+        return 1;
+    }   
+
+    async changeToUsers(roomId: string, usersIds: any , ownerId:string )
+    {
+        for(const user of usersIds) 
+        {
+            if(user === ownerId)
+                return 0;
+        }
+         
+        for (let i = 0; i < usersIds.length; i++) 
+        {
+            const existingLink = await this.prisma.joinedTable.findFirst({
+                where: {
+                  userId : usersIds[i],
+                  roomId,
+                },
+            });
+            
+            if (!existingLink) 
+            {
+                throw new Error("The specified user is not linked to the room.");
+            }
+
+        if (existingLink.userType === 'ADMIN')
+        {
+            await this.prisma.joinedTable.update({
+                where: {
+                    userId_roomId: {
+                        userId: usersIds[i],
+                        roomId,
+                    },
+                },
+                data: {
+                    userType: "USER",
+                },
+            });
+
+        }
+        }
+    }                                                                                                                            
+
+    async changeRoomType(roomType_: RoomType, roomId:string, password?: string )
+    {
+        if(roomType_ === "PROTECTED")
+        {
+            if(!password)
+            {
+                console.log("should set password for this protected room");
+                return 0;
+            }
+
+            await this.prisma.room.update({
+                where: {
+                  id: roomId,
+                },
+                data: {
+                  roomType : roomType_ ,
+                  password : encodePasswd(password)
+                },
+            });
+        }
+        else
+        {
+            await this.prisma.room.update({
+                where: {
+                  id: roomId,
+                },
+                data: {
+                  roomType : roomType_,
+           
+                },
+            });
+        }
 
     }
-                                                                                                                                        
 
     
 }

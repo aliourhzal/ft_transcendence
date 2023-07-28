@@ -10,6 +10,7 @@ import Search from './components/search';
 import UserList from './components/ConvList';
 import { getCookie, userDataContext } from "../layout";
 import ConvList from "./components/ConvList";
+import axios from "axios";
 
 export interface conversation {
 	readonly name: string,
@@ -32,12 +33,23 @@ export default function Chat() {
 	const [socket, setSocket] = useState<Socket>();
     
 	const [convs, setConvs] = useState<conversation[]>([])
+
+	const getConvs = async () => {
+		// try {
+		// 	await axios.get('http://127.0.0.1:3000/rooms').then(data => console.log(data))
+		// }
+		// catch(error) {alert(error)}
+	}
+
 	useEffect(() => {
 		setSocket(io('ws://127.0.0.1:3004',{
 			auth: {
 				token: getCookie('access_token'),
 			},
 		}))
+
+		getConvs()
+
 	}, [])
 
 	const [chatBoxMessages, setChatBoxMessages] = useState<any>([])

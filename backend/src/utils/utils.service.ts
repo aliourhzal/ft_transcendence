@@ -1,3 +1,5 @@
+/* eslint-disable prefer-const */
+/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
@@ -19,6 +21,7 @@ export class UtilsService {
       
         return user.id || null;
     }
+   
    
 
     async getUsersId(adminId: string, users: string[])
@@ -44,14 +47,7 @@ export class UtilsService {
                 }
                 else
                 { 
-                    // here check if enter the user multi time
-                    
-                    // const unique = this.checkIfArrayIsUnique(usersFounding);
-                    // if(!unique)
-                        usersFounding.push(existingUser.id);
-                         
-                    // else
-                    //     console.log(unique)
+                    usersFounding.push(existingUser.id);
                 }
             }   
             else
@@ -60,7 +56,8 @@ export class UtilsService {
             } 
             
         }
-        return usersFounding; // return users id
+        const uniqusers = [...new Set(usersFounding)];
+        return uniqusers; // return users id
     }
 
     async getRoomIdByName (room_name: string) {
@@ -69,13 +66,36 @@ export class UtilsService {
         });
       
         if (room) {
-            room.roomStauts = "PUBLIC"; // here make the room public or private or protected
           return room.id;
         } else {
           // Handle case when room is not found
           return null;
         }
-      };
+    };
+    
+    async getRoomById (id: string) {
+        const room = await this.prisma.room.findUnique({
+          where: { id },
+        });
+      
+        if (room) {
+          return room;
+        } else {
+          // Handle case when room is not found
+          return null;
+        }
+    };
+    
+    async   getUserType(roomId: string, userId: string) {
+        const getRoomInfos = await this.prisma.joinedTable.findFirst({
+          where: {
+            roomId: roomId,
+            userId: userId,
+          },
+        });
+      
+        return getRoomInfos;
+      }
 
     async getRoomsForUser(userId: string)
     {

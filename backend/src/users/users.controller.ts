@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { BadRequestException, Body, Controller, Get, Param, Post, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -17,6 +18,7 @@ export class UsersController{
 	@UseGuards(AuthGuard('jwt'))
 	@Get('profile')
 	async getProfile(@Req() request: any) {
+        
 		return await this.usersService.fetchUserByNickname(request.user.nickname);
 	}
 
@@ -99,4 +101,6 @@ export class UsersController{
 	{
 		return await this.usersService.addFriend(friendName, request.user.nickname);
 	}
+ 
+    
 }
