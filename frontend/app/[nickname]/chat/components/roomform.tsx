@@ -14,7 +14,7 @@ const RoomForm = () => {
     const [user, setUser] = useState('')
     const [pass, setPass] = useState('')
     const [isPrivate, setPrivate] = useState(false)
-    const [roomType, setRoomType] = useState('public')
+    const [roomType, setRoomType] = useState('PUBLIC')
 
     const hideForm = () => {
         setShowForm(false)
@@ -25,9 +25,9 @@ const RoomForm = () => {
     useEffect ( () => {
         if (!isPrivate)
             if (pass != '')
-                setRoomType('protected')
+                setRoomType('PROTECTED')
         else
-            setRoomType('private')
+            setRoomType('PRIVATE')
     }, [roomType, pass, isPrivate])
 
     const confirmForm = async () => {

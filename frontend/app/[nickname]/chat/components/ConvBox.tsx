@@ -18,7 +18,7 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
   const handleClick = async () => {
     setShowConv(true)
     setActiveUserConv(data.data)
-    await axios.post('http://127.0.0.1:3000/rooms/join-room', {roomName:data.data.name, auth: socket.auth['token'], socket:socket.id}, {withCredentials: true})
+    await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomName:data.data.name, auth: socket.auth['token'], socket:socket.id}, {withCredentials: true})
     .then((data) => {
       // Handle the data received from the server
       setChatBoxMessages([])

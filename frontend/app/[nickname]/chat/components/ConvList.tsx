@@ -9,11 +9,12 @@ const ConvList = () => {
     const {socket, convs, setConvs} = useContext(Context)
     const fillUserList = (listOfRoomsOfUser) => {
       setConvs([])
-      listOfRoomsOfUser.listOfRoomsOfUser.map( (room: any) => setConvs(old => [{name:room, photo:'', last_msg:'welcome to group chat', id:listOfRoomsOfUser.indexes}, ...old]))
+      listOfRoomsOfUser.listOfRoomsOfUser.map( (room: any) => setConvs(old => [{name:room, photo:'', last_msg:'welcome to group chat', id:room.indexes}, ...old]))
     }
   
-      useEffect( () => {
+    useEffect( () => {
         socket?.on('list-rooms',(listOfRoomsOfUser: any) => {
+          console.log(listOfRoomsOfUser)
           fillUserList(listOfRoomsOfUser)
         })
     })

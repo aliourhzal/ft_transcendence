@@ -11,6 +11,7 @@ import UserList from './components/ConvList';
 import { getCookie, userDataContext } from "../layout";
 import ConvList from "./components/ConvList";
 import axios from "axios";
+import JoinRoomForm from "./components/joinRoomForm";
 
 export interface conversation {
 	readonly name: string,
@@ -53,6 +54,7 @@ export default function Chat() {
 	const [chatBoxMessages, setChatBoxMessages] = useState<any>([])
 
 	const [showForm, setShowForm] = useState(false)
+	const [showJoinForm, setShowJoinForm] = useState(false)
 	
 	const [showConv, setShowConv] = useState(false)
 
@@ -60,8 +62,9 @@ export default function Chat() {
 	return (
 		<main className='select-none h-full w-full overflow-y-auto'>
 			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, convs, setConvs, socket,
-				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData}}>
+				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm}}>
 				<RoomForm />
+				<JoinRoomForm />
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200 ">
 					<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">
 						<div className=' flex items-center justify-center w-[100%]'>
@@ -80,7 +83,9 @@ export default function Chat() {
 								}} width={30} height={30}/>
 							</div>
 							<div className='border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center'>
-								<Image title='JoinChannel' className='w-auto h-auto' alt='new channel' src='/images/channel.svg' width={30} height={30}/>
+								<Image title='JoinChannel' className='w-auto h-auto' alt='new channel' src='/images/channel.svg' width={30} height={30} onClick={ () => {
+									setShowJoinForm(true)
+								}}/>
 							</div>
 							<div className='border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center'>
 								<Image className='w-auto h-auto' alt='new channel' src='/images/groupe.svg' width={25} height={25}/>
