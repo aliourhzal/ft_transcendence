@@ -25,8 +25,11 @@ const Conversation = () => {
     }
     const [msg, setMsg] = useState<string>('')
     const sendMessage = () => {
-        socket.emit('send-message', {message:msg, user:socket.auth['token'], roomName:activeUserConv.name, socketId:socket.id})
-        setMsg('')
+        const _msg = msg.trim()
+        if (_msg != '') {
+            socket.emit('send-message', {message:msg, user:socket.auth['token'], roomName:activeUserConv.name, socketId:socket.id})
+            setMsg('')
+        }
     }
 
     if (showConv) {
@@ -46,7 +49,7 @@ const Conversation = () => {
 					<div className='w-full h-[70%] rounded-[100px] bg-zinc-800 flex items-center justify-between'>
 						<input autoComplete="off" placeholder='Type a message...' type="text" id="message" className="outline outline-0 bg-transparent  p-5 text-gray-100 text-xs sm:text-base focus:ring-blue-500 focus:border-blue-500 w-[90%]" value={msg} onChange={(e) => {setMsg(e.target.value)}} onKeyDown={ handleKeyDown }/>
 						<div className='w-[8%] flex items-center justify-center'>
-							<div className=' border-blue-500 border-[6px] bg-blue-500 rounded-full h-9 w-9 flex items-center justify-center cursor-pointer' onClick={sendMessage}>
+							<div className=' border-blue-500 border-[6px] bg-blue-500 rounded-full h-9 w-9 flex items-center justify-end cursor-pointer mr-3 lg:mr-0' onClick={sendMessage}>
 								<Image className='w-auto h-auto' src="/images/send.svg" alt="send" width={150} height={150}/>
 							</div>
 						</div>
@@ -68,7 +71,7 @@ const Conversation = () => {
 
                 <div className='absolute pt-5 bg-gray-900 text-center w-[100%] flex items-center justify-center'>
 					<input autoComplete="off" placeholder='Type a message...' type="text" id="message" className="absolute outline outline-0 block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500" value={msg} onChange={(e) => {setMsg(e.target.value)}} onKeyDown={ handleKeyDown }/>
-					<div className='absolute right-[1%] border-blue-500 border-[6px] bg-blue-500 rounded-full h-7 w-7 flex items-center justify-center cursor-pointer' onClick={sendMessage}>
+					<div className='absolute right-[30%] lg:right-[1%] border-blue-500 border-[6px] bg-blue-500 rounded-full h-7 w-7 flex items-center justify-center cursor-pointer' onClick={sendMessage}>
 						<Image className='w-auto h-auto' src="/images/send.svg" alt="send" width={100} height={100}/>
 					</div>
                 </div>
@@ -80,3 +83,5 @@ const Conversation = () => {
 }
 
 export default Conversation
+
+// auto MATA
