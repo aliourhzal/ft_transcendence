@@ -2,17 +2,15 @@
 /* eslint-disable prettier/prettier */
 import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { CreateUserDto } from 'src/dto';
 import { UsersService } from 'src/users/users.service';
 import { RoomsService } from './rooms.service';
-import { WebSocketServer } from '@nestjs/websockets';
 
-import { Server, Socket } from  'socket.io';
 import { UtilsService } from 'src/utils/utils.service';
 import { JoinRoomDto } from 'src/dto/join-room.dto';
 import { MessagesService } from '../messages/messages.service';
-import { AuthGuard } from '@nestjs/passport';
 import { RoomType } from 'src/utils/userData.interface';
+import { createRoom } from 'src/dto';
+import { comparePasswd } from 'src/utils/bcrypt';
 
 
    
@@ -28,195 +26,267 @@ export class RoomController {
         ) {}
 
     @Post()
-    async createRoom(@Body() dto:any, @Res() res:any)
+    async createRoom(@Body() dto:createRoom, @Res() res:any)
     {
-
-        const idOfuser =   this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
-        
-        if(!idOfuser)
+        console.log(dto.type)
+        try 
         {
-            console.log("user not found");
-            return 
-        }
-    
-        const ifUsersExist = await this.utils.getUsersId(idOfuser['sub'],dto.users)
-
-        if(ifUsersExist === "you try to enter the admin")
-        {
-            console.log("you try to enter the admin")
-            return ;
-        }
-        if(ifUsersExist) // if room name is not empty and users  exist
-        {
-            // check the type of the room if public or protected | the type when send it without private and withou password it send private in type
-            const room = await this.roomService.createRoom({roomName: dto.roomName, users: dto.users}, idOfuser['sub'],"PROTECTED", "1234");
+            const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
             
-            res.status(200).send({ message: await this.utils.getRoomsForUser(idOfuser['sub']) });
-        }
-        else
+            const usersIds = await this.utils.getUsersId(user['sub'],dto.users, 1)
+            
+            if(usersIds === 0)
+            {
+                console.log("you are the admin")
+                return;
+            }
+            
+            if(usersIds)
+            { 
+                if (dto.type === RoomType.PRIVATE || dto.type === RoomType.PROTECTED || dto.type === RoomType.PUBLIC) 
+                {
+                    if (dto.type === "PROTECTED") 
+                    {
+                        const room = await this.roomService.createRoom({roomName: dto.roomName, users: usersIds}, user['sub'], "PROTECTED", dto.password);
+    
+                        if(room === 1)
+                        {
+                            console.log("room name aleredy exist.");
+                            return ;
+                        }
+                        console.log(await this.utils.getRoomsForUser(user['sub']))
+                        res.status(200).send({ message: await this.utils.getRoomsForUser(user['sub']) });
+                        
+                    }
+                    else
+                    {
+                        const room = await this.roomService.createRoom({roomName: dto.roomName, users: usersIds}, user['sub'], dto.type);
+    
+                        if(room === 1)
+                        {
+                            console.log("room name aleredy exist.");
+                            return ;
+                        }
+                        console.log(await this.utils.getRoomsForUser(user['sub']))
+                        res.status(200).send({ message: await this.utils.getRoomsForUser(user['sub']) });
+                    }
+                }
+                else
+                {
+                    console.log("error in type of room.")
+                }
+            }   
+            else
+            {
+                console.log("users not found")
+                return ;
+            }
+
+
+        } 
+        catch (error) 
         {
-            console.log("user not found")
-            return res.status(404)
+            
+            console.log(error);
         }
+
+        
     }
    
-    @Post('/join-room') // use here JoinRoomDto
-    async onJoinedRoom(@Body() dto:JoinRoomDto, @Res() res:any) // if it is protected should enter the password
+    @Post('/select-room') // use here JoinRoomDto
+    async onJoinedRoom(@Body() dto:JoinRoomDto, @Res() res:any) 
     {
-          
-       
-        const idOfuser =   this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET });
-        const roomId = await this.utils.getRoomIdByName(dto.roomName);
-
-      
-        if(idOfuser && roomId)
+        try 
         {
-            const messageAndUserName = await this.messagesService.getAllMessagesofRoom(dto.roomName); // should return messages and username who send message
-             
-            await this.messagesService.linkUsersWithSocketIdAndRooms(idOfuser['sub'],dto.socket,roomId); // link user with socket id and room
+            const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
+            const roomId = await this.utils.getRoomIdByName(dto.roomName);
             
-            return res.status(200).send({ message: messageAndUserName });
-        }
-        else
-        {
-            console.log("error")
-        }  
-    }
-
-    @Post('/setOtherAasAdministrators') // use dto
-    async setOtherAasAdministrators(@Body() body:any, @Res() res:any)
-    {
-        const idOfuser =   this.jwtService.verify(body.auth,{ secret: process.env.JWT_SECRET });
-        
-        if(!idOfuser)
-        {
-            console.log("user not found");
-            return 
-        }
-    
-        const usersId = await this.utils.getUsersId(idOfuser['sub'],body.users);
-      
-        const roomId = await this.utils.getRoomIdByName(body.roomName);
-
-        if (usersId && roomId) 
-        {
-            const userType = await this.utils.getRoomsForUser(idOfuser['sub']);
-
-            if (userType[0].userType === "ADMIN" || userType[0].userType === "OWNER") 
+            if (roomId) 
             {
-                if(await this.roomService.setNewAdmins(roomId, usersId, idOfuser['sub']) === 0) 
+                const roomType = await this.utils.getRoomById(roomId);
+                if (roomType) 
                 {
-                    console.log("you try to change the Type of the owner.");
+                    
+                    const messageAndUserName = await this.messagesService.getAllMessagesofRoom(dto.roomName); // should return messages and username who send message
+            
+                    await this.messagesService.linkUsersWithSocketIdAndRooms(user['sub'],dto.socket,roomId); // link user with socket id and room
+                    
+                    return res.status(200).send({ message: messageAndUserName });
+                }
+                else
+                {
+                    console.log("room not found")
                     return ;
                 }
             }
             else
             {
-                console.log("IS A USER, cannot have permission to change to admin.")
+                console.log('room not found.');
             }
-             
-        }
-        else
+
+        } 
+        catch (error) 
         {
-            console.log("user not found Or roomm not found")
-            return res.Type(404).send({ message: "user not found Or roomm not found" });
+            console.log(error)
+        }
+    }
+
+    @Post('/setOtherAasAdministrators') // use dto
+    async setOtherAasAdministrators(@Body() dto:any, @Res() res:any)
+    {
+        try 
+        {
+            const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
+            const roomId = await this.utils.getRoomIdByName(dto.roomName);
+            const usersIds = await this.utils.getUsersId(user['sub'],dto.users)
+           
+           
+            if(roomId && usersIds)
+            {
+                const userType = await this.utils.getUserType(roomId,user['sub']);
+                if (userType.userType === "ADMIN" || userType.userType === "OWNER") 
+                {
+                    const newAdmins = await this.roomService.setNewAdmins(roomId, usersIds, user['sub']);
+                    
+                    if (newAdmins === 0) 
+                    {
+                        console.log("you try to enter the admin")
+                        return;    
+                    }
+
+                    if (newAdmins === 1) 
+                    {
+                        console.log("The specified user is not linked to the room.");
+                        return ;
+                    }
+                }
+                else
+                {
+                    console.log('dont have the perrmission')
+                    return ;
+                }
+            }
+            else
+            {
+                console.log("room or users not found");
+            }
+        } 
+        catch (error) 
+        {
+            console.log(error)    
         }
     }
 
     @Post('/changeTypeToUsers') // use dto
-    async changeTypeToUsers(@Body() body:any, @Res() res:any)
+    async changeTypeToUsers(@Body() dto:any, @Res() res:any)
     {
-        const idOfuser =   this.jwtService.verify(body.auth,{ secret: process.env.JWT_SECRET });
-        
-        if(!idOfuser)
+        try 
         {
-            console.log("user not found");
-            return 
-        }
-    
-        const usersId = await this.utils.getUsersId(idOfuser['sub'],body.users);
-      
-        const roomId = await this.utils.getRoomIdByName(body.roomName);
+            const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
 
-        if (usersId && roomId) 
-        { // can be error handle it like changeRoomType
-            const userType = await this.utils.getRoomsForUser(idOfuser['sub']);
-
-            if (userType[0].userType === "OWNER") 
+            const roomId = await this.utils.getRoomIdByName(dto.roomName);
+            
+            const usersIds = await this.utils.getUsersId(user['sub'],dto.users)
+           
+           
+            if(roomId && usersIds)
             {
-                if(await this.roomService.changeToUsers(roomId, usersId, idOfuser['sub']) === 0) 
+                const userType = await this.utils.getUserType(roomId,user['sub']);
+                if (userType.userType === "OWNER") 
                 {
-                    console.log("you try to change the Type of the owner.");
-                    return ;
+                    const changeToUsers = await this.roomService.changeToUsers(roomId, usersIds, user['sub']);
+                     
+                    if (changeToUsers === 0) 
+                    {
+                        console.log("you try to enter the admin")
+                        return;    
+                    }
+                    if (changeToUsers === 1) 
+                    {
+                        console.log("The specified user is not linked to the room.");
+                        return ;
+                    }
+                }
+                else
+                {
+                    console.log("dont have the permission")
                 }
             }
             else
             {
-                console.log("IS not hte owner, cannot have permission to change to admin.")
+                console.log("room or users not found");
             }
-             
-        }
-        else
+        } 
+        catch (error) 
         {
-            console.log("user not found Or roomm not found")
-            return res.Type(404).send({ message: "user not found Or roomm not found" });
+            console.log(error)    
         }
     }
 
     @Post('/change-room-Type') // use dto
-    async changeRoomType(@Body() body:any, @Res() res:any)
+    async changeRoomType(@Body() dto:any, @Res() res:any)
     {
-        const idOfuser =   this.jwtService.verify(body.auth,{ secret: process.env.JWT_SECRET });
-        
-        if(!idOfuser)
+        try 
         {
-            console.log("user not found");
-            return 
-        }
-     
-        const roomId = await this.utils.getRoomIdByName(body.roomName);
- 
-        if (roomId) 
-        {
-            const userType = await this.utils.getUserType(roomId, idOfuser['sub']); // 
-            if(userType)
-            {
-                if (userType.userType === 'ADMIN' || userType.userType === 'OWNER') 
-                {
-                    
-                    if(body.roomStatus === RoomType.PRIVATE || body.roomStatus === RoomType.PROTECTED || body.roomStatus === RoomType.PUBLIC)
-                    {
-                        const roomType = await this.utils.getRoomById(roomId);
+            const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
 
-                        if(roomType.roomType !== body.roomType)
+            const roomId = await this.utils.getRoomIdByName(dto.roomName);
+            
+           
+            
+            if(roomId)
+            {
+                const userType = await this.utils.getUserType(roomId,user['sub']);
+                
+                 if(userType)
+                {
+                    if (userType.userType === 'ADMIN' || userType.userType === 'OWNER') 
+                    {
+                        
+                        if(dto.type === RoomType.PRIVATE || dto.type === RoomType.PROTECTED || dto.type === RoomType.PUBLIC)
                         {
-                            if(body.roomType === 'PROTECTED')
-                                await this.roomService.changeRoomType(body.roomType,roomId, "1234");
+                            const roomType = await this.utils.getRoomById(roomId);
+                            
+                            if(roomType.roomType !== dto.type)
+                            {
+                                if(dto.type === 'PROTECTED')
+                                {
+                                     
+                                    if(await this.roomService.changeRoomType(dto.type,roomId, dto.password) === 0)
+                                    {
+                                        console.log("should set password for this protected room");
+                                        return ;
+                                    }
+
+                                }
+                                else
+                                    await this.roomService.changeRoomType(dto.type,roomId);
+                            }
                             else
-                                await this.roomService.changeRoomType(body.roomType,roomId);
+                            {
+                                console.log("you enter the same Type of the room.")
+                            }
                         }
                         else
                         {
-                            console.log("you enter the same Type of the room.")
+                            console.log("room Type you entered is not found.")
                         }
+                        
                     }
                     else
                     {
-                        console.log("room Type you entered is not found.")
+                        console.log("cannot have the permission to change room Type.")
                     }
-                    
-                }
-                else
-                {
-                    console.log("cannot have the permission to change room Type.")
                 }
             }
-
-        }
-        else
+            else
+            {
+                console.log("room  not found");
+            }
+        } 
+        catch (error) 
         {
-            console.log("roomm not found")
-            return res.status(404).send({ message: "roomm not found" });
+            console.log(error)    
         }
 
     }

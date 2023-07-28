@@ -24,7 +24,7 @@ export class UtilsService {
    
    
 
-    async getUsersId(adminId: string, users: string[])
+    async getUsersId(adminId: string, users: string[], flag?: number)
     {
         let usersFounding: string[] = [];
 
@@ -37,18 +37,10 @@ export class UtilsService {
                 },
             });
             
+            
             if(existingUser)
             {
-            
-                if(existingUser.id === adminId)
-                {
-                    return "you try to enter the admin"
-                    // emit message to frontend you try to insert the admin
-                }
-                else
-                { 
-                    usersFounding.push(existingUser.id);
-                }
+                usersFounding.push(existingUser.id);
             }   
             else
             {
@@ -56,6 +48,16 @@ export class UtilsService {
             } 
             
         }
+
+        if(flag === 1)
+        {
+            for(const user of usersFounding) 
+            {
+                if(user === adminId)
+                    return 0;
+            }
+        }
+
         const uniqusers = [...new Set(usersFounding)];
         return uniqusers; // return users id
     }

@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prettier/prettier */
-import { IsArray, IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ArrayNotEmpty, IsArray, IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { RoomType } from 'src/utils/userData.interface';
 
 
 
-export class CreateUserDto {
+export class createRoom {
      
     @IsNotEmpty()
     @IsString()
@@ -16,9 +16,8 @@ export class CreateUserDto {
     @IsOptional() 
     password?: string;
   
-    @IsNotEmpty()
-    @IsArray()
-    @IsString({ each: true }) // Use "each" option to validate each element of the array as a string
+    @ArrayNotEmpty()
+    @IsString({ each: true })
     users: string[];
   
     @IsNotEmpty()
@@ -28,6 +27,5 @@ export class CreateUserDto {
     @IsNotEmpty()
     @IsString()
     type: RoomType;
- 
 }
  

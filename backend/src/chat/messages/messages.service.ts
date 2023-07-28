@@ -16,6 +16,7 @@ export class MessagesService
     async getAllMessagesofRoom(room_name : string)
     {
         const allMessages: AllMessages[] = [];
+        
         const messages = await this.prisma.room.findUnique({
             where: { room_name },
             include: {
