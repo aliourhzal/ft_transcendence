@@ -20,47 +20,50 @@ const RoomForm = () => {
         setShowForm(false)
         var temp = document.getElementById('main')
         temp ? temp.style.filter = 'blur(0)' : ''
-        setName(''); setUser(''); setUsers([]); setPass('')
+        setName(''); setUser(''); setUsers([]); setPass(''); setRoomType('PUBLIC'); setPrivate(false)
     }
-    useEffect ( () => {
-        if (!isPrivate)
-            if (pass != '')
-                setRoomType('PROTECTED')
-        else
-            setRoomType('PRIVATE')
-    }, [roomType, pass, isPrivate])
-
+    // useEffect ( () => {
+    //     if (pass != '')
+    //         setRoomType('PROTECTED')
+    //     else if (isPrivate)
+    //         setRoomType('PRIVATE')
+    //     else
+    //         setRoomType('PUBLIC')
+    //     }, [roomType, pass, isPrivate])
+        
     const confirmForm = async () => {
-
+        if (pass != '')
+            setRoomType('PROTECTED')
+        else if (isPrivate)
+            setRoomType('PRIVATE')
+        else
+            setRoomType('PUBLIC')
+            
         try {
             await axios.post('http://127.0.0.1:3000/rooms', {roomName:roomName, users:users, auth: socket.auth['token'], type:roomType, password:pass},
                                                             {withCredentials: true, headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}}).then(
                                                                 response => hideForm())
-                                                            } catch(error) {
-                                                                alert(error)
-                                                            }
-        // const response = await fetch('http://127.0.0.1:3000/rooms', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:roomName, users:users, auth: socket.auth['token'], type:{roomType}})})
-        // if (response.ok)
-        // else console.log("wrong stuff")
+        } catch(error) {
+            alert(error)
+        }
     }
     return (
         showForm &&
                 <div className='fixed flex bg-darken-300 items-center justify-center w-[50%] min-w-[450px] z-10' onBlur={() => hideForm}>
                     <div className="w-[80%] border-4 rounded-lg px-10 pb-12 border-white">
-                        <button type="button" className="ml-[100%] bg-white rounded-s-sm p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 w-10 h-10" onClick={ hideForm }>x
-                        </button>
+                    <button type="button" className="ml-[auto] mb-5 w-9 h-9 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-lg flex text-center justify-center items-center" onClick={hideForm}>x</button>
                         <div className='text-center text-3xl mb-2 drop-shadow-[0px_0px_5px_rgba(255,255,255,1)]'><h1>Create Chatroom</h1></div>
                             <div className="relative z-0 w-full mb-6 group">
-                                <input aria-required='true' value={roomName} type="text" name="floating_text" id="floating_text" className="text-gray-300 block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required 
+                                <input aria-required='true' autoComplete='off' value={roomName} type="text" name="floating_text" id="floating_text" className="text-gray-300 block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required 
                                 onChange={(e) => {setName(e.target.value)}}/>
                                 <label htmlFor="floating_text" className="text-xs lg:text-base peer-focus:font-medium absolute text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Name</label>
                             </div>
                             <div className="relative z-0 w-full mb-6 group">
-                                <input type="text" name="floating_desc" id="floating_desc" className="text-gray-300 block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                                <input autoComplete='off' type="text" name="floating_desc" id="floating_desc" className="text-gray-300 block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
                                 <label htmlFor="floating_desc" className="text-xs lg:text-base peer-focus:font-medium absolute text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Description</label>
                             </div>
                             <div className="flex relative z-0 w-full mb-6 group">
-                                <input value={user} type="text" name="user" id="user" className="text-gray-300 text-xs lg:text-base block py-2.5 px-0 w-full bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required 
+                                <input autoComplete='off' value={user} type="text" name="user" id="user" className="text-gray-300 text-xs lg:text-base block py-2.5 px-0 w-full bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required 
                                 onChange={
                                     (e) => setUser(e.target.value)
                                 }/>
@@ -85,7 +88,10 @@ const RoomForm = () => {
                             <div className="flex relative z-0 w-full mb-6 group">
                                 <input disabled={isPrivate? true : false} value={pass} type="password" name="password" id="password" className="text-gray-300 block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required
                                 onChange={
-                                    (e) => setPass(e.target.value)
+                                    (e) => {
+                                        setRoomType('PROTECTED')
+                                        setPass(e.target.value)
+                                    }
                                 }/>
                                 <label htmlFor="password" className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Password (optional)</label>
                             </div>

@@ -6,15 +6,15 @@ import OthersChatBox from './othersChatBox'
 
 const ChatBox = () => {
   
-  const {socket, chatBoxMessages, setChatBoxMessages, userData} = useContext(Context)
+  const {socket, chatBoxMessages, setChatBoxMessages, userData, msg_sent} = useContext(Context)
   
   useEffect( () => {
-		  socket.on('add-message', (msg: { user: string; message: string }) => {
-		  setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.message}] )
-		  console.log(msg)
-		})
-	  }, [chatBoxMessages])
-  
+		socket?.on('add-message', (msg: { user: string; message: string }) => {
+			setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.message}] )
+			console.log(msg)
+	  	})
+	}, [msg_sent])
+
     let temp = document.getElementById('chatbox')
     useEffect ( () => {
       if (temp)

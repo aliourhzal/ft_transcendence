@@ -5,13 +5,13 @@ import Image from 'next/image'
 import { useEffect, useState, createContext, useContext } from 'react';
 import { Component } from 'react';
 import Conversation from './components/conversation';
-import RoomForm from './components/roomform';
+import RoomForm from './components/createRoom';
 import Search from './components/search';
 import UserList from './components/ConvList';
 import { getCookie, userDataContext } from "../layout";
 import ConvList from "./components/ConvList";
 import axios from "axios";
-import JoinRoomForm from "./components/joinRoomForm";
+import JoinRoomForm from "./components/joinRoom";
 
 export interface conversation {
 	readonly name: string,
@@ -34,6 +34,8 @@ export default function Chat() {
 	const [socket, setSocket] = useState<Socket>();
     
 	const [convs, setConvs] = useState<conversation[]>([])
+
+	const [msg_sent, set_msg_sent] = useState(false)
 
 	const getConvs = async () => {
 		// try {
@@ -62,7 +64,7 @@ export default function Chat() {
 	return (
 		<main className='select-none h-full w-full overflow-y-auto'>
 			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, convs, setConvs, socket,
-				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm}}>
+				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm, set_msg_sent}}>
 				<RoomForm />
 				<JoinRoomForm />
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200 ">
@@ -76,14 +78,12 @@ export default function Chat() {
 
 						<div className='flex justify-between items-center w-[50%] h-[8%]'>
 							<div className='border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center'>
-								<Image className='cursor-pointer w-auto h-auto' alt='new channel' title='CreateChannel' src='/images/channel.svg' onClick={ () => {
-								setShowForm(true);
-								var temp = document.getElementById('main')
-								temp ? temp.style.filter = 'blur(1.5rem)' : ''
+								<Image className='cursor-pointer w-auto h-auto' alt='CreateChannel' title='CreateChannel' src='/images/channel.svg' onClick={ () => {
+									setShowForm(true);
 								}} width={30} height={30}/>
 							</div>
 							<div className='border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center'>
-								<Image title='JoinChannel' className='w-auto h-auto' alt='new channel' src='/images/channel.svg' width={30} height={30} onClick={ () => {
+								<Image title='JoinChannel' className='w-auto h-auto' alt='JoinChannel' src='/images/channel.svg' width={30} height={30} onClick={ () => {
 									setShowJoinForm(true)
 								}}/>
 							</div>

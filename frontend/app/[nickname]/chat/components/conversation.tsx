@@ -7,7 +7,7 @@ const Conversation = () => {
 
     const [deviceType, setDeviceType] = useState('normal')
 
-    const {showConv, setShowConv, activeUserConv, setActiveUserConv, chatBoxMessages, setChatBoxMessages, rooms, socket} = useContext(Context)
+    const {showConv, setShowConv, activeUserConv, setActiveUserConv, chatBoxMessages, setChatBoxMessages, rooms, socket, userData, set_msg_sent} = useContext(Context)
 
     useEffect( () => {
       typeof window != 'undefined' ? (window.innerWidth <= 768 ? setDeviceType('small') : setDeviceType('normal')) : setDeviceType('normal')
@@ -28,6 +28,8 @@ const Conversation = () => {
         const _msg = msg.trim()
         if (_msg != '') {
             socket.emit('send-message', {message:msg, user:socket.auth['token'], roomName:activeUserConv.name, socketId:socket.id})
+            // setChatBoxMessages(old => [...old, {user:userData.nickname, msg:msg}])
+            set_msg_sent(old => !old)
             setMsg('')
         }
     }
