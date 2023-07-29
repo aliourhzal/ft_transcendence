@@ -19,14 +19,44 @@ export class RoomsService
     
     // ----------------------------------------------Create Room---------------------------------------------- //
 
-    async linkBetweenUsersAndRooms(roomId: string, usersIds:string[])  
+    async linkBetweenUsersAndRooms(roomId: string, usersIds:string[] | string)  
     {
-       
-        for(let i = 0; i < usersIds.length; i++)
+        if(Array.isArray(usersIds))
+        {
+            for(let i = 0; i < usersIds.length; i++)
+            {
+                const existingUsers = await this.prisma.joinedTable.findFirst({
+                    where: {
+                      userId: usersIds[i],
+                      roomId,
+                    },
+                });
+                
+                if (!existingUsers) 
+                {
+                    
+                    await this.prisma.joinedTable.create({
+                      data: {
+                        userId : usersIds[i],
+                        roomId,
+                      },
+                    });
+                    
+                }
+                else
+                {
+                    return 4
+                    // here will entered if user is aleredy exist in the chat room 
+                    //  emit error when the same user is entered
+                }
+            }
+
+        }
+        else
         {
             const existingUsers = await this.prisma.joinedTable.findFirst({
                 where: {
-                  userId: usersIds[i],
+                  userId: usersIds,
                   roomId,
                 },
             });
@@ -36,7 +66,7 @@ export class RoomsService
                 
                 await this.prisma.joinedTable.create({
                   data: {
-                    userId : usersIds[i],
+                    userId : usersIds,
                     roomId,
                   },
                 });
@@ -49,7 +79,6 @@ export class RoomsService
                 //  emit error when the same user is entered
             }
         }
-
         return 1;
     }
 
@@ -205,7 +234,7 @@ export class RoomsService
         return 2;
     }                                                                                                                            
 
-    async changeRoomType(roomType_: RoomType, roomId:string, password?: string )
+    async updateRoom(roomType_: RoomType, roomId:string, password?: string )
     {
         if(roomType_ === "PROTECTED")
         {

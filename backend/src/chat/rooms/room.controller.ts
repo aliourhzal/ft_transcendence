@@ -27,8 +27,8 @@ export class RoomController {
 
     @Post()
     async createRoom(@Body() dto:createRoom, @Res() res:any)
-    {
-        console.log(dto.type)
+    { 
+        // conflict between private and public
         try 
         {
             const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
@@ -81,16 +81,11 @@ export class RoomController {
                 console.log("users not found")
                 return ;
             }
-
-
         } 
         catch (error) 
         {
-            
             console.log(error);
         }
-
-        
     }
    
     @Post('/select-room') // use here JoinRoomDto
@@ -224,15 +219,13 @@ export class RoomController {
     }
 
     @Post('/change-room-Type') // use dto
-    async changeRoomType(@Body() dto:any, @Res() res:any)
+    async updateRoom(@Body() dto:any, @Res() res:any)
     {
         try 
         {
             const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
 
             const roomId = await this.utils.getRoomIdByName(dto.roomName);
-            
-           
             
             if(roomId)
             {
@@ -252,7 +245,7 @@ export class RoomController {
                                 if(dto.type === 'PROTECTED')
                                 {
                                      
-                                    if(await this.roomService.changeRoomType(dto.type,roomId, dto.password) === 0)
+                                    if(await this.roomService.updateRoom(dto.type,roomId, dto.password) === 0)
                                     {
                                         console.log("should set password for this protected room");
                                         return ;
@@ -260,7 +253,7 @@ export class RoomController {
 
                                 }
                                 else
-                                    await this.roomService.changeRoomType(dto.type,roomId);
+                                    await this.roomService.updateRoom(dto.type,roomId);
                             }
                             else
                             {
@@ -290,6 +283,69 @@ export class RoomController {
         }
 
     }
+
+    @Post('/join-room')
+    async joinRoom(@Body() dto:any, @Res() res:any) // test join room by script & test to join the public room
+    {
+        try 
+        {
+            const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
+            
+            const roomId = await this.utils.getRoomIdByName(dto.name);
+
+            if(roomId)
+            {
+                const usersInRoom = await this.utils.getUsersInRooms(roomId);
+
+                const find = usersInRoom.find((item) => item.userId === user['sub']);
+
+                if(!find)
+                {
+                    const roomType = await this.utils.getRoomById(roomId);
+
+                    if(roomType.roomType === 'PROTECTED')
+                    {
+                        if(comparePasswd(dto.pass,roomType.password) )
+                        {
+                            if(await this.roomService.linkBetweenUsersAndRooms(roomId, user['sub']) === 4)
+                            {
+                                console.log('user is aleredy exist in the chat room.')
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            console.log("password inccorect.")
+                            return;
+                        }
+                    }
+                    else if(roomType.roomType === 'PUBLIC')
+                    {
+                        if(await this.roomService.linkBetweenUsersAndRooms(roomId, user['sub']) === 4)
+                        {
+                            console.log('user is aleredy exist in the chat room.')
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    console.log("you are aleredy joined to this room")
+                    return ;
+                }
+            }
+            else
+            {
+                console.log("room  not found");
+            }
+        } 
+        catch (error) 
+        {
+            console.log("from catch")
+            console.log(error)    
+        }
+    }
+
 
     async leaveRoom()
     {

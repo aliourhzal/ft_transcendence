@@ -35,7 +35,7 @@ const JoinRoomForm = () => {
                     <label htmlFor="pass" className="text-xs lg:text-base peer-focus:font-medium absolute text-black duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">password</label>
                 </div>
                 <button type="button" className="w-auto text-white bg-blue-700 hover:bg-blue-800 focus:bg-blue-600 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" onClick={ () => {
-                    axios.post('http://127.0.0.1:3000/join-room', {name:name, pass:pass, auth:socket.auth['token']}, {withCredentials: true})
+                    axios.post('http://127.0.0.1:3000/rooms/join-room', {name:name, pass:pass, auth:socket.auth['token']}, {withCredentials: true})
                     submitForm()
                 }}>Submit</button>
             </div>
