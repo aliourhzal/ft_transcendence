@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { HttpException, HttpStatus, Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
+import { PrismaClient, User } from '@prisma/client';
 import { unlinkSync } from 'fs';
 import { extname } from 'path';
 import { parse } from 'path';
@@ -130,7 +130,6 @@ export class UsersService {
 
 	async serveUploads(fileTarget: string) {
 		const category = fileTarget.split('.')[1];
-		console.log(fileTarget);
 		let userFile: any = undefined;
 		const assets = await readdir(`./uploads/${category}`);
 		
@@ -149,39 +148,99 @@ export class UsersService {
 		else
 		{
 			if (category === 'cover') {
-				const file = createReadStream(`./uploads/${category}/default.png`);
+				const file = createReadStream(`./uploads/${category}/default.jpg`);
 				return new StreamableFile(file);
 			}
 		}
 	}
-	
 
-	async addFriend(friendNickname: string, nickname: string) {
+	async findOneByNicknameWithRequests(nickname: string) {
+		return await this.prisma.user.findUnique({
+			where: {
+				nickname
+			},
+			include: {
+				sentRequests: true,
+				userFriends: true
+			}
+		})
+	}
 
+	async findOneByNicknameWithReceived(nickname: string) {
+		return await this.prisma.user.findUnique({
+			where: {
+				nickname
+			},
+			include: {
+				receivedRequest: {
+					include: {
+						sender: true
+					}
+				},
+				userFriends: true
+			}
+		})
+	}
+
+	async acceptRequest(friendNickname: string, nickname: string) {
 		const friend = await this.findOneByNickname(friendNickname);
-		const user =  await this.findOneByNickname(nickname);
-		if (!friend || !user) 
+		const user = await this.findOneByNicknameWithReceived(nickname);
+		if (!friend) 
 		{
 			throw new NotFoundException('user not found!!')
 		}
+		for (const request of user.receivedRequest) {
+			if (request.senderId === friend.id) {
+				await this.prisma.user.update({
+					where: {
+						nickname
+					},
+					data: {
+						userFriends: {
+						connect: [{ id: friend.id }],
+					},
+					},
+				})
+		
+				await this.prisma.user.update({
+					where: { id: friend.id },
+					data: {
+						userFriends: {
+						connect: [{ nickname }],
+					},
+					},
+				});
+				return ;
+			}
+		}
+		throw new HttpException(`${friend.nickname} did not send you a request`, HttpStatus.BAD_REQUEST);
+	}
 
-		await this.prisma.user.update({
-            where: { id: user.id },
-            data: {
-                userFriends: {
-                connect: [{ id: friend.id }],
-              },
-            },
-        })
+	async sendRequest(friendNickname: string, nickname: string) {
+		const newFriend = await this.findOneByNickname(friendNickname);
+		const user = await this.findOneByNicknameWithRequests(nickname);
+		if (!newFriend) 
+		{
+			throw new NotFoundException('user not found!!')
+		}
+		for (const request of user.sentRequests) {
+			if (request.targetId === newFriend.id)
+				return ;
+		}
+		for (const friend of user.userFriends) {
+			if (friend.id === newFriend.id)
+				throw new HttpException(`${newFriend.nickname} is already your friend`, HttpStatus.BAD_REQUEST);
+		}
+		await this.prisma.friendRequest.create({
+			data: {
+				senderId: user.id,
+				targetId: newFriend.id
+			}
+		});
+	}
 
-		await this.prisma.user.update({
-            where: { id: friend.id },
-            data: {
-                userFriends: {
-                connect: [{ id: user.id }],
-              },
-            },
-        });
-  
+	async getFriendsRequests(nickname: string) {
+		const user = await this.findOneByNicknameWithReceived(nickname);
+		return (user.receivedRequest);
 	}
 }
