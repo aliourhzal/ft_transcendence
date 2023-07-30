@@ -151,6 +151,11 @@ export class UsersService {
 				const file = createReadStream(`./uploads/${category}/default.jpg`);
 				return new StreamableFile(file);
 			}
+			if (category === 'avatar')
+			{
+				const file = createReadStream(`./uploads/${category}/default.png`);
+				return new StreamableFile(file);
+			}
 		}
 	}
 

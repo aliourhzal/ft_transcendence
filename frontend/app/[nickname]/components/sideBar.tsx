@@ -26,7 +26,12 @@ export function NavOption(props: any) {
 	}
 
 	return (
-		<a className="cursor-pointer flex flex-col md:flex-row items-center gap-5" onClick={emitRoomsRequest}>
+		<a className="cursor-pointer flex flex-col md:flex-row items-center gap-5" onClick={()=>{
+			if (props.location === 'chat')
+				emitRoomsRequest()
+			// props.router.push(props.nickname + props.location);
+			props.router.push("http://127.0.0.1:3001/" + props.nickname + '' + props.location)
+		}}>
 			<props.icon  style={{color: 'white', fontSize: '24px'}}/>
 			<span className="text-md text-whiteSmoke hidden sm:inline capitalize">{props.option}</span>
 		</a>
