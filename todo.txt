@@ -28,6 +28,40 @@
 - A user who is an administrator of a channel can kick, ban or mute (for a limited time) other users, but not the channel owners.
 
 
-
+=> use try and catch here && search by id of user in db if found or not
 
 - implement the leaveRoom
+
+
+
+
+
+// handle on join the room
+            
+            const createdMsg = await this.messagesService.createMessages(infos['message'],idOfuser['sub'],roomId);
+            
+            await this.messagesService.linkUsersWithSocketIdAndRooms(idOfuser['sub'],infos['socketId'],roomId);
+
+            const connectedUsersInRoom = await this.messagesService.usersConnectedInRoom(roomId);
+            
+            
+            for(const user of connectedUsersInRoom) // broad cast the message for all members of the room
+            {
+                this.server.to(user.socketId).emit("add-message",{user: createdMsg.username, message: createdMsg.msg})// can send here the username and her msg
+            }
+
+
+
+
+
+=> return all users in the room
+=> loop all users and send to evry socket id of evry exist user.
+
+=> array of client : userId and socketId
+
+=> find all userId of evry user and send her socketId
+
+
+
+
+

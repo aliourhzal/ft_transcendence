@@ -24,7 +24,7 @@ export class UtilsService {
    
    
 
-    async getUsersId(adminId: string, users: string[], flag?: number)
+    async getUsersId(adminId: string, users?: string[], flag?: number)
     {
         let usersFounding: string[] = [];
 
@@ -82,6 +82,19 @@ export class UtilsService {
       
         if (room) {
           return room;
+        } else {
+          // Handle case when room is not found
+          return null;
+        }
+    };
+    
+    async getuserById (id: string) {
+        const user = await this.prisma.user.findUnique({
+          where: { id },
+        });
+      
+        if (user) {
+          return user;
         } else {
           // Handle case when room is not found
           return null;

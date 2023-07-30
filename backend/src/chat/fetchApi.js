@@ -21,7 +21,7 @@ const type = "PROTECTED"
 //                 users,
 //                 type, 
 //                 password: "1234",
-//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6ImFkYWlmaSIsInN1YiI6ImY2MWM2NmYzLWUyZDItNGY1MS05ODRmLWQ3YWQxN2RlMmM3YSIsImlhdCI6MTY5MDYyNjU3NX0.o9Nib6wgforBqK2osEkON6ht0bYZ4RhRqwogCFaefCI"})}).then((response) => response.json())
+//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6Im1lc3NhbGloIiwic3ViIjoiZTZmYzNmMDUtYjQ2Zi00ZDAwLTg1NDEtZDNhOGY2MDRjNTU4IiwiaWF0IjoxNjkwNjU1NDcxfQ.ozjl_DstX_ZzM6kN0fUEl-nsrlMdhgLTtqne85Y2bPk"})}).then((response) => response.json())
             
 //         console.log(response)
 
@@ -86,22 +86,22 @@ const type = "PROTECTED"
 
 // changeRoomType()
 
-async function joinRoom()
-{
-    const response = await fetch('http://127.0.0.1:3000/rooms/join-room', 
-        { 
-            method:'POST', 
-            headers: { 'Content-Type': 'application/json' },  
-            body: JSON.stringify({
-                name : 'samara', 
-                pass: "1234", 
-                auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6InRuYW1pciIsInN1YiI6IjQ5YzY2YWJiLTNmNGEtNDM3MC04NjBiLWQxMTM5YjFhM2U0NCIsImlhdCI6MTY5MDYyNjUzOX0.MvhDA7DA6j3qWbhtJm-3GOjuuVtsYYc5lKrUG6IKnXk"})}).then((response) => response.json())
+// async function joinRoom()
+// {
+//     const response = await fetch('http://127.0.0.1:3000/rooms/join-room', 
+//         { 
+//             method:'POST', 
+//             headers: { 'Content-Type': 'application/json' },  
+//             body: JSON.stringify({
+//                 name : 'samara', 
+//                 pass: "1234", 
+//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6InRuYW1pciIsInN1YiI6IjQ5YzY2YWJiLTNmNGEtNDM3MC04NjBiLWQxMTM5YjFhM2U0NCIsImlhdCI6MTY5MDYyNjUzOX0.MvhDA7DA6j3qWbhtJm-3GOjuuVtsYYc5lKrUG6IKnXk"})}).then((response) => response.json())
             
-        console.log(response)
+//         console.log(response)
 
-}
+// }
 
-joinRoom()
+// joinRoom()
 
 
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-var */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prefer-const */
 /* eslint-disable prettier/prettier */
@@ -43,7 +44,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             
             if(!userInfos)
             {
-                 
                 this.OnWebSocektError(socket);
             }
             else
@@ -53,7 +53,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 
                 this.user =  userInfos;
                 
-                this.arrayOfClinets.push({Nickname:userInfos.nickname, socketIds:socket.id})
+                this.arrayOfClinets.push({userId:userInfos.id, socketIds:socket.id})
 
                 const rooms = await this.utils.getRoomsForUser(userInfos.id); // all rooms who this user is member into it
 
@@ -84,48 +84,62 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     @SubscribeMessage('send-message') // on emit the message input get the message and the room name
     async sendMessage(@MessageBody() infos: object)
     {
-        
-        const idOfuser =   this.jwtService.verify(infos['user'],{ secret: process.env.JWT_SECRET });
+        // use try and catch here && search by id of user in db if found or not
+
+        // try 
+        // {
+            console.log(infos)
+            const user =   this.jwtService.verify(infos['user'],{ secret: process.env.JWT_SECRET });
+
+        //     const userId = await this.utils.getuserById(user['sub'])
+
+        //     console.log(userId)
+
+            
+        // } 
+        // catch (error) 
+        // {
+            
+        // }
+
+        console.log(user)
+
 
         const roomId =  await this.utils.getRoomIdByName(infos['roomName']);
         
-        if(idOfuser &&  roomId)
+        const createdMsg = await this.messagesService.createMessages(infos['message'],user['sub'],roomId);
+   
+      
+        const usersInroom = await this.utils.getUsersInRooms(roomId);
+        
+        for(const user of usersInroom)
         {
-            // handle on join the room
-            
-            const createdMsg = await this.messagesService.createMessages(infos['message'],idOfuser['sub'],roomId);
-            
-            await this.messagesService.linkUsersWithSocketIdAndRooms(idOfuser['sub'],infos['socketId'],roomId);
-
-            const connectedUsersInRoom = await this.messagesService.usersConnectedInRoom(roomId);
-            
-            
-            for(const user of connectedUsersInRoom) // broad cast the message for all members of the room
+            for (let i = 0; i < this.arrayOfClinets.length; i++) 
             {
-                this.server.to(user.socketId).emit("add-message",{user: createdMsg.username, message: createdMsg.msg})// can send here the username and her msg
+                if (this.arrayOfClinets[i].userId === user.userId) 
+                {
+                    this.server.to(this.arrayOfClinets[i].socketIds).emit("add-message", {user: createdMsg.username, message: createdMsg.msg})
+                }    
             }
         }
-        else
-        {
-            console.log("room not found")
-        }
+            
     }
    
 
     OnWebSocektError(socket:Socket)
     { 
-        
-       
         socket.emit("error", new UnauthorizedException());
         socket.disconnect();
     }
 
 
     async handleDisconnect(socket: Socket) {
-        
+
+        // on deconect delete the socket id
+
         console.log("disconnected from chat");
         
-        this.arrayOfClinets = []; // clear socket ids 
+        // this.arrayOfClinets = []; // clear socket ids 
         // remove sockets from room
         this.OnWebSocektError(socket);
     }

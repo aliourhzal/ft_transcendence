@@ -87,8 +87,6 @@ export class MessagesService
 
     async  linkUserWithMessageAndRoom(message: string, userId: string, roomId:string) 
     {
-         
-
         return await this.prisma.messages.create({ //  
             data: {
               text: message,
@@ -96,8 +94,7 @@ export class MessagesService
               room: { connect: { id: roomId } },
               
             },
-          });
-
+        });
     }
 
     async usersConnectedInRoom(roomId: string) 
@@ -129,7 +126,8 @@ export class MessagesService
         {
             return { 
                 username, 
-                msg: userAndText.msg
+                msg: userAndText.msg,
+                rtn
             }
         }
         else

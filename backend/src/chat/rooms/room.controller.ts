@@ -93,6 +93,8 @@ export class RoomController {
     {
         try 
         {
+            // search in db by user id if found it or not
+            
             const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
             const roomId = await this.utils.getRoomIdByName(dto.roomName);
             

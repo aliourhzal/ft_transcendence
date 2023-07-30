@@ -27,7 +27,7 @@ export interface roomAndUsers {
 
 export interface ArrayOfClinets{
     
-    Nickname:string;
+    userId : string;
     socketIds : string;
 }
 
