@@ -33,6 +33,30 @@ export default function FriendsRequests() {
 		setDisplayRequests(oldState => !oldState)
 	}
 
+	function createAcceptFunc(requestId: string) {
+		return (async (e) => {
+			try {
+				socket.emit('accept-request', {
+					requestId
+				})
+			} catch (err) {
+				console.log(err);
+			}
+		})
+	}
+
+	function createRefuseFunc(requestId: string) {
+		return (async (e) => {
+			try {
+				socket.emit('refuse-request', {
+					requestId
+				})
+			} catch (err) {
+				console.log(err);
+			}
+		})
+	}
+
 	return(
 		<>
 			<button className="p-3 text-white font-medium bg-darken-300 rounded-xl ml-[auto] relative" onClick={modalAppearance}>
@@ -65,24 +89,24 @@ export default function FriendsRequests() {
 						leaveFrom="opacity-100 scale-100"
 						leaveTo="opacity-0 scale-95"
 						>
-						<Dialog.Panel className="flex flex-col gap-3 w-full max-w-md transform overflow-hidden rounded-2xl bg-whiteSmoke p-6 text-left align-middle shadow-xl transition-all">
+						<Dialog.Panel className="flex flex-col items-center gap-3 w-full max-w-md transform overflow-hidden rounded-2xl bg-whiteSmoke p-6 text-left align-middle shadow-xl transition-all">
 							{
-								requestArray.map((request) => {
+								requestArray.length > 0 ? requestArray.map((request) => {
 									return (
-										<div key={request.id} className="flex rounded-md items-center gap-4 bg-darken-100 p-3">
+										<div key={request.id} className="flex rounded-md items-center gap-4 bg-darken-100 p-3 w-full">
 											<img src={request.sender.profilePic} alt="avatar" className="h-[50px] aspect-square rounded-full"/>
 											<span className="text-white font-medium">{request.sender.nickname}</span>
 											<div className="ml-[auto] flex gap-3">
-												<button className="h-[90%] aspect-square  rounded-full p-2 border-2 border-slate-500">
+												<button className="h-[90%] aspect-square  rounded-full p-2 border-2 border-slate-500" onClick={createAcceptFunc(request.id)}>
 													<BsCheck2 color="rgb(100 116 139)" fontSize="1.2rem"/>
 												</button>
-												<button className="h-[90%] aspect-square  rounded-full p-2 border-2 border-slate-500">
+												<button className="h-[90%] aspect-square  rounded-full p-2 border-2 border-slate-500" onClick={createRefuseFunc(request.id)}>
 													<RxCross1 color="rgb(100 116 139)" fontSize="1.2rem"/>
 												</button>
 											</div>
 										</div>
 									)
-								})
+								}) : <span className="font-medium text-base">You have no Friend Requests</span>
 							}
 						</Dialog.Panel>
 						</Transition.Child>
