@@ -3,6 +3,7 @@
 import {BsFillPersonFill} from "react-icons/bs";
 import {BsFillChatSquareDotsFill} from "react-icons/bs";
 import {FaTableTennis} from "react-icons/fa";
+import {FaUserFriends} from "react-icons/fa";
 import MyModal from "./modalPopup";
 import { useContext } from "react";
 import { getCookie, userDataContext } from "../layout";
@@ -48,9 +49,10 @@ export default function SideBar(props: any)
 					<h2 className="text-whiteSmoke sm:text-base lg:text-[20px] ">{userData.nickname}</h2>
 				</div>
 				<div className=" flex flex-col gap-9 mt-[55%]">
-					<NavOption icon={BsFillPersonFill} router={router} nickname={userData.nickname} location='/' option='profile' socket={userData.chatSocket}/>
-					<NavOption icon={BsFillChatSquareDotsFill} nickname={userData.nickname} router={router} location='/chat' option='chat' socket={userData.chatSocket}/>
-					<NavOption icon={FaTableTennis} router={router} nickname={userData.nickname} location='/game' option='game' socket={userData.chatSocket}/>
+					<NavOption icon={BsFillPersonFill} router={router} nickname={userData.nickname} location='' option='profile' socket={userData.chatSocket}/>
+					<NavOption icon={BsFillChatSquareDotsFill} nickname={userData.nickname} router={router} location='chat' option='chat' socket={userData.chatSocket}/>
+					<NavOption icon={FaTableTennis} router={router} nickname={userData.nickname} location='game' option='game' socket={userData.chatSocket}/>
+					<NavOption icon={FaUserFriends} router={router} nickname={userData.nickname} location='friends' option='friends' socket={userData.chatSocket}/>
 				</div>
 				<div className="h-full w-[44%] flex justify-center items-end">
 					<MyModal dispatch={props.dispatch}/>

@@ -72,7 +72,6 @@ export default function MyModal(props: any) {
 		}
         const newPass = e.target[p].value;
         const confirmPass = e.target[4].value;
-		console.log(newNickname, newPass, confirmPass);
 		if (newPass && confirmPass)
 		{
 			try {
@@ -108,7 +107,6 @@ export default function MyModal(props: any) {
 			catch (error) {
 				passwordRef.current.textContent = "Wrong Password Syntax";
 				passwordRef.current.style.color = "#E76161";
-				console.log(error);
 			}
 		}
 		else if (newNickname)
