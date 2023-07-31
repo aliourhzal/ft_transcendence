@@ -58,3 +58,19 @@ export interface AllMessages {
     user: string;
     msg: string;
   }
+
+
+export  interface ListOfRoomsOfUser
+{
+    userId: string;
+    userType: string;
+    roomId: string;
+    socketId?: string;
+    room: {
+      id: string;
+      room_name: string;
+      password?: string;
+      roomType: string;
+    }
+
+}

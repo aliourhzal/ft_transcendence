@@ -7,7 +7,7 @@ import { Socket } from "socket.io-client"
 
 const RoomForm = () => {
      
-    const {showConv, setShowConv, activeUserConv, setActiveUserConv, showForm, setShowForm, socket, setConvs} = useContext(Context)
+    const {showConv, setShowConv, activeUserConv, setActiveUserConv, showForm, setShowForm, socket, setConvs, set_room_created} = useContext(Context)
     // const [roomInfo, setRoomInfo] = useState({name:'', users:[], password:''})
     const [roomName, setName] = useState('')
     const [users, setUsers] = useState<string[]>([])
@@ -21,6 +21,7 @@ const RoomForm = () => {
         var temp = document.getElementById('main')
         temp ? temp.style.filter = 'blur(0)' : ''
         setName(''); setUser(''); setUsers([]); setPass(''); setRoomType('PUBLIC'); setPrivate(false)
+        set_room_created(old => !old)
     }
     // useEffect ( () => {
     //     if (pass != '')
@@ -38,11 +39,11 @@ const RoomForm = () => {
             setRoomType('PRIVATE')
         else
             setRoomType('PUBLIC')
-            
+
         try {
             await axios.post('http://127.0.0.1:3000/rooms', {roomName:roomName, users:users, auth: socket.auth['token'], type:roomType, password:pass},
                                                             {withCredentials: true, headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}}).then(
-                                                                response => hideForm())
+                                                                response => {console.log(response);hideForm()})
         } catch(error) {
             alert(error)
         }

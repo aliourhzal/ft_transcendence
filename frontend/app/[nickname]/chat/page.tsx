@@ -36,6 +36,9 @@ export default function Chat() {
 	const [convs, setConvs] = useState<conversation[]>([])
 
 	const [msg_sent, set_msg_sent] = useState(false)
+	const [room_created, set_room_created] = useState(false)
+
+	const [rooms, setRooms] = useState<any>(undefined)
 
 	const getConvs = async () => {
 		// try {
@@ -50,7 +53,8 @@ export default function Chat() {
 				token: getCookie('access_token'),
 			},
 		}))
-
+		set_room_created(old => !old)
+		// axios.get("http://127.0.0.1:3000/rooms").then(res => console.log(res))
 	}, [])
 
 	const [chatBoxMessages, setChatBoxMessages] = useState<any>([])
@@ -64,7 +68,8 @@ export default function Chat() {
 	return (
 		<main className='select-none h-full w-full overflow-y-auto'>
 			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, convs, setConvs, socket,
-				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm, set_msg_sent}}>
+				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm, set_msg_sent,
+				set_room_created, room_created}}>
 				<RoomForm />
 				<JoinRoomForm />
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200 ">
@@ -77,15 +82,15 @@ export default function Chat() {
 						<ConvList />
 
 						<div className='flex justify-between items-center w-[50%] h-[8%]'>
-							<div className='border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center'>
-								<Image className='cursor-pointer w-auto h-auto' alt='CreateChannel' title='CreateChannel' src='/images/channel.svg' onClick={ () => {
+							<div className='cursor-pointer border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center' onClick={ () => {
 									setShowForm(true);
-								}} width={30} height={30}/>
+								}}>
+								<Image className='w-auto h-auto' alt='CreateChannel' title='CreateChannel' src='/images/channel.svg'  width={30} height={30}/>
 							</div>
-							<div className='border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center'>
-								<Image title='JoinChannel' className='w-auto h-auto' alt='JoinChannel' src='/images/channel.svg' width={30} height={30} onClick={ () => {
+							<div className='cursor-pointer border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center' onClick={ () => {
 									setShowJoinForm(true)
-								}}/>
+								}}>
+								<Image title='JoinChannel' className='w-auto h-auto' alt='JoinChannel' src='/images/channel.svg' width={30} height={30}/>
 							</div>
 							<div className='border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center'>
 								<Image className='w-auto h-auto' alt='new channel' src='/images/groupe.svg' width={25} height={25}/>

@@ -1,13 +1,9 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prettier/prettier */
 // Example POST method implementation:
 
-const users = ['asalek'];
-const name = "test"
 
-const type = "PROTECTED"
-
- 
 
 
 // async function createRoom()
@@ -17,11 +13,11 @@ const type = "PROTECTED"
 //             method:'POST', 
 //             headers: { 'Content-Type': 'application/json' },  
 //             body: JSON.stringify({
-//                 roomName : "samara", 
+//                 roomName : "dfd", 
 //                 users,
 //                 type, 
 //                 password: "1234",
-//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6Im1lc3NhbGloIiwic3ViIjoiZTZmYzNmMDUtYjQ2Zi00ZDAwLTg1NDEtZDNhOGY2MDRjNTU4IiwiaWF0IjoxNjkwNjU1NDcxfQ.ozjl_DstX_ZzM6kN0fUEl-nsrlMdhgLTtqne85Y2bPk"})}).then((response) => response.json())
+//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6Im1lc3NhbGloIiwic3ViIjoiY2ViOTVmYjYtZDlhZC00NThlLTgzNTctMTQyOTM1YTgwZGZlIiwiaWF0IjoxNjkwNTc3NTEyfQ.S9UxCON3cuVQ_5edBYIF6DTJMmmHZEZG1ElvipJqtf0"})}).then((response) => response.json())
             
 //         console.log(response)
 
@@ -103,6 +99,46 @@ const type = "PROTECTED"
 
 // joinRoom()
 
+// const io = require('socket.io-client');
 
+// async function connectToWebSocket()
+// {
+//     const socket = io('ws://127.0.0.1:3004',{
+// 			auth: {
+// 				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6Im1lc3NhbGloIiwic3ViIjoiZjU1YWQ0NjAtMzVhZi00MjM3LWJlYmQtOWZlODY5ZDdiMTlmIiwiaWF0IjoxNjkwODM3MTM0fQ.5ozooN7jcA1EbAQ5Yk6XhoXTlQgDcVnLDcSnFyXy8CM'
+// 			},
+// 		});
+// }
+
+
+// connectToWebSocket()
+
+
+const users = ['asalek' ,'asalek'  , 'messalih'];
+const name = "dfd"
+
+const type = "PUBLIC"
 
  
+
+
+
+async function addNewUsersToRoom()
+{
+
+const response = await fetch('http://127.0.0.1:3000/rooms/addNewUsersToRoom', 
+        { 
+            method:'POST', 
+            headers: { 'Content-Type': 'application/json' },  
+            body: JSON.stringify({
+                idOfRoom : '7db037b5-11fa-477e-9a28-947b3bd633b5', 
+                users,
+                pass: "1234", 
+                auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6Im1lc3NhbGloIiwic3ViIjoiZjU1YWQ0NjAtMzVhZi00MjM3LWJlYmQtOWZlODY5ZDdiMTlmIiwiaWF0IjoxNjkwODM3MjYwfQ.FVVk55AeFvDKf5SPot6cTbmc9cqIG77tCHDweM02WMU"})}).then((response) => response.json())
+            
+        console.log(response)
+
+
+}
+
+addNewUsersToRoom()

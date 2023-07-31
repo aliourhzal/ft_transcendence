@@ -6,18 +6,21 @@ import ConvBox from "./ConvBox"
 
 
 const ConvList = () => {
-    const {socket, convs, setConvs} = useContext(Context)
+    const {socket, convs, setConvs, room_created, set_room_created} = useContext(Context)
     const fillUserList = (listOfRoomsOfUser) => {
       setConvs([])
-      listOfRoomsOfUser.listOfRoomsOfUser.map( (room: any) => setConvs(old => [{name:room, photo:'', last_msg:'welcome to group chat', id:room.indexes}, ...old]))
+      listOfRoomsOfUser.listOfRoomsOfUser.map( (room: any) => setConvs(old => [{name:room.name, photo:'', last_msg:'welcome to group chat', id:room.id}, ...old]))
     }
   
     useEffect( () => {
+      console.log("entered")
         socket?.on('list-rooms',(listOfRoomsOfUser: any) => {
-          console.log(listOfRoomsOfUser)
-          fillUserList(listOfRoomsOfUser)
-        })
-    })
+          console.log("YES")
+            console.log(listOfRoomsOfUser)
+            fillUserList(listOfRoomsOfUser)
+          })
+    }, [room_created])
+
     return (
       <div className='group left-[10%] flex-col bg-transparent w-full h-[80%] bg-slate-500 mt-8 overflow-hidden overflow-y-scroll'>
           {convs.map ((item:conversation) =>  (<ConvBox key={gimmeRandom()} data={item} />))}

@@ -33,11 +33,17 @@ export class RoomController {
         {
             const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
             
+            if(!await this.utils.getUserId(user['sub']))
+            {
+                console.log('user not found.')
+                return;
+            }
+
             const usersIds = await this.utils.getUsersId(user['sub'],dto.users, 1)
             
             if(usersIds === 0)
             {
-                console.log("you are the admin")
+                console.log("you try to add the current user")
                 return;
             }
             
@@ -84,6 +90,7 @@ export class RoomController {
         } 
         catch (error) 
         {
+            console.log('object')
             console.log(error);
         }
     }
@@ -96,6 +103,12 @@ export class RoomController {
             // search in db by user id if found it or not
             
             const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
+            if(!await this.utils.getUserId(user['sub']))
+            {
+                console.log('user not found.')
+                return;
+            }
+            
             const roomId = await this.utils.getRoomIdByName(dto.roomName);
             
             if (roomId) 
@@ -132,8 +145,16 @@ export class RoomController {
     async setOtherAasAdministrators(@Body() dto:any, @Res() res:any)
     {
         try 
-        {
+        { // if error in jwt
             const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
+            
+            if(!await this.utils.getUserId(user['sub'])) //if jwt expired
+            {
+                console.log('user not found.')
+                return;
+            }
+            
+
             const roomId = await this.utils.getRoomIdByName(dto.roomName);
             const usersIds = await this.utils.getUsersId(user['sub'],dto.users)
            
@@ -181,6 +202,12 @@ export class RoomController {
         {
             const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
 
+            if(!await this.utils.getUserId(user['sub']))
+            {
+                console.log('user not found.')
+                return;
+            }
+            
             const roomId = await this.utils.getRoomIdByName(dto.roomName);
             
             const usersIds = await this.utils.getUsersId(user['sub'],dto.users)
@@ -226,7 +253,12 @@ export class RoomController {
         try 
         {
             const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
-
+            if(!await this.utils.getUserId(user['sub']))
+            {
+                console.log('user not found.')
+                return;
+            }
+            
             const roomId = await this.utils.getRoomIdByName(dto.roomName);
             
             if(roomId)
@@ -292,6 +324,11 @@ export class RoomController {
         try 
         {
             const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
+            if(!await this.utils.getUserId(user['sub']))
+            {
+                console.log('user not found.')
+                return;
+            }
             
             const roomId = await this.utils.getRoomIdByName(dto.name);
 
@@ -299,7 +336,7 @@ export class RoomController {
             {
                 const usersInRoom = await this.utils.getUsersInRooms(roomId);
 
-                const find = usersInRoom.find((item) => item.userId === user['sub']);
+                const find = usersInRoom.find((item:any) => item.userId === user['sub']);
 
                 if(!find)
                 {
@@ -348,6 +385,75 @@ export class RoomController {
         }
     }
 
+
+    @Post('/addNewUsersToRoom')
+    async addNewUsersToRoom(@Body() dto:any, @Res() res:any)
+    {
+        // id of room
+        // users 
+        // current user
+
+        // check if current user is admin or owner
+        // dont add current user to this room
+        // dont add existing users in room
+
+        // test if addmin and owner can add users
+        // test if user cannot add users to this room
+
+
+        try 
+        { // if error in jwt
+            const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
+
+            if(!await this.utils.getUserId(user['sub'])) //if jwt expired
+            {
+                console.log('user not found.')
+                return;
+            }
+            const roomId = await this.utils.getRoomById(dto.idOfRoom);
+            
+            
+            const userType = await this.utils.getUserType(roomId.id,user['sub']);
+
+            
+            if(userType.userType !== 'USER') // test one by one
+            {
+                const usersIds = await this.utils.getUsersId(user['sub'],dto.users, 1)
+            
+                if(usersIds === 0)
+                {
+                    console.log("you try to add the current user")
+                    return;
+                }
+                if(usersIds)
+                {
+                    // search in room by users id if found or not
+                    // if not found add them
+                    
+                }
+                else
+                {
+                    console.log('users not found')
+                    return;
+                }
+
+            }
+            else
+            {
+                console.log('dont have the permmission to add users to this room.')
+                return ;
+            }
+            
+            
+        } 
+        catch (error) 
+        {
+            console.log('here')
+            console.log(error)    
+        }
+
+
+    }
 
     async leaveRoom()
     {

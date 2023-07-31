@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket, Server } from  'socket.io';
 import { UsersService } from 'src/users/users.service';
-import { ArrayOfClinets, UserData, roomAndUsers } from 'src/utils/userData.interface';
+import {  UserData, ArrayOfClinets, ListOfRoomsOfUser } from 'src/utils/userData.interface';
 import { RoomsService } from '../rooms/rooms.service';
 import { UtilsService } from 'src/utils/utils.service';
 import { MessagesService } from '../messages/messages.service';
@@ -30,8 +30,9 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     
     socketOfcurrentUser:Socket;
 
-    arrayOfClinets :ArrayOfClinets[] = [];
-
+    soketsId :ArrayOfClinets[] = [];
+    
+    listOfRoomsOfUser :   any[] = [];
 
     async handleConnection(socket: Socket) 
     {
@@ -40,6 +41,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             // connect to socket with jwt
             const decodeJWt =   this.jwtService.verify(socket.handshake.auth['token'],{ secret: process.env.JWT_SECRET })
             // verify the user
+
             const userInfos = await this.usersService.findOneByNickname(decodeJWt['nickname']);
             
             if(!userInfos)
@@ -50,33 +52,30 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             { 
                 
                 console.log("connected from chat.")
-                
-                this.user =  userInfos;
-                
-                this.arrayOfClinets.push({userId:userInfos.id, socketIds:socket.id})
+                 
+                this.soketsId.push({userId:userInfos.id, socketIds:socket.id})
 
                 const rooms = await this.utils.getRoomsForUser(userInfos.id); // all rooms who this user is member into it
 
-
-                let listOfRoomsOfUser:string[] = [];
-
+              
                 let indexes:number[] = [];
 
                 
                 for(let i = 0; i < rooms.length; i++)
                 {
-                    listOfRoomsOfUser.push(rooms[i]['room']['room_name']);
+                    this.listOfRoomsOfUser.push(await this.messagesService.getAllMessagesofRoom(rooms[i]['room']['room_name']));
                     indexes.push(i);
                 }
                 
-                this.server.to(socket.id).emit("list-rooms",{listOfRoomsOfUser,indexes });  //  evry client will connected will display the rooms who is member into it
+
+                this.server.to(socket.id).emit("list-rooms",{listOfRooms: this.listOfRoomsOfUser,indexes });  //  evry client will connected will display the rooms who is member into it
             
             }
              
         } 
         catch (error) 
         {
-            console.log("from error")
+            console.log("from chat error")
             this.OnWebSocektError(socket);
         }
     }
@@ -86,43 +85,37 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     {
         // use try and catch here && search by id of user in db if found or not
 
-        // try 
-        // {
-            console.log(infos)
-            const user =   this.jwtService.verify(infos['user'],{ secret: process.env.JWT_SECRET });
-
-        //     const userId = await this.utils.getuserById(user['sub'])
-
-        //     console.log(userId)
-
-            
-        // } 
-        // catch (error) 
-        // {
-            
-        // }
-
-        console.log(user)
-
-
-        const roomId =  await this.utils.getRoomIdByName(infos['roomName']);
-        
-        const createdMsg = await this.messagesService.createMessages(infos['message'],user['sub'],roomId);
-   
-      
-        const usersInroom = await this.utils.getUsersInRooms(roomId);
-        
-        for(const user of usersInroom)
+        try 
         {
-            for (let i = 0; i < this.arrayOfClinets.length; i++) 
+            const user =   this.jwtService.verify(infos['user'],{ secret: process.env.JWT_SECRET });
+    
+            if(!await this.utils.getUserId(user['sub']))
             {
-                if (this.arrayOfClinets[i].userId === user.userId) 
-                {
-                    this.server.to(this.arrayOfClinets[i].socketIds).emit("add-message", {user: createdMsg.username, message: createdMsg.msg})
-                }    
+                console.log('user not found.')
+                return;
             }
-        }
             
+            const roomId =  await this.utils.getRoomIdByName(infos['roomName']);
+            
+            const createdMsg = await this.messagesService.createMessages(infos['message'],user['sub'],roomId);
+        
+            
+            const usersInroom = await this.utils.getUsersInRooms(roomId);
+            
+            for(const userInRoom of usersInroom)
+            {
+                for (let i = 0; i < this.soketsId.length; i++) 
+                {
+                    {
+                        this.server.to(this.soketsId[i].socketIds).emit("add-message", {user: createdMsg.username, message: createdMsg.msg})
+                    }    
+                }
+            }
+        } 
+        catch (error) 
+        {
+            console.log(error)
+        }
     }
    
 
@@ -139,7 +132,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
         console.log("disconnected from chat");
         
-        // this.arrayOfClinets = []; // clear socket ids 
+        // this.soketsId = []; // clear socket ids 
         // remove sockets from room
         this.OnWebSocektError(socket);
     }

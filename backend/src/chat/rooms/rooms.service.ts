@@ -84,7 +84,7 @@ export class RoomsService
 
     async OWNERCreateRoom(room_name: string, adminOfRoom:string, roomType_: RoomType , password?: string)  
     {
-     
+        console.log(adminOfRoom)
         const existingRoom = await this.utils.getRoomIdByName(room_name)
         
         
@@ -113,6 +113,7 @@ export class RoomsService
                 return room;
             }
             const room = await this.prisma.room.create({data: {room_name , roomType : roomType_  }}) // create the room
+      
              
             await this.prisma.joinedTable.create({ // set OWNER for the room
                 data: {
@@ -133,6 +134,7 @@ export class RoomsService
         
         const room = await this.OWNERCreateRoom(roomandUsers.roomName, adminOfRoom, roomType_, password);// crete room and assign to it the admin
         
+
         if(room === 0 )
             return 0;
 

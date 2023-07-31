@@ -2,10 +2,13 @@
 import Image from 'next/image'
 import { Context } from '../page'
 import ChatBox from './ChatBox'
+import RoomInfo from './roomInfo'
 
 const Conversation = () => {
 
     const [deviceType, setDeviceType] = useState('normal')
+
+    const [showInfo, setShowInfo] = useState(false)
 
     const {showConv, setShowConv, activeUserConv, setActiveUserConv, chatBoxMessages, setChatBoxMessages, rooms, socket, userData, set_msg_sent} = useContext(Context)
 
@@ -38,12 +41,16 @@ const Conversation = () => {
     return (
         deviceType == 'normal' ?
             <div className='flex flex-grow-[1] flex-col h-[90vh] w-[calc(120%/2)] items-center justify-center '>
-				<div className=" text-white pl-10 pb-5 pt-4 w-[100%] border-blue-gray-200 text-blue-gray-700 outline border-b outline-0 placeholder-shown:border-blue-gray-200 focus:outline-0">
+				<div className=" flex justify-between text-white pl-10 pb-5 pt-4 w-[100%] border-blue-gray-200 text-blue-gray-700 outline border-b outline-0 placeholder-shown:border-blue-gray-200 focus:outline-0">
 					<div className=''>{activeUserConv.name}</div>
+                    <Image alt='info' className='cursor-pointer mr-5 w-7 h-7' src={'/images/info.svg'} width={30} height={30} onClick={ () => {
+                        setShowInfo(true)
+                    }}/>
 				</div>
 
-                <div id='chatbox' className='flex flex-col w-full mt-8 overflow-y-scroll basis-[80%]'>
+                <div id='chatbox' className='relative flex flex-col w-full mt-8 overflow-y-scroll basis-[80%]'>
                     <ChatBox/>
+                    <RoomInfo users={['lol']} show={showInfo} setShow={setShowInfo} name={activeUserConv.name} />
                     {/* <Image className=' object-contain' alt='bg' src='/assets/images/conv_bg.gif' width={500} height={500}/> */}
                 </div>
 
@@ -58,7 +65,12 @@ const Conversation = () => {
 					</div>
                 </div>
             </div>
-        : 
+        :
+
+
+                        // PHOOOOOOOOOOOOOONE
+
+
         <div id='conv_div' className='flex-col absolute h-[100%] w-[100%] bg-gray-900 rounded-3xl'>
             <button className='absolute right-10 top-[2%] bg-blue-500 text-white rounded-full w-7' type='button' onClick={() => {setShowConv(false)}}>X</button>
             <div className='w-[100%]'>

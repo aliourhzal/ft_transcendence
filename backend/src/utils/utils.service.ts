@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prefer-const */
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
@@ -22,7 +23,15 @@ export class UtilsService {
         return user.id || null;
     }
    
-   
+    async getUserId(id:string)
+    {
+        const existingUser = await this.prisma.user.findUnique({
+            where: {
+                id,
+            },
+        });
+        return existingUser;
+    }
 
     async getUsersId(adminId: string, users?: string[], flag?: number)
     {
