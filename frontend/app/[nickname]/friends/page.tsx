@@ -16,7 +16,7 @@ export default function Friends() {
 	async function onSubmitHandler(e) {
 		e.preventDefault();
 		const nickname = e.target[0].value;
-		console.log()
+		console.log(nickname);
 		setIsLoading(true);
 		socket.emit('send-request', {
 			friend: nickname
