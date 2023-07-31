@@ -117,13 +117,3 @@ export default function FriendsRequests() {
 		</>
 	);
 }
-
-/**
- * [
- * 	{
- * 		id,
- * 		sender: here you can access sender info,
- * 
- * 	}
- * ]
- */
