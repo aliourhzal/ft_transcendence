@@ -94,26 +94,10 @@ export class UsersController{
 	}
 
 	@UseGuards(AuthGuard('jwt'))
-	@Post('/friend/send-request')
-	async sendRequest(@Body('nickname') friendName:string, @Req() request: any)
-	{
-		console.log(friendName);
-		return await this.usersService.sendRequest(friendName, request.user.nickname);
-	}
-
-	@UseGuards(AuthGuard('jwt'))
-	@Post('/friend/accept-request')
-	async acceptRequest(@Body('nickname') friendName:string, @Req() request: any)
-	{
-		return await this.usersService.acceptRequest(friendName, request.user.nickname);
-	}
-
-	@UseGuards(AuthGuard('jwt'))
 	@Get('/friend/requests')
 	async getRequest(@Body('nickname') friendName:string, @Req() request: any)
 	{
 		return await this.usersService.getFriendsRequests(request.user.nickname);
 	}
-
 
 }
