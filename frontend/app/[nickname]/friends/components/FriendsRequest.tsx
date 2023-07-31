@@ -20,13 +20,10 @@ export default function FriendsRequests() {
 		const requests = axios.get('http://127.0.0.1:3000/users/friend/requests', {
 			withCredentials: true
 		}).then(res => {
-			console.log(res.data);
 			setRequestArray(res.data);
 			setRequestCounter(res.data.length);
 		}).catch(err => console.log(err));
 		socket.on('receive-request', (data) => {
-			console.log('test');
-			console.log(data);
 			setRequestCounter(data.length);
 			setRequestArray(data);
 		})
