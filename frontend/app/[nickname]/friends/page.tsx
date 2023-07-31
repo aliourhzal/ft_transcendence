@@ -2,27 +2,25 @@
 
 import Container from "@/components/UI/ProfileBoxs";
 import CircularProgress from '@mui/material/CircularProgress';
-import { sizing } from '@mui/system';
 
 import axios from "axios";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import FriendsRequests from "./components/FriendsRequest";
+import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
 
 export default function Friends() {
 	const [requestErr, setRequestErr] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
+	const socket = useContext(InvitationSocketContext);
 
 	async function onSubmitHandler(e) {
 		e.preventDefault();
 		const nickname = e.target[0].value;
-		try {
-			setIsLoading(true);
-			await axios.post(`http://127.0.0.1:3000/users/friend/send-request`, {nickname}, {
-				withCredentials: true
-			})
-		} catch(err) {
-			setRequestErr(err.response.data.message);
-		}
+		console.log()
+		setIsLoading(true);
+		socket.emit('send-request', {
+			friend: nickname
+		})
 		setIsLoading(false);
 	}
 
