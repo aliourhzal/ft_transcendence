@@ -4,13 +4,16 @@ import Container from "@/components/UI/ProfileBoxs";
 import CircularProgress from '@mui/material/CircularProgress';
 
 import axios from "axios";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import FriendsRequests from "./components/FriendsRequest";
 import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
+import FriendCard from "./components/FriendCard";
+import { UniversalData } from "../layout";
 
 export default function Friends() {
 	const [requestErr, setRequestErr] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
+	const [friends, setFriends] = useState<UniversalData[]>([]);
 	const socket = useContext(InvitationSocketContext);
 
 	async function onSubmitHandler(e) {
@@ -23,6 +26,16 @@ export default function Friends() {
 		})
 		setIsLoading(false);
 	}
+
+	useEffect(() => {
+		axios.get('http://127.0.0.1:3000/users/friends', {
+			withCredentials: true
+		})
+		.then(res => {
+			console.log(res.data);
+			setFriends(res.data);
+		})
+	}, [])
 
 	return (
 		<main className='h-full w-full bg-darken-200 overflow-y-auto'>
@@ -39,6 +52,13 @@ export default function Friends() {
 					<FriendsRequests />
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-5 p-5">
+					{/* {
+						friends.length > 0 && friends.map((friend) => {
+							return(
+								<FriendCard key={friend.intra_Id} user={friend}/>
+							);
+						})
+					} */}
 					<Container className="p-0 overflow-hidden flex flex-col items-center relative">
 						<div className="bg-[url('/images/pongTable.jpeg')] bg-cover bg-center bg-no-repeat w-[100%] h-[150px]"></div>
 						<div className="translate-y-[-50%] flex flex-col items-center">
