@@ -1,19 +1,22 @@
 'use client'
 
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from "react";
 import {BsCheck2} from "react-icons/bs"
 import {RxCross1} from "react-icons/rx"
-import Container from "@/components/UI/ProfileBoxs";
+import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
+
 
 export default function FriendsRequests() {
 	const [requestCounter, setRequestCounter] = useState(0);
 	const [displayRequests, setDisplayRequests] = useState(false);
 	const [requestArray, setRequestArray] = useState([]);
+	const socket = useContext(InvitationSocketContext);
 
 	useEffect(() => {
+		console.log('friend is mounted')
 		const requests = axios.get('http://127.0.0.1:3000/users/friend/requests', {
 			withCredentials: true
 		}).then(res => {
@@ -21,6 +24,12 @@ export default function FriendsRequests() {
 			setRequestArray(res.data);
 			setRequestCounter(res.data.length);
 		}).catch(err => console.log(err));
+		socket.on('receive-request', (data) => {
+			console.log('test');
+			console.log(data);
+			setRequestCounter(data.length);
+			setRequestArray(data);
+		})
 	}, [])
 
 	function modalAppearance() {
@@ -59,11 +68,11 @@ export default function FriendsRequests() {
 						leaveFrom="opacity-100 scale-100"
 						leaveTo="opacity-0 scale-95"
 						>
-						<Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-whiteSmoke p-6 text-left align-middle shadow-xl transition-all">
+						<Dialog.Panel className="flex flex-col gap-3 w-full max-w-md transform overflow-hidden rounded-2xl bg-whiteSmoke p-6 text-left align-middle shadow-xl transition-all">
 							{
 								requestArray.map((request) => {
 									return (
-										<div className="flex rounded-md items-center gap-4 bg-darken-100 p-3">
+										<div key={request.id} className="flex rounded-md items-center gap-4 bg-darken-100 p-3">
 											<img src={request.sender.profilePic} alt="avatar" className="h-[50px] aspect-square rounded-full"/>
 											<span className="text-white font-medium">{request.sender.nickname}</span>
 											<div className="ml-[auto] flex gap-3">
