@@ -100,4 +100,10 @@ export class UsersController{
 		return await this.usersService.getFriendsRequests(request.user.nickname);
 	}
 
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/friends')
+	async getFriends(@Req() request: any) {
+		return await this.usersService.getFriends(request.user.nickname);
+	}
+
 }
