@@ -187,38 +187,44 @@ export class UsersService {
 		})
 	}
 
-	async acceptRequest(friendNickname: string, nickname: string) {
-		const friend = await this.findOneByNickname(friendNickname);
-		const user = await this.findOneByNicknameWithReceived(nickname);
-		if (!friend) 
-		{
-			throw new NotFoundException('user not found!!')
-		}
-		for (const request of user.receivedRequest) {
-			if (request.senderId === friend.id) {
-				await this.prisma.user.update({
-					where: {
-						nickname
-					},
-					data: {
-						userFriends: {
-						connect: [{ id: friend.id }],
-					},
-					},
-				})
-		
-				await this.prisma.user.update({
-					where: { id: friend.id },
-					data: {
-						userFriends: {
-						connect: [{ nickname }],
-					},
-					},
-				});
-				return ;
+	async acceptRequest(requestId: string, nickname: string) {
+		const request = await this.prisma.friendRequest.findUnique({
+			where: {
+				id: requestId
+			},
+			include: {
+				sender: true,
+				target: true
 			}
-		}
-		throw new HttpException(`${friend.nickname} did not send you a request`, HttpStatus.BAD_REQUEST);
+		})
+		const user = await this.findOneByNickname(nickname);
+		if (user.id !== request.target.id)
+			throw new HttpException('no such request', HttpStatus.BAD_REQUEST);
+		await this.prisma.user.update({
+			where: {
+				nickname
+			},
+			data: {
+				userFriends: {
+					connect: [{id: request.sender.id}]
+				}
+			}
+		})
+		await this.prisma.user.update({
+			where: {
+				id: request.sender.id
+			},
+			data: {
+				userFriends: {
+					connect: [{id: user.id}]
+				}
+			}
+		})
+		await this.prisma.friendRequest.delete({
+			where: {
+				id: request.id
+			}
+		});
 	}
 
 	async sendRequest(friendNickname: string, nickname: string) {
@@ -248,6 +254,25 @@ export class UsersService {
 			}
 		});
 		return (0);
+	}
+
+	async refuseRequest(requestId: string, nickname: string) {
+		const request = await this.prisma.friendRequest.findUnique({
+			where: {
+				id: requestId
+			},
+			include: {
+				target: true
+			}
+		});
+		const user = await this.findOneByNickname(nickname);
+		if (user.id !== request.target.id)
+			throw new HttpException('no such request', HttpStatus.BAD_REQUEST);
+		await this.prisma.friendRequest.delete({
+			where: {
+				id: requestId
+			}
+		})
 	}
 
 	async getFriendsRequests(nickname: string) {
