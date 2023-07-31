@@ -1,0 +1,90 @@
+import { NotFoundException, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { AuthGuard } from "@nestjs/passport";
+import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { Socket, Server } from "socket.io"
+import { UsersService } from "src/users/users.service";
+
+type userNode = {
+	socket: Socket,
+	nickname: string
+}
+
+@WebSocketGateway(3030, {
+	cors: {
+		origin: process.env.FRONT_HOST
+	}
+})
+export default class InvitationsGateway implements OnGatewayConnection, OnGatewayDisconnect {
+
+	constructor(
+		private readonly jwtService: JwtService,
+		private readonly usersService: UsersService    
+	) {}
+
+	@WebSocketServer()
+	private server: Server;
+
+	private connectedUsers: userNode[] = [];
+
+	OnWebSocektError(socket:Socket)
+    {
+        socket.emit("error", new UnauthorizedException());
+        socket.disconnect();
+    }
+
+	handleDisconnect(socket: Socket) {
+		const index = this.connectedUsers.findIndex((user, i) => {
+			if (user.socket.id === socket.id)
+				return (i);
+		})
+		if (index > -1)
+			this.connectedUsers.splice(index, 1);	
+		console.log("disconnected from invitations")
+	}
+
+	async handleConnection(socket: Socket) {
+		let decodeJWt: any;
+		try {
+			decodeJWt = this.jwtService.verify(socket.handshake.auth.token, {
+				secret: process.env.JWT_SECRET
+			})
+		} catch (err) {
+			this.OnWebSocektError(socket);
+		}
+		const user = await this.usersService.findOneByNickname(decodeJWt.nickname);
+		if (!user) {
+			this.OnWebSocektError(socket);
+		}
+		this.connectedUsers.push({socket, nickname: user.nickname});
+		console.log('connected to invitations')
+	}
+
+	@SubscribeMessage('send-request')
+	async onSendRequest(socket: Socket, target: any) {
+		const sender = this.connectedUsers.filter((user) => {
+			if (user.socket.id === socket.id)
+				return (true);
+		})
+		const receiver = this.connectedUsers.filter((user) => {
+			if (user.nickname === target.friend)
+				return (true);
+		})
+
+		const response = await this.usersService.sendRequest(target.friend, sender[0].nickname);
+		if (response)
+		{
+			console.log("user not found");
+			this.server.to(socket.id).emit('user not found!!');
+			return ;
+		}
+		if (receiver) {
+			const requests = await this.usersService.getFriendsRequests(receiver[0].nickname);
+			console.log(requests);
+			receiver.map((instant) => {
+				this.server.to(instant.socket.id).emit('receive-request', requests)
+			})
+		}
+	}
+
+}
