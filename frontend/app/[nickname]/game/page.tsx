@@ -14,7 +14,7 @@ import { useEffectmod } from "@/hooks/useAxiosFetch";
         Score
 */
 
-export function StartGame()
+export function StartGame(socket: Socket)
 {
     // declare interval ID
     let loop:NodeJS.Timer = null;
@@ -38,7 +38,6 @@ comScore.src = "../sounds/comScore.mp3";
 userScore.src = "../sounds/userScore.mp3";
 
 // Ball object
-ballPos.x = canvas.width/2;
 const ball = {
     x : canvas.width/2,
     y : canvas.height/2,
@@ -249,6 +248,7 @@ function render()
     {
         if (com.score === 5 || user.score === 5)
             clearInterval(loop);
+        socket.emit("gameData", ball);
         update();
         render();
     }
@@ -268,14 +268,17 @@ export default function Game()
     const socket = useContext(WebsocketContext);
     const userData = useContext(userDataContext);
     console.log('test', userData);
-
+    //tlat khmis jm3a
     // this hook used to start the game and connect to the socket
     useEffect(() => {
-        StartGame();
+        // wait in a que || play with friend
+        socket.on("startGame", () => {
+            StartGame(socket);
+        });
 
         socket.on('connect', () => {
             console.log("connected");
-            // socket.emit('newMessageAsalek', 'i\'m connected');
+            socket.emit('newMessageAsalek', 'i\'m connected');
         });
         socket.on('onMessage', (data) => {
             console.log(data);
