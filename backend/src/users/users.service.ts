@@ -187,6 +187,18 @@ export class UsersService {
 		})
 	}
 
+	async getFriends(nickname: string) {
+		const {userFriends} = await this.prisma.user.findUnique({
+			where: {
+				nickname
+			},
+			include: {
+				userFriends: true
+			}
+		})
+		return (userFriends);
+	}
+
 	async acceptRequest(requestId: string, nickname: string) {
 		const request = await this.prisma.friendRequest.findUnique({
 			where: {
