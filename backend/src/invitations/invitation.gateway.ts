@@ -81,7 +81,6 @@ export default class InvitationsGateway implements OnGatewayConnection, OnGatewa
 		}
 		if (receiver) {
 			const requests = await this.usersService.getFriendsRequests(receiver[0].nickname);
-			console.log(requests);
 			receiver.map((instant) => {
 				this.server.to(instant.socket.id).emit('receive-request', requests)
 			})
@@ -99,8 +98,10 @@ export default class InvitationsGateway implements OnGatewayConnection, OnGatewa
 				return (true);
 		})
 		await this.usersService.acceptRequest(target.requestId, receiver.nickname);
+		const friends = await this.usersService.getFriends(receiver.nickname);
 		const requests = await this.usersService.getFriendsRequests(receiver.nickname);
 		this.server.to(socket.id).emit('receive-request', requests);
+		this.server.to(socket.id).emit('receive-friends', friends);
 	}
 
 	@SubscribeMessage('refuse-request')
@@ -117,4 +118,5 @@ export default class InvitationsGateway implements OnGatewayConnection, OnGatewa
 		const requests = await this.usersService.getFriendsRequests(receiver.nickname);
 		this.server.to(socket.id).emit('receive-request', requests);
 	}
+
 }
