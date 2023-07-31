@@ -77,8 +77,8 @@ model FriendRequest {
 	id			String @id @default(uuid())
 	target		User @relation("target", fields: [targetId], references: [id])
 	sender		User @relation("sender", fields: [senderId], references: [id])
-	targetId	String @unique
-	senderId	String @unique
+	targetId	String
+	senderId	String
 }
 
 
