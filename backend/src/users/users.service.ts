@@ -225,16 +225,21 @@ export class UsersService {
 		const newFriend = await this.findOneByNickname(friendNickname);
 		const user = await this.findOneByNicknameWithRequests(nickname);
 		if (!newFriend) 
-		{
-			throw new NotFoundException('user not found!!')
-		}
+			return (1);
+
+		// to prevent sending the request to your self
+		if (newFriend.nickname === user.nickname)
+			return(1);
+
+		// to prevent sending request of the same user more than once
 		for (const request of user.sentRequests) {
 			if (request.targetId === newFriend.id)
-				return ;
+				return (1);
 		}
+		// to prevent sending request to a friend
 		for (const friend of user.userFriends) {
 			if (friend.id === newFriend.id)
-				throw new HttpException(`${newFriend.nickname} is already your friend`, HttpStatus.BAD_REQUEST);
+				return (1)
 		}
 		await this.prisma.friendRequest.create({
 			data: {
@@ -242,6 +247,7 @@ export class UsersService {
 				targetId: newFriend.id
 			}
 		});
+		return (0);
 	}
 
 	async getFriendsRequests(nickname: string) {
