@@ -2,6 +2,7 @@ import { NotFoundException, UnauthorizedException, UseGuards } from "@nestjs/com
 import { JwtService } from "@nestjs/jwt";
 import { AuthGuard } from "@nestjs/passport";
 import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { request } from "http";
 import { Socket, Server } from "socket.io"
 import { UsersService } from "src/users/users.service";
 
@@ -87,4 +88,33 @@ export default class InvitationsGateway implements OnGatewayConnection, OnGatewa
 		}
 	}
 
+	@SubscribeMessage('accept-request')
+	async onAcceptRequest(socket: Socket, target: any) {
+		const receiver = this.connectedUsers.find((user) => {
+			if (user.socket.id === socket.id)
+				return (true);
+		});
+		const receiverSockets = this.connectedUsers.filter(user => {
+			if (user.nickname === receiver.nickname)
+				return (true);
+		})
+		await this.usersService.acceptRequest(target.requestId, receiver.nickname);
+		const requests = await this.usersService.getFriendsRequests(receiver.nickname);
+		this.server.to(socket.id).emit('receive-request', requests);
+	}
+
+	@SubscribeMessage('refuse-request')
+	async onRefuseRequest(socket: Socket, target: any) {
+		const receiver = this.connectedUsers.find((user) => {
+			if (user.socket.id === socket.id)
+				return (true);
+		});
+		const receiverSockets = this.connectedUsers.filter(user => {
+			if (user.nickname === receiver.nickname)
+				return (true);
+		})
+		await this.usersService.refuseRequest(target.requestId, receiver.nickname);
+		const requests = await this.usersService.getFriendsRequests(receiver.nickname);
+		this.server.to(socket.id).emit('receive-request', requests);
+	}
 }
