@@ -147,7 +147,7 @@ export class UsersService {
 		}
 		else
 		{
-			const file = createReadStream(`./uploads/${category}/default.cover.png`);
+			const file = createReadStream(`./uploads/${category}/default.png`);
 			return new StreamableFile(file);
 		}
 	}
