@@ -35,10 +35,13 @@ export default function Friends() {
 			console.log(res.data);
 			setFriends(res.data);
 		})
+		socket.on('receive-friends', data => {
+			setFriends(data);
+		})
 	}, [])
 
 	return (
-		<main className='h-full w-full bg-darken-200 overflow-y-auto'>
+		<main className='h-full w-full bg-darken-200 overflow-y-auto relative'>
 			<div className=" gap-[3vh] flex-grow h-full overflow-y-auto">
 				<div className="sticky top-0 flex w-full backdrop-blur-xl p-3 z-50">
 					<form className="w-[70%] flex gap-3" onSubmit={onSubmitHandler}>
@@ -52,29 +55,13 @@ export default function Friends() {
 					<FriendsRequests />
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-5 p-5">
-					{/* {
-						friends.length > 0 && friends.map((friend) => {
+					{
+						friends.length > 0 ? friends.map((friend) => {
 							return(
 								<FriendCard key={friend.intra_Id} user={friend}/>
 							);
-						})
-					} */}
-					<Container className="p-0 overflow-hidden flex flex-col items-center relative">
-						<div className="bg-[url('/images/pongTable.jpeg')] bg-cover bg-center bg-no-repeat w-[100%] h-[150px]"></div>
-						<div className="translate-y-[-50%] flex flex-col items-center">
-							<img src="/images/profile.png" alt="avatar" className="h-[130px] w-[130px] " />
-							<span className="text-white font-medium text-lg">Nickname</span>
-						</div>
-						<div className="absolute top-0 left-0 h-full w-full z-10 bg-black opacity-50"></div>
-					</Container>
-					<Container className="p-0 overflow-hidden flex flex-col items-center relative shadow-[-1px_12px_33px_-9px_rgba(0,0,0,1)]">
-						<div className="bg-[url('/images/pongTable.jpeg')] bg-cover bg-center bg-no-repeat w-[100%] h-[150px]"></div>
-						<div className="translate-y-[-50%] flex flex-col items-center">
-							<img src="/images/profile.png" alt="avatar" className="h-[130px] w-[130px] " />
-							<span className="text-white font-medium text-lg">Nickname</span>
-						</div>
-						{/* <div className="absolute top-0 left-0 h-full w-full z-50 bg-black opacity-50"></div> */}
-					</Container>
+						}) : <span className="text-white font-medium text-2xl absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">You have no Friends</span>
+					}
 				</div>
 			</div>
 		</main>
