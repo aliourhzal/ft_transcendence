@@ -147,15 +147,8 @@ export class UsersService {
 		}
 		else
 		{
-			if (category === 'cover') {
-				const file = createReadStream(`./uploads/${category}/default.jpg`);
-				return new StreamableFile(file);
-			}
-			if (category === 'avatar')
-			{
-				const file = createReadStream(`./uploads/${category}/default.png`);
-				return new StreamableFile(file);
-			}
+			const file = createReadStream(`./uploads/${category}/default.cover.png`);
+			return new StreamableFile(file);
 		}
 	}
 
@@ -237,6 +230,7 @@ export class UsersService {
 				id: request.id
 			}
 		});
+		return (request.sender.nickname);
 	}
 
 	async sendRequest(friendNickname: string, nickname: string) {
