@@ -4,9 +4,8 @@ import axios from "axios";
 import { useEffect, useState, useContext } from "react";
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from "react";
-import {BsCheck2} from "react-icons/bs"
-import {RxCross1} from "react-icons/rx"
 import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
+import RequestCard from "./RequestCard";
 
 
 export default function FriendsRequests() {
@@ -31,30 +30,6 @@ export default function FriendsRequests() {
 
 	function modalAppearance() {
 		setDisplayRequests(oldState => !oldState)
-	}
-
-	function createAcceptFunc(requestId: string) {
-		return (async (e) => {
-			try {
-				socket.emit('accept-request', {
-					requestId
-				})
-			} catch (err) {
-				console.log(err);
-			}
-		})
-	}
-
-	function createRefuseFunc(requestId: string) {
-		return (async (e) => {
-			try {
-				socket.emit('refuse-request', {
-					requestId
-				})
-			} catch (err) {
-				console.log(err);
-			}
-		})
 	}
 
 	return(
@@ -93,18 +68,7 @@ export default function FriendsRequests() {
 							{
 								requestArray.length > 0 ? requestArray.map((request) => {
 									return (
-										<div key={request.id} className="flex rounded-md items-center gap-4 bg-darken-100 p-3 w-full">
-											<img src={request.sender.profilePic} alt="avatar" className="h-[50px] aspect-square rounded-full"/>
-											<span className="text-white font-medium">{request.sender.nickname}</span>
-											<div className="ml-[auto] flex gap-3">
-												<button className="h-[90%] aspect-square  rounded-full p-2 border-2 border-slate-500" onClick={createAcceptFunc(request.id)}>
-													<BsCheck2 color="rgb(100 116 139)" fontSize="1.2rem"/>
-												</button>
-												<button className="h-[90%] aspect-square  rounded-full p-2 border-2 border-slate-500" onClick={createRefuseFunc(request.id)}>
-													<RxCross1 color="rgb(100 116 139)" fontSize="1.2rem"/>
-												</button>
-											</div>
-										</div>
+										<RequestCard key={request.id} request={request}/>
 									)
 								}) : <span className="font-medium text-base">You have no Friend Requests</span>
 							}
