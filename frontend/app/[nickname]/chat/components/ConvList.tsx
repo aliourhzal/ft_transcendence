@@ -13,7 +13,7 @@ const getUsersInfo = (users) => {
 		photo?: string,
 		type: "OWNER"| "ADMIN" | "USER",
 		isBanned: boolean
-	}[]
+	}[] = []
   // console.log(users)
   users.map( (user) => {
       _users.push(
