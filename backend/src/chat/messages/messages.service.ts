@@ -88,7 +88,7 @@ export class MessagesService
             return { 
                 username, 
                 msg: userAndText.msg,
-                rtn
+                 
             }
         }
         else

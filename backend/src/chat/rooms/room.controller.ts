@@ -98,13 +98,14 @@ export class RoomController {
     }
    
     @Post('/select-room') // use here JoinRoomDto
-    async onJoinedRoom(@Body() dto:JoinRoomDto, @Res() res:any) 
+    async onJoinedRoom(@Body() dto:any, @Res() res:any) 
     {
         try 
         {
             // search in db by user id if found it or not
             // check if current user is not banned from the selected room
-            const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
+            const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET });
+
             if(!await this.utils.getUserId(user['sub']))
             {
                 console.log('user not found.')
@@ -113,22 +114,18 @@ export class RoomController {
             
             const roomId = await this.utils.getRoomIdByName(dto.roomName);
             
-            if (roomId) 
+            if (roomId) // if room is founding check if current user is member into it and it not banned
             {
-                const roomType = await this.utils.getRoomById(roomId);
-                // if user is member of curent room
-                if (roomType) 
+                const isUserInRoom = await this.utils.getUserType(roomId,user['sub']);
+                if(isUserInRoom && !isUserInRoom.isBanned)
                 {
-                    const userType = await this.utils.getUserType(roomId,user['sub']);
-                    console.log(userType)
                     const messageAndUserName = await this.messagesService.getAllMessagesofRoom(dto.roomName); // should return messages and username who send message
                                 
-                    return res.status(200).send({ message: messageAndUserName });
+                    return res.status(200).send({ msg: messageAndUserName });
                 }
                 else
                 {
-                    console.log("room not found")
-                    return ;
+                    console.log('user not in this room')
                 }
             }
             else
@@ -158,32 +155,40 @@ export class RoomController {
             
 
             const roomId = await this.utils.getRoomIdByName(dto.roomName);
+
             const usersIds = await this.utils.getUsersId(user['sub'],dto.users)
         
             if(roomId && usersIds)
             {
 
-                const userType = await this.utils.getUserType(roomId,user['sub']);
-                if (userType.userType === "ADMIN" || userType.userType === "OWNER") 
+                const userType = await this.utils.getUserType(roomId,user['sub']); // this return type of user and check if current user is member into this room
+                if(userType)
                 {
-                    const newAdmins = await this.roomService.setNewAdmins(roomId, usersIds, user['sub']);
-                    
-                    if (newAdmins === 0) 
+                    if (userType.userType === "ADMIN" || userType.userType === "OWNER") 
                     {
-                        console.log("you try to change the owner")
-                        return;    
+                        const newAdmins = await this.roomService.setNewAdmins(roomId, usersIds, user['sub']);
+                        
+                        if (newAdmins === 0) 
+                        {
+                            console.log("you try to change the owner")
+                            return;    
+                        }
+    
+                        if (newAdmins === 1) 
+                        {
+                            console.log("The specified user is not linked to the room.");
+                            return ;
+                        }
                     }
-
-                    if (newAdmins === 1) 
+                    else
                     {
-                        console.log("The specified user is not linked to the room.");
+                        console.log('dont have the perrmission')
                         return ;
                     }
                 }
                 else
                 {
-                    console.log('dont have the perrmission')
-                    return ;
+                    console.log('user not in this room')
                 }
             }
             else
@@ -219,24 +224,31 @@ export class RoomController {
             if(roomId && usersIds)
             {
                 const userType = await this.utils.getUserType(roomId,user['sub']);
-                if (userType.userType === "OWNER") 
+                if(userType)
                 {
-                    const changeToUsers = await this.roomService.changeToUsers(roomId, usersIds, user['sub']);
-                     
-                    if (changeToUsers === 0) 
+                    if (userType.userType === "OWNER") 
                     {
-                        console.log("you try to enter the admin")
-                        return;    
+                        const changeToUsers = await this.roomService.changeToUsers(roomId, usersIds, user['sub']);
+                         
+                        if (changeToUsers === 0) 
+                        {
+                            console.log("you try to enter the admin")
+                            return;    
+                        }
+                        if (changeToUsers === 1) 
+                        {
+                            console.log("The specified user is not linked to the room.");
+                            return ;
+                        }
                     }
-                    if (changeToUsers === 1) 
+                    else
                     {
-                        console.log("The specified user is not linked to the room.");
-                        return ;
+                        console.log("dont have the permission")
                     }
                 }
                 else
                 {
-                    console.log("dont have the permission")
+                    console.log('user not in this room')
                 }
             }
             else
@@ -307,6 +319,8 @@ export class RoomController {
                         console.log("cannot have the permission to change room Type.")
                     }
                 }
+                else
+                    console.log('user not in this room')
             }
             else
             {
@@ -431,6 +445,10 @@ export class RoomController {
                         console.log("cannot have the permission to change room Type.")
                     }
                 }
+                else
+                {
+                    console.log('user is not in this room')
+                }
             }
             else
             {
@@ -461,31 +479,38 @@ export class RoomController {
             if(roomId)
             {
                 const userType = await this.utils.getUserType(roomId.id,user['sub']);
-
-                if(userType.userType !== 'USER') // test one by one
+                if(userType)
                 {
-                    const usersIds = await this.utils.getUsersId(user['sub'],dto.users, 1)
-                    
-                    if(usersIds === 0)
+                    if(userType.userType !== 'USER') // test one by one
                     {
-                        console.log("you try to add the current user")
-                        return;
-                    }
-                    
-                    if(usersIds)
-                    {
-                        await this.roomService.linkBetweenUsersAndRooms(roomId.id, usersIds);
+                        const usersIds = await this.utils.getUsersId(user['sub'],dto.users, 1)
+                        
+                        if(usersIds === 0)
+                        {
+                            console.log("you try to add the current user")
+                            return;
+                        }
+                        
+                        if(usersIds)
+                        {
+                            await this.roomService.linkBetweenUsersAndRooms(roomId.id, usersIds);
+                        }
+                        else
+                        {
+                            console.log('users not found')
+                            return;
+                        }
                     }
                     else
                     {
-                        console.log('users not found')
-                        return;
+                        console.log('dont have the permmission to add users to this room.')
+                        return ;
                     }
                 }
                 else
                 {
-                    console.log('dont have the permmission to add users to this room.')
-                    return ;
+                    console.log('user is not in this room')
+
                 }
             }
             else
@@ -522,25 +547,36 @@ export class RoomController {
             }
 
             const roomId = await this.utils.getRoomById(dto.idOfRoom);
-
-            if(roomId.roomType === 'PROTECTED')
+            if(roomId)
             {
-                const userType = await this.utils.getUserType(roomId.id,user['sub']);
-
-                if(userType.userType !== 'USER') // test one by one
+                if(roomId.roomType === 'PROTECTED')
                 {
-                    await this.roomService.changePasswordOfProtectedRoom(roomId.id, encodePasswd(dto.newPassword))
+                    const userType = await this.utils.getUserType(roomId.id,user['sub']);
+                    if(userType)
+                    {
+                        if(userType.userType !== 'USER') // test one by one
+                        {
+                            await this.roomService.changePasswordOfProtectedRoom(roomId.id, encodePasswd(dto.newPassword))
+                        }
+                        else
+                        {
+                            console.log('dont have the permmission to add users to this room.')
+                            return ;
+                        }
+                    }
+                    else
+                        console.log('user is not this room')
                 }
                 else
                 {
-                    console.log('dont have the permmission to add users to this room.')
-                    return ;
+                    console.log('room is not PROTECTED')
+                    return;
                 }
+
             }
             else
             {
-                console.log('room is not PROTECTED')
-                return;
+                console.log('room not found')
             }
         } 
         catch (error) 
@@ -571,27 +607,31 @@ export class RoomController {
                 {
                     const userType = await this.utils.getUserType(roomId.id,user['sub']);
                      
+                    if(userType)
+                    {
+                        if(userType.userType === 'OWNER')
+                        { 
+                            await this.roomService.removeUserFromRoom(roomId.id, user['sub']);
+        
+                            let newOwner:any = await this.roomService.getFirstUser('ADMIN') // get first admin if found it
     
-                    if(userType.userType === 'OWNER')
-                    { 
-                        await this.roomService.removeUserFromRoom(roomId.id, user['sub']);
-    
-                        let newOwner:any = await this.roomService.getFirstUser('ADMIN') // get first admin if found it
-
-                        if(!newOwner) // if not found an admin
-                        {
-                            newOwner = await this.roomService.getFirstUser('USER') // will search for the first user in the room
-    
-                            await this.roomService.setNewOwner(roomId.id, newOwner.userId) // set first user in the room as owner
-                            
-                            return ;
+                            if(!newOwner) // if not found an admin
+                            {
+                                newOwner = await this.roomService.getFirstUser('USER') // will search for the first user in the room
+        
+                                await this.roomService.setNewOwner(roomId.id, newOwner.userId) // set first user in the room as owner
+                                
+                                return ;
+                            }
+                            await this.roomService.setNewOwner(roomId.id, newOwner.userId) // set this first admin as the owne
                         }
-                        await this.roomService.setNewOwner(roomId.id, newOwner.userId) // set this first admin as the owne
+                        else
+                        {
+                            await this.roomService.removeUserFromRoom(roomId.id, user['sub']); // if admin or user leave 
+                        }                 
                     }
                     else
-                    {
-                        await this.roomService.removeUserFromRoom(roomId.id, user['sub']); // if admin or user leave 
-                    }                 
+                        console.log('user is not in this room')
                 }
                 else
                 {

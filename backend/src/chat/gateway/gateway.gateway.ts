@@ -92,23 +92,39 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 console.log('user not found.')
                 return;
             }
-            
             const roomId =  await this.utils.getRoomIdByName(infos['roomName']);
-            
-            const createdMsg = await this.messagesService.createMessages(infos['message'],user['sub'],roomId);
-        
-            
-            const usersInroom = await this.utils.getUsersInRooms(roomId);
-            
-            for(const userInRoom of usersInroom)
+            if(roomId)
             {
-                for (let i = 0; i < this.soketsId.length; i++) 
+                const userType = await this.utils.getUserType(roomId,user['sub']);
+                if(userType)
                 {
+                    const createdMsg = await this.messagesService.createMessages(infos['message'],user['sub'],roomId);
+                    
+                    
+                    const usersInroom = await this.utils.getUsersInRooms(roomId);
+                    
+                    for(const userInRoom of usersInroom)
                     {
-                        this.server.to(this.soketsId[i].socketIds).emit("add-message", {user: createdMsg.username, message: createdMsg.msg})
-                    }    
+                        for (let i = 0; i < this.soketsId.length; i++) 
+                        {
+                            {
+                                this.server.to(this.soketsId[i].socketIds).emit("add-message", {user: createdMsg.username, msg: createdMsg.msg})
+                            }    
+                        }
+                    }
+                    
                 }
+                else
+                {
+                    // emmit user is not in this room
+                }
+
             }
+            else
+            {
+                // emmit room not found
+            }
+            
         } 
         catch (error) 
         {
