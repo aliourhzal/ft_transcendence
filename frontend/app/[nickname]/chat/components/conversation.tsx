@@ -32,7 +32,7 @@ const Conversation = () => {
         if (_msg != '') {
             socket.emit('send-message', {message:msg, user:socket.auth['token'], roomName:activeUserConv.name, socketId:socket.id})
             // setChatBoxMessages(old => [...old, {user:userData.nickname, msg:msg}])
-            console.log("LMFAOING")
+            console.log("sendmessage")
             set_msg_sent(old => !old)
             setMsg('')
         }
@@ -51,7 +51,7 @@ const Conversation = () => {
 
                 <div id='chatbox' className='relative flex flex-col w-full mt-8 overflow-y-scroll basis-[80%]'>
                     <ChatBox/>
-                    <RoomInfo users={['lol']} show={showInfo} setShow={setShowInfo} name={activeUserConv.name} />
+                    {showInfo && <RoomInfo users={rooms.find(o => o.name === activeUserConv.name).users} setShow={setShowInfo} name={activeUserConv.name} />}
                     {/* <Image className=' object-contain' alt='bg' src='/assets/images/conv_bg.gif' width={500} height={500}/> */}
                 </div>
 

@@ -1,16 +1,13 @@
 "use client";
-import { Socket,io } from "socket.io-client";
 
+import { Socket,io } from "socket.io-client";
 import Image from 'next/image'
 import { useEffect, useState, createContext, useContext } from 'react';
-import { Component } from 'react';
 import Conversation from './components/conversation';
 import RoomForm from './components/createRoom';
 import Search from './components/search';
-import UserList from './components/ConvList';
 import { getCookie, userDataContext } from "../layout";
 import ConvList from "./components/ConvList";
-import axios from "axios";
 import JoinRoomForm from "./components/joinRoom";
 
 export interface conversation {
@@ -34,10 +31,14 @@ export interface Room {
 	type: string,
 	lastmsg: string,
 	users: {
-		userId: string,
-		userType: 'OWNER' | 'USER' | 'ADMIN',
-		isBanned: boolean}[],
-	photo?: string
+		id: string,
+		nickName: string,
+		firstName: string,
+		lastName: string,
+		photo?: string,
+		type: "OWNER"| "ADMIN" | "USER",
+		isBanned: boolean
+	}[]
 }
 
 export default function Chat() {
@@ -52,13 +53,6 @@ export default function Chat() {
 	const [room_created, set_room_created] = useState(false)
 
 	const [rooms, setRooms] = useState<Room[]>([])
-
-	const getConvs = async () => {
-		// try {
-		// 	await axios.get('http://127.0.0.1:3000/rooms').then(data => console.log(data))
-		// }
-		// catch(error) {alert(error)}
-	}
 
 	useEffect(() => {
 		setSocket(io('ws://127.0.0.1:3004',{
