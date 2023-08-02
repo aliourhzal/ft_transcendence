@@ -45,46 +45,7 @@ export class MessagesService
         }
         // return messages;
     }
-   
-    async linkUsersWithSocketIdAndRooms(userId:string, socketId: string, roomId: string)
-    {
-
-        const existingEntry = await this.prisma.joinedTable.findFirst({ // because when insert it with socket id 
-            where: {
-                userId,
-                roomId,
-            },
-        });
-          
-        if (existingEntry) 
-        {
-
-            await this.prisma.joinedTable.update({ // because when want to inset the userid and roomId is aleredy exist so error, should update the userId and roomId
-
-                where: {
-                    userId_roomId: {
-                        userId: existingEntry.userId,
-                        roomId: existingEntry.roomId,
-                    },
-                },
-                data: {
-                    socketId,
-                },
-            });
-        } 
-        else {
-            
-            await this.prisma.joinedTable.create({
-                data: {
-                    userId: userId,
-                    roomId: roomId,
-                    socketId: socketId,
-                },
-            });
-        }
-          
-    }
-
+    
     async  linkUserWithMessageAndRoom(message: string, userId: string, roomId:string) 
     {
         return await this.prisma.messages.create({ //  

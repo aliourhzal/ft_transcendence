@@ -46,8 +46,6 @@ model Room{
 }
  
 
-
-
 model Messages {
 
     id                  Int     @default(autoincrement()) @id
@@ -69,8 +67,11 @@ model JoinedTable{
 
     room                Room        @relation(fields: [roomId], references: [id]) // not compile in the query
     roomId              String 
- 
-    socketId           String?
+
+    isBanned            Boolean   @default(false) // Add the isBanned column and set it to false by default
+
+    createdAt  DateTime   @default(now())  // Add this field to track creation date
+
 
     @@id([userId, roomId])
 }

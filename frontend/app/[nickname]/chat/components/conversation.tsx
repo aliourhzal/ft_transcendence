@@ -32,6 +32,7 @@ const Conversation = () => {
         if (_msg != '') {
             socket.emit('send-message', {message:msg, user:socket.auth['token'], roomName:activeUserConv.name, socketId:socket.id})
             // setChatBoxMessages(old => [...old, {user:userData.nickname, msg:msg}])
+            console.log("LMFAOING")
             set_msg_sent(old => !old)
             setMsg('')
         }

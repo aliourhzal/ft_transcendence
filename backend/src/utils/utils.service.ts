@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/adjacent-overload-signatures */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prefer-const */
 /* eslint-disable prettier/prettier */
@@ -37,7 +38,7 @@ export class UtilsService {
     {
         let usersFounding: string[] = [];
 
-        
+         
         for (let i = 0; i < users.length; i++) 
         {
             const existingUser = await this.prisma.user.findUnique({
@@ -66,9 +67,24 @@ export class UtilsService {
                     return 0;
             }
         }
-
         const uniqusers = [...new Set(usersFounding)];
         return uniqusers; // return users id
+    }
+
+    async getUsersInfosInRoom(adminId: string,users: string[], roomdId:string)
+    {
+        const usersId = await this.getUsersId(adminId, users);
+        if(usersId !== 0)
+        {
+            for(const userId of usersId)
+            {
+                const userType = (await this.getUserType(roomdId,userId)).userType;
+                if(userType === 'ADMIN' || userType === 'OWNER')
+                    return 0;
+            }
+            return usersId;
+        }
+        return 0;
     }
 
     async getRoomIdByName (room_name: string) {
@@ -156,6 +172,23 @@ export class UtilsService {
       
         }
         return usersInRooms.users;
+    }
+
+
+    async  getUserInfosInRoom(roomId: string) 
+    {
+        let usersInRooms:any;
+        
+        const rooms = await this.prisma.joinedTable.findMany({
+            where: {
+                roomId,
+              },
+              include: {
+                user: true,
+              },
+        });
+
+        return rooms;
     }
 
 

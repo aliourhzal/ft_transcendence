@@ -6,24 +6,41 @@
 
 
 
-// async function createRoom()
+async function createRoom()
+{
+    const response = await fetch('http://127.0.0.1:3000/rooms/', 
+        { 
+            method:'POST', 
+            headers: { 'Content-Type': 'application/json' },  
+            body: JSON.stringify({
+                roomName : "sds", 
+                users : ['asalek'],
+                type:'PUBLIC', 
+                password: "1234",
+                auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6ImFkYWlmaSIsInN1YiI6IjdhM2E0ZDQ2LWIzYTQtNGMxMC04OGIwLTQ5N2M0YjQ2NTE5MSIsImlhdCI6MTY5MDkzMTEwMn0.CZUihNyTv_zvzrJdIbBBYFSM-nqFUemcBtiz_jN90HU"})}).then((response) => response.json())
+            
+        console.log(response)
+
+}
+
+createRoom()
+
+
+// async function onJoinedRoom()
 // {
-//     const response = await fetch('http://127.0.0.1:3000/rooms/', 
+//     const response = await fetch('http://127.0.0.1:3000/rooms/select-room', 
 //         { 
 //             method:'POST', 
 //             headers: { 'Content-Type': 'application/json' },  
 //             body: JSON.stringify({
-//                 roomName : "dfd", 
-//                 users,
-//                 type, 
-//                 password: "1234",
-//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6Im1lc3NhbGloIiwic3ViIjoiY2ViOTVmYjYtZDlhZC00NThlLTgzNTctMTQyOTM1YTgwZGZlIiwiaWF0IjoxNjkwNTc3NTEyfQ.S9UxCON3cuVQ_5edBYIF6DTJMmmHZEZG1ElvipJqtf0"})}).then((response) => response.json())
+//                 roomName : "ok", 
+//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6InRuYW1pciIsInN1YiI6ImU0YzY2ODViLWUyN2EtNDYyZi1iYTQxLWEwYzk1ZWQxNWUxNSIsImlhdCI6MTY5MDkxMzgxNn0.CIQqhE71OcsMTXGuRQ_iakCLqMrPuJvbbXkAkQrcIA0"})}).then((response) => response.json())
             
 //         console.log(response)
 
 // }
 
-// createRoom()
+// createRonJoinedRoomoom()
 
 
 
@@ -34,9 +51,9 @@
 //             method:'POST', 
 //             headers: { 'Content-Type': 'application/json' },  
 //             body: JSON.stringify({
-//                 roomName,  // test user try change
-//                 users,
-//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6Im1lc3NhbGloIiwic3ViIjoiY2ViOTVmYjYtZDlhZC00NThlLTgzNTctMTQyOTM1YTgwZGZlIiwiaWF0IjoxNjkwNTc3NTEyfQ.S9UxCON3cuVQ_5edBYIF6DTJMmmHZEZG1ElvipJqtf0"})}).then((response) => response.json())
+//                 roomName:'ok',  // test user try change
+//                 users :['adaifi'],
+//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6Im1lc3NhbGloIiwic3ViIjoiODc3NzcxNmMtMzZlMy00ZDEwLWJlMGQtMjNiNmRjMjQ5OWFjIiwiaWF0IjoxNjkwOTE1MDQ4fQ.imS0wn5I6Q6cSXCZoQZ4cBIOG-lV_aRQ5hoFsDLP3fE"})}).then((response) => response.json())
             
 //         console.log(response)
 
@@ -71,10 +88,10 @@
 //             method:'POST', 
 //             headers: { 'Content-Type': 'application/json' },  
 //             body: JSON.stringify({
-//                 roomName : , 
-//                 type,
+//                 roomName : 'testo', 
+//                 type : 'PROTECTED' ,
 //                 password: "test", 
-//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6Im1lc3NhbGloIiwic3ViIjoiNTlmYjA0YWItYTY2ZS00NzE3LTk0N2QtMzhiMGYwNGU2YWIzIiwiaWF0IjoxNjkwNjI2OTcxfQ.9nIjaYjmsB09pZ3c0ELsP-PYgYOVQKKQJfGUpYx_Zqo"})}).then((response) => response.json())
+//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6Im1lc3NhbGloIiwic3ViIjoiZjU1YWQ0NjAtMzVhZi00MjM3LWJlYmQtOWZlODY5ZDdiMTlmIiwiaWF0IjoxNjkwODkyMTA4fQ.ZgK2S2YTiu0G0pjYuDQEiMvtZ0Ju6z_8kO0UNqj9pqs"})}).then((response) => response.json())
             
 //         console.log(response)
 
@@ -114,31 +131,113 @@
 // connectToWebSocket()
 
 
-const users = ['asalek' ,'asalek'  , 'messalih'];
-const name = "dfd"
+// const users = ['asalek' ,'asalek' , 'tnamir'];
+// const name = "dfd"
 
-const type = "PUBLIC"
+// const type = "PUBLIC"
 
  
 
 
 
-async function addNewUsersToRoom()
-{
+// async function addNewUsersToRoom()
+// {
 
-const response = await fetch('http://127.0.0.1:3000/rooms/addNewUsersToRoom', 
-        { 
-            method:'POST', 
-            headers: { 'Content-Type': 'application/json' },  
-            body: JSON.stringify({
-                idOfRoom : '7db037b5-11fa-477e-9a28-947b3bd633b5', 
-                users,
-                pass: "1234", 
-                auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6Im1lc3NhbGloIiwic3ViIjoiZjU1YWQ0NjAtMzVhZi00MjM3LWJlYmQtOWZlODY5ZDdiMTlmIiwiaWF0IjoxNjkwODM3MjYwfQ.FVVk55AeFvDKf5SPot6cTbmc9cqIG77tCHDweM02WMU"})}).then((response) => response.json())
+// const response = await fetch('http://127.0.0.1:3000/rooms/addNewUsersToRoom', 
+//         { 
+//             method:'POST', 
+//             headers: { 'Content-Type': 'application/json' },  
+//             body: JSON.stringify({
+//                 idOfRoom : 'e0d4de66-cd92-4455-b6b6-17fa70615d93', 
+//                 users ,
+//                 pass: "1234", 
+//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6InRuYW1pciIsInN1YiI6IjIyN2FmNTNlLTQyNWYtNDQ1Mi05NzQwLTljYjQ4Yzg0MjNkMCIsImlhdCI6MTY5MDg4OTMxMH0.h-dtQzHBaYOV8tPpxr8WEsIoYqK3amI9whx5ntLYpno"})}).then((response) => response.json())
             
-        console.log(response)
+//         console.log(response)
 
 
-}
+// }
 
-addNewUsersToRoom()
+// addNewUsersToRoom()
+
+
+
+
+// async function renameRoom()
+// {
+
+// const response = await fetch('http://127.0.0.1:3000/rooms/renameRoom', 
+//         { 
+//             method:'POST', 
+//             headers: { 'Content-Type': 'application/json' },  
+//             body: JSON.stringify({
+//                 idOfRoom : 'e0d4de66-cd92-4455-b6b6-17fa70615d93', 
+//                 users ,
+//                 pass: "1234", 
+//                 newNameOfRoom: 'testo',
+//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6Im1lc3NhbGloIiwic3ViIjoiZjU1YWQ0NjAtMzVhZi00MjM3LWJlYmQtOWZlODY5ZDdiMTlmIiwiaWF0IjoxNjkwODkyMTA4fQ.ZgK2S2YTiu0G0pjYuDQEiMvtZ0Ju6z_8kO0UNqj9pqs"})}).then((response) => response.json())
+            
+//         console.log(response)
+
+
+// }
+
+// renameRoom()
+
+// async function changePasswordOfProtectedRoom()
+// {
+
+// const response = await fetch('http://127.0.0.1:3000/rooms/changePasswordOfProtectedRoom', 
+//         { 
+//             method:'POST', 
+//             headers: { 'Content-Type': 'application/json' },  
+//             body: JSON.stringify({
+//                 idOfRoom : 'e0d4de66-cd92-4455-b6b6-17fa70615d93', 
+//                 newPassword: 'new',
+//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6Im1lc3NhbGloIiwic3ViIjoiZjU1YWQ0NjAtMzVhZi00MjM3LWJlYmQtOWZlODY5ZDdiMTlmIiwiaWF0IjoxNjkwODkyMTA4fQ.ZgK2S2YTiu0G0pjYuDQEiMvtZ0Ju6z_8kO0UNqj9pqs"})}).then((response) => response.json())
+            
+//         console.log(response)
+
+
+// }
+
+// changePasswordOfProtectedRoom()
+
+
+
+// async function leaveRoom()
+// {
+
+// const response = await fetch('http://127.0.0.1:3000/rooms/leaveRoom', 
+//         { 
+//             method:'POST', 
+//             headers: { 'Content-Type': 'application/json' },  
+//             body: JSON.stringify({
+//                 idOfRoom : '2dc51aed-66a0-48ec-a47b-c4186c8b626d', 
+//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6InRuYW1pciIsInN1YiI6ImU0YzY2ODViLWUyN2EtNDYyZi1iYTQxLWEwYzk1ZWQxNWUxNSIsImlhdCI6MTY5MDkxMzgxNn0.CIQqhE71OcsMTXGuRQ_iakCLqMrPuJvbbXkAkQrcIA0"})}).then((response) => response.json())
+            
+//         console.log(response)
+
+
+// }
+
+// leaveRoom()
+
+// async function kick()
+// {
+
+// const response = await fetch('http://127.0.0.1:3000/rooms/kick', 
+//         { 
+//             method:'POST', 
+//             headers: { 'Content-Type': 'application/json' },  
+//             body: JSON.stringify({
+//                 idOfRoom : '825365bd-16c5-4415-b169-f798b520cdba', 
+//                 users: ['adaifi'],
+//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6Im1lc3NhbGloIiwic3ViIjoiODc3NzcxNmMtMzZlMy00ZDEwLWJlMGQtMjNiNmRjMjQ5OWFjIiwiaWF0IjoxNjkwOTE1MDQ4fQ.imS0wn5I6Q6cSXCZoQZ4cBIOG-lV_aRQ5hoFsDLP3fE"})}).then((response) => response.json())
+            
+//         console.log(response)
+
+
+// }
+
+// kick()

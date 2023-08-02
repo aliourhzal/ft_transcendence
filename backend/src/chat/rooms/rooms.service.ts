@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
-import { PrismaClient, RoomType } from '@prisma/client';
+import { PrismaClient, RoomType, UserType } from '@prisma/client';
 import { AuthService } from 'src/auth/auth.service';
 import { encodePasswd } from 'src/utils/bcrypt';
 import { roomAndUsers, roomShape } from 'src/utils/userData.interface';
@@ -43,12 +43,12 @@ export class RoomsService
                     });
                     
                 }
-                else
-                {
-                    return 4
-                    // here will entered if user is aleredy exist in the chat room 
-                    //  emit error when the same user is entered
-                }
+                // else
+                // {
+                //     return 4
+                //     // here will entered if user is aleredy exist in the chat room 
+                //     //  emit error when the same user is entered
+                // }
             }
 
         }
@@ -84,7 +84,6 @@ export class RoomsService
 
     async OWNERCreateRoom(room_name: string, adminOfRoom:string, roomType_: RoomType , password?: string)  
     {
-        console.log(adminOfRoom)
         const existingRoom = await this.utils.getRoomIdByName(room_name)
         
         
@@ -197,6 +196,22 @@ export class RoomsService
         return 2;
     }   
 
+    async setNewOwner(roomId: string, newOwnerId:string)
+    {
+        await this.prisma.joinedTable.update({
+            where: {
+                userId_roomId: {
+                    userId: newOwnerId,
+                    roomId,
+                },
+            },
+            data: {
+                userType: "OWNER",
+            },
+        });
+    
+    }   
+
     async changeToUsers(roomId: string, usersIds: any, ownerId:string)
     {
         for(const user of usersIds) 
@@ -242,7 +257,6 @@ export class RoomsService
         {
             if(!password)
             {
-                
                 return 0;
             }
 
@@ -252,7 +266,7 @@ export class RoomsService
                 },
                 data: {
                   roomType : roomType_ ,
-                  password : encodePasswd(password)
+                  password : password
                 },
             });
         }
@@ -270,5 +284,92 @@ export class RoomsService
 
     }
 
+    async updateRoomName(roomId:string, newRoomName: string )
+    {
+        await this.prisma.room.update({
+            where: {
+                id: roomId,
+            },
+            data: {
+                room_name : newRoomName ,
+            },
+        });
+    }
+
+    async changePasswordOfProtectedRoom(roomId:string, hash: string )
+    {
+        await this.prisma.room.update({
+            where: {
+                id: roomId,
+            },
+            data: {
+                password : hash ,
+            },
+        });
+    }
     
+    async   removeUserFromRoom(roomId: string, usersIds: string[] | string) {
+        
+        if(Array.isArray(usersIds))
+        {
+            for(const userId of usersIds)
+            {
+                await this.prisma.joinedTable.delete({
+                  where: {
+                    userId_roomId: {
+                      roomId: roomId,
+                      userId: userId,
+                    },
+                  },
+                });
+            }
+        }
+        else
+        {
+            await this.prisma.joinedTable.delete({
+                where: {
+                  userId_roomId: {
+                    roomId: roomId,
+                    userId: usersIds,
+                  },
+                },
+              });
+        }
+
+    } 
+      
+    async   getFirstUser(userType_: UserType) {
+        
+        return await this.prisma.joinedTable.findFirst({
+            where: {
+              userType: userType_,
+            },
+            orderBy: {
+              createdAt: 'asc'
+            }
+          });
+    }
+      
+    async   doesRoomHaveUsers(roomId: string): Promise<boolean> {
+        const usersInRoom = await this.prisma.joinedTable.findMany({
+            where: {
+            roomId
+            }
+        });
+        
+        return usersInRoom.length > 0;
+    }
+     
+    async   isUserInRoom(userId: string, roomId: string): Promise<boolean> {
+        const userInRoom = await this.prisma.joinedTable.findFirst({
+          where: {
+            userId,
+            roomId
+          }
+        });
+      
+        return !userInRoom;  
+      }
+      
+      
 }

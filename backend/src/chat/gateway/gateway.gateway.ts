@@ -40,37 +40,35 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         {
             // connect to socket with jwt
             const decodeJWt =   this.jwtService.verify(socket.handshake.auth['token'],{ secret: process.env.JWT_SECRET })
-            // verify the user
-
-            const userInfos = await this.usersService.findOneByNickname(decodeJWt['nickname']);
             
-            if(!userInfos)
+            const userInfos = await this.utils.getUserId(decodeJWt['sub']);
+             
+            if(!userInfos) // handle this
             {
                 this.OnWebSocektError(socket);
+
+                console.log('user not found.')
+                return;
             }
-            else
-            { 
+
+             
                 
-                console.log("connected from chat.")
-                 
-                this.soketsId.push({userId:userInfos.id, socketIds:socket.id})
-
-                const rooms = await this.utils.getRoomsForUser(userInfos.id); // all rooms who this user is member into it
-
-              
-                let indexes:number[] = [];
-
+            console.log("connected from chat.")
                 
-                for(let i = 0; i < rooms.length; i++)
-                {
-                    this.listOfRoomsOfUser.push(await this.messagesService.getAllMessagesofRoom(rooms[i]['room']['room_name']));
-                    indexes.push(i);
-                }
-                
+            this.soketsId.push({userId:userInfos.id, socketIds:socket.id})
 
-                this.server.to(socket.id).emit("list-rooms",{listOfRooms: this.listOfRoomsOfUser,indexes });  //  evry client will connected will display the rooms who is member into it
+            const rooms = await this.utils.getRoomsForUser(userInfos.id); // all rooms who this user is member into it
+
+            let messages:any[] = [];
+
             
+            for(let i = 0; i < rooms.length; i++)
+            {
+                messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i]['room']['room_name']) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId) })
             }
+            
+
+            this.server.to(socket.id).emit("list-rooms",{messages});  //  evry client will connected will display the rooms who is member into it
              
         } 
         catch (error) 

@@ -27,6 +27,19 @@ export const gimmeRandom = () => {
 	return Math.random()
 };
 
+export interface Room {
+	msgs: {user:string, msg:string}[],
+	id: string,
+	name: string,
+	type: string,
+	lastmsg: string,
+	users: {
+		userId: string,
+		userType: 'OWNER' | 'USER' | 'ADMIN',
+		isBanned: boolean}[],
+	photo?: string
+}
+
 export default function Chat() {
 
 	const userData = useContext(userDataContext);
@@ -38,7 +51,7 @@ export default function Chat() {
 	const [msg_sent, set_msg_sent] = useState(false)
 	const [room_created, set_room_created] = useState(false)
 
-	const [rooms, setRooms] = useState<any>(undefined)
+	const [rooms, setRooms] = useState<Room[]>([])
 
 	const getConvs = async () => {
 		// try {
@@ -57,7 +70,7 @@ export default function Chat() {
 		// axios.get("http://127.0.0.1:3000/rooms").then(res => console.log(res))
 	}, [])
 
-	const [chatBoxMessages, setChatBoxMessages] = useState<any>([])
+	const [chatBoxMessages, setChatBoxMessages] = useState<{user:string, msg:string}[]>([])
 
 	const [showForm, setShowForm] = useState(false)
 	const [showJoinForm, setShowJoinForm] = useState(false)
@@ -69,7 +82,7 @@ export default function Chat() {
 		<main className='select-none h-full w-full overflow-y-auto'>
 			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, convs, setConvs, socket,
 				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm, set_msg_sent,
-				set_room_created, room_created}}>
+				set_room_created, room_created, rooms, setRooms}}>
 				<RoomForm />
 				<JoinRoomForm />
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200 ">

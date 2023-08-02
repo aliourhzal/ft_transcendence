@@ -6,17 +6,27 @@ import ConvBox from "./ConvBox"
 
 
 const ConvList = () => {
-    const {socket, convs, setConvs, room_created, set_room_created} = useContext(Context)
+    const {socket, convs, setConvs, room_created, set_room_created, rooms, setRooms} = useContext(Context)
     const fillUserList = (listOfRoomsOfUser) => {
       setConvs([])
-      listOfRoomsOfUser.listOfRoomsOfUser.map( (room: any) => setConvs(old => [{name:room.name, photo:'', last_msg:'welcome to group chat', id:room.id}, ...old]))
+      listOfRoomsOfUser.messages.map( (room: any) => {
+        rooms.unshift({
+          name: room.room.room.room_name,
+          last_msg:'welcome to group chat',
+          msgs: room.msg,
+          id: room.room.room.id,
+          users: room.usersInRoom,
+          type: room.room.room.roomType
+        })
+      })
+      console.log(rooms)
+      setConvs(rooms)
     }
   
     useEffect( () => {
       console.log("entered")
         socket?.on('list-rooms',(listOfRoomsOfUser: any) => {
-          console.log("YES")
-            console.log(listOfRoomsOfUser)
+            // console.log(listOfRoomsOfUser)
             fillUserList(listOfRoomsOfUser)
           })
     }, [room_created])
