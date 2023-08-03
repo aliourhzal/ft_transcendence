@@ -92,10 +92,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 console.log('user not found.')
                 return;
             }
-            const roomId =  await this.utils.getRoomIdByName(infos['roomName']);
+            const roomId =  await this.utils.getRoomByName(infos['roomName']);
             if(roomId)
             {
-                const userType = await this.utils.getUserType(roomId,user['sub']);
+                const userType = await this.utils.getUserType(roomId.id,user['sub']);
                 if(userType.isBanned)
                 {
                     console.log('you are banned from this room.')
@@ -103,10 +103,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 }
                 if(userType)
                 {
-                    const createdMsg = await this.messagesService.createMessages(infos['message'],user['sub'],roomId);
+                    const createdMsg = await this.messagesService.createMessages(infos['message'],user['sub'],roomId.id);
                     
                     
-                    const usersInroom = await this.utils.getUsersInRooms(roomId);
+                    const usersInroom = await this.utils.getUsersInRooms(roomId.id);
                      
                     for(const userInRoom of usersInroom)
                     {
@@ -114,7 +114,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         {
                             if(this.soketsId[i].userId === userInRoom.userId)
                             {
-                                this.server.to(this.soketsId[i].socketIds).emit("add-message", {user: createdMsg.username, msg: createdMsg.msg})
+                                this.server.to(this.soketsId[i].socketIds).emit("add-message", {user: createdMsg.username, msg: createdMsg.msg , roomName: roomId.room_name})
                             }
                         }
 

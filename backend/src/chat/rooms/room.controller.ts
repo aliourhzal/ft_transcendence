@@ -98,7 +98,7 @@ export class RoomController {
     }
    
     @Post('/select-room') // use here JoinRoomDto
-    async onJoinedRoom(@Body() dto:JoinRoomDto, @Res() res:any) 
+    async onJoinedRoom(@Body() dto:any, @Res() res:any) 
     {
         try 
         {
