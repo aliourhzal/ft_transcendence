@@ -31,22 +31,51 @@ const RoomForm = () => {
             setRoomType('PRIVATE')
         else
             setRoomType('PUBLIC')
-        }, [roomType, pass, isPrivate])
-        
+    }, [roomType, pass, isPrivate])
+    
+    const getUsersInfo = (users) => {
+        let _users: {
+                id: string,
+                nickName: string,
+                firstName: string,
+                lastName: string,
+                photo?: string,
+                type: "OWNER"| "ADMIN" | "USER",
+                isBanned: boolean
+            }[] = []
+        // console.log(users)
+        users.map( (user) => {
+            _users.push(
+                {
+                id: user.user.userId,
+                nickName: user.user.nickname,
+                firstName: user.user.firstName,
+                lastName: user.user.lastName,
+                photo: user.user.profilePic,
+                type: user.userType,
+                isBanned: user.isBanned,
+                }
+            )
+            } 
+        )
+            return (_users)
+        }
+
     const confirmForm = async () => {
         try {
             await axios.post('http://127.0.0.1:3000/rooms', {roomName:roomName, users:users, auth: socket.auth['token'], type:roomType, password:pass},
                                                             {withCredentials: true, headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}}).then(
-                                                                response => {
-                                                                    console.log(response)
+                                                                res => {
+                                                                    // console.log(res)
                                                                     rooms.unshift({
-                                                                        name: "room.room.room.room_name",
+                                                                        name: res.data.room.room_name,
                                                                         last_msg:'welcome to group chat',
                                                                         msgs: [],
-                                                                        id: "room.room.room.id",
-                                                                        users: [],
-                                                                        type: "room.room.room.roomType"
+                                                                        id: res.data.room.id,
+                                                                        users: getUsersInfo(res.data.userInfos),
+                                                                        type: res.data.room.roomType
                                                                     })
+                                                                    // console.log(rooms)
                                                                     hideForm()
                                                                 })
         } catch(error) {
