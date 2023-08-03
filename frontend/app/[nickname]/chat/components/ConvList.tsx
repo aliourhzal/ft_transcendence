@@ -46,6 +46,14 @@ const ConvList = () => {
           users: getUsersInfo(room.usersInRoom),
           type: room.room.room.roomType
         })
+        // setRooms(old => [{
+        //   name: room.room.room.room_name,
+        //   last_msg:'welcome to group chat',
+        //   msgs: room.msg,
+        //   id: room.room.room.id,
+        //   users: getUsersInfo(room.usersInRoom),
+        //   type: room.room.room.roomType
+        // }, ...old])
       })
       console.log(rooms)
       setConvs(rooms)

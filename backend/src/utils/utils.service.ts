@@ -140,9 +140,9 @@ export class UtilsService {
           return null;
         }
     };
-    async getRoomByName (id: string) {
+    async getRoomByName (room_name: string) {
         const room = await this.prisma.room.findUnique({
-          where: { id },
+          where: { room_name },
         });
       
         if (room) {

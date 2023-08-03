@@ -13,17 +13,16 @@ interface ConvBoxProps {
 
 const ConvBox: React.FC<ConvBoxProps> = (data) => {
 
-  const {showConv, setShowConv, activeUserConv, setActiveUserConv, socket, setChatBoxMessages} = useContext(Context)
+  const {showConv, setShowConv, activeUserConv, setActiveUserConv, socket, setChatBoxMessages, rooms} = useContext(Context)
 
   const handleClick = async () => {
     setShowConv(true)
     setActiveUserConv(data.data)
+    // console.log(data.data)
     await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomName:data.data.name, auth: socket.auth['token'], socket:socket.id}, {withCredentials: true})
-    .then((data) => {
-      // Handle the data received from the server
-      setChatBoxMessages([])
-      data.data.msg.map ((dt: { user: any; msg: any }) => setChatBoxMessages((old: any) => [...old, {user:dt.user, msg:dt.msg}]))
-      // console.log(data)
+    .then((res) => {
+      console.log(res)
+      setChatBoxMessages(res.data.msg)
     }
     )
     // const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())

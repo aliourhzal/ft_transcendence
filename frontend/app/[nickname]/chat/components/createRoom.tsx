@@ -7,7 +7,7 @@ import { Socket } from "socket.io-client"
 
 const RoomForm = () => {
      
-    const {showConv, setShowConv, activeUserConv, setActiveUserConv, showForm, setShowForm, socket, setConvs, set_room_created} = useContext(Context)
+    const {showConv, setShowConv, activeUserConv, setActiveUserConv, showForm, setShowForm, socket, setConvs, set_room_created, setRooms, rooms} = useContext(Context)
     // const [roomInfo, setRoomInfo] = useState({name:'', users:[], password:''})
     const [roomName, setName] = useState('')
     const [users, setUsers] = useState<string[]>([])
@@ -43,7 +43,18 @@ const RoomForm = () => {
         try {
             await axios.post('http://127.0.0.1:3000/rooms', {roomName:roomName, users:users, auth: socket.auth['token'], type:roomType, password:pass},
                                                             {withCredentials: true, headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}}).then(
-                                                                response => {console.log(response);hideForm()})
+                                                                response => {
+                                                                    console.log(response)
+                                                                    setRooms(rooms => rooms.unshift({
+                                                                        name: "room.room.room.room_name",
+                                                                        last_msg:'welcome to group chat',
+                                                                        msgs: [],
+                                                                        id: "room.room.room.id",
+                                                                        users: [],
+                                                                        type: "room.room.room.roomType"
+                                                                    }))
+                                                                    hideForm()
+                                                                })
         } catch(error) {
             alert(error)
         }

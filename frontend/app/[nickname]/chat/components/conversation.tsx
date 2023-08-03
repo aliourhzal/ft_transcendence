@@ -32,7 +32,6 @@ const Conversation = () => {
         if (_msg != '') {
             socket.emit('send-message', {message:msg, user:socket.auth['token'], roomName:activeUserConv.name, socketId:socket.id})
             // setChatBoxMessages(old => [...old, {user:userData.nickname, msg:msg}])
-            console.log("sendmessage")
             msg_sent == undefined ? set_msg_sent(1) : set_msg_sent(old => old == 1 ? 2 : 1)
             setMsg('')
         }

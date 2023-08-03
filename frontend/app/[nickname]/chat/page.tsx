@@ -49,7 +49,7 @@ export default function Chat() {
     
 	const [convs, setConvs] = useState<conversation[]>([])
 
-	const [msg_sent, set_msg_sent] = useState<number | undefined>(undefined)
+	const [msg_sent, set_msg_sent] = useState<1 | 2 | undefined>(undefined)
 	const [room_created, set_room_created] = useState(false)
 
 	const [rooms, setRooms] = useState<Room[]>([])

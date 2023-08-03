@@ -9,21 +9,24 @@ const ChatBox = () => {
   const {socket, chatBoxMessages, setChatBoxMessages, userData, msg_sent, rooms, setRooms, activeUserConv} = useContext(Context)
   
   const addmsg = (msg) => {
-  console.log("lmfaoingxd")
+    console.log(msg)
     let temp_rooms = [...rooms]
-    temp_rooms.find(o => o.name === activeUserConv.name).msgs.push(msg)
+    temp_rooms.find(o => o.name === activeUserConv.name).msgs.push({user:msg.user, msg:msg.msg})
     setRooms(temp_rooms)
     // setChatBoxMessages(rooms.find(o => o.name == activeUserConv.name).msgs)
     // console.log(rooms.find(o => o.name === activeUserConv.name).msgs)
     // rooms.find(o => o.name === activeUserConv.name)
     // ((old:any) => [...old, {user:msg.user, msg:msg.message}] )
-    setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.msg}] )
+    if (activeUserConv.name == msg.roomName){
+      setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.msg}] )
+    }
   }
-      
+  
   useEffect( () => {
-    if (msg_sent)
-      socket.once('add-message', addmsg)
-      // return () => socket.off('add-message', addmsg)
+    if (msg_sent) {
+        socket.on('add-message', addmsg)
+        return () => socket.off('add-message', addmsg)
+    }
 	},[msg_sent])
 
     let temp = document.getElementById('chatbox')
