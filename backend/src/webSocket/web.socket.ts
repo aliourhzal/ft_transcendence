@@ -3,7 +3,6 @@ import { JwtService } from "@nestjs/jwt";
 import { IoAdapter } from "@nestjs/platform-socket.io";
 import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { randomUUID } from "crypto";
-import { type } from "os";
 import { Server, Socket } from 'socket.io'
 import { UsersService } from "src/users/users.service";
 
@@ -12,30 +11,38 @@ type userNode = {
 	nickname: string
 }
 
+type paddleInfo = {
+	x: number,
+	y: number,
+	collision: boolean,
+	collAngle: number
+}
+
+type coords = {
+	x: number,
+	y: number
+}
+
 type roomT = {
 	roomId: string,
 	socket1: Socket,
-	socket2: Socket
+	socket2: Socket,
+	ball_p1: coords,
+	ball_p2: coords,
+	ballDynamics: Ball
 }
 
 class Ball {
-	x: number;
-	y: number;
-
-	top: number;
-	bottom: number;
-	left: number;
-	right: number;
-
 	radius = 10;
 	velocityX = 5; //ball direction
 	velocityY = 5;
 	speed = 7;
 	color = "WHITE";
 
-	constructor(initX: number, initY: number) {
-		this.x = initX;
-		this.y = initY;
+	resetForNewGame() {
+		this.speed = 7;
+		this.velocityX = 5;
+		this.velocityY = 5;
 	}
 }
 
@@ -46,6 +53,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	server:Server;
 
 	private connectedUsers: userNode[] = [];
+	private gameQueue: userNode[] = [];
 
 	private rooms : roomT[] = [];
 	// private findPlayerinRoom()
@@ -68,25 +76,34 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		console.log('the user disconnected from game socket')
 	}
 
-	update(ball: Ball, roomId: string) {
-		// if (ball.x - ball.radius < -20 || ball.x + ball.radius > 820)
-		// {
-		// 	ball.speed = 7;
-		// 	ball.x = 400;
-		// 	ball.y = 225;
-		// 	ball.velocityY = 5;
-		// 	ball.velocityX = 5;
-		// }
-		ball.x += ball.velocityX;
-		ball.y += ball.velocityY;
-		if(ball.y - ball.radius < 0 || ball.y + ball.radius > 450){
-			ball.velocityY = -ball.velocityY;
+	update(ball_p1: coords, ball_p2: coords, ballDynamics: Ball, player1: Socket, player2: Socket) {
+		if (ball_p1.x - ballDynamics.radius < -20 || ball_p1.x + ballDynamics.radius > 820) {
+			ballDynamics.resetForNewGame();
+			ball_p1.x = ball_p2.x = 400;
+			ball_p1.y = ball_p2.y = 225;
 		}
-		if (ball.x - ball.radius < 0 || ball.x + ball.radius > 800)
-			ball.velocityX = -ball.velocityX;
-		this.server.to(roomId).emit('game_Data', {
-			x: ball.x,
-			y: ball.y
+		ball_p1.x += ballDynamics.velocityX;
+		ball_p1.y += ballDynamics.velocityY;
+		ball_p2.x -= ballDynamics.velocityX;
+		ball_p2.y -= ballDynamics.velocityY;
+		if(ball_p1.y - ballDynamics.radius < 0 || ball_p1.y + ballDynamics.radius > 450) {
+			if (ball_p1.y - ballDynamics.radius < 0) {
+				ball_p1.y = ballDynamics.radius + 1;
+				ball_p2.y = 450 - ballDynamics.radius + 1;
+			}
+			else {
+				ball_p1.y = 450 - ballDynamics.radius + 1;
+				ball_p2.y = ballDynamics.radius + 1;
+			}
+			ballDynamics.velocityY = -ballDynamics.velocityY;
+		}
+		this.server.to(player1.id).emit('game_Data', {
+			x: ball_p1.x,
+			y: ball_p1.y
+		})
+		this.server.to(player2.id).emit('game_Data', {
+			x: ball_p2.x,
+			y: ball_p2.y
 		})
 	}
 
@@ -101,34 +118,40 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		return sock;
 	}
 
-	@SubscribeMessage('player')
-	handleEvent(socket: Socket, data : {x: number, y: number }) {
-		this.server.to(this.findOpponentBySocket(socket).id).emit("playerMov", {x: data.x, y:data.y});
-	}
 
-	async startGame(roomId: string) {
-		const ball = new Ball(400, 225);
+	async startGame(ball_p1: coords, ball_p2: coords, ballDynamics: Ball, player1: Socket, player2: Socket) {
+		
 		
 		let loop:NodeJS.Timer = null;
 		let framePerSecond = 50;
 		loop = setInterval(() => {
-			this.update(ball, roomId);
+			this.update(ball_p1, ball_p2, ballDynamics, player1, player2);
 		},1000/framePerSecond);
 		return ;
 	}
 
 	async createGameRoom() {
 		const roomId = randomUUID();
-		console.log(roomId);
-		this.connectedUsers[0].socket.join(roomId);
-		this.connectedUsers[1].socket.join(roomId);
+		const ballDynamics = new Ball()
+		const ball_p1: coords = {x: 400, y: 225};
+		const ball_p2: coords = {x: 400, y: 225};
+		const player1 = this.gameQueue[0].socket;
+		const player2 = this.gameQueue[1].socket;
+		player1.join(roomId);
+		player2.join(roomId);
 
-		const obj:roomT = {roomId, socket1: this.connectedUsers[0].socket, socket2: this.connectedUsers[1].socket};
+		const obj:roomT = {
+			roomId,
+			socket1: player1,
+			socket2: player2,
+			ball_p1,
+			ball_p2,
+			ballDynamics
+		};
 		this.rooms.push(obj);
 
-		console.log(obj);
-		this.connectedUsers.splice(0, 2);
-		this.startGame(roomId);
+		this.gameQueue.splice(0, 2);
+		this.startGame(ball_p1, ball_p2, ballDynamics, player1, player2);
 	}
 
 	async handleConnection(socket: Socket) {
@@ -148,7 +171,8 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			this.OnWebSocektError(socket);
 		}
 		this.connectedUsers.push({socket, nickname: user.nickname});
-		if (this.connectedUsers.length < 2)
+		this.gameQueue.push({socket, nickname: user.nickname});
+		if (this.gameQueue.length < 2)
 			return ;
 		if (this.connectedUsers[0].nickname === this.connectedUsers[1].nickname)
 		{
@@ -156,6 +180,27 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			return ;
 		}
 		this.createGameRoom();
+	}
+
+	@SubscribeMessage('player')
+	handleEvent(socket: Socket, data: paddleInfo) {
+		const room = this.rooms.find(room => {
+			return (room.socket1.id === socket.id || room.socket2.id === socket.id)
+		})
+		if (data.collision)
+		{
+			if (socket.id === room.socket2.id)
+			{
+				const a = 1.5708 - data.collAngle; // the angle between collAngle and 90deg
+				const mirrorAngle = data.collAngle + 2 * a;
+				data.collAngle = -mirrorAngle;
+			}
+			room.ballDynamics.velocityX = room.ballDynamics.speed * Math.cos(data.collAngle);
+			room.ballDynamics.velocityY = room.ballDynamics.speed * Math.sin(data.collAngle);
+			room.ballDynamics.speed += 0.7;
+		}
+		const newY = 450 - data.y - 100;
+		this.server.to(this.findOpponentBySocket(socket).id).emit("playerMov", {x: data.x, y: newY});
 	}
 
 }
