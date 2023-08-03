@@ -35,7 +35,7 @@ const RoomForm = () => {
     
     const getUsersInfo = (users) => {
         let _users: {
-                id: string,
+                id: string, 
                 nickName: string,
                 firstName: string,
                 lastName: string,
@@ -84,8 +84,8 @@ const RoomForm = () => {
     }
     return (
         showForm &&
-                <div className='fixed flex bg-darken-300 items-center justify-center w-[50%] min-w-[450px] z-10' onBlur={() => hideForm}>
-                    <div className="w-[80%] border-4 rounded-lg px-10 pb-12 border-white">
+        <div className='backdrop-blur-md z-10 fixed flex justify-center items-center w-[100%] h-[100vh]'>
+                    <div className=' scale-90 w-[45%] p-9 bg-slate-700 rounded-2xl flex flex-col items-center justify-center'>
                     <button type="button" className="ml-[auto] mb-5 w-9 h-9 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-lg flex text-center justify-center items-center" onClick={hideForm}>x</button>
                         <div className='text-center text-3xl mb-2 drop-shadow-[0px_0px_5px_rgba(255,255,255,1)]'><h1>Create Chatroom</h1></div>
                             <div className="relative z-0 w-full mb-6 group">
