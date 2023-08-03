@@ -8,7 +8,6 @@ interface RoomInfoProps {
 }
 
 const RoomInfo: React.FC<RoomInfoProps> = (info) => {
-
   return (
     <div className='p-8 absolute mt-20 z-20 w-[70%] bg-slate-500 rounded-2xl'>
         <div className='flex justify-between'>
@@ -18,7 +17,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         <div className='flex flex-col justify-center items-center'>
             <h1 className='font-bold m-3'>Users</h1>
             {info.users.map(user => (
-                <div key={user.userId}>{user.userName}</div>
+                <div key={user.id}>{user.nickName}</div>
             ) )}
         </div>
     </div>

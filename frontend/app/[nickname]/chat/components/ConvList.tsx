@@ -57,11 +57,12 @@ const ConvList = () => {
       })
       console.log(rooms)
       setConvs(rooms)
+      return socket?.off('list-rooms',fillUserList)
     }
   
     useEffect( () => {
       console.log("entered")
-        socket?.once('list-rooms',fillUserList)
+        socket?.on('list-rooms',fillUserList)
     }, [room_created])
 
     return (

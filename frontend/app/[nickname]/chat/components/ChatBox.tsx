@@ -17,17 +17,16 @@ const ChatBox = () => {
     // console.log(rooms.find(o => o.name === activeUserConv.name).msgs)
     // rooms.find(o => o.name === activeUserConv.name)
     // ((old:any) => [...old, {user:msg.user, msg:msg.message}] )
-    if (activeUserConv.name == msg.roomName){
+    if (activeUserConv.name == msg.roomName)
       setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.msg}] )
-    }
   }
   
   useEffect( () => {
-    if (msg_sent) {
+    // if (msg_sent) {
         socket.on('add-message', addmsg)
         return () => socket.off('add-message', addmsg)
-    }
-	},[msg_sent])
+    // }
+	},[msg_sent, chatBoxMessages])
 
     let temp = document.getElementById('chatbox')
     useEffect ( () => {

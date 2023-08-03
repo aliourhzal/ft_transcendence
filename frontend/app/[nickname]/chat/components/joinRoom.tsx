@@ -1,11 +1,10 @@
 import React, { useContext, useState } from 'react'
 import { Context } from '../page'
 import axios from 'axios'
-import { useSSR } from '@nextui-org/react'
 
 const JoinRoomForm = () => {
 
-    const {showJoinForm, setShowJoinForm, convs, socket} = useContext(Context)
+    const {showJoinForm, setShowJoinForm, convs, socket, rooms} = useContext(Context)
 
     const [name, setName] = useState('')
     const [pass, setPass] = useState('')
@@ -15,7 +14,9 @@ const JoinRoomForm = () => {
     const submitForm = () => {
         try {
             axios.post('http://127.0.0.1:3000/rooms/join-room', {name:name, pass:pass, auth:socket.auth['token']}, {withCredentials: true}).then(
-                res => console.log(res)
+                res => {
+                    console.log(res)
+                }
             )
         }
         catch(error) {
@@ -26,7 +27,7 @@ const JoinRoomForm = () => {
 
   return (
     showJoinForm &&
-        <div className='z-10 fixed flex justify-center items-center w-[100%] h-[100vh] min-w-[500px]'>
+        <div className='transition-opacity ease-in duration-700 opacity-100 z-10 fixed flex justify-center items-center w-[100%] h-[100vh] min-w-[500px]'>
             <div className='w-[30%] h-[30vh] p-6 bg-slate-600 rounded-2xl flex flex-col items-center justify-center'>
             <button type="button" className="ml-[auto] mb-5 w-9 h-9 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-lg flex text-center justify-center items-center" onClick={() => setShowJoinForm(false)}>x</button>
                 <h1>Join Chatroom</h1>

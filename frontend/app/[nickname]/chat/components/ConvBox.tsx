@@ -21,10 +21,11 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
     // console.log(data.data)
     await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomName:data.data.name, auth: socket.auth['token'], socket:socket.id}, {withCredentials: true})
     .then((res) => {
-      console.log(res)
-      setChatBoxMessages(res.data.msg)
-    }
-    )
+        console.log(res)
+        setChatBoxMessages(res.data.msg)
+    })
+
+    
     // const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
 }
 
