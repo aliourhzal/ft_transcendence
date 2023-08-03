@@ -10,6 +10,7 @@ export default function Canvas() {
     const socket = useContext(WebsocketContext);
     const ball = new Ball();
 	const player = new Player(0, 0, "#FFF")
+	const com = new Player(0, 0, "#5fed55")
 
     function StartGame(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D)
 	{
@@ -21,6 +22,7 @@ export default function Canvas() {
 			let rect = canvas.getBoundingClientRect();
 			if (evt.clientY < rect.bottom - player.height)
 			{
+				
 				player.y = evt.clientY - rect.top + 2; 
 			}
 			else
@@ -47,13 +49,11 @@ export default function Canvas() {
 		//draw player Paddle
 		drawRect(player.x, player.y, player.width, player.height, player.color);
 		//draw the oposite Paddle
-		drawRect(canvas.width - player.width, canvas.height / 2 - player.height/2, player.width, player.height, player.color);
+		drawRect(canvas.width - com.width, com.y , com.width, com.height, com.color);
 
 		//draw the ball
 		drawArc(ball.x, ball.y, ball.radius, ball.color);
-		
-		// // draw the COM's paddle
-		// drawRect(com.x, com.y, com.width, com.height, com.color);
+		socket.emit("player", {x : player.x, y: player.y});
 	}
 
     useEffect(() => {
@@ -63,7 +63,12 @@ export default function Canvas() {
             ball.x = data.x;
 			ball.y = data.y;
             StartGame(canvas, ctx);
-        })
+        });
+		socket.on("playerMov", data => {
+			com.x = data.x;
+			com.y = data.y;
+			console.log(com.x, com.y);
+		});
     }, [])
 
     return (

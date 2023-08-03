@@ -3,12 +3,19 @@ import { JwtService } from "@nestjs/jwt";
 import { IoAdapter } from "@nestjs/platform-socket.io";
 import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { randomUUID } from "crypto";
+import { type } from "os";
 import { Server, Socket } from 'socket.io'
 import { UsersService } from "src/users/users.service";
 
 type userNode = {
 	socket: Socket,
 	nickname: string
+}
+
+type roomT = {
+	roomId: string,
+	socket1: Socket,
+	socket2: Socket
 }
 
 class Ball {
@@ -40,7 +47,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 
 	private connectedUsers: userNode[] = [];
 
-	private rooms : {}[] = [];
+	private rooms : roomT[] = [];
 	// private findPlayerinRoom()
 	// {
 	// 	this.rooms.map()
@@ -75,7 +82,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		if(ball.y - ball.radius < 0 || ball.y + ball.radius > 450){
 			ball.velocityY = -ball.velocityY;
 		}
-		if (ball.x - ball.radius < 0 || ball.x - ball.radius >= 800)
+		if (ball.x - ball.radius < 0 || ball.x + ball.radius > 800)
 			ball.velocityX = -ball.velocityX;
 		this.server.to(roomId).emit('game_Data', {
 			x: ball.x,
@@ -83,10 +90,21 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		})
 	}
 
-	// @SubscribeMessage('player')
-	// handleEvent(@MessageBody() data: player): player {
-	// 	this.server.to(roomId)
-	// }
+	findOpponentBySocket(socket: Socket): Socket {
+		let sock: Socket;
+		this.rooms.map((x) => {
+			if (x.socket1.id === socket.id)
+				sock = x.socket2;
+			if (x.socket2.id === socket.id)
+				sock = x.socket1;
+		});
+		return sock;
+	}
+
+	@SubscribeMessage('player')
+	handleEvent(socket: Socket, data : {x: number, y: number }) {
+		this.server.to(this.findOpponentBySocket(socket).id).emit("playerMov", {x: data.x, y:data.y});
+	}
 
 	async startGame(roomId: string) {
 		const ball = new Ball(400, 225);
@@ -105,7 +123,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		this.connectedUsers[0].socket.join(roomId);
 		this.connectedUsers[1].socket.join(roomId);
 
-		const obj = {roomId, player1: this.connectedUsers[0].socket.id, player2: this.connectedUsers[1].socket.id};
+		const obj:roomT = {roomId, socket1: this.connectedUsers[0].socket, socket2: this.connectedUsers[1].socket};
 		this.rooms.push(obj);
 
 		console.log(obj);
@@ -141,3 +159,5 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	}
 
 }
+
+//socket.broadcast.emit("event", ...); 		: send a message to all but not your self

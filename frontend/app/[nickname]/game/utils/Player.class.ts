@@ -1,6 +1,7 @@
 export default class Player {
 	x: number;
 	y: number;
+	pos: string;
 
 	top: number;
 	bottom: number;
