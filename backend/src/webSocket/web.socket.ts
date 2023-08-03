@@ -1,5 +1,6 @@
 import { UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import { IoAdapter } from "@nestjs/platform-socket.io";
 import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { randomUUID } from "crypto";
 import { Server, Socket } from 'socket.io'
@@ -39,6 +40,12 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 
 	private connectedUsers: userNode[] = [];
 
+	private rooms : {}[] = [];
+	// private findPlayerinRoom()
+	// {
+	// 	this.rooms.map()
+	// }
+
 	constructor(
 		private readonly jwtService: JwtService,
 		private readonly usersService: UsersService	
@@ -70,19 +77,21 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		}
 		if (ball.x - ball.radius < 0 || ball.x - ball.radius >= 800)
 			ball.velocityX = -ball.velocityX;
-		this.server.to(roomId).emit('ball-position', {
+		this.server.to(roomId).emit('game_Data', {
 			x: ball.x,
 			y: ball.y
 		})
 	}
 
+	// @SubscribeMessage('player')
+	// handleEvent(@MessageBody() data: player): player {
+	// 	this.server.to(roomId)
+	// }
+
 	async startGame(roomId: string) {
 		const ball = new Ball(400, 225);
+		
 		let loop:NodeJS.Timer = null;
-		// function game()
-		// {
-		// 	update(ball, roomId);
-		// }
 		let framePerSecond = 50;
 		loop = setInterval(() => {
 			this.update(ball, roomId);
@@ -95,6 +104,11 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		console.log(roomId);
 		this.connectedUsers[0].socket.join(roomId);
 		this.connectedUsers[1].socket.join(roomId);
+
+		const obj = {roomId, player1: this.connectedUsers[0].socket.id, player2: this.connectedUsers[1].socket.id};
+		this.rooms.push(obj);
+
+		console.log(obj);
 		this.connectedUsers.splice(0, 2);
 		this.startGame(roomId);
 	}
@@ -118,6 +132,11 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		this.connectedUsers.push({socket, nickname: user.nickname});
 		if (this.connectedUsers.length < 2)
 			return ;
+		if (this.connectedUsers[0].nickname === this.connectedUsers[1].nickname)
+		{
+			this.connectedUsers.splice(0, 1);
+			return ;
+		}
 		this.createGameRoom();
 	}
 
