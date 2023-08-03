@@ -94,7 +94,6 @@ export class RoomsService
                  
                 if(!password)
                 {
-                    console.log("should set password for this protected room");
                     return 0;
                 }
                 

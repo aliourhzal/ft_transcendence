@@ -30,27 +30,25 @@ export class RoomController {
         ) {}
 
     @Post()
-    async createRoom(@Body() dto:createRoom, @Res() res:any)
+    async createRoom(@Body() dto:createRoom, @Res() res:any) // when work with erroe in dto by default return object response error
     { 
         // conflict between private and public
         try 
         {
-            const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
+            const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET }) // who send the request
             
-            if(!await this.utils.getUserId(user['sub']))
+            if(!await this.utils.getUserId(user['sub'])) // search for it in db
             {
-                console.log('user not found.')
-                return;
+                return res.status(404).send('user not found.')
             }
 
-            const usersIds = await this.utils.getUsersId(user['sub'],dto.users, 1)
+            const usersIds = await this.utils.getUsersId(user['sub'],dto.users, 1) // return the users id of the users want to add to chat room
             
             if(usersIds === 0)
             {
-                console.log("you try to add the current user")
-                return;
+                return res.status(406).send("this current user is aleredy in this room.")// to avoid enter one user and can the current user
             }
-            if(usersIds)
+            if(usersIds) // if found the users id
             { 
                 if (dto.type === RoomType.PRIVATE || dto.type === RoomType.PROTECTED || dto.type === RoomType.PUBLIC) 
                 {
@@ -60,8 +58,11 @@ export class RoomController {
     
                         if(room === 1)
                         {
-                            console.log("room name aleredy exist.");
-                            return ;
+                            return res.status(406).send("room name aleredy exist.");
+                        }
+                        if(room === 0)
+                        {
+                            return res.status(406).send("should set password for this protected room.");
                         }
 
                         res.status(200).send({room  , usersInRoom: await this.utils.getUsersInRooms(room['id']) , userInfos: await this.utils.getUserInfosInRoom(room['id'])});
@@ -73,8 +74,7 @@ export class RoomController {
     
                         if(room === 1)
                         {
-                            console.log("room name aleredy exist.");
-                            return ;
+                            return res.status(406).send("room name aleredy exist.");
                         }
  
                         res.status(200).send({room  , usersInRoom: await this.utils.getUsersInRooms(room['id']) , userInfos: await this.utils.getUserInfosInRoom(room['id'])});
@@ -82,18 +82,17 @@ export class RoomController {
                 }
                 else
                 {
-                    console.log("error in type of room.")
+                    return res.status(406).send("error in type of room.")
                 }
             }   
             else
             {
-                console.log("users not found")
-                return ;
+                return res.status(404).send('one or multi users not found.')
             }
         } 
         catch (error) 
         {
-            console.log(error);
+            return res.status(500).json({ error: error.message });
         }
     }
    
@@ -102,8 +101,6 @@ export class RoomController {
     {
         try 
         {
-            // search in db by user id if found it or not
-            // check if current user is not banned from the selected room
             const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET });
 
             if(!await this.utils.getUserId(user['sub']))

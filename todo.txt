@@ -34,18 +34,4 @@
 
 
 
-const roomType = await this.utils.getRoomById(roomId);
-
-                // if user is member of curent room
-                if (roomType) 
-                {
-                    const userType = await this.utils.getUserType(roomId,user['sub']);
-
-                    
-                }
-                else
-                {
-                    console.log("room not found")
-                    return ;
-                }
-
+======================================================================================================================
