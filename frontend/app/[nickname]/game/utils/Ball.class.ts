@@ -13,8 +13,4 @@ export default class Ball {
 	speed = 7;
 	color = "WHITE";
 
-	constructor(initX: number, initY: number) {
-		this.x = initX;
-		this.y = initY;
-	}
 }
