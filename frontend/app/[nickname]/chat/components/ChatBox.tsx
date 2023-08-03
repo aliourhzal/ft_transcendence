@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import user, { Context, gimmeRandom } from '../page'
 import { Socket } from 'socket.io-client'
 import SelfChatBox from './selfChatBox'
@@ -8,25 +8,29 @@ const ChatBox = () => {
   
   const {socket, chatBoxMessages, setChatBoxMessages, userData, msg_sent, rooms, setRooms, activeUserConv} = useContext(Context)
   
+  const addmsg = (msg) => {
+  console.log("lmfaoingxd")
+    let temp_rooms = [...rooms]
+    temp_rooms.find(o => o.name === activeUserConv.name).msgs.push(msg)
+    setRooms(temp_rooms)
+    // setChatBoxMessages(rooms.find(o => o.name == activeUserConv.name).msgs)
+    // console.log(rooms.find(o => o.name === activeUserConv.name).msgs)
+    // rooms.find(o => o.name === activeUserConv.name)
+    // ((old:any) => [...old, {user:msg.user, msg:msg.message}] )
+    setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.msg}] )
+  }
+      
   useEffect( () => {
-    socket?.on('add-message', (msg) => {
-      console.log("********", msg, "********")
-      let temp_rooms = [...rooms]
-      temp_rooms.find(o => o.name === activeUserConv.name).msgs.push(msg)
-      setRooms(temp_rooms)
-      // setChatBoxMessages(rooms.find(o => o.name == activeUserConv.name).msgs)
-        // console.log(rooms.find(o => o.name === activeUserConv.name).msgs)
-        // rooms.find(o => o.name === activeUserConv.name)
-        // ((old:any) => [...old, {user:msg.user, msg:msg.message}] )
-        // setChatBoxMessages((old:any) => [...old, {user:msg.user, message:msg.msg}] )
-	  	})
-	}, [msg_sent])
+    if (msg_sent)
+      socket.once('add-message', addmsg)
+      // return () => socket.off('add-message', addmsg)
+	},[msg_sent])
 
     let temp = document.getElementById('chatbox')
     useEffect ( () => {
       if (temp)
         temp.scrollTop = temp.scrollHeight
-    }, [temp, chatBoxMessages])
+    }, [chatBoxMessages, temp])
   
   return (
     <div>

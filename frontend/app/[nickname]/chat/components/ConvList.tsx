@@ -34,6 +34,7 @@ const getUsersInfo = (users) => {
 
 const ConvList = () => {
     const {socket, convs, setConvs, room_created, set_room_created, rooms, setRooms} = useContext(Context)
+
     const fillUserList = (listOfRoomsOfUser) => {
       setConvs([])
       listOfRoomsOfUser.messages.map( (room: any) => {
@@ -52,9 +53,7 @@ const ConvList = () => {
   
     useEffect( () => {
       console.log("entered")
-        socket?.on('list-rooms',(listOfRoomsOfUser: any) => {
-            fillUserList(listOfRoomsOfUser)
-          })
+        socket?.once('list-rooms',fillUserList)
     }, [room_created])
 
     return (

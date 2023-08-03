@@ -49,7 +49,7 @@ export default function Chat() {
     
 	const [convs, setConvs] = useState<conversation[]>([])
 
-	const [msg_sent, set_msg_sent] = useState(false)
+	const [msg_sent, set_msg_sent] = useState<number | undefined>(undefined)
 	const [room_created, set_room_created] = useState(false)
 
 	const [rooms, setRooms] = useState<Room[]>([])
@@ -75,7 +75,7 @@ export default function Chat() {
 	return (
 		<main className='select-none h-full w-full overflow-y-auto'>
 			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, convs, setConvs, socket,
-				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm, set_msg_sent,
+				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm, msg_sent, set_msg_sent,
 				set_room_created, room_created, rooms, setRooms}}>
 				<RoomForm />
 				<JoinRoomForm />
