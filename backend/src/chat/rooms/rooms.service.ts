@@ -158,9 +158,8 @@ export class RoomsService
          
         if(userId === ownerId)
             return 0;
-     
         
-        
+            
         // if pass the same users to change to admins will pass unique ids
 
        

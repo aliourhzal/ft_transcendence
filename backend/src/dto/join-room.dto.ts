@@ -15,13 +15,5 @@ export class JoinRoomDto {
     @IsNotEmpty()
     @IsString()
     auth: string;
-    
-    @IsNotEmpty()
-    @IsString()
-    socket: string;
-    
-    @IsString()
-    @IsOptional() 
-    password?: string;
 }
  

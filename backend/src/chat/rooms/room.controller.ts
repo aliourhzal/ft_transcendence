@@ -11,6 +11,7 @@ import { MessagesService } from '../messages/messages.service';
 import { RoomType } from 'src/utils/userData.interface';
 import { createRoom } from 'src/dto';
 import { comparePasswd, encodePasswd } from 'src/utils/bcrypt';
+import { SetOtherAasAdministrators } from 'src/dto/setOtherAasAdministrators.dto';
 
 /**
  *  in try and catch if any function return null will catch as error
@@ -97,7 +98,7 @@ export class RoomController {
     }
    
     @Post('/select-room') // use here JoinRoomDto
-    async onJoinedRoom(@Body() dto:any, @Res() res:any) 
+    async onJoinedRoom(@Body() dto:JoinRoomDto, @Res() res:any) 
     {
         try 
         {
@@ -105,8 +106,7 @@ export class RoomController {
 
             if(!await this.utils.getUserId(user['sub']))
             {
-                console.log('user not found.')
-                return;
+                return res.status(404).send('user not found.');
             }
             
             const roomId = await this.utils.getRoomIdByName(dto.roomName);
@@ -114,39 +114,35 @@ export class RoomController {
             if (roomId) // if room is founding check if current user is member into it and it not banned
             {
                 const isUserInRoom = await this.utils.getUserType(roomId,user['sub']);
+                if(!isUserInRoom)
+                {
+                    return res.status(404).send('user is not in this room.');
+                }
                 if(isUserInRoom.isBanned)
                 {
-                    console.log('you are banned from this room.')
-                    return ;
+                    return res.status(401).send('you are banned from this room.')
                 }
-                if(isUserInRoom)
-                {
-                    const messageAndUserName = await this.messagesService.getAllMessagesofRoom(dto.roomName); // should return messages and username who send message
-                                
-                    return res.status(200).send({ msg: messageAndUserName });
-                }
-                else
-                {
-                    console.log('user not in this room')
-                }
+                 
+                const messageAndUserName = await this.messagesService.getAllMessagesofRoom(dto.roomName);
+                            
+                return res.status(200).send({ msg: messageAndUserName });
             }
             else
             {
-                console.log('room not found.');
+                return res.status(404).send('room not found.');
             }
-
         } 
         catch (error) 
         {
-            console.log(error)
+            return res.status(500).json({ error: error.message });
         }
     }
 
     @Post('/setOtherAasAdministrators') // use dto
-    async setOtherAasAdministrators(@Body() dto:any, @Res() res:any)
+    async setOtherAasAdministrators(@Body() dto:SetOtherAasAdministrators, @Res() res:any)
     {
         try 
-        { // if error in jwt
+        {   // if error in jwt
             const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
             
             if(!await this.utils.getUserId(user['sub'])) //if jwt expired
@@ -158,17 +154,27 @@ export class RoomController {
 
             const roomId = await this.utils.getRoomIdByName(dto.roomName);
 
-            const usersIds = await this.utils.getUsersId(user['sub'],dto.users)
+            const usersIds = await this.utils.getUsersId(user['sub'],dto.users, 1)
         
+            if(usersIds === 0) // send one user is the admin or the owner , send admin with users
+            {
+                return res.status(406).send("cannot reset the current user role.")// to avoid enter one user and can the current user
+            }
+
             if(roomId && usersIds)
             {
+                // if aleredy admin set it admin else dont
+                const userType = await this.utils.getUserType(roomId,user['sub']); 
+                if(!userType)
+                {
+                    return res.status(404).send('user is not in this room.');
+                }
 
-                const userType = await this.utils.getUserType(roomId,user['sub']); // this return type of user and check if current user is member into this room
                 if(userType)
                 {
                     if (userType.userType === "ADMIN" || userType.userType === "OWNER") 
                     {
-                        const bannedAndUnBannedUsers = await this.utils.getAllbannedAndUnBannedUsers(user['sub'],dto.users, roomId); 
+                        const bannedAndUnBannedUsers = await this.utils.getAllbannedAndUnBannedUsers(user['sub'],usersIds, roomId); 
 
                         for(const user of bannedAndUnBannedUsers)
                         {

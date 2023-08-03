@@ -105,7 +105,6 @@ export class UtilsService {
             for(const userId of users)
             {
                 const userType = (await this.getUserType(roomdId,userId));
- 
                 
                 if(userType.isBanned === true)
                     this.bannedAndUnBannedUsers.push({BannedUser : userId})

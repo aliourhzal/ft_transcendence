@@ -107,17 +107,19 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                     
                     
                     const usersInroom = await this.utils.getUsersInRooms(roomId);
-                    
+                     
                     for(const userInRoom of usersInroom)
                     {
                         for (let i = 0; i < this.soketsId.length; i++) 
                         {
+                            if(this.soketsId[i].userId === userInRoom.userId)
                             {
                                 this.server.to(this.soketsId[i].socketIds).emit("add-message", {user: createdMsg.username, msg: createdMsg.msg})
-                            }    
+                            }
                         }
+
                     }
-                    
+                     
                 }
                 else
                 {

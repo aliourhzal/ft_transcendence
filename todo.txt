@@ -35,3 +35,11 @@
 
 
 ======================================================================================================================
+
+- when admin or owner mute user this user cannot send message to the room who is muted rom it.
+
+- implemt controller mute user .
+
+- add boolean fild isMuted
+
+- if is muted cannot send message , should wait after finish time of muted
