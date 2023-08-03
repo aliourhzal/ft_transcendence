@@ -23,36 +23,30 @@ const RoomForm = () => {
         setName(''); setUser(''); setUsers([]); setPass(''); setRoomType('PUBLIC'); setPrivate(false)
         set_room_created(old => !old)
     }
-    // useEffect ( () => {
-    //     if (pass != '')
-    //         setRoomType('PROTECTED')
-    //     else if (isPrivate)
-    //         setRoomType('PRIVATE')
-    //     else
-    //         setRoomType('PUBLIC')
-    //     }, [roomType, pass, isPrivate])
-        
-    const confirmForm = async () => {
+
+    useEffect ( () => {
         if (pass != '')
             setRoomType('PROTECTED')
         else if (isPrivate)
             setRoomType('PRIVATE')
         else
             setRoomType('PUBLIC')
-
+        }, [roomType, pass, isPrivate])
+        
+    const confirmForm = async () => {
         try {
             await axios.post('http://127.0.0.1:3000/rooms', {roomName:roomName, users:users, auth: socket.auth['token'], type:roomType, password:pass},
                                                             {withCredentials: true, headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}}).then(
                                                                 response => {
                                                                     console.log(response)
-                                                                    setRooms(rooms => rooms.unshift({
+                                                                    rooms.unshift({
                                                                         name: "room.room.room.room_name",
                                                                         last_msg:'welcome to group chat',
                                                                         msgs: [],
                                                                         id: "room.room.room.id",
                                                                         users: [],
                                                                         type: "room.room.room.roomType"
-                                                                    }))
+                                                                    })
                                                                     hideForm()
                                                                 })
         } catch(error) {
