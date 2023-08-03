@@ -4,11 +4,14 @@
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { BannedAndUnbannedUsers } from './userData.interface';
 
 @Injectable()
 export class UtilsService {
 
     private readonly prisma = new PrismaClient();
+
+    bannedAndUnBannedUsers:BannedAndUnbannedUsers[] = [];
 
     async   getUserIdByEmail(email: string)
     {
@@ -71,20 +74,46 @@ export class UtilsService {
         return uniqusers; // return users id
     }
 
-    async getUsersInfosInRoom(adminId: string,users: string[], roomdId:string)
+    async getUsersInfosInRoom(adminId: string,users: string[], roomdId:string)  
     {
+
         const usersId = await this.getUsersId(adminId, users);
+        
+        if(usersId === null)
+        {
+            return '1';
+        }
         if(usersId !== 0)
         {
+             
             for(const userId of usersId)
             {
                 const userType = (await this.getUserType(roomdId,userId)).userType;
                 if(userType === 'ADMIN' || userType === 'OWNER')
                     return 0;
+                
             }
             return usersId;
         }
         return 0;
+    }
+
+
+
+    async getAllbannedAndUnBannedUsers(adminId: string,users: string[], roomdId:string)  
+    {
+            for(const userId of users)
+            {
+                const userType = (await this.getUserType(roomdId,userId));
+ 
+                
+                if(userType.isBanned === true)
+                    this.bannedAndUnBannedUsers.push({BannedUser : userId})
+                else
+                    this.bannedAndUnBannedUsers.push({UnbannedUser : userId})
+
+            }
+            return this.bannedAndUnBannedUsers;
     }
 
     async getRoomIdByName (room_name: string) {
@@ -191,6 +220,34 @@ export class UtilsService {
         return rooms;
     }
 
+    async   removeUserFromRoom(userId : string, roomId : string) 
+    {
+        // if remove the user from join table will not known if it is banned or not , so just remove all messages from the room
+        
+        const userMessages = await this.prisma.messages.findMany({ //  messages of user in the room
+            where: {
+              user: {
+                id: userId,  
+              },
+              room: {
+                id: roomId,  
+              },
+            },
+        });
+          
+        const messageIds = userMessages.map((message) => message.id); // all ids of messages
+        
+        await this.prisma.messages.deleteMany({ // delete all messages of user in the room
+            where: { id: { in: messageIds } },
+        });
+          
+        await this.prisma.joinedTable.update({ // make the user banned from the room
+            where: { userId_roomId: { userId: userId, roomId: roomId } },
+            data: { isBanned: true },
+        });
+          
+          
+    }
 
     async setHashedPasswordOfRoom(id: string ,password: string)
 	{

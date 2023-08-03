@@ -154,45 +154,39 @@ export class RoomsService
     // ---------------------------------------------------------Set Roles Of Rooms ---------------------------------------------- //
 
     
-    async setNewAdmins(roomId: string, usersIds:any, ownerId:string)
+    async setNewAdmins(roomId: string, userId:any, ownerId:string)
     {
-        for(const user of usersIds) 
-        {
-            if(user === ownerId)
-                return 0;
-        }
+         
+        if(userId === ownerId)
+            return 0;
+     
         
         
         // if pass the same users to change to admins will pass unique ids
 
-        for (let i = 0; i < usersIds.length; i++) 
+       
+        const existingLink = await this.prisma.joinedTable.findFirst({
+            where: {
+                userId,
+                roomId,
+            },
+        });
+        
+        if (existingLink.userType === 'USER') // check if the user is admin dont change her Type to admin in db
         {
-            const existingLink = await this.prisma.joinedTable.findFirst({
+            await this.prisma.joinedTable.update({
                 where: {
-                  userId : usersIds[i],
-                  roomId,
+                    userId_roomId: {
+                        userId: userId,
+                        roomId,
+                    },
+                },
+                data: {
+                    userType: "ADMIN",
                 },
             });
-            
-            if (!existingLink) 
-            {
-                return 1;
-            }
-            if (existingLink.userType === 'USER') // check if the user is admin dont change her Type to admin in db
-            {
-                await this.prisma.joinedTable.update({
-                    where: {
-                        userId_roomId: {
-                            userId: usersIds[i],
-                            roomId,
-                        },
-                    },
-                    data: {
-                        userType: "ADMIN",
-                    },
-                });
-            }
         }
+    
         return 2;
     }   
 
@@ -308,7 +302,7 @@ export class RoomsService
         });
     }
     
-    async   removeUserFromRoom(roomId: string, usersIds: string[] | string) {
+    async   removeUserFromRoom(roomId: string, usersIds: string[] | string ) {
         
         if(Array.isArray(usersIds))
         {

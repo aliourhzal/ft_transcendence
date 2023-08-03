@@ -59,6 +59,11 @@ export interface AllMessages {
     msg: string;
   }
 
+export interface BannedAndUnbannedUsers {
+    BannedUser?: string;
+    UnbannedUser?: string;
+}
+
 
 export  interface ListOfRoomsOfUser
 {

@@ -117,7 +117,12 @@ export class RoomController {
             if (roomId) // if room is founding check if current user is member into it and it not banned
             {
                 const isUserInRoom = await this.utils.getUserType(roomId,user['sub']);
-                if(isUserInRoom && !isUserInRoom.isBanned)
+                if(isUserInRoom.isBanned)
+                {
+                    console.log('you are banned from this room.')
+                    return ;
+                }
+                if(isUserInRoom)
                 {
                     const messageAndUserName = await this.messagesService.getAllMessagesofRoom(dto.roomName); // should return messages and username who send message
                                 
@@ -166,18 +171,24 @@ export class RoomController {
                 {
                     if (userType.userType === "ADMIN" || userType.userType === "OWNER") 
                     {
-                        const newAdmins = await this.roomService.setNewAdmins(roomId, usersIds, user['sub']);
-                        
-                        if (newAdmins === 0) 
+                        const bannedAndUnBannedUsers = await this.utils.getAllbannedAndUnBannedUsers(user['sub'],dto.users, roomId); 
+
+                        for(const user of bannedAndUnBannedUsers)
                         {
-                            console.log("you try to change the owner")
-                            return;    
-                        }
-    
-                        if (newAdmins === 1) 
-                        {
-                            console.log("The specified user is not linked to the room.");
-                            return ;
+                            if(user.UnbannedUser)
+                            {
+                                const newAdmins = await this.roomService.setNewAdmins(roomId, user.UnbannedUser, user['sub']);
+                                
+                                if (newAdmins === 0) 
+                                {
+                                    console.log("you try to change the owner")
+                                    return;    
+                                }
+                            }
+                            else
+                            {
+                                console.log(`${user} is banned from this room and cannot set it addmin`)
+                            }
                         }
                     }
                     else
@@ -354,7 +365,11 @@ export class RoomController {
                 const usersInRoom = await this.utils.getUsersInRooms(roomId);
 
                 const find = usersInRoom.find((item:any) => item.userId === user['sub']);
-                
+                if(find.isBanned)
+                {
+                    console.log('you are banned from this room')
+                    return;
+                }
                 if(!find)
                 {
                     const roomType = await this.utils.getRoomById(roomId);
@@ -627,6 +642,7 @@ export class RoomController {
                         }
                         else
                         {
+                            // check here if banned
                             await this.roomService.removeUserFromRoom(roomId.id, user['sub']); // if admin or user leave 
                         }                 
                     }
@@ -657,8 +673,8 @@ export class RoomController {
         // validatin of the current user  
         // validation of current room
         // if current user is admin or owner
-            // if user who want to kick them is a user kick them 
-            // else cannot kick them
+        // if user who want to kick them is a user kick them 
+        // else cannot kick them
         
             try 
             { // if error in jwt
@@ -675,7 +691,11 @@ export class RoomController {
                 if(roomId)
                 {
                     const usersIds = await this.utils.getUsersInfosInRoom(user['sub'],dto.users, roomId.id)
-            
+                    if(usersIds === '1')
+                    {
+                        console.log('one user or multi users not found')
+                        return ;
+                    }
                     if(usersIds === 0)
                     {
                         console.log("cannot kick owners")
@@ -724,7 +744,78 @@ export class RoomController {
     @Post('/banFromRoom') 
 	async banFromRoom(@Body() dto:any, @Res() res:any)
     {
+        // validatin of the current user  
+        // validation of current room
+        // if current user is admin or owner
+        // if user who want to block them is a user block them 
+        // else cannot block them
+        
 
+        try 
+            { // if error in jwt
+                const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
+    
+                if(!await this.utils.getUserId(user['sub'])) //if jwt expired
+                {
+                    console.log('user not found.')
+                    return;
+                }
+
+                const usersIds = await this.utils.getUsersId(user['sub'],dto.users)
+                if(!usersIds)
+                {
+                    console.log('on user or multi users dont found.')
+                }
+                const roomId = await this.utils.getRoomById(dto.idOfRoom);
+                
+                if(roomId)
+                {
+                    const bannedAndUnBannedUsers = await this.utils.getAllbannedAndUnBannedUsers(user['sub'],dto.users, roomId.id); 
+                    
+                    if(await this.roomService.doesRoomHaveUsers(roomId.id))
+                    {
+                        const userType = await this.utils.getUserType(roomId.id,user['sub']);
+                       
+                        if(userType)
+                        {
+                            if(userType.userType !== 'USER')
+                            { 
+                                for(const user of bannedAndUnBannedUsers)
+                                {
+                                    if(user.UnbannedUser)
+                                    {
+                                        await this.utils.removeUserFromRoom(user.UnbannedUser, roomId.id);
+                                    }
+                                    else
+                                        console.log('user is banned')
+                                }
+                            }
+                            else
+                            {
+                                console.log('dont have the permission to ban ');
+                            }                 
+                        }
+                        else
+                        {
+                            console.log('user in not in the room')
+                        }
+                    }
+                    else
+                    {
+                        console.log('room dont have users.')
+                    }
+                }
+                else
+                {
+                    console.log('room not found')
+                    return;
+                }
+            } 
+            catch (error) 
+            {
+                console.log('from banFromRoom()')
+                console.log(error)    
+            }
 
 
     }

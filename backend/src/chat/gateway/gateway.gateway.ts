@@ -96,6 +96,11 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             if(roomId)
             {
                 const userType = await this.utils.getUserType(roomId,user['sub']);
+                if(userType.isBanned)
+                {
+                    console.log('you are banned from this room.')
+                    return ;
+                }
                 if(userType)
                 {
                     const createdMsg = await this.messagesService.createMessages(infos['message'],user['sub'],roomId);

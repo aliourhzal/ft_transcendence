@@ -26,21 +26,21 @@
 // createRoom()
 
 
-// async function onJoinedRoom()
-// {
-//     const response = await fetch('http://127.0.0.1:3000/rooms/select-room', 
-//         { 
-//             method:'POST', 
-//             headers: { 'Content-Type': 'application/json' },  
-//             body: JSON.stringify({
-//                 roomName : "samara", 
-//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6InRuYW1pciIsInN1YiI6IjczYTJmZTM3LWRjNmUtNGFlMC1iMDRiLWQzZjY5ZTcyYmZmMCIsImlhdCI6MTY5MTAwODI1OH0.Jqb2vlgHHyepRcB-VFsu2eYACopUQu0c3CS5g5P6_m8"})}).then((response) => response.json())
+async function onJoinedRoom()
+{
+    const response = await fetch('http://127.0.0.1:3000/rooms/select-room', 
+        { 
+            method:'POST', 
+            headers: { 'Content-Type': 'application/json' },  
+            body: JSON.stringify({
+                roomName : "test", 
+                auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6InRuYW1pciIsInN1YiI6IjczYTJmZTM3LWRjNmUtNGFlMC1iMDRiLWQzZjY5ZTcyYmZmMCIsImlhdCI6MTY5MTAwODI1OH0.Jqb2vlgHHyepRcB-VFsu2eYACopUQu0c3CS5g5P6_m8"})}).then((response) => response.json())
             
-//         console.log(response)
+        console.log(response)
 
-// }
+}
 
-// onJoinedRoom()
+onJoinedRoom()
 
 // createRonJoinedRoomoom()
 
@@ -101,21 +101,21 @@
 
 // changeRoomType()
 
-async function joinRoom()
-{
-    const response = await fetch('http://127.0.0.1:3000/rooms/join-room', 
-        { 
-            method:'POST', 
-            headers: { 'Content-Type': 'application/json' },  
-            body: JSON.stringify({
-                name : 'samara', 
-                auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6ImFkYWlmaSIsInN1YiI6IjNhMzAwMTU1LWI4MmUtNDlkMy1hNDlhLTYzMmI4YWJkNWUyMCIsImlhdCI6MTY5MTAwODI3N30.3hmi8sqqsToHKqfzKhKWEVo20Mq7qU2Ujh-sH6M-ZaE"})}).then((response) => response.json())
+// async function joinRoom()
+// {
+//     const response = await fetch('http://127.0.0.1:3000/rooms/join-room', 
+//         { 
+//             method:'POST', 
+//             headers: { 'Content-Type': 'application/json' },  
+//             body: JSON.stringify({
+//                 name : 'samara', 
+//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6ImFkYWlmaSIsInN1YiI6IjNhMzAwMTU1LWI4MmUtNDlkMy1hNDlhLTYzMmI4YWJkNWUyMCIsImlhdCI6MTY5MTAwODI3N30.3hmi8sqqsToHKqfzKhKWEVo20Mq7qU2Ujh-sH6M-ZaE"})}).then((response) => response.json())
 
-        console.log(response)
+//         console.log(response)
 
-}
+// }
 
-joinRoom()
+// joinRoom()
 
 // const io = require('socket.io-client');
 
@@ -242,3 +242,23 @@ joinRoom()
 // }
 
 // kick()
+
+
+// async function banFromRoom()
+// {
+
+// const response = await fetch('http://127.0.0.1:3000/rooms/banFromRoom', 
+//         { 
+//             method:'POST', 
+//             headers: { 'Content-Type': 'application/json' },  
+//             body: JSON.stringify({
+//                 idOfRoom : '88aad697-8f8a-4402-b4f5-4d2358c85589', 
+//                 users: ['asalek', 'tnamir', 'adaifi'],
+//                 auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaWNrbmFtZSI6Im1lc3NhbGloIiwic3ViIjoiOThlOWE1N2ItYmY2Yy00ODgxLTliODMtNDBkZTNlODc4ZGE1IiwiaWF0IjoxNjkxMDA4MjI5fQ.DQJwEOBE9T0boxorr43y0WIm7-kGynZdYwJG02vrrgM"})}).then((response) => response.json())
+            
+//         console.log(response)
+
+
+// }
+
+// banFromRoom()

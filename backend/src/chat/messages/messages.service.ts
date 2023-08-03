@@ -53,7 +53,6 @@ export class MessagesService
               text: message,
               user: { connect: { id: userId } },
               room: { connect: { id: roomId } },
-              
             },
         });
     }
