@@ -73,13 +73,13 @@ export default function Chat() {
 
 	const [activeUserConv, setActiveUserConv] = useState<conversation | undefined>(undefined)
 	return (
-		<main className='select-none h-full w-full overflow-y-auto'>
+		<main className='select-none h-full w-full'>
 			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, convs, setConvs, socket,
 				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm, msg_sent, set_msg_sent,
 				set_room_created, room_created, rooms, setRooms}}>
 				<RoomForm />
 				<JoinRoomForm />
-				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200 ">
+				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200">
 					<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">
 						<div className=' flex items-center justify-center w-[100%]'>
 							<Image  alt='search' src='/images/loupe.svg' width={20} height={20}/>
