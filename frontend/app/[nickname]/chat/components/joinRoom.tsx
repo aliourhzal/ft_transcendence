@@ -17,7 +17,7 @@ const JoinRoomForm = () => {
 
     const submitForm = () => {
         try {
-            axios.post('http://127.0.0.1:3000/rooms/join-room', {roomName:name, password:pass, auth:socket.auth['token']}, {withCredentials: true}).then(
+            axios.post('http://127.0.0.1:3000/rooms/join-room', {roomName:name, password:pass, auth: socket.auth['token']}, {withCredentials: true}).then(
                 res => {
                     console.log(res)
                 }

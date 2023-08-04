@@ -11,6 +11,9 @@ export class JoinRoomDto {
     @IsString()
     roomName: string;
   
+    @IsString()
+    @IsOptional() 
+    password?: string;
     
     @IsNotEmpty()
     @IsString()

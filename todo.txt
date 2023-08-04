@@ -43,3 +43,137 @@
 - add boolean fild isMuted
 
 - if is muted cannot send message , should wait after finish time of muted
+
+
+
+
+
+
+const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET }) // who send the request
+            
+            if(!await this.utils.getUserId(user['sub'])) // search for it in db
+            {
+                return res.status(404).send('user not found.')
+            }
+
+            const usersIds = await this.utils.getUsersId(user['sub'],dto.users, 1) // return the users id of the users want to add to chat room
+            
+            if(usersIds === 0)
+            {
+                return res.status(406).send("this current user is aleredy in this room.")// to avoid enter one user and can the current user
+            }
+            if(usersIds) // if found the users id
+            { 
+                if (dto.type === RoomType.PRIVATE || dto.type === RoomType.PROTECTED || dto.type === RoomType.PUBLIC) 
+                {
+                    if (dto.type === "PROTECTED") 
+                    {
+                        const room = await this.roomService.createRoom({roomName: dto.roomName, users: usersIds}, user['sub'], "PROTECTED", dto.password);
+    
+                        if(room === 1)
+                        {
+                            return res.status(406).send("room name aleredy exist.");
+                        }
+                        if(room === 0)
+                        {
+                            return res.status(406).send("should set password for this protected room.");
+                        }
+
+                        res.status(200).send({room  , usersInRoom: await this.utils.getUsersInRooms(room['id']) , userInfos: await this.utils.getUserInfosInRoom(room['id'])});
+                        
+                    }
+                    else
+                    { 
+                        const room = await this.roomService.createRoom({roomName: dto.roomName, users: usersIds}, user['sub'], dto.type);
+    
+                        if(room === 1)
+                        {
+                            return res.status(406).send("room name aleredy exist.");
+                        }
+ 
+                        res.status(200).send({room  , usersInRoom: await this.utils.getUsersInRooms(room['id']) , userInfos: await this.utils.getUserInfosInRoom(room['id'])});
+                    }
+                }
+                else
+                {
+                    return res.status(406).send("error in type of room.")
+                }
+            }   
+            else
+            {
+                return res.status(404).send('one or multi users not found.')
+            }
+
+
+
+
+try 
+            // check if current user is not banned from the selected room
+        {
+            const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
+            
+            if(!await this.utils.getUserId(user['sub']))
+            {
+                console.log('user not found.')
+                return;
+            }
+            
+            const roomId = await this.utils.getRoomIdByName(dto.name);
+
+            if(roomId)
+            {
+                const usersInRoom = await this.utils.getUsersInRooms(roomId);
+
+                const find = usersInRoom.find((item:any) => item.userId === user['sub']);
+                
+                if(find.isBanned)
+                {
+                    console.log('you are banned from this room')
+                    return;
+                }
+                if(!find)
+                {
+                    const roomType = await this.utils.getRoomById(roomId);
+
+                    if(roomType.roomType === 'PROTECTED')
+                    {
+                        if(comparePasswd(dto.pass,roomType.password) )
+                        {
+                            if(await this.roomService.linkBetweenUsersAndRooms(roomId, user['sub']) === 4)
+                            {
+                                console.log('user is aleredy exist in the chat room.')
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            console.log("password inccorect.")
+                            return;
+                        }
+                    }
+                    else if(roomType.roomType === 'PUBLIC')
+                    {
+                        if(await this.roomService.linkBetweenUsersAndRooms(roomId, user['sub']) === 4)
+                        {
+                            console.log('user is aleredy exist in the chat room.')
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    console.log("you are aleredy joined to this room")
+                    return ;
+                }
+            }
+            else
+            {
+                console.log("room  not found");
+            }
+        } 
+        catch (error) 
+        {
+            console.log("from catch")
+            console.log(error)    
+        }
+    }

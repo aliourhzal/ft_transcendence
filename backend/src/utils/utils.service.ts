@@ -199,7 +199,7 @@ export class UtilsService {
               },
               include: {
                 user: true,
-              },
+            },
         });
         
         for (const room of rooms) {
