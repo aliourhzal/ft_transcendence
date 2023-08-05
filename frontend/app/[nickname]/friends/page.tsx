@@ -75,7 +75,7 @@ export default function Friends() {
 							return(
 								<FriendCard key={friend.nickname} user={friend}/>
 							);
-						}) : <p className="text-white font-medium text-xl absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] ">You have no Friends</p>
+						}) : <span className="text-white font-medium text-xl absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] ">You have no Friends</span>
 					}
 				</div>
 			</div>
