@@ -94,9 +94,16 @@ export class UsersController{
 	}
 
 	@UseGuards(AuthGuard('jwt'))
-	@Get('/friend/:nickname')
-	async addFriend(@Param('nickname') friendName:string, @Req() request: any)
+	@Get('/friend/requests')
+	async getRequest(@Body('nickname') friendName:string, @Req() request: any)
 	{
-		return await this.usersService.addFriend(friendName, request.user.nickname);
+		return await this.usersService.getFriendsRequests(request.user.nickname);
 	}
+
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/friends')
+	async getFriends(@Req() request: any) {
+		return await this.usersService.getFriends(request.user.nickname);
+	}
+
 }

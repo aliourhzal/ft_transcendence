@@ -4,6 +4,7 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { gateAwayModule } from './webSocket/web.module';
 import { ChatModule } from './chat/chat.module';
+import { InvitationsModule } from './invitations/invitations.module';
 
 
 @Module({
@@ -13,6 +14,7 @@ import { ChatModule } from './chat/chat.module';
     UsersModule,
     ConfigModule.forRoot(),
     ChatModule,
+    InvitationsModule,
   ],
   controllers: [],
   providers: [],

@@ -17,7 +17,7 @@ export class myGateAway implements OnModuleInit
         });
     }
 
-    @SubscribeMessage('newMessageAsalek') //get events in websocket protocol
+    @SubscribeMessage('gameData') //get events in websocket protocol
     onNewMessage(@MessageBody() messageContent: any)// once the subscribeMessage event triggerd log the recieved message
     {
         console.log(messageContent);

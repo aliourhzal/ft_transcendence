@@ -1,5 +1,14 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Socket } from "socket.io-client";
+
+export function useEffectmod(x: number, socket: Socket)
+{
+    useEffect(() => {
+        socket.emit("gameData", x);
+    }, [x]);
+    return x;
+}
 
 export default function useAxiosFetch(url: string,) {
     const [data, setData] = useState(null);

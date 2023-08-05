@@ -42,6 +42,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             }
             else
             { 
+                // make this for entring chat in routes
                 console.log("connected")
                  
                 this.user =  userInfos;
@@ -83,6 +84,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         if(roomandUsers.roomName !== '' && ifUserExist) // if room name is not empty and users  exist
         {
             
+
             const rtn = await this.roomService.createRoom(roomandUsers, idOfuser); // return all the room who the admin is member into it
            
             // console.log(rtn)
@@ -115,12 +117,34 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             }
 
         }
-
-
-        
     }
 
-    
+    @SubscribeMessage('chat')  // after entred the in infos in create room form should reload the  page => this is bug
+    async displayRooms(@MessageBody() jwtAndSocketId: object) 
+    {
+        
+
+
+
+        // const idOfuser = await this.roomService.getUserIdByEmail(this.user.email);
+
+                 
+        // const rooms = await this.roomService.getRoomsForUser(idOfuser); // all rooms who this user is member into it
+
+         
+        // await this.connectedUsersService.create(socket.id, idOfuser) // set evry client an (multi )socket id
+
+        // let listOfRoomsOfUser:string[] = [];
+
+        // for(let i = 0; i < rooms.length; i++)
+        // {
+        //     listOfRoomsOfUser.push(rooms[i]['room']['room_name']);
+        // }
+        
+        // this.server.to(socket.id).emit("list-rooms",listOfRoomsOfUser); 
+        
+
+    }
 
     OnWebSocektError(socket:Socket)
     { 
