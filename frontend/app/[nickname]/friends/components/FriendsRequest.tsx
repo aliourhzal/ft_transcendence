@@ -2,11 +2,10 @@
 
 import axios from "axios";
 import { useEffect, useState, useContext } from "react";
-import { Dialog, Transition } from '@headlessui/react'
-import { Fragment } from "react";
 import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
 import { RiUserReceivedFill } from 'react-icons/ri'
 import RequestCard from "./RequestCard";
+import Popup from "@/components/UI/Popup";
 
 
 export default function FriendsRequests() {
@@ -16,7 +15,6 @@ export default function FriendsRequests() {
 	const socket = useContext(InvitationSocketContext);
 
 	useEffect(() => {
-		console.log('friend is mounted')
 		const requests = axios.get('http://127.0.0.1:3000/users/friend/requests', {
 			withCredentials: true
 		}).then(res => {
@@ -44,44 +42,15 @@ export default function FriendsRequests() {
 					requestCounter !== 0 && <span className="absolute bottom-[-10px] right-[-10px] bg-red-500 rounded-full h-[30px] aspect-square flex items-center justify-center">{requestCounter}</span>
 				}
 			</button>
-			<Transition appear show={displayRequests} as={Fragment}>
-				<Dialog as="div" className="relative z-10" onClose={modalAppearance}>
-					<Transition.Child as={Fragment}
-						enter="ease-out duration-300"
-						enterFrom="opacity-0"
-						enterTo="opacity-100"
-						leave="ease-in duration-200"
-						leaveFrom="opacity-100"
-						leaveTo="opacity-0"
-					>
-						<div className="fixed inset-0 bg-black bg-opacity-25"></div>
-					</Transition.Child>
-
-					<div className="fixed inset-0 overflow-y-auto">
-					<div className="flex min-h-full items-center justify-center p-4 text-center">
-						<Transition.Child
-						as={Fragment}
-						enter="ease-out duration-300"
-						enterFrom="opacity-0 scale-95"
-						enterTo="opacity-100 scale-100"
-						leave="ease-in duration-200"
-						leaveFrom="opacity-100 scale-100"
-						leaveTo="opacity-0 scale-95"
-						>
-						<Dialog.Panel className="flex flex-col items-center gap-3 w-full max-w-md transform overflow-hidden rounded-2xl bg-whiteSmoke p-6 text-left align-middle shadow-xl transition-all">
-							{
-								requestArray.length > 0 ? requestArray.map((request) => {
-									return (
-										<RequestCard key={request.id} request={request}/>
-									)
-								}) : <span className="font-medium text-base">You have no Friend Requests</span>
-							}
-						</Dialog.Panel>
-						</Transition.Child>
-					</div>
-					</div>
-				</Dialog>
-			</Transition>
+			<Popup isOpen={displayRequests} modalAppearance={setDisplayRequests}>
+				{
+					requestArray.length > 0 ? requestArray.map((request) => {
+						return (
+							<RequestCard key={request.id} request={request} />
+						)
+					}) : <span className="font-medium text-base">You have no Friend Requests</span>
+				}
+			</Popup>
 		</>
 	);
 }
