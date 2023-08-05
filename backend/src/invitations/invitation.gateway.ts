@@ -72,11 +72,10 @@ export default class InvitationsGateway implements OnGatewayConnection, OnGatewa
 				return (true);
 		})
 
-		const response = await this.usersService.sendRequest(target.friend, sender[0].nickname);
-		if (response)
+		const response: string = await this.usersService.sendRequest(target.friend, sender[0].nickname);
+		if (response !== '')
 		{
-			console.log("user not found");
-			this.server.to(socket.id).emit('user not found!!');
+			this.server.to(socket.id).emit('request-error', response);
 			return ;
 		}
 		if (receiver) {

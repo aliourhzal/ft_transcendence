@@ -237,21 +237,21 @@ export class UsersService {
 		const newFriend = await this.findOneByNickname(friendNickname);
 		const user = await this.findOneByNicknameWithRequests(nickname);
 		if (!newFriend) 
-			return (1);
+			return ('user not found');
 
 		// to prevent sending the request to your self
 		if (newFriend.nickname === user.nickname)
-			return(1);
+			return("that's you");
 
 		// to prevent sending request of the same user more than once
 		for (const request of user.sentRequests) {
 			if (request.targetId === newFriend.id)
-				return (1);
+				return ("request already sent");
 		}
 		// to prevent sending request to a friend
 		for (const friend of user.userFriends) {
 			if (friend.id === newFriend.id)
-				return (1)
+				return ("that your friend");
 		}
 		await this.prisma.friendRequest.create({
 			data: {
@@ -259,7 +259,7 @@ export class UsersService {
 				targetId: newFriend.id
 			}
 		});
-		return (0);
+		return ('');
 	}
 
 	async refuseRequest(requestId: string, nickname: string) {
