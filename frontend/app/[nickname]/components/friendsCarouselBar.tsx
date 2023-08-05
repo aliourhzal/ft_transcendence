@@ -75,7 +75,7 @@ export default function FriendCarouselBar()
 						{
 							friends.length > 0 ? friends.map((friend) => {
 								return (
-									<FriendBarColumns key={friend.intra_Id} src={friend.profilePic} nickname={friend.nickname} />
+									<FriendBarColumns key={friend.nickname} src={friend.profilePic} nickname={friend.nickname} />
 								);
 							}) : <span className="text-white text-lg absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">You Have no Friends</span>
 						}
