@@ -5,6 +5,7 @@ import { useEffect, useState, useContext } from "react";
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from "react";
 import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
+import { AiOutlineUsergroupAdd } from 'react-icons/ai'
 import RequestCard from "./RequestCard";
 
 
@@ -34,8 +35,11 @@ export default function FriendsRequests() {
 
 	return(
 		<>
-			<button className="p-3 text-white font-medium bg-darken-300 rounded-xl ml-[auto] relative" onClick={modalAppearance}>
-				<span>Friend Requests</span>
+			<button className="p-3 text-white font-medium text-sm bg-darken-300 rounded-xl ml-[auto] relative" onClick={modalAppearance}>
+				<span className="text-white font-medium text-sm md:block hidden">Friend Requests</span>
+				<span className="md:hidden block">
+					<AiOutlineUsergroupAdd color="white" size="1.5rem"/>
+				</span>
 				{
 					requestCounter !== 0 && <span className="absolute bottom-[-10px] right-[-10px] bg-red-500 rounded-full h-[30px] aspect-square flex items-center justify-center">{requestCounter}</span>
 				}
