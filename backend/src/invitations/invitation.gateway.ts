@@ -56,6 +56,7 @@ export default class InvitationsGateway implements OnGatewayConnection, OnGatewa
 		const user = await this.usersService.findOneByNickname(decodeJWt.nickname);
 		if (!user) {
 			this.OnWebSocektError(socket);
+			return ;
 		}
 		this.connectedUsers.push({socket, nickname: user.nickname});
 		console.log('connected to invitations')
@@ -75,7 +76,7 @@ export default class InvitationsGateway implements OnGatewayConnection, OnGatewa
 		const response: string = await this.usersService.sendRequest(target.friend, sender[0].nickname);
 		if (response !== '')
 		{
-			this.server.to(socket.id).emit('request-error', response);
+			this.server.to(socket.id).emit('request-response', {err: true, msg: response});
 			return ;
 		}
 		if (receiver) {
@@ -83,6 +84,7 @@ export default class InvitationsGateway implements OnGatewayConnection, OnGatewa
 			receiver.map((instant) => {
 				this.server.to(instant.socket.id).emit('receive-request', requests)
 			})
+			this.server.to(socket.id).emit('request-response', {err: false, msg: 'request sent'});
 		}
 	}
 
