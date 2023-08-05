@@ -32,11 +32,11 @@ export default function Friends() {
 			withCredentials: true
 		})
 		.then(res => {
-			console.log(res.data);
 			setFriends(res.data);
 		})
 		socket.on('receive-friends', data => {
-			setFriends(data);
+			console.log(data.nickname);
+			setFriends(oldFriends => [...oldFriends, data]);
 		})
 	}, [])
 
@@ -56,11 +56,9 @@ export default function Friends() {
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-5 p-5">
 					{
-						friends.length > 0 ? friends.map((friend) => {
-							return(
-								<FriendCard key={friend.intra_Id} user={friend}/>
-							);
-						}) : <span className="text-white font-medium text-2xl absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">You have no Friends</span>
+						friends.length > 0 ? 
+						friends.map((friend) => <FriendCard key={friend.nickname} user={friend}/>)
+						: <span className="text-white font-medium text-2xl absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">You have no Friends</span>
 					}
 				</div>
 			</div>
