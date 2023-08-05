@@ -102,15 +102,15 @@ export default class InvitationsGateway implements OnGatewayConnection, OnGatewa
 			if (user.nickname === senderNickname)
 				return (true);
 		})
-		const receiverFriends = await this.usersService.getFriends(receiver.nickname);
-		const senderFriends = await this.usersService.getFriends(senderNickname);
+		const receiverNewFriends = await this.usersService.findOneByNickname(senderNickname);
+		const senderNewFriends = await this.usersService.findOneByNickname(receiver.nickname);
 		const requests = await this.usersService.getFriendsRequests(receiver.nickname);
 		receiverSockets.map(instant => {
 			this.server.to(instant.socket.id).emit('receive-request', requests);
-			this.server.to(instant.socket.id).emit('receive-friends', receiverFriends);
+			this.server.to(instant.socket.id).emit('receive-friends', receiverNewFriends);
 		})
 		senderSockets.map(instant => {
-			this.server.to(instant.socket.id).emit('receive-friends', senderFriends);
+			this.server.to(instant.socket.id).emit('receive-friends', senderNewFriends);
 		})
 	}
 
