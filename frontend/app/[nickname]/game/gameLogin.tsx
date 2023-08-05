@@ -1,5 +1,6 @@
 'use client'
 import { useRef, useState } from "react"
+import './utils/style.css'
 
 export default function GameLogin()
 {
@@ -17,12 +18,14 @@ export default function GameLogin()
             <div className="w-[90%] h-3/4 max-sm:h-[95%] border-collapse bg-darken-100 rounded-xl">
                 {/* Game Mode Radio Buttons */}
                 <div className="w-full flex items-center justify-center gap-[30%] my-10">
-                    <div className="flex flex-col items-center gap-3">
+                    <div className="flex flex-col items-center gap-3 relative tooltip">
+                        <span className="tooltiptext opacity-25 top-16">Practice With a Bot</span>
                         <h1 className="text-whiteSmoke text-lg font-bold">Practice</h1>
                         <input className="h-5 w-5" type="radio" name="practice" id="" checked/>
                         {/* <Radio color="primary" size="lg" ttvariant="soft" name="radio-buttons" checked/> */}
                     </div>
-                    <div className="flex flex-col items-center gap-3">
+                    <div className="flex flex-col items-center gap-3 relative tooltip">
+                        <span className="tooltiptext opacity-25 top-16">1 v 1 Online Game</span>
                         <h1 className="text-whiteSmoke text-lg font-bold">Play Online</h1>
                         <input className="h-5 w-5" type="radio" name="practice" id="" />
                     </div>
