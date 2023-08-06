@@ -75,6 +75,7 @@ export class UsersService {
 					profilePic: userData.profilePic,
 					coverPic: userData.coverPic,
 					password: "",
+					status: 'online'
 				}
 			});
 		}
@@ -284,5 +285,16 @@ export class UsersService {
 	async getFriendsRequests(nickname: string) {
 		const user = await this.findOneByNicknameWithReceived(nickname);
 		return (user.receivedRequest);
+	}
+
+	async updateUserStatus(nickname: string, status: string) {
+		await this.prisma.user.update({
+			where: {
+				nickname
+			},
+			data: {
+				status
+			}
+		})
 	}
 }
