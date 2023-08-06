@@ -46,24 +46,16 @@ const ConvList = () => {
           users: getUsersInfo(room.usersInRoom),
           type: room.room.room.roomType
         })
-        // setRooms(old => [{
-        //   name: room.room.room.room_name,
-        //   last_msg:'welcome to group chat',
-        //   msgs: room.msg,
-        //   id: room.room.room.id,
-        //   users: getUsersInfo(room.usersInRoom),
-        //   type: room.room.room.roomType
-        // }, ...old])
       })
       console.log(rooms)
       setConvs(rooms)
-      return socket?.off('list-rooms',fillUserList)
+      // return socket?.off('list-rooms',fillUserList)
     }
   
     useEffect( () => {
-      console.log("entered")
+      console.log(socket?.id)
         socket?.on('list-rooms',fillUserList)
-    }, [room_created])
+    })
 
     return (
       <div className='group left-[10%] flex-col bg-transparent w-full h-[80%] bg-slate-500 mt-8 overflow-hidden overflow-y-scroll'>

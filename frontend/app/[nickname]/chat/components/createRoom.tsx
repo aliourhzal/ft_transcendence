@@ -17,15 +17,9 @@ const RoomForm = () => {
     const [isPrivate, setPrivate] = useState(false)
     const [roomType, setRoomType] = useState('PUBLIC')
 
-    const selectDivToHide = (e) => {
-        if (e.target.id === 'big_div')
-            hideForm()
-    }
-
     const hideForm = () => {
         setShowForm(false)
         setName(''); setUser(''); setUsers([]); setPass(''); setRoomType('PUBLIC'); setPrivate(false)
-        set_room_created(old => !old)
     }
 
     useEffect ( () => {
@@ -63,7 +57,7 @@ const RoomForm = () => {
             } 
         )
             return (_users)
-        }
+    }
 
     const confirmForm = async () => {
         try {
@@ -80,15 +74,16 @@ const RoomForm = () => {
                                                                         type: res.data.room.roomType
                                                                     })
                                                                     // console.log(rooms)
-                                                                    hideForm()
                                                                 })
+                                                                set_room_created(old => !old)
+                                                                hideForm()
         } catch(error) {
             alert(error)
         }
     }
     return (
         <Popup isOpen={showForm} modalAppearance={hideForm}>
-                    <div className='text-center text-3xl mb-2 drop-shadow-[0px_0px_5px_rgba(255,255,255,1)]'><h1>Create Chatroom</h1></div>
+                    <div className='font-bold text-center text-3xl mb-2 drop-shadow-[0px_0px_5px_rgba(255,255,255,1)]'><h1>Create Chatroom</h1></div>
                     <div className="relative z-0 w-full mb-6 group">
                         <input aria-required='true' autoComplete='off' value={roomName} type="text" name="floating_text" id="floating_text" className="text-gray-300 block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required 
                         onChange={(e) => {setName(e.target.value)}}/>

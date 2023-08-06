@@ -28,7 +28,7 @@ export default function Popup(props) {
 				leaveTo="opacity-0 scale-95"
 				>
 				{/* inside pop Up */}
-				<Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-slate-700 p-6 text-left align-middle shadow-xl transition-all">
+				<Dialog.Panel className="select-none w-full max-w-md transform overflow-hidden rounded-2xl bg-slate-700 p-6 text-left align-middle shadow-xl transition-all">
 			        <button onClick={props.modalAppearance} type="button" className="ml-[auto] mb-5 w-9 h-9 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-lg flex text-center justify-center items-center">x</button>
                     {props.children}
 				</Dialog.Panel>
