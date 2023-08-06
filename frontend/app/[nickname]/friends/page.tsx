@@ -45,6 +45,16 @@ export default function Friends() {
 			setTimeout(() => {
 				setRequestErr({display: false, response})
 			}, 2500);
+		});
+		socket.on('update-status', data => {
+			console.log('friends page: ', data);
+			setFriends(friends => {
+				return friends.map(friend => {
+					if (friend.nickname === data.user)
+						friend.status = data.status		
+					return friend;
+				})
+			})
 		})
 	}, [])
 
