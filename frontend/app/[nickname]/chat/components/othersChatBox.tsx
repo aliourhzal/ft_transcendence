@@ -1,15 +1,19 @@
 import React from "react"
 import { gimmeRandom } from "../page"
+import { Avatar } from "@nextui-org/react"
 
 interface SelfChatBoxProps {
-    user: string,
+    user: any,
     msg: string
   }
 
 const OthersChatBox:React.FC<SelfChatBoxProps> = (msg) => {
+    console.log(msg)
     return (
-        <div className={' bg-slate-400 h-10 my-1 rounded-full p-5 flex items-center justify-start'}
-        key={gimmeRandom()}>{msg.user} : {msg.msg}</div>
+        <div className={'flex items-center justify-start gap-3'} key={gimmeRandom()}>
+            <Avatar pointer src={msg.user.photo}/>
+            <div className="bg-slate-400 h-10 my-1 rounded-full p-5 flex items-center justify-end">{msg.msg}</div>
+        </div>
     )
 }
 

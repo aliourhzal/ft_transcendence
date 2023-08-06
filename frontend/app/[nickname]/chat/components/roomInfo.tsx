@@ -48,10 +48,6 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
 
     }
 
-    console.log(info.room.users.find(o => o.nickName === info.userData.nickname).type)
-
-    // const [cursor, setCursor] = useState(isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) ? 'pointer' : 'not-allowed')
-
   return (
     <Popup isOpen={info.show} modalAppearance={hide}>
         <div className='flex justify-center m-4'>

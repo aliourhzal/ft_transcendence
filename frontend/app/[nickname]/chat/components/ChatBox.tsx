@@ -8,8 +8,9 @@ const ChatBox = () => {
   
   const {socket, chatBoxMessages, setChatBoxMessages, userData, msg_sent, rooms, setRooms, activeUserConv} = useContext(Context)
   
+  const [currentRoom, setCurrentRoom] = useState(rooms.find(o => o.name === activeUserConv.name))
+
   const addmsg = (msg) => {
-    console.log(msg)
     let temp_rooms = [...rooms]
     temp_rooms.find(o => o.name === activeUserConv.name).msgs.push({user:msg.user, msg:msg.msg})
     setRooms(temp_rooms)
@@ -37,8 +38,8 @@ const ChatBox = () => {
   return (
     <div>
       {chatBoxMessages.map ((BoxMessage) => 
-        (BoxMessage.user == userData.nickname ? <SelfChatBox msg={BoxMessage.msg} user={BoxMessage.user} key={gimmeRandom()}/>
-          : <OthersChatBox msg={BoxMessage.msg} user={BoxMessage.user} key={gimmeRandom()}/>))}
+        (BoxMessage.user == userData.nickname ? <SelfChatBox msg={BoxMessage.msg} user={currentRoom.users.find(o => o.nickName === BoxMessage.user)} key={gimmeRandom()}/>
+          : <OthersChatBox msg={BoxMessage.msg} user={currentRoom.users.find(o => o.nickName === BoxMessage.user)} key={gimmeRandom()}/>))}
     </div>
   )
 }
