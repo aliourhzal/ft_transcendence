@@ -22,12 +22,12 @@ export interface UniversalData {
 	lastName?: string,
 	email?: string,
 	nickname?: string,
-	progress?: number,
 	wins?: number,
 	losses?: number,
 	password?: boolean,
 	profilePic?: string,
 	coverPic?: string,
+	status: string,
 	chatSocket: Socket
 }
 
