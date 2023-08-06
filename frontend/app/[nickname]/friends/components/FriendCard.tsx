@@ -7,6 +7,7 @@ export default function FriendCard({user}: {
 }) {
 	const [lvl, progess] = user.level.toString().split('.');
 	console.log(progess);
+	console.log(user);
 	return (
 		<Container className="p-0 overflow-hidden flex flex-col items-center relative">
 			<div style={{backgroundImage: `url(${user.coverPic})`}} className="bg-cover bg-center bg-no-repeat w-full h-[150px] rounded-lg"></div>
@@ -29,7 +30,9 @@ export default function FriendCard({user}: {
 					</div>
 				</div>
 			</div>
-			<div className="absolute top-0 left-0 h-full w-full z-10 bg-black opacity-50"></div>
+			{
+				user.status === 'offline' && <div className="absolute top-0 left-0 h-full w-full z-10 bg-black opacity-50"></div>
+			}
 		</Container>
 	);
 }
