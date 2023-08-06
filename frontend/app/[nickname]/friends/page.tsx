@@ -52,7 +52,7 @@ export default function Friends() {
 		<main className='h-full w-full bg-darken-200 overflow-y-auto relative'>
 			<span className={`px-3 py-1 ${requestErr.response.err ? 'bg-red-500': 'bg-green-500'} z-50 absolute top-[35px] left-[50%] translate-x-[-50%] translate-y-[-50%] text-sm text-white rounded-md ${requestErr.display ? 'opacity-100' : 'opacity-0'} ease-in duration-200`}>{requestErr.response.msg}</span>
 			<div className=" gap-[3vh] flex-grow h-full overflow-y-auto">
-				<div className="sticky top-0 flex w-full backdrop-blur-xl p-3 z-50">
+				<div className="sticky top-0 flex w-full backdrop-blur-xl p-3 z-20">
 					<form className="w-[90%] sm:w-[75%] flex gap-3" onSubmit={onSubmitHandler}>
 						<input className="p-3 rounded-xl text-white bg-darken-300 outline-none w-[70%]" type="text" placeholder="enter Nickname"/>
 						<button type="submit" className="p-3 bg-darken-300 rounded-xl flex items-center justify-center">
