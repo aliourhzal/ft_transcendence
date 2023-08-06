@@ -34,14 +34,35 @@ export default class InvitationsGateway implements OnGatewayConnection, OnGatewa
         socket.disconnect();
     }
 
+	async updateUserStatus(user: userNode, status: string, ) {
+		await this.usersService.updateUserStatus(user.nickname, status);
+		const friends = await this.usersService.getFriends(user.nickname);
+		if (!friends)
+			return;
+		friends.map(async friend => {
+			const friendSocket = this.connectedUsers.filter(connectedUser => connectedUser.nickname === friend.nickname);
+			if (!friendSocket)
+				return;
+			if (friendSocket) {
+				friendSocket.map(socket => {
+					this.server.to(socket.socket.id).emit('update-status', {user: user.nickname, status})
+				})
+			}
+		})
+	}
+
 	handleDisconnect(socket: Socket) {
 		const index = this.connectedUsers.findIndex((user, i) => {
 			if (user.socket.id === socket.id)
 				return (i);
 		})
-		if (index > -1)
+		if (index > -1) {
+			console.log(this.connectedUsers[index].nickname);
+			const sockets = this.connectedUsers.filter(user => user.nickname === this.connectedUsers[index].nickname);
+			if (sockets.length < 2)
+				this.updateUserStatus(this.connectedUsers[index], 'offline');
 			this.connectedUsers.splice(index, 1);	
-		console.log("disconnected from invitations")
+		}
 	}
 
 	async handleConnection(socket: Socket) {
@@ -59,7 +80,7 @@ export default class InvitationsGateway implements OnGatewayConnection, OnGatewa
 			return ;
 		}
 		this.connectedUsers.push({socket, nickname: user.nickname});
-		console.log('connected to invitations')
+		await this.updateUserStatus({socket, nickname: user.nickname}, 'online');
 	}
 
 	@SubscribeMessage('send-request')
