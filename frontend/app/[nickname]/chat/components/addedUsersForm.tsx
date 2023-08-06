@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { gimmeRandom } from '../page'
 import { off } from 'process'
 
@@ -8,6 +8,7 @@ interface AddedUsersFormProps {
 }
 
 const AddedUsersForm: React.FC<AddedUsersFormProps> = (users) => {
+  const [renderLmk, forceRenderLmk] = useState<boolean>(false)
   return (
     <div className='flex items-center gap-3 flex-wrap'>
         {users.users.map( user => (
@@ -17,7 +18,7 @@ const AddedUsersForm: React.FC<AddedUsersFormProps> = (users) => {
               var temp = users.users
               temp.splice(temp.indexOf(user), 1)
               users.setUsers(temp)
-              console.log(users.users)
+              forceRenderLmk(old => !old)
             }}>x</button>
         </div>) )}
     </div>
