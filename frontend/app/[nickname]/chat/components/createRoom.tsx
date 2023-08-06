@@ -109,7 +109,7 @@ const RoomForm = () => {
                         }>Add user</button>
                     </div>
 
-                    <AddedUsersForm users={users}/>
+                    <AddedUsersForm users={users} setUsers={setUsers}/>
 
                     <div className="text-gray-200 my-5">
                         <input id="checkbox" name="checkbox" type="checkbox" onChange={ () =>  {setPrivate(old => !old); setPass('')} }/>

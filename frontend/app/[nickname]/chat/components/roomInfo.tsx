@@ -62,20 +62,19 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
             {info.room.users.map(user => (
                     <div className='m-2 border-2 p-2 rounded-lg bg-slate-600 border-slate-500 w-full flex flex-col items-center justify-center' key={user.id}>
                         <div className='m-1 w-full flex justify-between items-center'>
-
-                            <div className='font-bold flex justify-between items-center'>
-                                <Avatar src={info.room.users.find(o => o.nickName === user.nickName).photo}/>
-                                <div className='ml-3'>{user.nickName === info.userData.nickname ? 'you' : user.nickName}</div>
+                            <div className='font-bold flex justify-between items-center gap-3'>
+                                <Avatar pointer zoomed src={info.room.users.find(o => o.nickName === user.nickName).photo}/>
+                                <div>{user.nickName === info.userData.nickname ? 'you' : user.nickName}</div>
                             </div>
-                            <div className='w-[40%] flex justify-between'>
+                            <div className='flex items-center gap-2'>
                                 {(isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) && user.nickName != info.userData.nickname) &&
                                     <>
                                         { isAdmin(info.room.users.find(o => o.nickName === user.nickName)) ? 
-                                            <TbUserDown title='demote' aria-label='demote' cursor="pointer" size={25} onClick={demoteteUser}/>
-                                            :   <TbUserUp title='promote' aria-label='promote' cursor="pointer" size={25} onClick={promoteUser}/>
+                                            <TbUserDown title='demote' aria-label='demote' cursor="pointer" size={20} onClick={demoteteUser}/>
+                                            :   <TbUserUp title='promote' strokeWidth={2.3} aria-label='promote' cursor="pointer" size={25} onClick={promoteUser}/>
                                         }
-                                        <BiUserMinus title='kick' aria-label='kick' cursor="pointer" size={25} onClick={kickUser}/>
-                                        <BiUserX title='ban' aria-label='ban' cursor="pointer" size={25} onClick={banUser}/>
+                                        <BiUserMinus title='kick' strokeWidth={0} aria-label='kick' cursor="pointer" size={30} onClick={kickUser}/>
+                                        <BiUserX title='ban' aria-label='ban' cursor="pointer" size={30} onClick={banUser}/>
                                         <BiVolumeMute title='mute' aria-label='mute' cursor="pointer" size={25} onClick={muteUser}/>
                                     </>}
                                 { user.nickName != info.userData.nickname &&

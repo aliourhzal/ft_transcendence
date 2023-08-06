@@ -1,17 +1,24 @@
 import React from 'react'
 import { gimmeRandom } from '../page'
+import { off } from 'process'
 
 interface AddedUsersFormProps {
     users: string[]
+    setUsers: any
 }
 
 const AddedUsersForm: React.FC<AddedUsersFormProps> = (users) => {
   return (
-    <div className='flex justify-start items-start'>
+    <div className='flex items-center gap-3 flex-wrap'>
         {users.users.map( user => (
-        <div className='bg-gray-300 rounded-lg w-[30%] m-2 text-center flex items-center' key={gimmeRandom()}>{user}
-            <button type="button" className="ml-[100%] bg-white rounded-s-sm p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 w-10 h-10">x
-            </button>
+        <div className='bg-gray-300 rounded-lg flex justify-center items-center gap-2 p-2' key={gimmeRandom()}>
+            <div className='font-bold'>{user}</div>
+            <button type="button" className="w-6 h-6 text-gray-700 border border-gray-700 hover:bg-gray-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-full text-lg flex text-center justify-center items-center" onClick={ () => {
+              var temp = users.users
+              temp.splice(temp.indexOf(user), 1)
+              users.setUsers(temp)
+              console.log(users.users)
+            }}>x</button>
         </div>) )}
     </div>
   )
