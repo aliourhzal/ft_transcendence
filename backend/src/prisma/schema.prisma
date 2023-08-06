@@ -21,6 +21,7 @@ model User {
 	coverPic		            String
 	level			            Float
 	grade			            String
+	status						String
 	
 	userFriends                 User[]              @relation("friends")
     friendOfUser                User[]              @relation("friends")
