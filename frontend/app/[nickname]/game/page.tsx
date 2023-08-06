@@ -2,6 +2,12 @@
 import { useRef, useState } from "react"
 import './utils/style.css'
 import Game from "./Game";
+import dynamic from "next/dynamic";
+
+const LazyGame = dynamic(() => import('./Game'), {
+	ssr: false,
+	loading: () => <p className="text-whiteSmoke font-mono font-semibold">Game is Loading ...</p>
+});
 
 export default function GameLogin()
 {
@@ -138,7 +144,7 @@ export default function GameLogin()
                     }}>Start</button>
                 </div>
             </div>
-            {show && <Game />}
+            {show && <LazyGame />}
         </div>
     );
 }
