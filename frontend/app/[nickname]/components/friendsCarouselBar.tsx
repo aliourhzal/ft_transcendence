@@ -11,7 +11,17 @@ export function FriendBarColumns(props: any)
 		<div /*style={ {animation: "scroll 40s linear infinite",}} className="animate flex flex-row gap-1 h-full items-center cursor-pointer  rounded-md"*/
 			className="w-full flex flex-col items-center"
 			onClick={()=>{alert("clicked");}}>
-				<img className="w-[60px] h-[60px] rounded-full" src={props.src} alt="f_img" />
+				<div className="relative w-[60px] aspect-square ">
+					<img className="w-[full] h-full rounded-full" src={props.src} alt="f_img" />
+					{
+						props.status === 'online' &&
+						<>
+							<span className="animate-ping h-[15px] w-[15px] rounded-full bg-green-500 absolute bottom-0 right-0"></span>
+							<span className="h-[15px] w-[15px] rounded-full bg-green-500 absolute bottom-0 right-0"></span>
+						</>
+
+					}
+				</div>
 				<h3 className="w-lg text-white font-medium mt-1">{props.nickname}</h3>
 		</div>
 	);
@@ -62,6 +72,16 @@ export default function FriendCarouselBar()
 		})
 		socket.on('receive-friends', data => {
 			setFriends(data);
+		});
+		socket.on('update-status', data => {
+			console.log('friend caroussel: ', data);
+			setFriends(friends => {
+				return friends.map(friend => {
+					if (friend.nickname === data.user)
+						friend.status = data.status		
+					return friend;
+				})
+			})
 		})
 	}, [])
 
@@ -75,17 +95,10 @@ export default function FriendCarouselBar()
 						{
 							friends.length > 0 ? friends.map((friend) => {
 								return (
-									<FriendBarColumns key={friend.nickname} src={friend.profilePic} nickname={friend.nickname} />
+									<FriendBarColumns key={friend.nickname} src={friend.profilePic} nickname={friend.nickname} status={friend.status}/>
 								);
 							}) : <span className="text-white text-lg absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">You Have no Friends</span>
 						}
-						{/* <FriendBarColumns src="../images/man.png" nickname="asalek" />
-						<FriendBarColumns src="../images/man.png" nickname="asalek" />
-						<FriendBarColumns src="../images/man.png" nickname="asalek" />
-						<FriendBarColumns src="../images/man.png" nickname="asalek" />
-						<FriendBarColumns src="../images/man.png" nickname="asalek" />
-						<FriendBarColumns src="../images/man.png" nickname="asalek" />
-						<FriendBarColumns src="../images/man.png" nickname="asalek" /> */}
 				</div>
 				{
 					friends.length > 7 && <img ref={imgR} className=" p-2 m-2 rounded-full btn-scroll max-sm:hidden w-[35px] aspect-square" src="../images/R_arrow.png"  alt="" onClick={()=>scrollHorizontal(1)}/>
@@ -93,22 +106,5 @@ export default function FriendCarouselBar()
 
 			</div>
 		</div>
-	// <div  className="w-[90%] bg-darken-100 rounded-xl flex justify-end">
-	//     <div /*style={{width: "calc(56px * 13)"}}*/ className="w-[99%] h-full flex justify-end overflow-hidden gap-4">
-	//         <FriendBarColumns nickname="ayoub" src="../images/profile.png" />
-	//         <FriendBarColumns nickname="ayoub" src="../images/profile.png" />
-	//         {/* <FriendBarColumns nickname="ayoub" src="../images/profile.png" />
-	//         <FriendBarColumns nickname="ayoub" src="../images/profile.png" />
-	//         <FriendBarColumns nickname="ayoub" src="../images/profile.png" />
-	//         <FriendBarColumns nickname="ayoub" src="../images/profile.png" />
-	//         <FriendBarColumns nickname="ayoub" src="../images/profile.png" />
-	//         <FriendBarColumns nickname="ayoub" src="../images/profile.png" />
-	//         <FriendBarColumns nickname="ayoub" src="../images/profile.png" />
-	//         <FriendBarColumns nickname="ayoub" src="../images/profile.png" />
-	//         <FriendBarColumns nickname="ayoub" src="../images/profile.png" />
-	//         <FriendBarColumns nickname="ayoub" src="../images/profile.png" />
-	//         <FriendBarColumns nickname="ayoub" src="../images/profile.png" /> */}
-	//     </div>
-	// </div>
 	);
 }
