@@ -8,9 +8,11 @@ import { BiUserX } from "react-icons/Bi";
 import { TbUserUp } from "react-icons/Tb";
 import { TbUserDown } from "react-icons/Tb";
 import { BiMessageRoundedDetail } from "react-icons/Bi";
+import { AiOutlineUsergroupAdd } from "react-icons/Ai";
 
 import { UniversalData } from '../../layout';
 import { Avatar, useSSR } from '@nextui-org/react';
+import AddedUsersForm from './addedUsersForm';
 
 interface RoomInfoProps {
     room:any
@@ -48,12 +50,36 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
 
     }
 
+    const   addUsersToRoom = () => {
+
+    }
+
+    const [newUser, setNewUser] = useState<string>('')
+    const [newUsers, setNewUsers] = useState<string[]>([])
+    const [showUsersForm, setShowUsersForm] = useState(false)
+
   return (
     <Popup isOpen={info.show} modalAppearance={hide}>
-        <div className='flex justify-center m-4'>
-            <Avatar zoomed text={info.room.name} bordered color={"gradient"} alt={info.room.name} className="w-auto h-auto"></Avatar>
-            {/* <div className='m-4 text-center w-full text-xl font-bold'>{info.name}</div> */}
+        <div className='flex items-end justify-center m-4'>
+            <Avatar zoomed text={info.room.name} bordered color={"gradient"} alt={info.room.name} className="ml-8 w-auto h-auto"></Avatar>
+            <AiOutlineUsergroupAdd cursor={'pointer'} className='hover:text-white' onClick={ () => setShowUsersForm(old => !old) }/>
         </div>
+        {showUsersForm && <>
+            <div className="flex relative z-0 w-full mb-6 group">
+                <input autoComplete='off' value={newUser} type="text" name="user" id="user" className="text-gray-300 text-xs lg:text-base block py-2.5 px-0 w-full bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required 
+                onChange={
+                    () => {}
+                } onKeyDown={(e) => {
+                    
+                }}/>
+                <label htmlFor="user" className="text-xs lg:text-sm peer-focus:font-medium absolute text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Search user by nickname</label>
+                <button className='ml-[10%] w-[40%] px-1 relative bg-sky-900 text-gray-300 rounded-full' onClick={ () => {
+                    setNewUsers(old => [...old, newUser]);
+                    setNewUser('');
+                }}>Add user</button>
+            </div>
+            <AddedUsersForm users={newUsers} setUsers={setNewUsers}/>
+        </>}
         <div className='flex flex-col justify-center items-center overflow-y-scroll'>
             {info.room.users.map(user => (
                     <div className='m-2 border-2 p-2 rounded-lg bg-slate-600 border-slate-500 w-full flex flex-col items-center justify-center' key={user.id}>
@@ -66,15 +92,15 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
                                 {(isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) && user.nickName != info.userData.nickname) &&
                                     <>
                                         { isAdmin(info.room.users.find(o => o.nickName === user.nickName)) ? 
-                                            <TbUserDown title='demote' aria-label='demote' cursor="pointer" size={20} onClick={demoteteUser}/>
-                                            :   <TbUserUp title='promote' strokeWidth={2.3} aria-label='promote' cursor="pointer" size={25} onClick={promoteUser}/>
+                                            <TbUserDown className='hover:text-white' title='demote' aria-label='demote' cursor="pointer" size={20} onClick={demoteteUser}/>
+                                            :   <TbUserUp className='hover:text-white' title='promote' strokeWidth={2.3} aria-label='promote' cursor="pointer" size={25} onClick={promoteUser}/>
                                         }
-                                        <BiUserMinus title='kick' strokeWidth={0} aria-label='kick' cursor="pointer" size={30} onClick={kickUser}/>
-                                        <BiUserX title='ban' aria-label='ban' cursor="pointer" size={30} onClick={banUser}/>
-                                        <BiVolumeMute title='mute' aria-label='mute' cursor="pointer" size={25} onClick={muteUser}/>
+                                        <BiUserMinus className='hover:text-white' title='kick' strokeWidth={0} aria-label='kick' cursor="pointer" size={30} onClick={kickUser}/>
+                                        <BiUserX className='hover:text-white' title='ban' aria-label='ban' cursor="pointer" size={30} onClick={banUser}/>
+                                        <BiVolumeMute className='hover:text-white' title='mute' aria-label='mute' cursor="pointer" size={25} onClick={muteUser}/>
                                     </>}
                                 { user.nickName != info.userData.nickname &&
-                                <BiMessageRoundedDetail title='DM' aria-label='DM' cursor="pointer" size={25}/>}
+                                <BiMessageRoundedDetail className='hover:text-white' title='DM' aria-label='DM' cursor="pointer" size={25}/>}
                             </div>
                         </div>
                     </div>
