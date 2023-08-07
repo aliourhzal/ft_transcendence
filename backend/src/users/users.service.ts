@@ -89,6 +89,8 @@ export class UsersService {
 
 	async fetchUserByNickname(nickname: string) {
 		const user = await this.findOneByNickname(nickname);
+		if (!user)
+			throw new NotFoundException('user not found');
 		const {password, ...ret} = user;
 		if (user.password !== '')
 			ret["password"] = true;
@@ -182,15 +184,19 @@ export class UsersService {
 	}
 
 	async getFriends(nickname: string) {
-		const {userFriends} = await this.prisma.user.findUnique({
-			where: {
-				nickname
-			},
-			include: {
-				userFriends: true
-			}
-		})
-		return (userFriends);
+		try {
+			const {userFriends} = await this.prisma.user.findUnique({
+				where: {
+					nickname
+				},
+				include: {
+					userFriends: true
+				}
+			})
+			return (userFriends);
+		} catch(err) {
+			throw new NotFoundException('user not found');
+		}
 	}
 
 	async acceptRequest(requestId: string, nickname: string) {
@@ -288,13 +294,17 @@ export class UsersService {
 	}
 
 	async updateUserStatus(nickname: string, status: string) {
-		await this.prisma.user.update({
-			where: {
-				nickname
-			},
-			data: {
-				status
-			}
-		})
+		try {
+			await this.prisma.user.update({
+				where: {
+					nickname
+				},
+				data: {
+					status
+				}
+			})
+		} catch(err) {
+			throw new NotFoundException('user not found');
+		}
 	}
 }
