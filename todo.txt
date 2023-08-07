@@ -177,3 +177,108 @@ try
             console.log(error)    
         }
     }
+
+
+
+if(usersIds === '1')
+                    {
+                        console.log('one user or multi users not found')
+                        return ;
+                    }
+                    if(usersIds === 0)
+                    {
+                        console.log("cannot kick owners")
+                        return;
+                    }
+                    
+                    if(await this.roomService.doesRoomHaveUsers(roomId.id))
+                    {
+                        
+                        const userType = await this.utils.getUserType(roomId.id,user['sub']);
+                       
+                        if(userType)
+                        {
+                            if(userType.userType !== 'USER')
+                            { 
+                                await this.roomService.removeUserFromRoom(roomId.id, usersIds); 
+                            }
+                            else
+                            {
+                                console.log('dont have the permission to kick ');
+                            }                 
+                        }
+                        else
+                        {
+                            console.log('user in not in the room')
+                        }
+                    }
+                    else
+                    {
+                        console.log('room dont have users.')
+                    }
+
+
+
+
+
+                    @Post('/join-room') //
+    async joinRoom(@Body() dto:JoinRoomDto, @Res() res:any) 
+    {
+        try 
+        {
+            const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
+
+            const currentUser = await this.utils.getUserId(user['sub']);
+
+            if(!currentUser)
+                return res.status(404).send('user not found.')
+            
+            const roomId = await this.utils.getRoomByName(dto.roomName);
+
+            if(roomId)
+            {
+                const usersInRoom = await this.utils.getUsersInRooms(roomId.id);
+                
+                const find = usersInRoom.find((item:any) => item.userId === user['sub']);
+    
+                if(!find)
+                {
+                    const roomType = await this.utils.getRoomById(roomId.id);
+                    
+                    if(roomType.roomType === 'PROTECTED')
+                    {
+                        if(comparePasswd(dto.password,roomType.password) )
+                        {
+                            await this.roomService.linkBetweenUsersAndRooms(roomId.id, user['sub']);
+                            
+                            usersInRoom.push(currentUser);
+
+                            res.status(200).send({room :roomId , usersInRoom , usersInfos: await this.utils.getUserInfosInRoom(roomId.id)});
+                        }
+                        else
+                        {
+                            return res.status(404).send("password inccorect.")
+                        }
+                    }
+                    else if(roomType.roomType === 'PUBLIC')
+                    {
+                        await this.roomService.linkBetweenUsersAndRooms(roomId.id, user['sub']);
+
+                        usersInRoom.push(currentUser);
+                     
+                        res.status(200).send({room :roomId , usersInRoom , usersInfos: await this.utils.getUserInfosInRoom(roomId.id)});
+                    }
+                }
+                
+                return res.send('user aleredy in this room.')
+
+            }
+
+            return res.status(404).send('room not found.')
+            
+        } 
+        catch (error) 
+        {
+            return res.status(500).json({ error: error.message });
+        }
+    }

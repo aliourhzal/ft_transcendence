@@ -7,6 +7,7 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class JoinRoomDto {
      
     
+    
     @IsNotEmpty()
     @IsString()
     roomName: string;
@@ -17,6 +18,10 @@ export class JoinRoomDto {
     
     @IsNotEmpty()
     @IsString()
-    auth: string;
+    user: string;
+
+    @IsNotEmpty()
+    @IsString()
+    socketId:string;
 }
  

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prefer-const */
 /* eslint-disable prettier/prettier */
-import { UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException, UsePipes, ValidationPipe } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket, Server } from  'socket.io';
@@ -11,6 +11,8 @@ import {  UserData, ArrayOfClinets, ListOfRoomsOfUser } from 'src/utils/userData
 import { RoomsService } from '../rooms/rooms.service';
 import { UtilsService } from 'src/utils/utils.service';
 import { MessagesService } from '../messages/messages.service';
+import { JoinRoomDto } from 'src/dto/join-room.dto';
+import { comparePasswd } from 'src/utils/bcrypt';
 
 @WebSocketGateway(3004)
 export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
@@ -52,7 +54,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             }
 
              
-                
+          
             console.log("connected from chat.")
                 
             this.soketsId.push({userId:userInfos.id, socketIds:socket.id})
@@ -79,7 +81,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     }
    
     @SubscribeMessage('send-message') // on emit the message input get the message and the room name
-    async sendMessage(@MessageBody() infos: object)
+    async sendMessage(@MessageBody() infos: object) // use dto
     {
         // use try and catch here && search by id of user in db if found or not
 
@@ -139,6 +141,70 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         }
     }
    
+    @SubscribeMessage('join-room') 
+    @UsePipes(new ValidationPipe()) // Add the ValidationPipe here
+    async joinRoom(@MessageBody() dto:JoinRoomDto) 
+    { 
+
+        try 
+        {
+            const user = this.jwtService.verify(dto.user,{ secret: process.env.JWT_SECRET })
+
+            const currentUser = await this.utils.getUserId(user['sub']);
+
+            if(!currentUser)
+                return this.socketOfcurrentUser.emit('user not found.')
+            
+            const roomId:any = await this.utils.getRoomByName(dto.roomName);
+
+            if(roomId)
+            {
+                const usersInRoom:any = await this.utils.getUsersInRooms(roomId.id);
+                
+                const find = usersInRoom.find((item:any) => item.userId === user['sub']);
+    
+                if(!find)
+                {
+                    const roomType = await this.utils.getRoomById(roomId.id);
+                    
+                    if(roomType.roomType === 'PROTECTED')
+                    {
+                        if(comparePasswd(dto.password,roomType.password) )
+                        {
+                            await this.roomService.linkBetweenUsersAndRooms(roomId.id, user['sub']);
+                            
+                            this.socketOfcurrentUser.emit(roomId , await this.utils.getUserInfosInRoom(roomId.id));
+
+                        }
+                        else
+                        {
+                            this.socketOfcurrentUser.emit("password inccorect.")
+                        }
+                    }
+                    else if(roomType.roomType === 'PUBLIC')
+                    {
+                        await this.roomService.linkBetweenUsersAndRooms(roomId.id, user['sub']);
+
+                        usersInRoom.push(currentUser);
+                     
+                        this.socketOfcurrentUser.emit(roomId , await this.utils.getUserInfosInRoom(roomId.id));
+                    }
+                }
+                
+                return this.socketOfcurrentUser.emit('user aleredy in this room.')
+
+            }
+
+            return this.socketOfcurrentUser.emit('room not found.')
+            
+        } 
+        catch (error : any) 
+        {
+            return this.socketOfcurrentUser.emit(error);
+        }
+    }
+
+
 
     OnWebSocektError(socket:Socket)
     { 

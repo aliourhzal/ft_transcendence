@@ -74,28 +74,29 @@ export class UtilsService {
         return uniqusers; // return users id
     }
 
-    async getUsersInfosInRoom(adminId: string,users: string[], roomdId:string)  
+    async checkKickedUser(currentUser: string, kickerUser: string, roomdId:string)  
     {
 
-        const usersId = await this.getUsersId(adminId, users);
+        const userId = await this.getUserId(kickerUser);
         
-        if(usersId === null)
+        if(currentUser === userId.id)
+            return {error : 'cannot kick the current user'};
+
+        if(!userId)
         {
-            return '1';
+            return {error : 'user not found'}
         }
-        if(usersId !== 0)
-        {
-             
-            for(const userId of usersId)
-            {
-                const userType = (await this.getUserType(roomdId,userId)).userType;
-                if(userType === 'ADMIN' || userType === 'OWNER')
-                    return 0;
-                
-            }
-            return usersId;
-        }
-        return 0;
+        
+        const userType = (await this.getUserType(roomdId, kickerUser));
+        
+        // check if user in room
+
+        console.log(userType);
+
+        if(userType.userType === 'ADMIN' || userType.userType === 'OWNER')
+            return {error : 'connot kick the owner or admin'};
+        
+        return {ok : 'ok'};
     }
 
 
@@ -175,7 +176,7 @@ export class UtilsService {
         });
       
         return getRoomInfos;
-      }
+    }
 
     async getRoomsForUser(userId: string)
     {

@@ -98,65 +98,100 @@ export class RoomController {
     }
    
     
-    
-
-    @Post('/join-room') //
-    async joinRoom(@Body() dto:JoinRoomDto, @Res() res:any) 
+    @Post('/select-room') // use here JoinRoomDto
+    async onJoinedRoom(@Body() dto:any, @Res() res:any) 
     {
         try 
         {
-            const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
+            const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET });
 
-            const currentUser = await this.utils.getUserId(user['sub']);
-
-            if(!currentUser)
-                return res.status(404).send('user not found.')
-            
-            const roomId = await this.utils.getRoomByName(dto.roomName);
-
-            if(roomId)
+            if(!await this.utils.getUserId(user['sub']))
             {
-                const usersInRoom = await this.utils.getUsersInRooms(roomId.id);
-                
-                const find = usersInRoom.find((item:any) => item.userId === user['sub']);
-    
-                if(!find)
-                {
-                    const roomType = await this.utils.getRoomById(roomId.id);
-                    
-                    if(roomType.roomType === 'PROTECTED')
-                    {
-                        if(comparePasswd(dto.password,roomType.password) )
-                        {
-                            await this.roomService.linkBetweenUsersAndRooms(roomId.id, user['sub']);
-                            
-                            usersInRoom.push(currentUser);
-
-                            res.status(200).send({room :roomId , usersInRoom , usersInfos: await this.utils.getUserInfosInRoom(roomId.id)});
-                        }
-                        else
-                        {
-                            return res.status(404).send("password inccorect.")
-                        }
-                    }
-                    else if(roomType.roomType === 'PUBLIC')
-                    {
-                        
-                        await this.roomService.linkBetweenUsersAndRooms(roomId.id, user['sub']);
-                        usersInRoom.push(currentUser);
-                        res.status(200).send({room :roomId , usersInRoom , usersInfos: await this.utils.getUserInfosInRoom(roomId.id)});
-                    }
-                }
-                return res.send('user aleredy in this room.')
-
+                return res.status(404).send('user not found.');
             }
-            return res.status(404).send('room not found.')
             
+            const roomId = await this.utils.getRoomIdByName(dto.roomName);
+            
+            if (roomId) // if room is founding check if current user is member into it and it not banned
+            {
+                const isUserInRoom = await this.utils.getUserType(roomId,user['sub']);
+
+                if(!isUserInRoom)
+                {
+                    return res.status(404).send('user is not in this room.');
+                }
+
+                if(isUserInRoom.isBanned)
+                {
+                    return res.status(401).send('you are banned from this room.')
+                }
+                 
+                const messageAndUserName = await this.messagesService.getAllMessagesofRoom(dto.roomName);
+                            
+                return res.status(200).send({ msg: messageAndUserName });
+            }
+            else
+            {
+                return res.status(404).send('room not found.');
+            }
         } 
         catch (error) 
         {
             return res.status(500).json({ error: error.message });
         }
     }
-   
+
+     
+
+     @Post('/kick')
+    async kick(@Body() dto:any, @Res() res:any)
+    {
+        // validatin of the current user  
+        // validation of current room
+        // if current user is admin or owner
+        // if user who want to kick them is a user kick them 
+        // else cannot kick them
+        
+            try 
+            { 
+                const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
+    
+                if(!await this.utils.getUserId(user['sub'])) //if jwt expired
+                    return res.status(404).send('user not found.')
+
+                const roomId = await this.utils.getRoomByName(dto.roomNAme);
+                
+                if(roomId)
+                {
+                     
+                    const isUserInRoom = await this.utils.getUserType(roomId.id, user['sub']);
+
+                    if(!isUserInRoom)
+                    {
+                        return res.status(404).send('user is not in this room.');
+                    }
+
+                    if(await this.roomService.doesRoomHaveUsers(roomId.id))
+                    {
+
+                        const userInfos = await this.utils.checkKickedUser(user['sub'], dto.kickedUser , roomId.id);
+    
+                        // console.log(userInfos) // pass same user for kicking
+                    }
+                    
+                }
+                else
+                {
+                    console.log('room not found')
+                    return;
+                }
+            } 
+            catch (error) 
+            {
+                console.log('from kick()')
+                console.log(error)    
+            }
+    }
+    
+
 }

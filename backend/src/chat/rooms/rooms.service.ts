@@ -44,12 +44,6 @@ export class RoomsService
                     });
                     
                 }
-                // else
-                // {
-                //     return 4
-                //     // here will entered if user is aleredy exist in the chat room 
-                //     //  emit error when the same user is entered
-                // }
             }
 
         }
@@ -73,12 +67,7 @@ export class RoomsService
                 });
                 
             }
-            else
-            {
-                return 4
-                // here will entered if user is aleredy exist in the chat room 
-                //  emit error when the same user is entered
-            }
+            
         }
         return 1;
     }
