@@ -168,14 +168,17 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                     const roomType = await this.utils.getRoomById(roomId.id);
                     const usersInroom = await this.utils.getUsersInRooms(roomId.id);
                     
+                    
                     if(roomType.roomType === 'PROTECTED')
                     {
                         if(comparePasswd(dto.password,roomType.password) )
                         {
                             await this.roomService.linkBetweenUsersAndRooms(roomId.id, user['sub']);
                             
-                            this.server.to(dto.socketId).emit('current-user-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id)});
+                            // this.server.to(dto.socketId).emit('current-user-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id)});
 
+                            usersInRoom.push(currentUser);
+                            
                             for(const userInRoom of usersInroom)
                             {
                                 for (let i = 0; i < this.soketsId.length; i++) 
@@ -199,19 +202,19 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
                         usersInRoom.push(currentUser);
                      
-                        this.socketOfcurrentUser.emit('user-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id)});
+                        // this.server.to(dto.socketId).emit('current-user-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id)});
 
                         for(const userInRoom of usersInroom)
-                    {
-                        for (let i = 0; i < this.soketsId.length; i++) 
                         {
-                            if(this.soketsId[i].userId === userInRoom.userId)
+                            for (let i = 0; i < this.soketsId.length; i++) 
                             {
-                                this.server.to(this.soketsId[i].socketIds).emit("add-message", {user: createdMsg.username, msg: createdMsg.msg , roomName: roomId.room_name})
+                                if(this.soketsId[i].userId === userInRoom.userId)
+                                {
+                                    this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id)});
+                                }
                             }
-                        }
 
-                    }
+                        }
                     }
                 }
                 
