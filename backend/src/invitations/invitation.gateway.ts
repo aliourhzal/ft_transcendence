@@ -52,15 +52,11 @@ export default class InvitationsGateway implements OnGatewayConnection, OnGatewa
 	}
 
 	handleDisconnect(socket: Socket) {
-		const index = this.connectedUsers.findIndex((user, i) => {
-			if (user.socket.id === socket.id)
-				return (i);
-		})
+		const index = this.connectedUsers.findIndex(user => user.socket.id === socket.id)
 		if (index > -1) {
-			console.log(this.connectedUsers[index].nickname);
 			const sockets = this.connectedUsers.filter(user => user.nickname === this.connectedUsers[index].nickname);
 			if (sockets.length < 2)
-				this.updateUserStatus(this.connectedUsers[index], 'offline');
+			this.updateUserStatus(this.connectedUsers[index], 'offline');
 			this.connectedUsers.splice(index, 1);	
 		}
 	}
@@ -74,6 +70,10 @@ export default class InvitationsGateway implements OnGatewayConnection, OnGatewa
 		} catch (err) {
 			this.OnWebSocektError(socket);
 		}
+		if (!decodeJWt) {
+			this.OnWebSocektError(socket);
+			return ;
+		} 
 		const user = await this.usersService.findOneByNickname(decodeJWt.nickname);
 		if (!user) {
 			this.OnWebSocektError(socket);
