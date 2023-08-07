@@ -8,11 +8,10 @@ interface SelfChatBoxProps {
   }
 
 const OthersChatBox:React.FC<SelfChatBoxProps> = (msg) => {
-    console.log(msg)
     return (
-        <div className={'z-0 flex items-center justify-start gap-3'} key={gimmeRandom()}>
+        <div className={'z-0 flex items-start justify-start gap-3'} key={gimmeRandom()}>
             <Avatar pointer src={msg.user.photo}/>
-            <div className="py-2 flex-wrap bg-slate-400 h-10 my-1 rounded-full p-5 flex items-center justify-end">{msg.msg}</div>
+            <div className="overflow-hidden py-2 bg-slate-400 my-1 rounded-3xl p-5 flex items-center justify-center flex-wrap">{msg.msg}</div>
         </div>
     )
 }
