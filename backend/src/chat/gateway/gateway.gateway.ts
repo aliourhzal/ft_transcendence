@@ -153,7 +153,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             const currentUser = await this.utils.getUserId(user['sub']);
 
             if(!currentUser)
-                return this.socketOfcurrentUser.emit('user not found.')
+            {
+                this.socketOfcurrentUser.emit('users-join','user not found.')
+                return ;
+            }
             
             const roomId:any = await this.utils.getRoomByName(dto.roomName);
 
@@ -190,10 +193,12 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                 }
 
                             }
+                            return ;
                         }
                         else
                         {
-                            this.socketOfcurrentUser.emit("password inccorect.")
+                            this.socketOfcurrentUser.emit('users-join',"password inccorect.")
+                            return ;
                         }
                     }
                     else if(roomType.roomType === 'PUBLIC')
@@ -213,21 +218,29 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                     this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id)});
                                 }
                             }
-
-                        }
-                    }
+  
+                        } 
+                        return ;
+                    } 
                 }
-                
-                return this.socketOfcurrentUser.emit('user aleredy in this room.')
+                else
+                {
+                    this.socketOfcurrentUser.emit('users-join','user aleredy in this room.')
+
+                    return ;
+                }
 
             }
-
-            return this.socketOfcurrentUser.emit('room not found.')
+            else
+            {
+                this.socketOfcurrentUser.emit('users-join','room not found.')
+                return ;
+            }
             
         } 
         catch (error : any) 
         {
-            return this.socketOfcurrentUser.emit(error);
+            this.socketOfcurrentUser.emit('users-join',error);
         }
     }
 

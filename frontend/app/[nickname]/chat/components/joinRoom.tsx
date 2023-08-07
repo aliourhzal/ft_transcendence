@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Context } from '../page'
 import axios from 'axios'
 import Popup from './Popup'
@@ -47,6 +47,12 @@ const JoinRoomForm = () => {
         setShowJoinForm(false)
         setName(''); setPass('')
     }
+
+    useEffect ( () => {
+        socket?.on('current-user-join', (res) => {
+            console.log(res)
+        } )
+    })
 
     const submitForm = () => {
         
