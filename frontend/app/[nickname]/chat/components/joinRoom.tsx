@@ -49,25 +49,25 @@ const JoinRoomForm = () => {
     }
 
     const submitForm = () => {
-        try {
-            axios.post('http://127.0.0.1:3000/rooms/join-room', {roomName:name, password:pass, auth: socket.auth['token']}, {withCredentials: true}).then(
-                res => {
-                    console.log(res)
-                    rooms.unshift({
-                        name: res.data.room.room_name,
-                        last_msg:'welcome to group chat',
-                        msgs: [],
-                        id: res.data.room.id,
-                        users: getUsersInfo(res.data.usersInfos),
-                        type: res.data.room.roomType
-                    })
-                }
-            )
-            set_room_created(old => !old)
-        }
-        catch(error) {
-            alert(error)
-        }
+        socket.emit('send-message', {roomName:name, password:pass, user:socket.auth['token'], socketId:socket.id})
+        // try {
+        //     axios.post('http://127.0.0.1:3000/rooms/join-room', {roomName:name, password:pass, auth: socket.auth['token']}, {withCredentials: true}).then(
+        //         res => {
+        //             rooms.unshift({
+        //                 name: res.data.room.room_name,
+        //                 last_msg:'welcome to group chat',
+        //                 msgs: [],
+        //                 id: res.data.room.id,
+        //                 users: getUsersInfo(res.data.usersInfos),
+        //                 type: res.data.room.roomType
+        //             })
+        //         }
+        //     )
+        //     set_room_created(old => !old)
+        // }
+        // catch(error) {
+        //     console.log(error.data)
+        // }
         setShowJoinForm(false)
     }
 
