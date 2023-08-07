@@ -13,6 +13,7 @@ import { AiOutlineUsergroupAdd } from "react-icons/Ai";
 import { UniversalData } from '../../layout';
 import { Avatar, useSSR } from '@nextui-org/react';
 import AddedUsersForm from './addedUsersForm';
+import NewRoomUsers from './NewRoomUsers';
 
 interface RoomInfoProps {
     room:any
@@ -26,6 +27,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     
     const hide = () => {
         info.setShow(false)
+        setShowUsersForm(false)
     }
     
     const isAdmin = (user) => {
@@ -54,8 +56,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
 
     }
 
-    const [newUser, setNewUser] = useState<string>('')
-    const [newUsers, setNewUsers] = useState<string[]>([])
+    
     const [showUsersForm, setShowUsersForm] = useState(false)
 
   return (
@@ -64,22 +65,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
             <Avatar zoomed text={info.room.name} bordered color={"gradient"} alt={info.room.name} className="ml-8 w-auto h-auto"></Avatar>
             <AiOutlineUsergroupAdd cursor={'pointer'} className='hover:text-white' onClick={ () => setShowUsersForm(old => !old) }/>
         </div>
-        {showUsersForm && <>
-            <div className="flex relative z-0 w-full mb-6 group">
-                <input autoComplete='off' value={newUser} type="text" name="user" id="user" className="text-gray-300 text-xs lg:text-base block py-2.5 px-0 w-full bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required 
-                onChange={
-                    () => {}
-                } onKeyDown={(e) => {
-                    
-                }}/>
-                <label htmlFor="user" className="text-xs lg:text-sm peer-focus:font-medium absolute text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Search user by nickname</label>
-                <button className='ml-[10%] w-[40%] px-1 relative bg-sky-900 text-gray-300 rounded-full' onClick={ () => {
-                    setNewUsers(old => [...old, newUser]);
-                    setNewUser('');
-                }}>Add user</button>
-            </div>
-            <AddedUsersForm users={newUsers} setUsers={setNewUsers}/>
-        </>}
+        {showUsersForm && <NewRoomUsers addUsers={addUsersToRoom} />}
         <div className='flex flex-col justify-center items-center overflow-y-scroll'>
             {info.room.users.map(user => (
                     <div className='m-2 border-2 p-2 rounded-lg bg-slate-600 border-slate-500 w-full flex flex-col items-center justify-center' key={user.id}>
