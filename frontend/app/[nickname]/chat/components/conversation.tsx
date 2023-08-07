@@ -1,4 +1,4 @@
- import React, { useContext, useEffect, useState } from 'react'
+ import React, { useContext, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { Context } from '../page'
 import ChatBox from './ChatBox'
@@ -22,18 +22,18 @@ const Conversation = () => {
       } : setDeviceType('normal')
     } , [])
 
-    const handleKeyDown = (e:any) => {
-        if (e.key === 'Enter')
-            sendMessage()
-    }
-    const [msg, setMsg] = useState<string>('')
-    const sendMessage = () => {
-        const _msg = msg.trim()
-        if (_msg != '') {
+    // const handleKeyDown = (e:any) => {
+    //     if (e.key === 'Enter')
+    //         sendMessage()
+    // }
+    const sendMessage = (e) => {
+        e.preventDefault()
+        const msg = e.target[0].value.trim()
+        if (msg != '') {
             socket.emit('send-message', {message:msg, user:socket.auth['token'], roomName:activeUserConv.name, socketId:socket.id})
             // setChatBoxMessages(old => [...old, {user:userData.nickname, msg:msg}])
             msg_sent == undefined ? set_msg_sent(1) : set_msg_sent(old => old == 1 ? 2 : 1)
-            setMsg('')
+            e.target[0].value = ''
         }
     }
 
@@ -56,11 +56,13 @@ const Conversation = () => {
 
                 <div className='h-[8%] w-[90%] flex items-center justify-center'>
 					<div className='w-full h-[70%] rounded-[100px] bg-zinc-800 flex items-center justify-between'>
-						<input autoComplete="off" placeholder='Type a message...' type="text" id="message" className="outline outline-0 bg-transparent  p-5 text-gray-100 text-xs sm:text-base focus:ring-blue-500 focus:border-blue-500 w-[90%]" value={msg} onChange={(e) => {setMsg(e.target.value)}} onKeyDown={ handleKeyDown }/>
-						<div className='w-[8%] flex items-center justify-center'>
-							<div className=' border-blue-500 border-[6px] bg-blue-500 rounded-full h-9 w-9 flex items-center justify-end cursor-pointer mr-3 lg:mr-0' onClick={sendMessage}>
-								<Image className='w-auto h-auto' src="/images/send.svg" alt="send" width={150} height={150}/>
-							</div>
+                        <form onSubmit={sendMessage} id='form' className='w-[98%]'>
+						    <input autoComplete="off" placeholder='Type a message...' type="text" id="message" className="outline outline-0 bg-transparent  p-5 text-gray-100 text-xs sm:text-base focus:ring-blue-500 focus:border-blue-500 w-[100%]"/>
+                        </form>
+						<div className='w-10 h-7 flex items-center justify-center'>
+							<button type='submit' form='form' className=' border-blue-500 border-[6px] bg-blue-500 rounded-full w-[100%] h-[100%] mr-3 flex items-center justify-end cursor-pointer'>
+								<img className='w-auto h-auto' src="/images/send.svg" alt="send" width={150} height={150}/>
+							</button>
 						</div>
 					</div>
                 </div>
@@ -83,12 +85,12 @@ const Conversation = () => {
                 {/* <Image className=' object-contain' alt='bg' src='/assets/images/conv_bg.gif' width={500} height={500}/> */}
                 </div>
 
-                <div className='absolute pt-5 bg-gray-900 text-center w-[100%] flex items-center justify-center'>
+                {/* <div className='absolute pt-5 bg-gray-900 text-center w-[100%] flex items-center justify-center'>
 					<input autoComplete="off" placeholder='Type a message...' type="text" id="message" className="absolute outline outline-0 block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500" value={msg} onChange={(e) => {setMsg(e.target.value)}} onKeyDown={ handleKeyDown }/>
 					<div className='absolute right-[30%] lg:right-[1%] border-blue-500 border-[6px] bg-blue-500 rounded-full h-7 w-7 flex items-center justify-center cursor-pointer' onClick={sendMessage}>
-						<Image className='w-auto h-auto' src="/images/send.svg" alt="send" width={100} height={100}/>
+						<img className='w-auto h-auto' src="/images/send.svg" alt="send" width={100} height={100}/>
 					</div>
-                </div>
+                </div> */}
             </div>
         )
     }

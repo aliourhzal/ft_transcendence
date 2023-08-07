@@ -36,7 +36,7 @@ const ChatBox = () => {
     }, [chatBoxMessages, temp])
   
   return (
-    <div>
+    <div className='z-0'>
       {chatBoxMessages.map ((BoxMessage) => 
         (BoxMessage.user == userData.nickname ? <SelfChatBox msg={BoxMessage.msg} user={currentRoom.users.find(o => o.nickName === BoxMessage.user)} key={gimmeRandom()}/>
           : <OthersChatBox msg={BoxMessage.msg} user={currentRoom.users.find(o => o.nickName === BoxMessage.user)} key={gimmeRandom()}/>))}
