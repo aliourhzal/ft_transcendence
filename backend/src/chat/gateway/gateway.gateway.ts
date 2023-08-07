@@ -173,7 +173,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         {
                             await this.roomService.linkBetweenUsersAndRooms(roomId.id, user['sub']);
                             
-                            this.socketOfcurrentUser.emit(roomId , await this.utils.getUserInfosInRoom(roomId.id));
+                            this.socketOfcurrentUser.emit('user-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id)});
 
                         }
                         else
@@ -187,7 +187,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
                         usersInRoom.push(currentUser);
                      
-                        this.socketOfcurrentUser.emit(roomId , await this.utils.getUserInfosInRoom(roomId.id));
+                        this.socketOfcurrentUser.emit('user-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id)});
                     }
                 }
                 
