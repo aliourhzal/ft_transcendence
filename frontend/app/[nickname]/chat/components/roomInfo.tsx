@@ -52,8 +52,9 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
 
     }
 
-    const   addUsersToRoom = () => {
-
+    const   addUsersToRoom = (newUsers) => {
+        setShowUsersForm(false)
+        console.log(newUsers)
     }
 
     
@@ -63,7 +64,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     <Popup isOpen={info.show} modalAppearance={hide}>
         <div className='flex items-end justify-center m-4'>
             <Avatar zoomed text={info.room.name} bordered color={"gradient"} alt={info.room.name} className="ml-8 w-auto h-auto"></Avatar>
-            <AiOutlineUsergroupAdd cursor={'pointer'} className='hover:text-white' onClick={ () => setShowUsersForm(old => !old) }/>
+            <AiOutlineUsergroupAdd color={showUsersForm ? 'white' : ''} cursor={'pointer'} className='hover:text-white' onClick={ () => setShowUsersForm(old => !old) }/>
         </div>
         {showUsersForm && <NewRoomUsers addUsers={addUsersToRoom} />}
         <div className='flex flex-col justify-center items-center overflow-y-scroll'>

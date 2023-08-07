@@ -40,8 +40,8 @@ const Conversation = () => {
     if (showConv) {
     return (
         deviceType == 'normal' ?
-            <div className='flex flex-grow-[1] flex-col h-[90vh] w-[calc(120%/2)] items-center justify-center '>
-				<div className=" flex justify-between text-white pl-10 pb-5 pt-4 w-[100%] border-blue-gray-200 text-blue-gray-700 outline border-b outline-0 placeholder-shown:border-blue-gray-200 focus:outline-0">
+            <div className='flex flex-col h-[90vh] w-[calc(120%/2)] items-center justify-center '>
+				<div className=" flex justify-between text-white pl-10 pb-3 pt-4 w-[100%] border-blue-gray-200 text-blue-gray-700 outline border-b outline-0 placeholder-shown:border-blue-gray-200 focus:outline-0">
 					<div className=''>{activeUserConv.name}</div>
                     <Image alt='info' className='cursor-pointer mr-5 w-7 h-7' src={'/images/info.svg'} width={30} height={30} onClick={ () => {
                         setShowInfo(true)
