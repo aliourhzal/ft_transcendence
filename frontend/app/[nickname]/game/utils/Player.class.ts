@@ -9,7 +9,7 @@ export default class Player {
 	right: number;
 
 	width = 10;
-	height = 100;
+	height: number;
 
 	score = 0;
 	color: string;
@@ -18,5 +18,6 @@ export default class Player {
 		this.x = initX;
 		this.y = initY;
 		this.color = initColor;
+	
 	}
 }

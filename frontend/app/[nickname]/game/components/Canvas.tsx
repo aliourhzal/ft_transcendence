@@ -67,7 +67,7 @@ export default function Canvas() {
 			collAngle = (Math.PI/4) * collidePoint;
 		}
 		socket.emit("player", {
-			x : player.x,
+			x: player.x,
 			y: player.y,
 			collision: coll,
 			collAngle
@@ -79,6 +79,11 @@ export default function Canvas() {
 		const ctx = canvas.getContext('2d');
 		canvas.width = canvas.offsetWidth;
 		canvas.height = canvas.offsetHeight;
+		player.height = canvas.height / 4;
+		player.width = (canvas.width === 800 ? 10 : 12.5);
+		com.height = canvas.height / 4;
+		com.width = (canvas.width === 800 ? 10 : 12.5);
+		
 		// listening to the mouse
 		canvas.addEventListener("mousemove", getMousePos);
 
@@ -93,7 +98,9 @@ export default function Canvas() {
 			else
 				return ;
 		}
-		socket.emit("style", {w:canvas.width, h:canvas.height});
+		socket.on('send_canva_W_H', () => {
+			socket.emit("startGame", {w:canvas.width, h:canvas.height});
+		})
 		// socket.on("sendMe_canva_p2", ()=>{
 		// 	socket.emit("style", {w:canvas.width, h:canvas.height});
 		// })
@@ -107,7 +114,8 @@ export default function Canvas() {
             StartGame(canvas, ctx);
         });
 		socket.on("playerMov", data => {
-			com.x = data.x;
+			console.log(data.y);
+			com.x = canvas.width - com.width;
 			com.y = data.y;
 		});
     }, [])
