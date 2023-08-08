@@ -1,6 +1,7 @@
 import { useContext, useEffect } from "react"
 import { Context, conversation, gimmeRandom } from "../page"
 import ConvBox from "./ConvBox"
+import { userInfo } from "os"
 // import { useContext } from "react"
 // import { Context } from "../page"
 
@@ -33,7 +34,7 @@ const getUsersInfo = (users) => {
 }
 
 const ConvList = () => {
-    const {socket, convs, setConvs, room_created, set_room_created, rooms, setRooms} = useContext(Context)
+    const {socket, convs, setConvs, room_created, set_room_created, rooms, setRooms, userData} = useContext(Context)
 
     const fillUserList = (listOfRoomsOfUser) => {
       setConvs([])
@@ -47,15 +48,32 @@ const ConvList = () => {
           type: room.room.room.roomType
         })
       })
-      console.log(rooms)
+      // console.log(rooms)
       setConvs(rooms)
       // return socket?.off('list-rooms',fillUserList)
     }
-  
-    useEffect( () => {
-      console.log(socket?.id)
-        socket?.on('list-rooms',fillUserList)
-    })
+
+    socket?.on('list-rooms',fillUserList)
+
+    const AddUserToRoom = (res) => {
+      // if (res.userInfos.currentUser.nickname === userData.nickname) {
+      //   rooms.unshift({
+      //     name: res.roomId.room_name,
+      //     last_msg:'welcome to group chat',
+      //     msgs: [],
+      //     id: res.roomId.id,
+      //     users: getUsersInfo(room.usersInRoom),
+      //     type: res.roomId.roomType
+      //   })
+      // }
+      // console.log("**", res, "**")
+      console.log("**", res.roomId, "**")
+      console.log("**", res.userInfos.currentUser, "**")
+      console.log("**", res.userInfos.userType, "**")
+      // console.log("**", res.userInfos[res.userInfo.length()], "**")
+    }
+
+    socket.on('users-join', AddUserToRoom)
 
     return (
       <div className='group left-[10%] flex-col bg-transparent w-full h-[80%] bg-slate-500 mt-8 overflow-hidden overflow-y-scroll'>

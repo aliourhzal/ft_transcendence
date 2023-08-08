@@ -33,6 +33,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     socketOfcurrentUser:Socket;
 
     soketsId :ArrayOfClinets[] = [];
+    arrayOfJoinnedUsers :ArrayOfClinets[] = [];
     
     listOfRoomsOfUser :   any[] = [];
 
@@ -169,8 +170,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 if(!find)
                 {
                     const roomType = await this.utils.getRoomById(roomId.id);
-                    const usersInroom = await this.utils.getUsersInRooms(roomId.id);
-                    
                     
                     if(roomType.roomType === 'PROTECTED')
                     {
@@ -178,20 +177,19 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         {
                             await this.roomService.linkBetweenUsersAndRooms(roomId.id, user['sub']);
                             
-                            // this.server.to(dto.socketId).emit('current-user-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id)});
-
-                            usersInRoom.push(currentUser);
-                            
+                            const usersInroom = await this.utils.getUsersInRooms(roomId.id);
+                        
+                            const joinnedUser = {currentUser , userType: await this.utils.getUserType(roomId.id, user['sub']) };
                             for(const userInRoom of usersInroom)
                             {
                                 for (let i = 0; i < this.soketsId.length; i++) 
                                 {
                                     if(this.soketsId[i].userId === userInRoom.userId)
                                     {
-                                        this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id)});
+                                        this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId ,  userInfos : joinnedUser});
                                     }
                                 }
-
+                                
                             }
                             return ;
                         }
@@ -204,43 +202,45 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                     else if(roomType.roomType === 'PUBLIC')
                     {
                         await this.roomService.linkBetweenUsersAndRooms(roomId.id, user['sub']);
-
-                        usersInRoom.push(currentUser);
-                     
-                        // this.server.to(dto.socketId).emit('current-user-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id)});
-
+                        const usersInroom = await this.utils.getUsersInRooms(roomId.id);
+                        
+                        const joinnedUser = {currentUser , userType: await this.utils.getUserType(roomId.id, user['sub']) };
+                        
                         for(const userInRoom of usersInroom)
                         {
                             for (let i = 0; i < this.soketsId.length; i++) 
                             {
                                 if(this.soketsId[i].userId === userInRoom.userId)
                                 {
-                                    this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id)});
+                                    this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId , userInfos : joinnedUser });
                                 }
                             }
-  
+                            
                         } 
                         return ;
                     } 
                 }
-                else
+                else 
                 {
-                    this.socketOfcurrentUser.emit('users-join','user aleredy in this room.')
-
-                    return ;
+                    // this.socketOfcurrentUser.emit('error-joinned-room','user aleredy in this room.')
+                    this.OnWebSocektError(this.socketOfcurrentUser);
                 }
 
             }
             else
             {
-                this.socketOfcurrentUser.emit('users-join','room not found.')
+                // this.socketOfcurrentUser.emit('error-joinned-room','room not found.')
+                this.OnWebSocektError(this.socketOfcurrentUser);
+
                 return ;
             }
             
         } 
         catch (error : any) 
         {
-            this.socketOfcurrentUser.emit('users-join',error);
+            console.log('here')
+            // this.socketOfcurrentUser.emit('error-joinned-room',error);
+            this.OnWebSocektError(this.socketOfcurrentUser);
         }
     }
 

@@ -1,0 +1,3 @@
+** {id: '3f42f71a-c149-42f6-8ad3-e9996bdd33b7', room_name: 'p', password: null, roomType: 'PUBLIC'} **
+ConvList.tsx:64 ** {id: '110b7f04-f99e-482f-9fcf-4eb7fad1fed6', intra_id: 90350, firstName: 'Taha', lastName: 'Namir', nickname: 'tnamir', …} **
+ConvList.tsx:65 ** {userId: '110b7f04-f99e-482f-9fcf-4eb7fad1fed6', userType: 'USER', roomId: '3f42f71a-c149-42f6-8ad3-e9996bdd33b7', isBanned: false, createdAt: '2023-08-08T00:28:53.058Z'} **

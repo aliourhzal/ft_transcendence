@@ -9,6 +9,7 @@ import Search from './components/search';
 import { getCookie, userDataContext } from "../layout";
 import ConvList from "./components/ConvList";
 import JoinRoomForm from "./components/joinRoom";
+import { SocketAddress } from "net";
 
 export interface conversation {
 	readonly name: string,
@@ -41,11 +42,16 @@ export interface Room {
 	}[]
 }
 
+const socket = io('ws://127.0.0.1:3004',{
+	auth: {
+		token: getCookie('access_token'),
+	},
+})
+
 export default function Chat() {
 
-	const userData = useContext(userDataContext);
 
-	const [socket, setSocket] = useState<Socket>();
+	const userData = useContext(userDataContext);
     
 	const [convs, setConvs] = useState<conversation[]>([])
 
@@ -53,16 +59,6 @@ export default function Chat() {
 	const [room_created, set_room_created] = useState(false)
 
 	const [rooms, setRooms] = useState<Room[]>([])
-
-	useEffect(() => {
-		setSocket(io('ws://127.0.0.1:3004',{
-			auth: {
-				token: getCookie('access_token'),
-			},
-		}))
-		set_room_created(old => !old)
-		// axios.get("http://127.0.0.1:3000/rooms").then(res => console.log(res))
-	}, [])
 
 	const [chatBoxMessages, setChatBoxMessages] = useState<{user:string, msg:string}[]>([])
 
@@ -72,6 +68,7 @@ export default function Chat() {
 	const [showConv, setShowConv] = useState(false)
 
 	const [activeUserConv, setActiveUserConv] = useState<conversation | undefined>(undefined)
+
 	return (
 		<main className='select-none h-full w-full'>
 			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, convs, setConvs, socket,
