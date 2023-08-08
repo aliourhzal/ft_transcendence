@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Param, Post, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, Post, Put, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -16,8 +16,10 @@ export class UsersController{
 
 	@UseGuards(AuthGuard('jwt'))
 	@Get('profile')
-	async getProfile(@Req() request: any) {
-		return await this.usersService.fetchUserByNickname(request.user.nickname);
+	async getProfile(@Query('nickname') nickname: string, @Req() request: any) {
+		if (!nickname)
+			return await this.usersService.fetchUserByNickname(request.user.nickname);
+		return await this.usersService.fetchUserByNickname(nickname);
 	}
 
 	// this endpoint is to be called when want to change the user avatar
