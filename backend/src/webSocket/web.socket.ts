@@ -1,6 +1,5 @@
 import { UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { IoAdapter } from "@nestjs/platform-socket.io";
 import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { randomUUID } from "crypto";
 import { Server, Socket } from 'socket.io'
@@ -225,7 +224,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		this.gameQueue.push({socket, nickname: user.nickname});
 		if (this.gameQueue.length < 2)
 			return ;
-		if ((this.connectedUsers[1].nickname !== undefined && this.connectedUsers[0].nickname) &&  this.connectedUsers[0].nickname === this.connectedUsers[1].nickname)
+		if ((this.connectedUsers[1] !== undefined && this.connectedUsers[0].nickname) &&  this.connectedUsers[0].nickname === this.connectedUsers[1].nickname)
 		{
 			this.connectedUsers.splice(0, 1);
 			return ;
@@ -258,7 +257,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			room.ballDynamics.speed += 0.2;
 		}
 		const newY = emiter.canvas.height - data.y - (emiter.canvas.height / 4);
-		this.server.to(receiver.socket.id).emit("playerMov", {x: data.x, y: newY * (emiter.canvas.height / receiver.canvas.height)});
+		this.server.to(receiver.socket.id).emit("playerMov", {x: data.x, y: newY * receiver.canvas.height / emiter.canvas.height});
 	}
 
 	@SubscribeMessage('startGame')
@@ -273,30 +272,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		if (room && this.checkPlayerOrder(socket, room) === 2) {
 			room.player2.setCanvasDim(data.h, data.w);
 		}
-		console.log(room.player1.canvas.width, room.player1.canvas.height,
-			room.player2.canvas.width, room.player2.canvas.height);
 			this.startGame(room);
-	}
-
-	@SubscribeMessage('canva_cord')
-	// setStyles(@MessageBody() data: {w: number, h:number})
-	canva(socket: Socket, data: {w:number, h:number})
-	{
-		// const room = this.findRoomBySocket(socket);
-		// room.p1_Cw = data.w;
-
-		// console.log(data.w, data.h, room.p1_Cw);
-
-
-		// if (room.socket1.id && socket.id === room.socket1.id) {
-			// this.width = data.w;
-			// this.height = data.h;
-		// }
-		// if ( socket.id === room.socket2.id)
-		// {
-		// 	this.width = data.w;
-		// 	this.height = data.h;
-		// }
 	}
 }
 

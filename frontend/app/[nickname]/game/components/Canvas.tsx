@@ -88,9 +88,14 @@ export default function Canvas() {
 		canvas.addEventListener("mousemove", getMousePos);
 
 		//change player Paddle According to Mouse Position
-		function getMousePos(evt: { clientY: number; }){
+		function getMousePos(evt: { clientY: number, clientX: number }){
 			let rect = canvas.getBoundingClientRect();
-			if (evt.clientY < rect.bottom - player.height)
+			if (canvas.width === 600 && canvas.height === 337) {
+				const posY = canvas.height - (evt.clientX - rect.left + 2); 
+				if (posY < canvas.height - player.height)
+					player.y = posY
+			}
+			else if (evt.clientY < rect.bottom - player.height)
 			{
 				
 				player.y = evt.clientY - rect.top + 2; 
@@ -114,7 +119,6 @@ export default function Canvas() {
             StartGame(canvas, ctx);
         });
 		socket.on("playerMov", data => {
-			console.log(data.y);
 			com.x = canvas.width - com.width;
 			com.y = data.y;
 		});
@@ -123,7 +127,7 @@ export default function Canvas() {
     return (
 		//w-[800px] h-[450px]
         <canvas id="pongy" className="bg-darken-300 mx-auto rounded-md
-		 max-sm:rotate-90 max-sm:w-[600px] max-sm:h-[337]
+		 max-sm:rotate-90 max-sm:w-[600px] max-sm:h-[337px]
 		 md:w-[800px] md:h-[450px]
 		 xl:w-[1000px] xl:h-[562px]
 		 "/>
