@@ -21,13 +21,15 @@ const Search = (props:any) => {
     }
     return (
         <>
-            <input
-                type='search'
-                placeholder="Search"
-                value={name}
-                className="text-white pl-10 pb-5 pt-4 w-[70%] border-b border-blue-gray-200 bg-transparent  text-sm text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-blue-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
-                onChange={filter} onBlur={() => {setShow(false)}}
-            />
+            <div className=' flex items-center justify-center w-[100%]'>
+                <img alt='search' src='/images/loupe.svg' width={20} height={20}/>
+                <input
+                    type='search'
+                    placeholder="Search"
+                    value={name}
+                    className="text-white pl-10 pb-5 pt-4 w-[70%] border-b border-blue-gray-200 bg-transparent  text-sm text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-blue-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
+                    onChange={filter} onBlur={() => {setShow(false)}}
+                />
             { show ?
                 <div className='bg-transparent absolute w-[70%] z-10 mx-[15%] border-white h-70 overflow-scroll '>
                     {foundUsers && foundUsers.length > 0 ? (
@@ -42,6 +44,7 @@ const Search = (props:any) => {
                     )}
                 </div>
             : ''}
+            </div>
         </>
     )
 }

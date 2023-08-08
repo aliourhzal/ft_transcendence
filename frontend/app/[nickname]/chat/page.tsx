@@ -10,11 +10,13 @@ import { getCookie, userDataContext } from "../layout";
 import ConvList from "./components/ConvList";
 import JoinRoomForm from "./components/joinRoom";
 import { SocketAddress } from "net";
+import ButtomButtons from "./components/ButtomButtons";
+import SearchDm from "./components/SearchDm";
 
 export interface conversation {
 	readonly name: string,
 	readonly photo: string,
-	readonly last_msg: string, 
+	readonly lastmsg: string, 
 	readonly id: number,
 }
 
@@ -50,10 +52,7 @@ const socket = io('ws://127.0.0.1:3004',{
 
 export default function Chat() {
 
-
 	const userData = useContext(userDataContext);
-    
-	const [convs, setConvs] = useState<conversation[]>([])
 
 	const [msg_sent, set_msg_sent] = useState<1 | 2 | undefined>(undefined)
 	const [room_created, set_room_created] = useState(false)
@@ -69,44 +68,24 @@ export default function Chat() {
 
 	const [activeUserConv, setActiveUserConv] = useState<conversation | undefined>(undefined)
 
+	const [showSearchUsersForm, setShowSearchUsersForm] = useState(false)
+
 	return (
 		<main className='select-none h-full w-full'>
-			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, convs, setConvs, socket,
+			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, socket,
 				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm, msg_sent, set_msg_sent,
-				set_room_created, room_created, rooms, setRooms}}>
-				<RoomForm />
-				<JoinRoomForm />
+				set_room_created, room_created, rooms, setRooms, showSearchUsersForm, setShowSearchUsersForm}}>
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200">
 					<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">
-						<div className=' flex items-center justify-center w-[100%]'>
-							<Image  alt='search' src='/images/loupe.svg' width={20} height={20}/>
-							<Search users={convs} />
-						</div>
-
 						<ConvList />
-
-						<div className='flex justify-between items-center w-[50%] h-[8%]'>
-							<div className='cursor-pointer border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center' onClick={ () => {
-									setShowForm(true);
-								}}>
-								<Image className='w-auto h-auto' alt='CreateChannel' title='CreateChannel' src='/images/channel.svg'  width={30} height={30}/>
-							</div>
-							<div className='cursor-pointer border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center' onClick={ () => {
-									setShowJoinForm(true)
-								}}>
-								<Image title='JoinChannel' className='w-auto h-auto' alt='JoinChannel' src='/images/channel.svg' width={30} height={30}/>
-							</div>
-							<div className='border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center'>
-								<Image className='w-auto h-auto' alt='new channel' src='/images/groupe.svg' width={25} height={25}/>
-							</div>
-						</div>
+						<ButtomButtons />
 					</div>
 					<Conversation />
 				</div>
+				<RoomForm />
+				<JoinRoomForm />
+				<SearchDm />
 		</Context.Provider>
 		</main>
 	)
 }
-
-
-

@@ -170,26 +170,24 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 if(!find)
                 {
                     const roomType = await this.utils.getRoomById(roomId.id);
-                    
+                    const usersInroom = await this.utils.getUsersInRooms(roomId.id);                    
                     if(roomType.roomType === 'PROTECTED')
                     {
                         if(comparePasswd(dto.password,roomType.password) )
                         {
                             await this.roomService.linkBetweenUsersAndRooms(roomId.id, user['sub']);
-                            
-                            const usersInroom = await this.utils.getUsersInRooms(roomId.id);
                         
-                            const joinnedUser = {currentUser , userType: await this.utils.getUserType(roomId.id, user['sub']) };
+                        const usersInroom = await this.utils.getUsersInRooms(roomId.id);
+                            
                             for(const userInRoom of usersInroom)
                             {
                                 for (let i = 0; i < this.soketsId.length; i++) 
                                 {
                                     if(this.soketsId[i].userId === userInRoom.userId)
                                     {
-                                        this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId ,  userInfos : joinnedUser});
-                                    }
+                                        this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id) , newUserAdded : usersInroom[usersInroom.length - 1] });                                    }
                                 }
-                                
+
                             }
                             return ;
                         }
@@ -202,20 +200,22 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                     else if(roomType.roomType === 'PUBLIC')
                     {
                         await this.roomService.linkBetweenUsersAndRooms(roomId.id, user['sub']);
+                        
                         const usersInroom = await this.utils.getUsersInRooms(roomId.id);
                         
-                        const joinnedUser = {currentUser , userType: await this.utils.getUserType(roomId.id, user['sub']) };
                         
+                        // this.server.to(dto.socketId).emit('current-user-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id)});
+
                         for(const userInRoom of usersInroom)
                         {
                             for (let i = 0; i < this.soketsId.length; i++) 
                             {
                                 if(this.soketsId[i].userId === userInRoom.userId)
                                 {
-                                    this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId , userInfos : joinnedUser });
+                                    this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id) , newUserAdded : usersInroom[usersInroom.length - 1] });
                                 }
                             }
-                            
+  
                         } 
                         return ;
                     } 
@@ -238,9 +238,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         } 
         catch (error : any) 
         {
-            console.log('here')
             // this.socketOfcurrentUser.emit('error-joinned-room',error);
-            this.OnWebSocektError(this.socketOfcurrentUser);
+            // this.OnWebSocektError(this.socketOfcurrentUser);
         }
     }
 
@@ -248,7 +247,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
     OnWebSocektError(socket:Socket)
     { 
-        socket.emit("error", new UnauthorizedException());
+        // socket.emit("error", new UnauthorizedException());
         socket.disconnect();
     }
 

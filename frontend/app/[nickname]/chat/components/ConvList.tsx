@@ -1,7 +1,8 @@
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Context, conversation, gimmeRandom } from "../page"
 import ConvBox from "./ConvBox"
 import { userInfo } from "os"
+import Search from "./search"
 // import { useContext } from "react"
 // import { Context } from "../page"
 
@@ -34,14 +35,18 @@ const getUsersInfo = (users) => {
 }
 
 const ConvList = () => {
-    const {socket, convs, setConvs, room_created, set_room_created, rooms, setRooms, userData} = useContext(Context)
+    const {socket, room_created, set_room_created, rooms, setRooms, userData} = useContext(Context)
+
+    const [convs, setConvs] = useState<conversation[]>([])
+
+    const [updateList, setUpdateList] = useState(false)
 
     const fillUserList = (listOfRoomsOfUser) => {
       setConvs([])
       listOfRoomsOfUser.messages.map( (room: any) => {
         rooms.unshift({
           name: room.room.room.room_name,
-          last_msg:'welcome to group chat',
+          lastmsg:'welcome to group chat',
           msgs: room.msg,
           id: room.room.room.id,
           users: getUsersInfo(room.usersInRoom),
@@ -56,29 +61,50 @@ const ConvList = () => {
     socket?.on('list-rooms',fillUserList)
 
     const AddUserToRoom = (res) => {
-      // if (res.userInfos.currentUser.nickname === userData.nickname) {
-      //   rooms.unshift({
-      //     name: res.roomId.room_name,
-      //     last_msg:'welcome to group chat',
-      //     msgs: [],
-      //     id: res.roomId.id,
-      //     users: getUsersInfo(room.usersInRoom),
-      //     type: res.roomId.roomType
-      //   })
-      // }
-      // console.log("**", res, "**")
-      console.log("**", res.roomId, "**")
-      console.log("**", res.userInfos.currentUser, "**")
-      console.log("**", res.userInfos.userType, "**")
+      const newuser = res.userInfos.find(o => o.userId === res.newUserAdded.userId)
+      console.log(newuser)
+      if (newuser.user.nickname === userData.nickname) {
+        console.log("**", "LMAOAAAAOAOAOOAOOAOA", "**")
+        rooms.unshift({
+        msgs: [],
+        id: res.roomId.id,
+        name: res.roomId.room_name,
+        type: res.roomId.roomType,
+        lastmsg:'welcome to group chat',
+        users: getUsersInfo(res.userInfos),
+        })
+      } else {
+        rooms.find(o => o.name === res.roomId.room_name).users.push(
+        {
+          id: newuser.user.id,
+          nickName: newuser.user.nickname,
+          firstName: newuser.user.firstName,
+          lastName: newuser.user.lastName,
+          photo: newuser.user.profilePic,
+          type: newuser.userType,
+          isBanned: newuser.isBanned,
+        }
+        )
+      }
+      // setRooms(rooms.filter(o => o.name != res.roomId.room_name))
+      set_room_created(old => !old)
+      setUpdateList(old => !old)
+      console.log(rooms)
+      // console.log("**", res.roomId, "**")
+      // console.log("**", res.userInfos.currentUser, "**")
+      // console.log("**", res.userInfos.userType, "**")
       // console.log("**", res.userInfos[res.userInfo.length()], "**")
-    }
-
-    socket.on('users-join', AddUserToRoom)
+      }
+    
+      socket.on('users-join', AddUserToRoom)
 
     return (
-      <div className='group left-[10%] flex-col bg-transparent w-full h-[80%] bg-slate-500 mt-8 overflow-hidden overflow-y-scroll'>
-          {convs.map ((item:conversation) =>  (<ConvBox key={gimmeRandom()} data={item} />))}
-      </div>
+      <>
+        <Search users={convs} />
+        <div className='group left-[10%] flex-col bg-transparent w-full h-[80%] bg-slate-500 mt-8 overflow-hidden overflow-y-scroll'>
+            {convs.map ((item:conversation) =>  (<ConvBox key={gimmeRandom()} data={item} />))}
+        </div>
+      </>
     )
   }
 

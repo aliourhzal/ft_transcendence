@@ -56,7 +56,7 @@ const JoinRoomForm = () => {
         //         res => {
         //             rooms.unshift({
         //                 name: res.data.room.room_name,
-        //                 last_msg:'welcome to group chat',
+        //                 lastmsg:'welcome to group chat',
         //                 msgs: [],
         //                 id: res.data.room.id,
         //                 users: getUsersInfo(res.data.usersInfos),
