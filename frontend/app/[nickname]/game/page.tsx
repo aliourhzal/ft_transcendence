@@ -3,10 +3,26 @@ import { useRef, useState } from "react"
 import './utils/style.css'
 import Game from "./Game";
 import dynamic from "next/dynamic";
+import Lottie from 'react-lottie';
+import * as pongLoading from "./utils/pongLoading.json";
+
+const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: pongLoading,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice"
+    }
+  };
 
 const LazyGame = dynamic(() => import('./Game'), {
 	ssr: false,
-	loading: () => <p className="text-whiteSmoke font-mono font-semibold">Game is Loading ...</p>
+	loading: () => 
+    <Lottie 
+        options={defaultOptions}
+        width={400}
+        height={400}
+    />
 });
 
 export default function GameLogin()
