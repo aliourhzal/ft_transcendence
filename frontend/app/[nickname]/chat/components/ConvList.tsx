@@ -96,7 +96,9 @@ const ConvList = () => {
       // console.log("**", res.userInfos[res.userInfo.length()], "**")
       }
     
-      socket.on('users-join', AddUserToRoom)
+      useEffect(() => {
+        socket.on('users-join', AddUserToRoom)
+      }, [])
 
     return (
       <>
