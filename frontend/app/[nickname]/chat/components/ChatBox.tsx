@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import user, { Context, gimmeRandom } from '../page'
 import { Socket } from 'socket.io-client'
 import SelfChatBox from './selfChatBox'
@@ -6,7 +6,7 @@ import OthersChatBox from './othersChatBox'
 
 const ChatBox = () => {
   
-  const {socket, chatBoxMessages, setChatBoxMessages, userData, msg_sent, rooms, setRooms, activeUserConv} = useContext(Context)
+  const {scrollToBottom, ref, socket, chatBoxMessages, setChatBoxMessages, userData, msg_sent, rooms, setRooms, activeUserConv} = useContext(Context)
   
   const currentRoom = rooms.find(o => o.name === activeUserConv.name)
 
@@ -29,18 +29,17 @@ const ChatBox = () => {
     // }
 	},[msg_sent, chatBoxMessages])
 
-    let temp = document.getElementById('chatbox')
-    useEffect ( () => {
-      if (temp)
-        temp.scrollTop = temp.scrollHeight
-    }, [chatBoxMessages, temp])
-  
+  // let temp = document.getElementById('chatbox')
+  useEffect ( () => {
+    scrollToBottom();
+  }, [])
+
   return (
-    <div className='z-0'>
-      {chatBoxMessages.map ((BoxMessage, i) => 
-        (BoxMessage.user == userData.nickname ? <SelfChatBox msg={BoxMessage.msg} user={currentRoom.users.find(o => o.nickName === BoxMessage.user)} key={gimmeRandom()}/>
+      <div ref={ref} className='z-0'>
+        {chatBoxMessages.map ((BoxMessage, i) => 
+          (BoxMessage.user == userData.nickname ? <SelfChatBox msg={BoxMessage.msg} user={currentRoom.users.find(o => o.nickName === BoxMessage.user)} key={gimmeRandom()}/>
           : <OthersChatBox msg={BoxMessage.msg} user={currentRoom.users.find(o => o.nickName === BoxMessage.user)} key={gimmeRandom()}/>))}
-    </div>
+      </div>
   )
 }
 

@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { Context } from '../page'
 import ChatBox from './ChatBox'
 import RoomInfo from './roomInfo'
+import AlertMsgDown from './AlertMsgDown'
 
 const Conversation = () => {
 
@@ -53,6 +54,7 @@ const Conversation = () => {
                     <RoomInfo room={rooms.find(o => o.name === activeUserConv.name)} setShow={setShowInfo} show={showInfo} userData={userData} />
                     {/* <Image className=' object-contain' alt='bg' src='/assets/images/conv_bg.gif' width={500} height={500}/> */}
                 </div>
+                <AlertMsgDown />
 
                 <div className='h-[8%] w-[90%] flex items-center justify-center'>
 					<div className='w-full h-[70%] rounded-[100px] bg-zinc-800 flex items-center justify-between'>

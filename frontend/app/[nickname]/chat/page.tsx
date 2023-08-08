@@ -2,7 +2,7 @@
 
 import { Socket,io } from "socket.io-client";
 import Image from 'next/image'
-import { useEffect, useState, createContext, useContext } from 'react';
+import { useEffect, useState, createContext, useContext, useRef } from 'react';
 import Conversation from './components/conversation';
 import RoomForm from './components/createRoom';
 import Search from './components/search';
@@ -52,6 +52,8 @@ const socket = io('ws://127.0.0.1:3004',{
 
 export default function Chat() {
 
+	const ref = useRef(null);
+
 	const userData = useContext(userDataContext);
 
 	const [msg_sent, set_msg_sent] = useState<1 | 2 | undefined>(undefined)
@@ -70,11 +72,16 @@ export default function Chat() {
 
 	const [showSearchUsersForm, setShowSearchUsersForm] = useState(false)
 
+	const scrollToBottom = () => {
+        const lastChildElement = ref.current?.lastElementChild;
+        lastChildElement?.scrollIntoView({ behavior: 'smooth' });
+    };
+
 	return (
 		<main className='select-none h-full w-full'>
-			<Context.Provider value={{showConv, setShowConv, activeUserConv, setActiveUserConv, socket,
+			<Context.Provider value={{ref, showConv, setShowConv, activeUserConv, setActiveUserConv, socket,
 				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm, msg_sent, set_msg_sent,
-				set_room_created, room_created, rooms, setRooms, showSearchUsersForm, setShowSearchUsersForm}}>
+				set_room_created, room_created, rooms, setRooms, showSearchUsersForm, setShowSearchUsersForm, scrollToBottom}}>
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200">
 					<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">
 						<ConvList />

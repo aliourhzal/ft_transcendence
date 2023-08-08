@@ -13,7 +13,7 @@ interface ConvBoxProps {
 
 const ConvBox: React.FC<ConvBoxProps> = (data) => {
 
-  const {activeUserConv, showConv, setShowConv, setActiveUserConv, socket, setChatBoxMessages, rooms} = useContext(Context)
+  const {scrollToBottom, ref, activeUserConv, showConv, setShowConv, setActiveUserConv, socket, setChatBoxMessages, rooms} = useContext(Context)
 
   const handleClick = async () => {
     setShowConv(true)
@@ -27,7 +27,6 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
     } catch(error) {
         alert(error)
     }
-    
     // const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
 }
 
@@ -42,10 +41,12 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
       }
     }
   }
+
   return (
     <div className="z-0 bg-zinc-800 w-[70%] left-[15%] h-[100px] relative my-3 rounded-md active:bg-blue-500" onClick={(e) => {
         handleClick();
         activeDiv(e.currentTarget);
+        scrollToBottom()
       }}>
         <div className="left-[30%] top-[25%] absolute text-gray-200 font-medium">{data.data.name}</div>
         <Avatar pointer zoomed text={data.data.name} bordered color={"gradient"} alt={data.data.name} className="w-auto h-auto left-[6%] top-[30%] absolute"
