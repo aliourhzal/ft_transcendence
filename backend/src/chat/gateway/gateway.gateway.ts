@@ -43,7 +43,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             else
             { 
                 // make this for entring chat in routes
-                console.log("connected")
+                // console.log("connected")
                  
                 this.user =  userInfos;
 
@@ -149,14 +149,14 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     OnWebSocektError(socket:Socket)
     { 
         
-        console.log("disconnected")
+        // console.log("disconnected")
         socket.emit("error", new UnauthorizedException());
         socket.disconnect();
     }
 
 
     async handleDisconnect(socket: Socket) {
-        console.log("disconnected");
+        // console.log("disconnected");
         await this.connectedUsersService.deleteSocketId(socket.id);
         this.OnWebSocektError(socket);
     }

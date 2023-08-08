@@ -31,7 +31,7 @@ export default function Game()
 	return (
 		<section className="flex w-full h-full items-center bg-darken-200">
 			<div className="flex flex-col items-center w-full gap-5">
-				<div className="w-full flex justify-center gap-96">
+				{/* <div className="w-full flex justify-center gap-96">
 					<div className="flex items-center gap-x-5">
 						<img className="w-16 h-16" src="../images/man.png" alt="man_hhhh" />
 						<h2 className=" text-whiteSmoke">Ayoub</h2>
@@ -40,7 +40,7 @@ export default function Game()
 						<h2 className="text-whiteSmoke">Ayoub</h2>
 						<img className="w-16 h-16" src="../images/man.png" alt="man_hhhh" />
 					</div>
-				</div>
+				</div> */}
 				<Canvas />
 			</div>
 			{/* <Navbar/ > */}

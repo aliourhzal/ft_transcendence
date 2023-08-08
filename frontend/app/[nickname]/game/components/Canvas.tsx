@@ -42,12 +42,12 @@ export default function Canvas() {
 			return player.left < ball.right && player.top < ball.bottom && player.right > ball.left && player.bottom > ball.top;
 		}
 		//clear canvas
-		drawRect(0, 0, canvas.width, canvas.height, "#353D49");
+		drawRect(0, 0, canvas.offsetWidth, canvas.offsetHeight, "#353D49");
 		
 		//draw player Paddle
 		drawRect(player.x, player.y, player.width, player.height, player.color);
 		//draw the oposite Paddle
-		drawRect(canvas.width - com.width, com.y , com.width, com.height, com.color);
+		drawRect(canvas.offsetWidth - com.width, com.y , com.width, com.height, com.color);
 
 		//draw the ball
 		drawArc(ball.x, ball.y, ball.radius, ball.color);
@@ -77,7 +77,8 @@ export default function Canvas() {
     useEffect(() => {
 		const canvas = document.getElementById('pongy') as HTMLCanvasElement;
 		const ctx = canvas.getContext('2d');
-
+		canvas.width = canvas.offsetWidth;
+		canvas.height = canvas.offsetHeight;
 		// listening to the mouse
 		canvas.addEventListener("mousemove", getMousePos);
 
@@ -92,6 +93,14 @@ export default function Canvas() {
 			else
 				return ;
 		}
+		socket.emit("style", {w:canvas.width, h:canvas.height});
+		// socket.on("sendMe_canva_p2", ()=>{
+		// 	socket.emit("style", {w:canvas.width, h:canvas.height});
+		// })
+		// socket.on("sendMe_canva", ()=>{
+		// 	socket.emit("canva_cord", {w:canvas.width, h:canvas.height});
+		// })
+
         socket.on('game_Data', data => {
             ball.x = data.x;
 			ball.y = data.y;
@@ -104,6 +113,17 @@ export default function Canvas() {
     }, [])
 
     return (
-        <canvas id="pongy" className="bg-darken-300 mx-auto rounded-md " width="800px" height="450px"/>
+		//w-[800px] h-[450px]
+        <canvas id="pongy" className="bg-darken-300 mx-auto rounded-md
+		 max-sm:rotate-90 max-sm:w-[600px] max-sm:h-[337]
+		 md:w-[800px] md:h-[450px]
+		 xl:w-[1000px] xl:h-[562px]
+		 "/>
     );
 }
+
+/**
+ * md	xl		sm
+ * 800	1000	600
+ * 450	562		337
+ */

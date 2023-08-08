@@ -24,6 +24,8 @@ type coords = {
 }
 
 type roomT = {
+	p1_Cw : number,
+	p2_Cw: number,
 	roomId: string,
 	socket1: Socket,
 	socket2: Socket,
@@ -54,6 +56,8 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 
 	private connectedUsers: userNode[] = [];
 	private gameQueue: userNode[] = [];
+	private width = 800;
+	private height = 450;
 
 	private rooms : roomT[] = [];
 	// private findPlayerinRoom()
@@ -77,22 +81,23 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	}
 
 	update(ball_p1: coords, ball_p2: coords, ballDynamics: Ball, player1: Socket, player2: Socket) {
-		if (ball_p1.x - ballDynamics.radius < -20 || ball_p1.x + ballDynamics.radius > 820) {
+		const room = this.findBySocket(player1);
+		if (ball_p1.x - ballDynamics.radius < -20 || ball_p1.x + ballDynamics.radius > this.width + 20) {
 			ballDynamics.resetForNewGame();
-			ball_p1.x = ball_p2.x = 400;
-			ball_p1.y = ball_p2.y = 225;
+			ball_p1.x = ball_p2.x = this.width / 2;
+			ball_p1.y = ball_p2.y = this.height / 2;
 		}
 		ball_p1.x += ballDynamics.velocityX;
 		ball_p1.y += ballDynamics.velocityY;
 		ball_p2.x -= ballDynamics.velocityX;
 		ball_p2.y -= ballDynamics.velocityY;
-		if(ball_p1.y - ballDynamics.radius < 0 || ball_p1.y + ballDynamics.radius > 450) {
+		if(ball_p1.y - ballDynamics.radius < 0 || ball_p1.y + ballDynamics.radius > this.height) {
 			if (ball_p1.y - ballDynamics.radius < 0) {
 				ball_p1.y = ballDynamics.radius + 1;
-				ball_p2.y = 450 - ballDynamics.radius + 1;
+				ball_p2.y = this.height - ballDynamics.radius + 1;
 			}
 			else {
-				ball_p1.y = 450 - ballDynamics.radius + 1;
+				ball_p1.y = this.height - ballDynamics.radius + 1;
 				ball_p2.y = ballDynamics.radius + 1;
 			}
 			ballDynamics.velocityY = -ballDynamics.velocityY;
@@ -101,9 +106,10 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			x: ball_p1.x,
 			y: ball_p1.y
 		})
+		// console.log(room.p1_Cw, room.p2_Cw);
 		this.server.to(player2.id).emit('game_Data', {
-			x: ball_p2.x,
-			y: ball_p2.y
+			x: ball_p2.x * (room.p2_Cw / room.p1_Cw),
+			y: ball_p2.y * (room.p2_Cw / room.p1_Cw),
 		})
 	}
 
@@ -116,6 +122,10 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 				sock = x.socket1;
 		});
 		return sock;
+	}
+	findBySocket(socket: Socket)
+	{
+		return this.rooms.find(x => x.socket1.id === socket.id || x.socket2.id === socket.id);
 	}
 
 
@@ -133,14 +143,16 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	async createGameRoom() {
 		const roomId = randomUUID();
 		const ballDynamics = new Ball()
-		const ball_p1: coords = {x: 400, y: 225};
-		const ball_p2: coords = {x: 400, y: 225};
-		const player1 = this.gameQueue[0].socket;
-		const player2 = this.gameQueue[1].socket;
+		const ball_p1: coords = {x: this.width / 2, y: this.height / 2};
+		const ball_p2: coords = {x: this.width / 2, y: this.height / 2};
+		const player1 = this.gameQueue[0].socket;//ask fot his canva width
+		const player2 = this.gameQueue[1].socket;//ask fot his canva width
 		player1.join(roomId);
 		player2.join(roomId);
 
 		const obj:roomT = {
+			p1_Cw: 800,
+			p2_Cw: 1000,
 			roomId,
 			socket1: player1,
 			socket2: player2,
@@ -149,7 +161,6 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			ballDynamics
 		};
 		this.rooms.push(obj);
-
 		this.gameQueue.splice(0, 2);
 		this.startGame(ball_p1, ball_p2, ballDynamics, player1, player2);
 	}
@@ -199,10 +210,51 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			room.ballDynamics.velocityY = room.ballDynamics.speed * Math.sin(data.collAngle);
 			room.ballDynamics.speed += 0.7;
 		}
-		const newY = 450 - data.y - 100;
-		this.server.to(this.findOpponentBySocket(socket).id).emit("playerMov", {x: data.x, y: newY});
+		const newY = this.height - data.y - 100;
+		this.server.to(this.findOpponentBySocket(socket).id).emit("playerMov", {x: data.x, y: newY * 562 / 450});
 	}
 
+	@SubscribeMessage('style')
+	// setStyles(@MessageBody() data: {w: number, h:number})
+	setStyles(socket: Socket, data: {w:number, h:number})
+	{
+		const room = this.findBySocket(socket);
+		// (room.socket1 === socket ? room.p1_Cw = data.w : room.p2_Cw = data.w)
+		if (room.socket1 === socket)
+			room.p1_Cw = data.w;
+		if (room.socket2 === socket)
+			room.p2_Cw = data.w;
+
+		
+		
+		if (room.socket1.id && socket.id === room.socket1.id) {
+			this.width = data.w;
+			this.height = data.h;
+		}
+		console.log(data.w, data.h, room.p1_Cw, room.p2_Cw);
+
+	}
+
+	@SubscribeMessage('canva_cord')
+	// setStyles(@MessageBody() data: {w: number, h:number})
+	canva(socket: Socket, data: {w:number, h:number})
+	{
+		// const room = this.findBySocket(socket);
+		// room.p1_Cw = data.w;
+
+		// console.log(data.w, data.h, room.p1_Cw);
+
+
+		// if (room.socket1.id && socket.id === room.socket1.id) {
+			this.width = data.w;
+			this.height = data.h;
+		// }
+		// if ( socket.id === room.socket2.id)
+		// {
+		// 	this.width = data.w;
+		// 	this.height = data.h;
+		// }
+	}
 }
 
 //socket.broadcast.emit("event", ...); 		: send a message to all but not your self
