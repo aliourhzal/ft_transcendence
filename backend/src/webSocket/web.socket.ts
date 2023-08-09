@@ -222,9 +222,9 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		}
 		this.connectedUsers.push({socket, nickname: user.nickname});
 		this.gameQueue.push({socket, nickname: user.nickname});
-		if (this.gameQueue.length < 2)
+		if (this.gameQueue.length < 2 || this.connectedUsers.length < 2)
 			return ;
-		if ((this.connectedUsers[1] !== undefined && this.connectedUsers[0].nickname) &&  this.connectedUsers[0].nickname === this.connectedUsers[1].nickname)
+		if (this.connectedUsers[0].nickname === this.connectedUsers[1].nickname)
 		{
 			this.connectedUsers.splice(0, 1);
 			return ;
