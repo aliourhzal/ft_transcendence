@@ -45,9 +45,9 @@ export interface Room {
 }
 
 const socket = io('ws://127.0.0.1:3004',{
-	auth: {
-		token: getCookie('access_token'),
-	},
+	extraHeaders: {
+        Authorization: `Bearer ${getCookie('access_token')}`,
+    },
 })
 
 export default function Chat() {

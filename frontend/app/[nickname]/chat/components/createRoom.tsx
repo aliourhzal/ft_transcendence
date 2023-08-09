@@ -5,6 +5,7 @@ import AddedUsersForm from "./addedUsersForm"
 import { METHODS } from "http"
 import { Socket } from "socket.io-client"
 import Popup from "./Popup"
+import { getCookie } from "../../layout"
 
 const RoomForm = () => {
      
@@ -61,22 +62,32 @@ const RoomForm = () => {
 
     const confirmForm = async () => {
         try {
-            await axios.post('http://127.0.0.1:3000/rooms', {roomName:roomName, users:users, auth: socket.auth['token'], type:roomType, password:pass},
-                                                            {withCredentials: true, headers: {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}}).then(
-                                                                res => {
-                                                                    // console.log(res)
-                                                                    rooms.unshift({
-                                                                        name: res.data.room.room_name,
-                                                                        lastmsg:'welcome to group chat',
-                                                                        msgs: [],
-                                                                        id: res.data.room.id,
-                                                                        users: getUsersInfo(res.data.userInfos),
-                                                                        type: res.data.room.roomType
-                                                                    })
-                                                                    // console.log(rooms)
-                                                                })
-                                                                set_room_created(old => !old)
-                                                                hideForm()
+            await axios.post('http://127.0.0.1:3000/rooms', {
+                roomName:roomName, 
+                users:users, 
+                type:roomType, 
+                password:pass
+            },
+            {
+                withCredentials: true,
+                headers: {
+                    'Authorization': `Bearer ${getCookie('access_token')}`,
+                        'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
+            }).then(
+                res => {
+                    // console.log(res)
+                    rooms.unshift({
+                        name: res.data.room.room_name,
+                        lastmsg:'welcome to group chat',
+                        msgs: [],
+                        id: res.data.room.id,
+                        users: getUsersInfo(res.data.userInfos),
+                        type: res.data.room.roomType
+                    })
+                    // console.log(rooms)
+                })
+                set_room_created(old => !old)
+                hideForm()
         } catch(error) {
             alert(error)
         }

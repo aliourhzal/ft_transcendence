@@ -13,6 +13,7 @@ import { UtilsService } from 'src/utils/utils.service';
 import { MessagesService } from '../messages/messages.service';
 import { JoinRoomDto } from 'src/dto/join-room.dto';
 import { comparePasswd } from 'src/utils/bcrypt';
+import { SendMessage } from 'src/dto/sendMessage.dto';
 
 @WebSocketGateway(3004)
 export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
@@ -41,208 +42,264 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     {
         try 
         {
-            // connect to socket with jwt
-            const decodeJWt =   this.jwtService.verify(socket.handshake.auth['token'],{ secret: process.env.JWT_SECRET })
-            
-            const userInfos = await this.utils.getUserId(decodeJWt['sub']);
-             
-            if(!userInfos) // handle this
+            const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+        
+            if (token) 
             {
-                this.OnWebSocektError(socket);
+                const decodedToken = await this.utils.verifyToken(token)
+              
+                if (decodedToken) 
+                {
 
-                console.log('user not found.')
-                return;
-            }
-
-             
-          
-            console.log("connected from chat.")
+                    this.socketOfcurrentUser = socket;
+                    console.log('connected from chat');
                 
-            this.soketsId.push({userId:userInfos.id, socketIds:socket.id})
-
-            const rooms = await this.utils.getRoomsForUser(userInfos.id); // all rooms who this user is member into it
-
-            let messages:any[] = [];
-
-            
-            for(let i = 0; i < rooms.length; i++)
-            {
-                messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i]['room']['room_name']) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId) })
-            }
-            
-
-            this.server.to(socket.id).emit("list-rooms",{messages});  //  evry client will connected will display the rooms who is member into it
-             
-        } 
-        catch (error) 
-        {
-            console.log("from chat error")
-            this.OnWebSocektError(socket);
-        }
-    }
-   
-    @SubscribeMessage('send-message') // on emit the message input get the message and the room name
-    async sendMessage(@MessageBody() infos: object) // use dto
-    {
-        // use try and catch here && search by id of user in db if found or not
-
-        try 
-        {
-            const user =   this.jwtService.verify(infos['user'],{ secret: process.env.JWT_SECRET });
-    
-            if(!await this.utils.getUserId(user['sub']))
-            {
-                console.log('user not found.')
-                return;
-            }
-            const roomId =  await this.utils.getRoomByName(infos['roomName']);
-            if(roomId)
-            {
-                const userType = await this.utils.getUserType(roomId.id,user['sub']);
-                if(userType.isBanned)
-                {
-                    console.log('you are banned from this room.')
-                    return ;
-                }
-                if(userType)
-                {
-                    const createdMsg = await this.messagesService.createMessages(infos['message'],user['sub'],roomId.id);
+                    const existingUser = await this.utils.getUserId([decodedToken['sub']]);
                     
-                    
-                    const usersInroom = await this.utils.getUsersInRooms(roomId.id);
-                     
-                    for(const userInRoom of usersInroom)
+                    if(existingUser.error)
                     {
-                        for (let i = 0; i < this.soketsId.length; i++) 
-                        {
-                            if(this.soketsId[i].userId === userInRoom.userId)
-                            {
-                                this.server.to(this.soketsId[i].socketIds).emit("add-message", {user: createdMsg.username, msg: createdMsg.msg , roomName: roomId.room_name})
-                            }
-                        }
+                        this.OnWebSocektError(socket);
 
+                        // emit existingUsers.error
+                        return ;
+                    }                
+                
+                    this.soketsId.push({userId:existingUser.existingUser[0], socketIds:socket.id})
+
+                    const rooms = await this.utils.getRoomsForUser(existingUser.existingUser[0]); // all rooms who this user is member into it
+        
+                    let messages:any[] = [];
+
+            
+                    for(let i = 0; i < rooms.length; i++)
+                    {
+                        messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i]['room']['room_name']) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId) })
                     }
-                     
-                }
-                else
-                {
-                    // emmit user is not in this room
-                }
+                    
 
+                    this.server.to(socket.id).emit("list-rooms",{messages});  //  evry client will connected will display the rooms who is member into it
+                    
+                }
             }
             else
             {
-                // emmit room not found
+                console.log('invalid jwt.');
+                this.OnWebSocektError(socket);
+
             }
             
         } 
         catch (error) 
         {
-            console.log(error)
+            console.log('from catch');
+            console.log(error)    
+            this.OnWebSocektError(socket);
+
         }
     }
    
-    @SubscribeMessage('join-room') 
-    @UsePipes(new ValidationPipe()) // Add the ValidationPipe here
-    async joinRoom(@MessageBody() dto:JoinRoomDto) 
-    { 
-
+    @SubscribeMessage('send-message') 
+    @UsePipes(new ValidationPipe())
+    async sendMessage(@MessageBody() dto: SendMessage) 
+    {
         try 
         {
-            const user = this.jwtService.verify(dto.user,{ secret: process.env.JWT_SECRET })
-
-            const currentUser = await this.utils.getUserId(user['sub']);
-
-            if(!currentUser)
+            const token = this.utils.verifyJwtFromHeader(this.socketOfcurrentUser.handshake.headers.authorization);
+            if (token) 
             {
-                this.socketOfcurrentUser.emit('users-join','user not found.')
-                return ;
-            }
-            
-            const roomId:any = await this.utils.getRoomByName(dto.roomName);
-
-            if(roomId)
-            {
-                const usersInRoom:any = await this.utils.getUsersInRooms(roomId.id);
-                
-                const find = usersInRoom.find((item:any) => item.userId === user['sub']);
-    
-                if(!find)
+                const decodedToken = await this.utils.verifyToken(token)
+              
+                if (decodedToken) 
                 {
-                    const roomType = await this.utils.getRoomById(roomId.id);
-                    const usersInroom = await this.utils.getUsersInRooms(roomId.id);                    
-                    if(roomType.roomType === 'PROTECTED')
+                    const existingUser = await this.utils.getUserId([decodedToken['sub']]);
+                    
+                    if(existingUser.error)
                     {
-                        if(comparePasswd(dto.password,roomType.password) )
+                        this.OnWebSocektError(this.socketOfcurrentUser);
+
+                        // emit existingUsers.error
+                        return ;
+                    }                
+                
+                    const roomId =  await this.utils.getRoomByName(dto.roomName);
+                    if(roomId)
+                    {
+                        const userType = await this.utils.getUserType(roomId.id, [decodedToken['sub']]);
+                        // if(userType.isBanned)
+                        // {
+                        //     console.log('you are banned from this room.')
+                        //     return ;
+                        // }
+                        if(userType)
                         {
-                            await this.roomService.linkBetweenUsersAndRooms(roomId.id, user['sub']);
-                        
-                        const usersInroom = await this.utils.getUsersInRooms(roomId.id);
+                            const createdMsg = await this.messagesService.createMessages(dto.message ,decodedToken['sub'], roomId.id);
                             
+                            
+                            const usersInroom = await this.utils.getUsersInRooms(roomId.id);
+                             
                             for(const userInRoom of usersInroom)
                             {
                                 for (let i = 0; i < this.soketsId.length; i++) 
                                 {
                                     if(this.soketsId[i].userId === userInRoom.userId)
                                     {
-                                        this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id) , newUserAdded : usersInroom[usersInroom.length - 1] });                                    }
+                                        this.server.to(this.soketsId[i].socketIds).emit("add-message", {user: createdMsg.username, msg: createdMsg.msg , roomName: roomId.room_name})
+                                    }
                                 }
-
+        
                             }
-                            return ;
+                             
                         }
                         else
                         {
-                            this.socketOfcurrentUser.emit('users-join',"password inccorect.")
-                            return ;
+                            // emmit user is not in this room
                         }
+        
                     }
-                    else if(roomType.roomType === 'PUBLIC')
+                    else
                     {
-                        await this.roomService.linkBetweenUsersAndRooms(roomId.id, user['sub']);
-                        
-                        const usersInroom = await this.utils.getUsersInRooms(roomId.id);
-                        
-                        
-                        // this.server.to(dto.socketId).emit('current-user-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id)});
-
-                        for(const userInRoom of usersInroom)
-                        {
-                            for (let i = 0; i < this.soketsId.length; i++) 
-                            {
-                                if(this.soketsId[i].userId === userInRoom.userId)
-                                {
-                                    this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id) , newUserAdded : usersInroom[usersInroom.length - 1] });
-                                }
-                            }
-  
-                        } 
-                        return ;
-                    } 
+                        // emmit room not found
+                    }
+                    
+                    
                 }
-                else 
-                {
-                    // this.socketOfcurrentUser.emit('error-joinned-room','user aleredy in this room.')
-                    this.OnWebSocektError(this.socketOfcurrentUser);
-                }
-
             }
             else
             {
-                // this.socketOfcurrentUser.emit('error-joinned-room','room not found.')
+                console.log('invalid jwt.');
                 this.OnWebSocektError(this.socketOfcurrentUser);
 
-                return ;
             }
             
         } 
-        catch (error : any) 
+        catch (error) 
         {
-            // this.socketOfcurrentUser.emit('error-joinned-room',error);
-            // this.OnWebSocektError(this.socketOfcurrentUser);
+            this.OnWebSocektError(this.socketOfcurrentUser);
+            console.log(error.error)
         }
     }
 
+
+    @SubscribeMessage('join-room') 
+    @UsePipes(new ValidationPipe()) // Add the ValidationPipe here
+    async joinRoom(@MessageBody() dto:JoinRoomDto) 
+    {
+        try 
+        {
+            const token = this.utils.verifyJwtFromHeader(this.socketOfcurrentUser.handshake.headers.authorization);
+            if (token) 
+            {
+                const decodedToken = await this.utils.verifyToken(token)
+              
+                if (decodedToken) 
+                {
+                    const existingUser = await this.utils.getUserId([decodedToken['sub']]);
+                    
+                    if(existingUser.error)
+                    {
+                        this.OnWebSocektError(this.socketOfcurrentUser);
+
+                        // emit existingUsers.error
+                        return ;
+                    }                
+                
+                    const roomId =  await this.utils.getRoomByName(dto.roomName);
+
+                    if(roomId)
+                    {
+
+                        if(roomId.roomType !== 'PRIVATE')
+                        {
+                            const usersInRoom:any = await this.utils.getUsersInRooms(roomId.id);
+                    
+                            const find = usersInRoom.find((item:any) => item.userId === decodedToken['sub']);
+                            if(!find)
+                            {
+                                const roomType = await this.utils.getRoomById(roomId.id);
+                                const usersInroom = await this.utils.getUsersInRooms(roomId.id);                    
+                                if(roomType.roomType === 'PROTECTED')
+                                {
+                                    if(comparePasswd(dto.password,roomType.password) )
+                                    {
+                                        await this.roomService.linkBetweenUsersAndRooms(roomId.id, [decodedToken['sub']]);
+                                    
+                                    const usersInroom = await this.utils.getUsersInRooms(roomId.id);
+                                        
+                                        for(const userInRoom of usersInroom)
+                                        {
+                                            for (let i = 0; i < this.soketsId.length; i++) 
+                                            {
+                                                if(this.soketsId[i].userId === userInRoom.userId)
+                                                {
+                                                    this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id) , newUserAdded : usersInroom[usersInroom.length - 1] });                                    }
+                                            }
+     
+                                        }
+                                        return ;
+                                    }
+                                    else
+                                    {
+                                        console.log("password inccorect.")
+                                        // this.socketOfcurrentUser.emit('users-join',"password inccorect.")
+                                        return ;
+                                    }
+                                }
+                                else if(roomType.roomType === 'PUBLIC')
+                                {
+                                    await this.roomService.linkBetweenUsersAndRooms(roomId.id, [decodedToken['sub']]);
+                                    
+                                    const usersInroom = await this.utils.getUsersInRooms(roomId.id);
+                                    
+                                    
+                                    // this.server.to(dto.socketId).emit('current-user-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id)});
+    
+                                    for(const userInRoom of usersInroom)
+                                    {
+                                        for (let i = 0; i < this.soketsId.length; i++) 
+                                        {
+                                            if(this.soketsId[i].userId === userInRoom.userId)
+                                            {
+                                                this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id) , newUserAdded : usersInroom[usersInroom.length - 1] });
+                                            }
+                                        }
+            
+                                    } 
+                                    return ;
+                                } 
+                            }
+                            else 
+                            {
+                                console.log('user aleredy in this room.')
+                                // this.socketOfcurrentUser.emit('error-joinned-room','user aleredy in this room.')
+                                this.OnWebSocektError(this.socketOfcurrentUser);
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        console.log('room not found')
+                        // emmit room not found
+                    }
+                    
+                    
+                }
+            }
+            else
+            {
+                console.log('invalid jwt.');
+                this.OnWebSocektError(this.socketOfcurrentUser);
+
+            }
+            
+        } 
+        catch (error) 
+        {
+            this.OnWebSocektError(this.socketOfcurrentUser);
+            console.log(error.error)
+        }
+        
+    }
 
 
     OnWebSocektError(socket:Socket)

@@ -10,14 +10,11 @@ export class SetOtherAasAdministrators
     @IsNotEmpty()
     @IsString()
     roomName:string;
-
-    @ArrayNotEmpty()
-    @IsString({ each: true })
-    users:string[];
+ 
 
     
     @IsNotEmpty()
     @IsString()
-    auth:string;
+    newAdminId:string;
 
 }

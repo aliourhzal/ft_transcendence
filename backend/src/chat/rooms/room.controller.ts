@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { RoomsService } from './rooms.service';
@@ -12,6 +12,8 @@ import { RoomType } from 'src/utils/userData.interface';
 import { createRoom } from 'src/dto';
 import { comparePasswd, encodePasswd } from 'src/utils/bcrypt';
 import { SetOtherAasAdministrators } from 'src/dto/setOtherAasAdministrators.dto';
+import { SelectRoom } from 'src/dto/select-room.dto';
+import { BanUser } from 'src/dto/banUser.dto';
 
 /**
  *  in try and catch if any function return null will catch as error
@@ -31,167 +33,264 @@ export class RoomController {
         ) {}
 
     @Post()
-    async createRoom(@Body() dto:createRoom, @Res() res:any) // when work with erroe in dto by default return object response error
+    async createRoom(@Req() request: Request , @Body() dto:createRoom, @Res() res:any)
     { 
-        // conflict between private and public
         try 
         {
-            const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET }) // who send the request
-            
-            if(!await this.utils.getUserId(user['sub'])) // search for it in db
-            {
-                return res.status(404).send('user not found.')
-            }
+            const token = this.utils.verifyJwtFromHeader(request.headers['authorization']);
 
-            const usersIds = await this.utils.getUsersId(user['sub'],dto.users, 1) // return the users id of the users want to add to chat room
-            
-            if(usersIds === 0)
+            if (token) 
             {
-                return res.status(406).send("this current user is aleredy in this room.")// to avoid enter one user and can the current user
-            }
-            if(usersIds) // if found the users id
-            { 
-                if (dto.type === RoomType.PRIVATE || dto.type === RoomType.PROTECTED || dto.type === RoomType.PUBLIC) 
+                const user = await this.utils.verifyToken(token)
+              
+                if (user) 
                 {
-                    if (dto.type === "PROTECTED") 
-                    {
-                        const room = await this.roomService.createRoom({roomName: dto.roomName, users: usersIds}, user['sub'], "PROTECTED", dto.password);
-    
-                        if(room === 1)
-                        {
-                            return res.status(406).send("room name aleredy exist.");
-                        }
-                        if(room === 0)
-                        {
-                            return res.status(406).send("should set password for this protected room.");
-                        }
+                    const usersId = (await this.utils.getUsersIdByNickname(user['sub'],dto.users , 1)); // get ids of users 
 
-                        res.status(200).send({room  , usersInRoom: await this.utils.getUsersInRooms(room['id']) , userInfos: await this.utils.getUserInfosInRoom(room['id'])});
-                        
+                    if(usersId.error)
+                        return res.status(404).send(usersId.error);
+
+                    const ifUserExist = await this.utils.getUserId([user['sub'] , ...usersId.uniqUsers]);
+                    
+                    if(ifUserExist.error)
+                        return res.status(404).send(ifUserExist.error);
+                    
+                    if (dto.type === RoomType.PRIVATE || dto.type === RoomType.PROTECTED || dto.type === RoomType.PUBLIC) 
+                    {
+                        if (dto.type === "PROTECTED") 
+                        {
+                            const room = await this.roomService.createRoom({roomName: dto.roomName, users: usersId.uniqUsers}, user['sub'], "PROTECTED", dto.password);
+        
+                            if(room === 1)
+                            {
+                                return res.status(406).send("room name aleredy exist.");
+                            }
+                            if(room === 0)
+                            {
+                                return res.status(406).send("should set password for this protected room.");
+                            }
+    
+                            res.status(200).send({room  , usersInRoom: await this.utils.getUsersInRooms(room['id']) , userInfos: await this.utils.getUserInfosInRoom(room['id'])});
+                            
+                        }
+                        else
+                        { 
+                            const room = await this.roomService.createRoom({roomName: dto.roomName, users: usersId.uniqUsers}, user['sub'], dto.type);
+        
+                            if(room === 1)
+                            {
+                                return res.status(406).send("room name aleredy exist.");
+                            }
+        
+                            res.status(200).send({room  , usersInRoom: await this.utils.getUsersInRooms(room['id']) , userInfos: await this.utils.getUserInfosInRoom(room['id'])});
+                        }
                     }
                     else
-                    { 
-                        const room = await this.roomService.createRoom({roomName: dto.roomName, users: usersIds}, user['sub'], dto.type);
-    
-                        if(room === 1)
-                        {
-                            return res.status(406).send("room name aleredy exist.");
-                        }
- 
-                        res.status(200).send({room  , usersInRoom: await this.utils.getUsersInRooms(room['id']) , userInfos: await this.utils.getUserInfosInRoom(room['id'])});
+                    {
+                        return res.status(406).send("error in type of room.")
                     }
+
                 }
-                else
-                {
-                    return res.status(406).send("error in type of room.")
-                }
-            }   
+            }
             else
             {
-                return res.status(404).send('one or multi users not found.')
+                return res.status(404).send('invalid jwt.')
             }
+            
+
         } 
         catch (error) 
         {
+            console.log('from createRoom()' )
+         
             return res.status(500).json({ error: error.message });
-        }
+        } 
     }
    
-    
     @Post('/select-room') // use here JoinRoomDto
-    async onJoinedRoom(@Body() dto:any, @Res() res:any) 
+    async onJoinedRoom(@Req() request: Request , @Body() dto:SelectRoom, @Res() res:any) 
     {
         try 
         {
-            const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET });
+            const token = this.utils.verifyJwtFromHeader(request.headers['authorization']);
 
-            if(!await this.utils.getUserId(user['sub']))
+            if (token) 
             {
-                return res.status(404).send('user not found.');
-            }
-            
-            const roomId = await this.utils.getRoomIdByName(dto.roomName);
-            
-            if (roomId) // if room is founding check if current user is member into it and it not banned
-            {
-                const isUserInRoom = await this.utils.getUserType(roomId,user['sub']);
-
-                if(!isUserInRoom)
+                const user = await this.utils.verifyToken(token)
+              
+                if (user) 
                 {
-                    return res.status(404).send('user is not in this room.');
-                }
+                    const ifUserExist = await this.utils.getUserId([user['sub']]);
+                    
+                    if(ifUserExist.error)
+                        return res.status(404).send(ifUserExist.error);
 
-                if(isUserInRoom.isBanned)
-                {
-                    return res.status(401).send('you are banned from this room.')
-                }
-                 
-                const messageAndUserName = await this.messagesService.getAllMessagesofRoom(dto.roomName);
+                        const roomId = await this.utils.getRoomIdByName(dto.roomName);
+                   
+                        
+                        if (roomId) // if room is founding check if current user is member into it and it not banned
+                        {
+                            const isUserInRoom = await this.utils.getUserType(roomId,[user['sub']]);
+
+                            if(isUserInRoom.error)
+                                return res.status(404).send(isUserInRoom.error);
+                        
+
+                            // if(isUserInRoom.isBanned)
+                            // {
+                            //     return res.status(401).send('you are banned from this room.')
+                            // }
                             
-                return res.status(200).send({ msg: messageAndUserName });
+                            const messageAndUserName = await this.messagesService.getAllMessagesofRoom(dto.roomName);
+
+                            return res.status(200).send({ msg: messageAndUserName });
+                        }
+                        else
+                        {
+                            return res.status(404).send('room not found.');
+                        }
+                }
             }
             else
             {
-                return res.status(404).send('room not found.');
+                return res.status(404).send('invalid jwt.')
             }
-        } 
-        catch (error) 
+     
+        }
+        catch(error)
         {
             return res.status(500).json({ error: error.message });
         }
     }
-
-     
-
-     @Post('/kick')
-    async kick(@Body() dto:any, @Res() res:any)
+    
+    // test admin ban user
+    // test admin ban owner
+    // test admin ban admin
+    // test user ban admin
+    // test user ban owner
+    // test user ban user
+    // 
+    @Post('/banFromRoom') 
+	async banFromRoom(@Req() request: Request , @Body() dto:BanUser, @Res() res:any)
     {
-        // validatin of the current user  
-        // validation of current room
-        // if current user is admin or owner
-        // if user who want to kick them is a user kick them 
-        // else cannot kick them
+        try 
+        {
+            const token = this.utils.verifyJwtFromHeader(request.headers['authorization']);
+
+            if (token) 
+            {
+                const user = await this.utils.verifyToken(token)
+              
+                if (user) 
+                {
+                    const existingUsers = await this.utils.getUserId([user['sub'] , dto.bannedUserId]); //// if both users is is exist
         
-            try 
-            { 
-                const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
-    
-                if(!await this.utils.getUserId(user['sub'])) //if jwt expired
-                    return res.status(404).send('user not found.')
-
-                const roomId = await this.utils.getRoomByName(dto.roomNAme);
-                
-                if(roomId)
-                {
-                     
-                    const isUserInRoom = await this.utils.getUserType(roomId.id, user['sub']);
-
-                    if(!isUserInRoom)
+                    if(existingUsers.error)
+                        return res.status(404).send(existingUsers.error);
+        
+                    const roomId = await this.utils.getRoomIdByName(dto.roomName);
+        
+                    if(roomId) // test ban addmin
                     {
-                        return res.status(404).send('user is not in this room.');
-                    }
+                        // here check if the both users in this room and cannot ban same user
+                        const usersType = await this.utils.getUserType(roomId,existingUsers.existingUser);
+           
+                        if(usersType.error)
+                            return res.status(404).send(usersType.error);
+                        
+                        // if(usersType.usersType[1].isBanned)
+                        // {
+                        //     return res.status(404).send('you are banned.');
+                        // }
+                        // if current user is an admin or owner in this case can ban
+                        // and if user who want to ban is an user in this case can ban
+                        if(usersType.usersType[0].userType !== 'USER' && usersType.usersType[1].userType === 'USER')
+                        {
+                            if(!usersType.usersType[1].isBanned) // if 
+                            {
+                                await this.utils.removeUserFromRoom(usersType.usersType[1].userId, roomId); // delete allmessages of this user but still in the db
 
-                    if(await this.roomService.doesRoomHaveUsers(roomId.id))
-                    {
-
-                        const userInfos = await this.utils.checkKickedUser(user['sub'], dto.kickedUser , roomId.id);
-    
-                        // console.log(userInfos) // pass same user for kicking
+                                return res.status(200).send('user is banned succssufully.');
+                            }
+                            return res.status(404).send('user is aleredy banned.');
+                        }
+                        return res.status(404).send('dont have the permission to ban ');
                     }
-                    
-                }
-                else
-                {
-                    console.log('room not found')
-                    return;
+                    return res.status(404).send('room not found.');
                 }
             } 
-            catch (error) 
+            else
             {
-                console.log('from kick()')
-                console.log(error)    
-            }
+                return res.status(404).send('invalid jwt.')
+            }   
+        } 
+        catch (error) 
+        {
+            console.log('from banFromRoom()')
+            return res.status(500).json({ error: error.message });
+        }
     }
     
+    @Post('/setOtherAasAdministrators') // use dto
+    async setOtherAasAdministrators(@Req() request: Request , @Body() dto:SetOtherAasAdministrators, @Res() res:any)
+    {
+        try 
+        {
+            const token = this.utils.verifyJwtFromHeader(request.headers['authorization']);
+
+            if (token) 
+            {
+                const user = await this.utils.verifyToken(token)
+              
+                if (user) 
+                {
+                    const existingUsers = await this.utils.getUserId([user['sub'] , dto.newAdminId]); // if both users is is exist
+        
+                    if(existingUsers.error)
+                        return res.status(404).send(existingUsers.error);
+        
+                    const roomId = await this.utils.getRoomIdByName(dto.roomName);
+        
+                    if(roomId)  
+                    {
+                        // here check if the both users in this room and cannot set same user as admin
+                        const usersType = await this.utils.getUserType(roomId,existingUsers.existingUser);
+                        
+                        if(usersType.error)
+                            return res.status(404).send(usersType.error);
+                        
+                        if(usersType.usersType[1].isBanned)
+                        {
+                            return res.status(404).send('you are banned.');
+                        }
+                        
+                        if(usersType.usersType[0].userType !== 'USER') // if current user is admin or owner in this case can set admins
+                        { 
+                            // here before set admin check if it is aleredy admin or an  user
+                            const rtn = await this.roomService.setNewAdmins(roomId, usersType.usersType[1]);
+
+                            if(rtn.error)
+                                return res.status(404).send(rtn.error);
+
+                            return res.status(200).send(rtn.ok);
+                        }
+
+                        return res.status(404).send('dont have the permission to set an admin.');
+                    }
+                    return res.status(404).send('room not found.');
+                }
+            }    
+            else
+            {
+                return res.status(404).send('invalid jwt.')
+            }
+        } 
+        catch (error) 
+        {
+            console.log('from set()')
+            return res.status(500).json({ error: error.message });
+        }
+
+    }
 
 }

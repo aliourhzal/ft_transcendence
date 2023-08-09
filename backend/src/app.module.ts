@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { gateAwayModule } from './webSocket/web.module';
 import { ChatModule } from './chat/chat.module';
 import { UtilsService } from './utils/utils.service';
+import { JwtService } from '@nestjs/jwt';
 
 
 @Module({
@@ -17,6 +18,6 @@ import { UtilsService } from './utils/utils.service';
     ChatModule,
   ],
   controllers: [],
-  providers: [UtilsService],
+  providers: [UtilsService , JwtService],
 })
 export class AppModule {}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/adjacent-overload-signatures */
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prettier/prettier */
@@ -19,11 +20,10 @@ export class RoomsService
     
     // ----------------------------------------------Create Room---------------------------------------------- //
 
-    async linkBetweenUsersAndRooms(roomId: string, usersIds:string[] | string)  
+    async linkBetweenUsersAndRooms(roomId: string, usersIds:string[])  
     {
         
-        if(Array.isArray(usersIds))
-        {
+         
             for(let i = 0; i < usersIds.length; i++)
             {
                 const existingUsers = await this.prisma.joinedTable.findFirst({
@@ -46,29 +46,8 @@ export class RoomsService
                 }
             }
 
-        }
-        else
-        {
-            const existingUsers = await this.prisma.joinedTable.findFirst({
-                where: {
-                  userId: usersIds,
-                  roomId,
-                },
-            });
-            
-            if (!existingUsers) 
-            {
-                
-                await this.prisma.joinedTable.create({
-                  data: {
-                    userId : usersIds,
-                    roomId,
-                  },
-                });
-                
-            }
-            
-        }
+        
+         
         return 1;
     }
 
@@ -142,41 +121,7 @@ export class RoomsService
 
     // ---------------------------------------------------------Set Roles Of Rooms ---------------------------------------------- //
 
-    
-    async setNewAdmins(roomId: string, userId:any, ownerId:string)
-    {
-         
-        if(userId === ownerId)
-            return 0;
         
-            
-        // if pass the same users to change to admins will pass unique ids
-
-       
-        const existingLink = await this.prisma.joinedTable.findFirst({
-            where: {
-                userId,
-                roomId,
-            },
-        });
-        
-        if (existingLink.userType === 'USER') // check if the user is admin dont change her Type to admin in db
-        {
-            await this.prisma.joinedTable.update({
-                where: {
-                    userId_roomId: {
-                        userId: userId,
-                        roomId,
-                    },
-                },
-                data: {
-                    userType: "ADMIN",
-                },
-            });
-        }
-    
-        return 2;
-    }   
 
     async setNewOwner(roomId: string, newOwnerId:string)
     {
@@ -353,5 +298,22 @@ export class RoomsService
         return !userInRoom;  
       }
       
-      
+      async setNewAdmins(roomId: string, user:any)
+    {
+        if(user.userType === 'ADMIN' || user.userType === 'OWNER')
+            return {error : `you are aleredy seted to ${user.userType}.`}
+        
+        await this.prisma.joinedTable.update({
+            where: {
+                userId_roomId: {
+                    userId: user.userId,
+                    roomId,
+                },
+            },
+            data: {
+                userType: "ADMIN",
+            },
+        });
+        return {ok : 'new admin seted succssufuly.'};
+    }  
 }

@@ -5,13 +5,18 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { BannedAndUnbannedUsers } from './userData.interface';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UtilsService {
 
     private readonly prisma = new PrismaClient();
 
+    constructor(private readonly jwtService:JwtService){}
+
     bannedAndUnBannedUsers:BannedAndUnbannedUsers[] = [];
+
+    
 
     async   getUserIdByEmail(email: string)
     {
@@ -27,17 +32,27 @@ export class UtilsService {
         return user.id || null;
     }
    
-    async getUserId(id:string)
+    async getUserId(ids : string[])
     {
-        const existingUser = await this.prisma.user.findUnique({
-            where: {
-                id,
-            },
-        });
-        return existingUser;
+        let  existingUser: string[] = [];       
+
+        for(const id of ids)
+        {
+            const userId = await this.prisma.user.findUnique({
+                where: {
+                    id,
+                },
+            });
+
+            if(!userId)
+                return {error : 'user not found'};
+            
+            existingUser.push(userId.id);
+        }
+         return {existingUser};
     }
 
-    async getUsersId(adminId: string, users?: string[], flag?: number)
+    async getUsersIdByNickname(adminId: string, users?: string[], flag?: number)
     {
         let usersFounding: string[] = [];
 
@@ -57,7 +72,7 @@ export class UtilsService {
             }   
             else
             {
-                return null;
+                return {error : 'user not found.'};
             } 
             
         }
@@ -67,54 +82,16 @@ export class UtilsService {
             for(const user of usersFounding) 
             {
                 if(user === adminId)
-                    return 0;
+                {
+                    return {error : 'cannot add current user.'};
+                }
             }
         }
-        const uniqusers = [...new Set(usersFounding)];
-        return uniqusers; // return users id
+        const uniqUsers = [...new Set(usersFounding)];
+        return {uniqUsers}; // return users id
     }
 
-    async checkKickedUser(currentUser: string, kickerUser: string, roomdId:string)  
-    {
-
-        const userId = await this.getUserId(kickerUser);
-        
-        if(currentUser === userId.id)
-            return {error : 'cannot kick the current user'};
-
-        if(!userId)
-        {
-            return {error : 'user not found'}
-        }
-        
-        const userType = (await this.getUserType(roomdId, kickerUser));
-        
-        // check if user in room
-
-        console.log(userType);
-
-        if(userType.userType === 'ADMIN' || userType.userType === 'OWNER')
-            return {error : 'connot kick the owner or admin'};
-        
-        return {ok : 'ok'};
-    }
-
-
-
-    async getAllbannedAndUnBannedUsers(adminId: string,users: string[], roomdId:string)  
-    {
-            for(const userId of users)
-            {
-                const userType = (await this.getUserType(roomdId,userId));
-                
-                if(userType.isBanned === true)
-                    this.bannedAndUnBannedUsers.push({BannedUser : userId})
-                else
-                    this.bannedAndUnBannedUsers.push({UnbannedUser : userId})
-
-            }
-            return this.bannedAndUnBannedUsers;
-    }
+    
 
     async getRoomIdByName (room_name: string) {
         const room = await this.prisma.room.findUnique({
@@ -167,15 +144,27 @@ export class UtilsService {
         }
     };
     
-    async   getUserType(roomId: string, userId: string) {
-        const getRoomInfos = await this.prisma.joinedTable.findFirst({
-          where: {
-            roomId: roomId,
-            userId: userId,
-          },
-        });
-      
-        return getRoomInfos;
+    async   getUserType(roomId: string, usersId: string[]) 
+    {
+        let usersType:any[] = [];
+
+        if(usersId[0] ===  usersId[1]) 
+            return {error : 'you entered the same user.'};
+        for(const userId of usersId)
+        {
+            const getRoomInfos = await this.prisma.joinedTable.findFirst({
+                where: {
+                    roomId: roomId,
+                    userId,
+                },
+            });
+
+            if(!getRoomInfos)   
+                return {error : 'user is not in this room.'};
+            
+            usersType.push(getRoomInfos);
+        }
+        return {usersType}
     }
 
     async getRoomsForUser(userId: string)
@@ -272,4 +261,22 @@ export class UtilsService {
 			}
 		});
 	}
+
+
+    verifyJwtFromHeader(authorizationHeader: string)
+    {
+        if (authorizationHeader && authorizationHeader.startsWith('Bearer ')) {
+          const token = authorizationHeader.substring(7); // Remove 'Bearer ' from the header
+          return token;
+        }
+        return null;
+      }
+    
+      async verifyToken(token: string)
+       {
+
+          const decoded = this.jwtService.verify(token , { secret: process.env.JWT_SECRET });
+          return decoded;
+         
+      }
 }

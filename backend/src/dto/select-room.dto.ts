@@ -4,17 +4,10 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 
 
-export class JoinRoomDto {
-     
-    
-    
-    @IsNotEmpty()
+export class SelectRoom {
+     @IsNotEmpty()
     @IsString()
     roomName: string;
-  
-    @IsString()
-    @IsOptional() 
-    password?: string;
-     
+
 }
  

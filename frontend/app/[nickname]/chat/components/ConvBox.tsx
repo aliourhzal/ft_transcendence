@@ -6,6 +6,7 @@ import {Avatar} from '@nextui-org/react'
 import { useRouter } from 'next/navigation'
 import { Context } from '../page'
 import axios from 'axios'
+import { getCookie } from '../../layout'
 
 interface ConvBoxProps {
     data : conversation
@@ -20,7 +21,12 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
     setActiveUserConv(data.data)
     // console.log(data.data)
     try {
-      await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomName:data.data.name, auth: socket.auth['token'], socket:socket.id}, {withCredentials: true})
+      await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomName:data.data.name}, {
+        withCredentials: true,
+        headers: {
+            'Authorization': `Bearer ${getCookie('access_token')}`,
+                'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
+    })
       .then((res) => {
           setChatBoxMessages(res.data.msg)
       })

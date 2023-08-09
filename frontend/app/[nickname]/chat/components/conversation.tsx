@@ -4,6 +4,7 @@ import { Context } from '../page'
 import ChatBox from './ChatBox'
 import RoomInfo from './roomInfo'
 import AlertMsgDown from './AlertMsgDown'
+import { getCookie } from '../../layout'
 
 const Conversation = () => {
 
@@ -31,7 +32,11 @@ const Conversation = () => {
         e.preventDefault()
         const msg = e.target[0].value.trim()
         if (msg != '') {
-            socket.emit('send-message', {message:msg, user:socket.auth['token'], roomName:activeUserConv.name, socketId:socket.id})
+            socket.emit('send-message', {message:msg, roomName:activeUserConv.name ,
+                withCredentials: true,
+                headers: {
+                    'Authorization': `Bearer ${getCookie('access_token')}`,
+                        'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}})
             // setChatBoxMessages(old => [...old, {user:userData.nickname, msg:msg}])
             msg_sent == undefined ? set_msg_sent(1) : set_msg_sent(old => old == 1 ? 2 : 1)
             e.target[0].value = ''

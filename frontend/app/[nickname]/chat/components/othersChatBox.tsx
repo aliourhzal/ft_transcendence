@@ -7,7 +7,8 @@ interface SelfChatBoxProps {
     msg: string
   }
 
-const OthersChatBox:React.FC<SelfChatBoxProps> = (msg) => {
+  const OthersChatBox:React.FC<SelfChatBoxProps> = (msg) => {
+    console.log(msg)
     return (
         <div className={'z-0 flex items-start justify-start gap-3 m-2'} key={gimmeRandom()}>
             <Avatar pointer src={msg.user.photo}/>

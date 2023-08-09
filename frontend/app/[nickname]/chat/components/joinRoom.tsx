@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Context } from '../page'
 import axios from 'axios'
 import Popup from './Popup'
+import { getCookie } from '../../layout'
 
 const JoinRoomForm = () => {
 
@@ -50,7 +51,12 @@ const JoinRoomForm = () => {
 
     const submitForm = () => {
         console.log("lmao")
-        socket.emit('join-room', {roomName:name, password:pass, user:socket.auth['token'], socketId:socket.id })
+        socket.emit('join-room', {roomName:name, password:pass ,
+            withCredentials: true,
+            headers: {
+                'Authorization': `Bearer ${getCookie('access_token')}`,
+                    'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
+        })
         // try {
         //     axios.post('http://127.0.0.1:3000/rooms/join-room', {roomName:name, password:pass, auth: socket.auth['token']}, {withCredentials: true}).then(
         //         res => {

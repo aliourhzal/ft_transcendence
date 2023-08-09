@@ -33,7 +33,7 @@ const ChatBox = () => {
   useEffect ( () => {
     scrollToBottom();
   }, [])
-
+console.log(chatBoxMessages)
   return (
       <div ref={ref} className='z-0'>
         {chatBoxMessages.map ((BoxMessage, i) => 

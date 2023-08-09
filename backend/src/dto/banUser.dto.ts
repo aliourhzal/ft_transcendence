@@ -5,24 +5,14 @@ import { RoomType } from 'src/utils/userData.interface';
 
 
 
-export class createRoom {
+export class BanUser {
      
     @IsNotEmpty()
     @IsString()
     roomName: string;
   
-    // @IsNotEmpty()
-    @IsString()
-    @IsOptional() 
-    password?: string;
-  
-    @ArrayNotEmpty()
-    @IsString({ each: true })
-    users: string[];
- 
-  
     @IsNotEmpty()
     @IsString()
-    type: RoomType;
+    bannedUserId: string;
 }
  
