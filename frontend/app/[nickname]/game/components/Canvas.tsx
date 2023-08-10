@@ -95,13 +95,14 @@ export default function Canvas(props) {
 		
 		// listening to the mouse
 		canvas.addEventListener("mousemove", getMousePos);
-
+		
+		// listening to the window resize event
 		window.addEventListener("resize", ()=>{
 			GodWilling(canvas.width);
 			canvas.width = canvas.offsetWidth;
 			canvas.height = canvas.offsetHeight;
 			socket.emit("resize", {w:canvas.width, h:canvas.height});
-		})
+		});
 		//change player Paddle According to Mouse Position
 		function getMousePos(evt: { clientY: number, clientX: number }){
 			let rect = canvas.getBoundingClientRect();
@@ -111,16 +112,13 @@ export default function Canvas(props) {
 					player.y = posY
 			}
 			else if (evt.clientY < rect.bottom - player.height)
-			{
-				
 				player.y = evt.clientY - rect.top + 2; 
-			}
 			else
 				return ;
 		}
 		socket.on('send_canva_W_H', () => {
 			socket.emit("startGame", {w:canvas.width, h:canvas.height});
-		})
+		});
 
         socket.on('game_Data', data => {
             ball.x = data.x;
@@ -142,8 +140,10 @@ export default function Canvas(props) {
 		//  md:w-[800px] md:h-[450px]
 		//  xl:w-[1000px] xl:h-[562px]
 		//  "/>
-        <canvas id="pongy" className="bg-darken-300 mx-auto rounded-md
-			w-[100%]
+        <canvas id="pongy" className="bg-darken-300 rounded-md
+			w-[90%] h-[32%]
+			max-sm:rotate-90 max-sm:w-[600px] max-sm:h-[337px]
+			xl:w-[1000px] xl:h-[562px]
 		 "/>
     );
 }

@@ -30,7 +30,7 @@ export default function Game(props: any)
 	console.log(props);
 	return (
 		<section className="flex w-full h-full items-center bg-darken-200">
-			<div className="flex flex-col items-center w-full gap-5">
+			<div className="flex flex-col justify-center items-center w-full gap-5 h-full">
 				{/* <div className="w-full flex justify-center gap-96">
 					<div className="flex items-center gap-x-5">
 						<img className="w-16 h-16" src="../images/man.png" alt="man_hhhh" />
