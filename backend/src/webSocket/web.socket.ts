@@ -274,6 +274,17 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		}
 			this.startGame(room);
 	}
+	@SubscribeMessage('resize')
+	resize(socket: Socket, data: {w:number, h:number})
+	{
+		const room = this.findRoomBySocket(socket);
+		if (room && this.checkPlayerOrder(socket, room) === 1) {
+			room.player1.setCanvasDim(data.h, data.w);
+		}
+		if (room && this.checkPlayerOrder(socket, room) === 2) {
+			room.player2.setCanvasDim(data.h, data.w);
+		}
+	}
 }
 
 //socket.broadcast.emit("event", ...); 		: send a message to all but not your self

@@ -1,7 +1,7 @@
 'use client'
 
 import { WebsocketContext } from "@/app/context_sockets/gameWebSocket";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import Player from "../utils/Player.class";
 import Ball from "../utils/Ball.class";
 
@@ -96,6 +96,12 @@ export default function Canvas(props) {
 		// listening to the mouse
 		canvas.addEventListener("mousemove", getMousePos);
 
+		window.addEventListener("resize", ()=>{
+			GodWilling(canvas.width);
+			canvas.width = canvas.offsetWidth;
+			canvas.height = canvas.offsetHeight;
+			socket.emit("resize", {w:canvas.width, h:canvas.height});
+		})
 		//change player Paddle According to Mouse Position
 		function getMousePos(evt: { clientY: number, clientX: number }){
 			let rect = canvas.getBoundingClientRect();
@@ -127,12 +133,17 @@ export default function Canvas(props) {
 		});
     }, [])
 
+	const [ana, GodWilling] = useState(0);
+
     return (
 		//w-[800px] h-[450px]
+        // <canvas id="pongy" className="bg-darken-300 mx-auto rounded-md
+		//  max-sm:rotate-90 max-sm:w-[600px] max-sm:h-[337px]
+		//  md:w-[800px] md:h-[450px]
+		//  xl:w-[1000px] xl:h-[562px]
+		//  "/>
         <canvas id="pongy" className="bg-darken-300 mx-auto rounded-md
-		 max-sm:rotate-90 max-sm:w-[600px] max-sm:h-[337px]
-		 md:w-[800px] md:h-[450px]
-		 xl:w-[1000px] xl:h-[562px]
+			w-[100%]
 		 "/>
     );
 }
