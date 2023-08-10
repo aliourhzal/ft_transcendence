@@ -9,7 +9,7 @@ import { Missions, Achievements } from "./components/MissionsNAchievements";
 import ProfileInfo from "./components/ProfileInfo";
 import FriendsCarouselBar from "./components/friendsCarouselBar";
 import axios from "axios";
-import NotFound from "../not-found";
+import NotFound from "./components/not-found";
 
 export default function Profile(props) {
 	const [completed, setCompleted] = useState(false);
