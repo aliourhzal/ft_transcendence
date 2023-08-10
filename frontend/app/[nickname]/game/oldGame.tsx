@@ -14,10 +14,11 @@ import { useEffectmod } from "@/hooks/useAxiosFetch";
         Score
 */
 
-export function StartGame()
+export function StartGame(props)
 {
     // declare interval ID
     let loop:NodeJS.Timer = null;
+    let color = "#50CFED";
 
 // select canvas element
 const canvas:HTMLCanvasElement = document.getElementById("pongy") as HTMLCanvasElement;
@@ -242,7 +243,17 @@ function render()
         drawRect(com.x, com.y, com.width, com.height, com.color);
         
         // draw the ball
-        drawArc(ball.x, ball.y, ball.radius, ball.color);
+        if (props.ball === true)
+        {
+            color = "#" +  (Math.ceil(ball.x) < 0 ? Math.ceil(ball.x) * -1 : Math.ceil(ball.x))
+                + "" + (Math.ceil(ball.y) < 0 ? Math.ceil(ball.y) * -1 : Math.ceil(ball.x));
+            if (color.length !== 7)
+                color + "" + Math.floor(Math.random() * 10);
+        }
+        else
+            color = "white";
+        props.ball === true && drawArc(ball.x, ball.y, ball.radius + 2, "white");
+        drawArc(ball.x, ball.y, ball.radius, color);
     } 
     function game()
     {
@@ -262,13 +273,15 @@ function render()
     return ;
 }
 
-export default function BotPractice()
+export default function BotPractice(props:any)
 {
     // const userData = useContext(userDataContext);
     // console.log('test', userData);
     //tlat khmis jm3a
+    console.log(props);
+
     useEffect(() => {
-        StartGame();
+        StartGame(props);
     }, []);
     let width:string = '800px';
     return (

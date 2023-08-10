@@ -1,18 +1,24 @@
 'use client'
 import { useRef, useState } from "react"
-import './utils/style.css'
-import Game from "./Game";
+import './utils/style.css';
 import dynamic from "next/dynamic";
 import Lottie from 'react-lottie';
 import * as pongLoading from "./utils/pongLoading.json";
 import botLoading from './utils/botLoading.json';
-import BotPractice from "./oldGame";
-import { Divider } from "@nextui-org/react";
+import startButton from './utils/startButton.json';
 
 const defaultOptions = {
     loop: true,
     autoplay: true,
     animationData: pongLoading,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice"
+    }
+};
+const startbuttonGame = {
+    loop: true,
+    autoplay: true,
+    animationData: startButton,
     rendererSettings: {
       preserveAspectRatio: "xMidYMid slice"
     }
@@ -25,6 +31,7 @@ const BotLottie = {
       preserveAspectRatio: "xMidYMid slice"
     }
 };
+
 
 const LazyGame = dynamic(() => import('./Game'), {
 	ssr: false,
@@ -135,11 +142,11 @@ function Effects(props: any)
                 <h1 className=" text-whiteSmoke text-xl">Special Effects</h1>
                 <div className="flex gap-16">
                     <div className="flex flex-col items-center gap-3">
-                        <input className="h-5 w-5" type="radio" name="effects" id="" defaultChecked/>
+                        <input className="h-5 w-5" type="radio" name="effects" id=""/>
                         <h1 className="text-whiteSmoke text-lg">ON</h1>
                     </div>
                     <div className="flex flex-col items-center gap-3">
-                        <input className="h-5 w-5" type="radio" name="effects" id=""/>
+                        <input className="h-5 w-5" type="radio" name="effects" id="" defaultChecked/>
                         <h1 className="text-whiteSmoke text-lg">OFF</h1>
                     </div>
                 </div>
@@ -149,11 +156,11 @@ function Effects(props: any)
                 <h1 className=" text-whiteSmoke text-xl">Ball Colorized</h1>
                 <div className="flex gap-16">
                     <div className="flex flex-col items-center gap-3">
-                        <input className="h-5 w-5" type="radio" name="ballC" id="" defaultChecked/>
+                        <input className="h-5 w-5" type="radio" name="ballC" id="" onClick={() => props.setBall(true)}/>
                         <h1 className="text-whiteSmoke text-lg">ON</h1>
                     </div>
                     <div className="flex flex-col items-center gap-3">
-                        <input className="h-5 w-5" type="radio" name="ballC" id=""/>
+                        <input className="h-5 w-5" type="radio" name="ballC" id="" onClick={() => props.setBall(false)} defaultChecked/>
                         <h1 className="text-whiteSmoke text-lg">OFF</h1>
                     </div>
                 </div>
@@ -190,6 +197,7 @@ function Effects(props: any)
 export default function GameLogin()
 {
     const [playWith, setOp] = useState("bot"); // online
+    const [ballColors, setBall] = useState(false);
     const [themeN, setThemeN] = useState(1);
     const [hell, setHell] = useState(false);
     const [Mode, setMode] = useState("");
@@ -210,10 +218,10 @@ export default function GameLogin()
                 {/* Themse */}
                 <Themes setThemeN={setThemeN} T1={T1} T2={T2} T3={T3} T4={T4} def={def} def1={def1} def2={def2} def3={def3} />
                 {/* Effects */}
-                <Effects setHell={setHell} setMode={setMode} main={main} playWith={playWith} />
-            </div>    
-            {/* {!show && } */}t
-            {(Mode === "online" && <LazyGame hell={hell} />) || (Mode==="bot" && <BotGame />)}
+                <Effects setBall={setBall} setHell={setHell} setMode={setMode} main={main} playWith={playWith} />
+            </div>
+            {/* {!show && } */}
+            {(Mode === "online" && <LazyGame ball={ballColors} hell={hell} />) || (Mode==="bot" && <BotGame ball={ballColors} />)}
         </div>
     );
 }
