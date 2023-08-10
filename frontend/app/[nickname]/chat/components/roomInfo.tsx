@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import Popup from './Popup'
 
 import { BiVolumeMute } from "react-icons/Bi";
@@ -12,6 +12,7 @@ import { AiOutlineUsergroupAdd } from "react-icons/Ai";
 import { UniversalData } from '../../layout';
 import { Avatar } from '@nextui-org/react';
 import NewRoomUsers from './NewRoomUsers';
+import { Context } from '../page';
 
 interface RoomInfoProps {
     room:any
@@ -23,6 +24,8 @@ interface RoomInfoProps {
 
 const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     
+    const {socket} = useContext(Context)
+
     const hide = () => {
         info.setShow(false)
         setShowUsersForm(false)
@@ -34,19 +37,21 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         return false
     }
 
-    const promoteUser = () => {
+    const promoteUser = (id) => { socket.emit('setOtherAasAdministrators', {roomName:info.room.name, newAdminUser:id}) }
+
+    const demoteteUser = (id) => {
 
     }
-    const demoteteUser = () => {
+
+    const kickUser = (id) => {
 
     }
-    const kickUser = () => {
 
-    }
-    const banUser = () => {
+    const banUser = (id) => {
         
     }
-    const muteUser = () => {
+
+    const muteUser = (id) => {
 
     }
 
@@ -78,7 +83,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
                                     <>
                                         { isAdmin(info.room.users.find(o => o.nickName === user.nickName)) ? 
                                             <TbUserDown className='hover:text-whiteSmoke text-blueStrong' title='demote' aria-label='demote' cursor="pointer" size={20} onClick={demoteteUser}/>
-                                            :   <TbUserUp className='hover:text-whiteSmoke text-blueStrong' title='promote' strokeWidth={2.3} aria-label='promote' cursor="pointer" size={25} onClick={promoteUser}/>
+                                            :   <TbUserUp className='hover:text-whiteSmoke text-blueStrong' title='promote' strokeWidth={2.3} aria-label='promote' cursor="pointer" size={25} onClick={() => {promoteUser(user.id)}}/>
                                         }
                                         <BiUserMinus className='hover:text-whiteSmoke text-blueStrong' title='kick' strokeWidth={0} aria-label='kick' cursor="pointer" size={30} onClick={kickUser}/>
                                         <BiUserX className='hover:text-whiteSmoke text-blueStrong' title='ban' aria-label='ban' cursor="pointer" size={30} onClick={banUser}/>
