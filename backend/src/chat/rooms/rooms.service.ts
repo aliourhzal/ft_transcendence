@@ -24,31 +24,31 @@ export class RoomsService
     {
         
          
-            for(let i = 0; i < usersIds.length; i++)
+        for(let i = 0; i < usersIds.length; i++)
+        {
+            const existingUsers = await this.prisma.joinedTable.findFirst({
+                where: {
+                    userId: usersIds[i],
+                    roomId,
+                },
+            });
+            
+            if (!existingUsers) 
             {
-                const existingUsers = await this.prisma.joinedTable.findFirst({
-                    where: {
-                      userId: usersIds[i],
-                      roomId,
+                
+                await this.prisma.joinedTable.create({
+                    data: {
+                    userId : usersIds[i],
+                    roomId,
                     },
                 });
                 
-                if (!existingUsers) 
-                {
-                    
-                    await this.prisma.joinedTable.create({
-                      data: {
-                        userId : usersIds[i],
-                        roomId,
-                      },
-                    });
-                    
-                }
             }
+        }
 
         
          
-        return 1;
+        return {ok : 'ok'};
     }
 
     async OWNERCreateRoom(room_name: string, adminOfRoom:string, roomType_: RoomType , password?: string)  
@@ -63,7 +63,7 @@ export class RoomsService
                  
                 if(!password)
                 {
-                    return 0;
+                    return {error : 'should set password for this protected room.'}
                 }
                 
                 const room = await this.prisma.room.create({data: {room_name , roomType : roomType_ , password: encodePasswd(password)}});
@@ -77,7 +77,7 @@ export class RoomsService
                     },
                 });
 
-                return room;
+                return {room};
             }
             const room = await this.prisma.room.create({data: {room_name , roomType : roomType_  }}) // create the room
       
@@ -90,10 +90,10 @@ export class RoomsService
                 },
             });
             
-            return room;
+            return {room};
         }
-        else
-            return 1;
+        
+        return {error : " room aleredy exist"};
     }
 
     async createRoom(roomandUsers:roomAndUsers, adminOfRoom:string, roomType_:RoomType, password? : string) 
@@ -102,18 +102,10 @@ export class RoomsService
         const room = await this.OWNERCreateRoom(roomandUsers.roomName, adminOfRoom, roomType_, password);// crete room and assign to it the admin
         
 
-        if(room === 0 )
-            return 0;
-
-        if(room === 1)
-        {
-            // emit error
-            return 1;
-        }
- 
+        if(room.error)
+            return room;
        
-        if(await this.linkBetweenUsersAndRooms(room['id'], roomandUsers.users ) === 4 ) // add users to the room
-            return 4;
+        await this.linkBetweenUsersAndRooms(room.room.id, roomandUsers.users)
 
         return room;
     }

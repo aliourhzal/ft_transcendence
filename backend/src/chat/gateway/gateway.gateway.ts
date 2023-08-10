@@ -4,7 +4,7 @@
 /* eslint-disable prettier/prettier */
 import { UnauthorizedException, UsePipes, ValidationPipe } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket, Server } from  'socket.io';
 import { UsersService } from 'src/users/users.service';
 import {  UserData, ArrayOfClinets, ListOfRoomsOfUser } from 'src/utils/userData.interface';
@@ -14,6 +14,9 @@ import { MessagesService } from '../messages/messages.service';
 import { JoinRoomDto } from 'src/dto/join-room.dto';
 import { comparePasswd } from 'src/utils/bcrypt';
 import { SendMessage } from 'src/dto/sendMessage.dto';
+import { ClientRequest } from 'http';
+import { createRoom } from 'src/dto';
+import { RoomType } from 'src/utils/userData.interface';
 
 @WebSocketGateway(3004)
 export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
@@ -30,9 +33,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     server:Server;
     
     user : UserData;
-    
-    socketOfcurrentUser:Socket;
-
+        
     soketsId :ArrayOfClinets[] = [];
     arrayOfJoinnedUsers :ArrayOfClinets[] = [];
     
@@ -51,7 +52,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 if (decodedToken) 
                 {
 
-                    this.socketOfcurrentUser = socket;
                     console.log('connected from chat');
                 
                     const existingUser = await this.utils.getUserId([decodedToken['sub']]);
@@ -98,13 +98,116 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         }
     }
    
-    @SubscribeMessage('send-message') 
+
+    @SubscribeMessage('create-room') 
     @UsePipes(new ValidationPipe())
-    async sendMessage(@MessageBody() dto: SendMessage) 
+    async createRoom(@MessageBody() dto: createRoom , @ConnectedSocket() socket: Socket) 
     {
         try 
         {
-            const token = this.utils.verifyJwtFromHeader(this.socketOfcurrentUser.handshake.headers.authorization);
+            const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+            if (token) 
+            {
+                const decodedToken = await this.utils.verifyToken(token)
+              
+                if (decodedToken) 
+                {
+                    const usersId = (await this.utils.getUsersIdByNickname(decodedToken['sub'],dto.users , 1)); // get ids of users 
+
+                    if(usersId.error)
+                    {
+                        console.log(usersId.error);
+                        return
+                    }
+
+                    const ifUserExist = await this.utils.getUserId([decodedToken['sub'] , ...usersId.uniqUsers]);
+                    
+                    if(ifUserExist.error)
+                    {
+                        console.log(ifUserExist.error);
+                        return;
+                    }
+                    
+                    if (dto.type === RoomType.PRIVATE || dto.type === RoomType.PROTECTED || dto.type === RoomType.PUBLIC) 
+                    {
+                        if (dto.type === "PROTECTED") 
+                        {
+                            const room = await this.roomService.createRoom({roomName: dto.roomName, users: usersId.uniqUsers}, decodedToken['sub'], "PROTECTED", dto.password);
+        
+                            if(room.error)
+                            {
+                                console.log(room.error)
+                                return
+                            }
+                            const usersInroom = await this.utils.getUsersInRooms(room.room.id);
+
+                            for(const userInRoom of usersInroom)
+                            {
+                                for (let i = 0; i < this.soketsId.length; i++) 
+                                {
+                                    if(this.soketsId[i].userId === userInRoom.userId)
+                                    {
+                                        this.server.to(this.soketsId[i].socketIds).emit("new-room",{room  , usersInRoom: await this.utils.getUsersInRooms(room['id']) , userInfos: await this.utils.getUserInfosInRoom(room.room.id)});
+                                    }
+                                }
+                            }
+                            
+                        }
+                        else
+                        { 
+                            const room = await this.roomService.createRoom({roomName: dto.roomName, users: usersId.uniqUsers}, decodedToken['sub'], dto.type);
+                            if(room.error)
+                            {
+                                console.log(room.error)
+                                return
+                            }
+                             
+                            const usersInroom_ = await this.utils.getUsersInRooms(room.room.id);
+
+                            for(const userInRoom of usersInroom_)
+                            {
+                                for (let i = 0; i < this.soketsId.length; i++) 
+                                {
+                                    if(this.soketsId[i].userId === userInRoom.userId)
+                                    {
+                                  
+                                        this.server.to(this.soketsId[i].socketIds).emit("new-room",{ room  , usersInRoom : usersInroom_ , userInfos: await this.utils.getUserInfosInRoom(room.room.id)});
+                                        // console.log(room, usersInroom_ , await this.utils.getUserInfosInRoom(room.room.id))
+                                    } 
+                                }
+                            }
+        
+                        }
+                    }
+                    else
+                    {
+                        console.log("error in type of room.")
+                    }
+                }
+            }
+            else
+            {
+                console.log('invalid jwt.');
+                this.OnWebSocektError(socket);
+
+            }
+        } 
+        catch (error) 
+        {
+            console.log(error.error)
+        }
+
+    }
+
+
+
+    @SubscribeMessage('send-message') 
+    @UsePipes(new ValidationPipe())
+    async sendMessage(@MessageBody() dto: SendMessage , @ConnectedSocket() socket: Socket) 
+    {
+        try 
+        {
+            const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
             if (token) 
             {
                 const decodedToken = await this.utils.verifyToken(token)
@@ -115,7 +218,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                     
                     if(existingUser.error)
                     {
-                        this.OnWebSocektError(this.socketOfcurrentUser);
+                        this.OnWebSocektError(socket);
 
                         // emit existingUsers.error
                         return ;
@@ -136,14 +239,14 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                             
                             
                             const usersInroom = await this.utils.getUsersInRooms(roomId.id);
-                             
+                            
                             for(const userInRoom of usersInroom)
                             {
                                 for (let i = 0; i < this.soketsId.length; i++) 
                                 {
                                     if(this.soketsId[i].userId === userInRoom.userId)
                                     {
-                                        this.server.to(this.soketsId[i].socketIds).emit("add-message", {user: createdMsg.username, msg: createdMsg.msg , roomName: roomId.room_name})
+                                        this.server.to(this.soketsId[i].socketIds).emit("add-message", {user: createdMsg.username, msg: createdMsg.msg , roomName: roomId.room_name , idOfmsg : createdMsg.idOfMsg})
                                     }
                                 }
         
@@ -167,14 +270,14 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             else
             {
                 console.log('invalid jwt.');
-                this.OnWebSocektError(this.socketOfcurrentUser);
+                this.OnWebSocektError(socket);
 
             }
             
         } 
         catch (error) 
         {
-            this.OnWebSocektError(this.socketOfcurrentUser);
+            this.OnWebSocektError(socket);
             console.log(error.error)
         }
     }
@@ -182,22 +285,23 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
     @SubscribeMessage('join-room') 
     @UsePipes(new ValidationPipe()) // Add the ValidationPipe here
-    async joinRoom(@MessageBody() dto:JoinRoomDto) 
+    async joinRoom(@MessageBody() dto:JoinRoomDto , @ConnectedSocket() socket: Socket) 
     {
+     
         try 
         {
-            const token = this.utils.verifyJwtFromHeader(this.socketOfcurrentUser.handshake.headers.authorization);
+            const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
             if (token) 
             {
                 const decodedToken = await this.utils.verifyToken(token)
-              
+
                 if (decodedToken) 
                 {
                     const existingUser = await this.utils.getUserId([decodedToken['sub']]);
                     
                     if(existingUser.error)
                     {
-                        this.OnWebSocektError(this.socketOfcurrentUser);
+                        this.OnWebSocektError(socket);
 
                         // emit existingUsers.error
                         return ;
@@ -240,7 +344,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                     else
                                     {
                                         console.log("password inccorect.")
-                                        // this.socketOfcurrentUser.emit('users-join',"password inccorect.")
+                                        // socket.emit('users-join',"password inccorect.")
                                         return ;
                                     }
                                 }
@@ -249,7 +353,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                     await this.roomService.linkBetweenUsersAndRooms(roomId.id, [decodedToken['sub']]);
                                     
                                     const usersInroom = await this.utils.getUsersInRooms(roomId.id);
-                                    
                                     
                                     // this.server.to(dto.socketId).emit('current-user-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id)});
     
@@ -270,8 +373,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                             else 
                             {
                                 console.log('user aleredy in this room.')
-                                // this.socketOfcurrentUser.emit('error-joinned-room','user aleredy in this room.')
-                                this.OnWebSocektError(this.socketOfcurrentUser);
+                                // socket.emit('error-joinned-room','user aleredy in this room.')
+                                // this.OnWebSocektError(socket);
                             }
                         }
 
@@ -288,17 +391,16 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             else
             {
                 console.log('invalid jwt.');
-                this.OnWebSocektError(this.socketOfcurrentUser);
+                this.OnWebSocektError(socket);
 
             }
             
         } 
         catch (error) 
         {
-            this.OnWebSocektError(this.socketOfcurrentUser);
+            this.OnWebSocektError(socket);
             console.log(error.error)
         }
-        
     }
 
 

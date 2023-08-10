@@ -76,7 +76,6 @@ export class MessagesService
     async createMessages(message: string, userId: string, roomId: string)
     {
         const rtn =  await this.linkUserWithMessageAndRoom(message, userId, roomId); // link user with message and room
-        
 
         const userAndText = {userId: rtn.id, msg: rtn.text}
 
@@ -87,6 +86,7 @@ export class MessagesService
             return { 
                 username, 
                 msg: userAndText.msg,
+                idOfMsg:rtn.id
                  
             }
         }

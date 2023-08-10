@@ -6,7 +6,7 @@ import { getCookie } from '../../layout'
 
 const JoinRoomForm = () => {
 
-    const {showJoinForm, setShowJoinForm, convs, socket, rooms, set_room_created} = useContext(Context)
+    const {showJoinForm, setShowJoinForm, convs, socket, rooms, set_room_created , userData} = useContext(Context)
 
     const [name, setName] = useState('')
     const [pass, setPass] = useState('')
@@ -51,12 +51,11 @@ const JoinRoomForm = () => {
 
     const submitForm = () => {
         console.log("lmao")
-        socket.emit('join-room', {roomName:name, password:pass ,
-            withCredentials: true,
+        // socket.emit("join-room", {roomName:name, password:pass, userData.nickname})
+        socket.emit('join-room', {roomName:name, password:pass, withCredentials: true,
             headers: {
                 'Authorization': `Bearer ${getCookie('access_token')}`,
-                    'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
-        })
+                    'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}})
         // try {
         //     axios.post('http://127.0.0.1:3000/rooms/join-room', {roomName:name, password:pass, auth: socket.auth['token']}, {withCredentials: true}).then(
         //         res => {

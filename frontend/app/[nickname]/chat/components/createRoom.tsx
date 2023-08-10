@@ -59,38 +59,57 @@ const RoomForm = () => {
         )
             return (_users)
     }
+    
+    useEffect(() => {
+        socket.on('new-room', (res) => {
+            console.log(res)
+            rooms.unshift({
+                name: res.room.room.room_name,
+                lastmsg:'welcome to group chat',
+                msgs: [],
+                id: res.room.room.id,
+                users: getUsersInfo(res.userInfos),
+                type: res.room.room.roomType
+            })
+            console.log(rooms)
+            set_room_created(old => !old)
+            hideForm()
+        })
+    }, [])
 
     const confirmForm = async () => {
-        try {
-            await axios.post('http://127.0.0.1:3000/rooms', {
-                roomName:roomName, 
-                users:users, 
-                type:roomType, 
-                password:pass
-            },
-            {
-                withCredentials: true,
-                headers: {
-                    'Authorization': `Bearer ${getCookie('access_token')}`,
-                        'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
-            }).then(
-                res => {
-                    // console.log(res)
-                    rooms.unshift({
-                        name: res.data.room.room_name,
-                        lastmsg:'welcome to group chat',
-                        msgs: [],
-                        id: res.data.room.id,
-                        users: getUsersInfo(res.data.userInfos),
-                        type: res.data.room.roomType
-                    })
-                    // console.log(rooms)
-                })
-                set_room_created(old => !old)
-                hideForm()
-        } catch(error) {
-            alert(error)
-        }
+        socket.emit('create-room', {roomName:roomName, users:users, type:roomType, password:pass, withCredentials: true,
+            headers: {
+                'Authorization': `Bearer ${getCookie('access_token')}`,
+                    'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}})
+        // try {
+        //     await axios.post('http://127.0.0.1:3000/rooms', {
+        //         roomName:roomName, 
+        //         users:users, 
+        //         type:roomType, 
+        //         password:pass
+        //     },
+        //     {
+        //         withCredentials: true,
+        //         headers: {
+        //             'Authorization': `Bearer ${getCookie('access_token')}`,
+        //                 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
+        //     }).then(
+        //         res => {
+        //             // console.log(res)
+        //             rooms.unshift({
+        //                 name: res.data.room.room_name,
+        //                 lastmsg:'welcome to group chat',
+        //                 msgs: [],
+        //                 id: res.data.room.id,
+        //                 users: getUsersInfo(res.data.userInfos),
+        //                 type: res.data.room.roomType
+        //             })
+        //             // console.log(rooms)
+        //         })
+        // } catch(error) {
+        //     alert(error)
+        // }
     }
 
     const handleSpaceDown = (e:any) => {

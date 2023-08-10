@@ -14,6 +14,9 @@ import { comparePasswd, encodePasswd } from 'src/utils/bcrypt';
 import { SetOtherAasAdministrators } from 'src/dto/setOtherAasAdministrators.dto';
 import { SelectRoom } from 'src/dto/select-room.dto';
 import { BanUser } from 'src/dto/banUser.dto';
+import { Socket } from 'socket.io-client';
+import { ConnectedSocket, WebSocketServer } from '@nestjs/websockets';
+import { Server } from 'http';
 
 /**
  *  in try and catch if any function return null will catch as error
@@ -31,81 +34,9 @@ export class RoomController {
         private readonly messagesService:MessagesService,
         private readonly usersServise:UsersService
         ) {}
-
-    @Post()
-    async createRoom(@Req() request: Request , @Body() dto:createRoom, @Res() res:any)
-    { 
-        try 
-        {
-            const token = this.utils.verifyJwtFromHeader(request.headers['authorization']);
-
-            if (token) 
-            {
-                const user = await this.utils.verifyToken(token)
-              
-                if (user) 
-                {
-                    const usersId = (await this.utils.getUsersIdByNickname(user['sub'],dto.users , 1)); // get ids of users 
-
-                    if(usersId.error)
-                        return res.status(404).send(usersId.error);
-
-                    const ifUserExist = await this.utils.getUserId([user['sub'] , ...usersId.uniqUsers]);
-                    
-                    if(ifUserExist.error)
-                        return res.status(404).send(ifUserExist.error);
-                    
-                    if (dto.type === RoomType.PRIVATE || dto.type === RoomType.PROTECTED || dto.type === RoomType.PUBLIC) 
-                    {
-                        if (dto.type === "PROTECTED") 
-                        {
-                            const room = await this.roomService.createRoom({roomName: dto.roomName, users: usersId.uniqUsers}, user['sub'], "PROTECTED", dto.password);
+ 
         
-                            if(room === 1)
-                            {
-                                return res.status(406).send("room name aleredy exist.");
-                            }
-                            if(room === 0)
-                            {
-                                return res.status(406).send("should set password for this protected room.");
-                            }
-    
-                            res.status(200).send({room  , usersInRoom: await this.utils.getUsersInRooms(room['id']) , userInfos: await this.utils.getUserInfosInRoom(room['id'])});
-                            
-                        }
-                        else
-                        { 
-                            const room = await this.roomService.createRoom({roomName: dto.roomName, users: usersId.uniqUsers}, user['sub'], dto.type);
-        
-                            if(room === 1)
-                            {
-                                return res.status(406).send("room name aleredy exist.");
-                            }
-        
-                            res.status(200).send({room  , usersInRoom: await this.utils.getUsersInRooms(room['id']) , userInfos: await this.utils.getUserInfosInRoom(room['id'])});
-                        }
-                    }
-                    else
-                    {
-                        return res.status(406).send("error in type of room.")
-                    }
-
-                }
-            }
-            else
-            {
-                return res.status(404).send('invalid jwt.')
-            }
-            
-
-        } 
-        catch (error) 
-        {
-            console.log('from createRoom()' )
-         
-            return res.status(500).json({ error: error.message });
-        } 
-    }
+   
    
     @Post('/select-room') // use here JoinRoomDto
     async onJoinedRoom(@Req() request: Request , @Body() dto:SelectRoom, @Res() res:any) 
@@ -135,11 +66,11 @@ export class RoomController {
                             if(isUserInRoom.error)
                                 return res.status(404).send(isUserInRoom.error);
                         
-
-                            // if(isUserInRoom.isBanned)
-                            // {
-                            //     return res.status(401).send('you are banned from this room.')
-                            // }
+                            if(isUserInRoom.usersType[1].isBanned)
+                            {
+                                return res.status(404).send('you are banned.');
+                            }
+                            
                             
                             const messageAndUserName = await this.messagesService.getAllMessagesofRoom(dto.roomName);
 
@@ -198,10 +129,10 @@ export class RoomController {
                         if(usersType.error)
                             return res.status(404).send(usersType.error);
                         
-                        // if(usersType.usersType[1].isBanned)
-                        // {
-                        //     return res.status(404).send('you are banned.');
-                        // }
+                        if(usersType.usersType[1].isBanned)
+                        {
+                            return res.status(404).send('you are banned.');
+                        }
                         // if current user is an admin or owner in this case can ban
                         // and if user who want to ban is an user in this case can ban
                         if(usersType.usersType[0].userType !== 'USER' && usersType.usersType[1].userType === 'USER')
