@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react"
-import { Context } from '../page'
+import { Context, getUsersInfo } from '../page'
 import axios from "axios"
 import AddedUsersForm from "./addedUsersForm"
 import { METHODS } from "http"
@@ -32,34 +32,6 @@ const RoomForm = () => {
             setRoomType('PUBLIC')
     }, [roomType, pass, isPrivate])
     
-    const getUsersInfo = (users) => {
-        let _users: {
-                id: string, 
-                nickName: string,
-                firstName: string,
-                lastName: string,
-                photo?: string,
-                type: "OWNER"| "ADMIN" | "USER",
-                isBanned: boolean
-            }[] = []
-        // console.log(users)
-        users.map( (user) => {
-            _users.push(
-                {
-                id: user.user.userId,
-                nickName: user.user.nickname,
-                firstName: user.user.firstName,
-                lastName: user.user.lastName,
-                photo: user.user.profilePic,
-                type: user.userType,
-                isBanned: user.isBanned,
-                }
-            )
-            } 
-        )
-            return (_users)
-    }
-    
     useEffect(() => {
         socket.on('new-room', (res) => {
             console.log(res)
@@ -78,10 +50,7 @@ const RoomForm = () => {
     }, [])
 
     const confirmForm = async () => {
-        socket.emit('create-room', {roomName:roomName, users:users, type:roomType, password:pass, withCredentials: true,
-            headers: {
-                'Authorization': `Bearer ${getCookie('access_token')}`,
-                    'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}})
+        socket.emit('create-room', {roomName:roomName, users:users, type:roomType, password:pass})
         // try {
         //     await axios.post('http://127.0.0.1:3000/rooms', {
         //         roomName:roomName, 

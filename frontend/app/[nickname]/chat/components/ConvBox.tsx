@@ -37,7 +37,7 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
 }
 
   const activeDiv = (div:HTMLDivElement) => {
-    var divs = document.getElementsByClassName('convGroup') as HTMLCollectionOf<HTMLElement>
+    var divs = document.getElementsByClassName('convGroup z-0 bg-zinc-800 w-[70%] left-[15%] h-[100px] relative my-3 rounded-md active:bg-blue-500') as HTMLCollectionOf<HTMLElement>
     if (divs) {
       for (var i = 0; i < divs.length; i++) {
         if (divs[i] == div)
@@ -49,7 +49,7 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
   }
 
   return (
-    <div className="z-0 bg-zinc-800 w-[70%] left-[15%] h-[100px] relative my-3 rounded-md active:bg-blue-500" onClick={(e) => {
+    <div className="convGroup z-0 bg-zinc-800 w-[70%] left-[15%] h-[100px] relative my-3 rounded-md active:bg-blue-500" onClick={(e) => {
         handleClick();
         activeDiv(e.currentTarget);
         scrollToBottom()

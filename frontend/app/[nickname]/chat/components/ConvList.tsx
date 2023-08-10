@@ -1,38 +1,10 @@
 import { useContext, useEffect, useState } from "react"
-import { Context, conversation, gimmeRandom } from "../page"
+import { Context, conversation, getUsersInfo, gimmeRandom } from "../page"
 import ConvBox from "./ConvBox"
 import { userInfo } from "os"
 import Search from "./search"
 // import { useContext } from "react"
 // import { Context } from "../page"
-
-const getUsersInfo = (users) => {
-  let _users: {
-		id: string,
-		nickName: string,
-		firstName: string,
-		lastName: string,
-		photo?: string,
-		type: "OWNER"| "ADMIN" | "USER",
-		isBanned: boolean
-	}[] = []
-  // console.log(users)
-  users.map( (user) => {
-      _users.push(
-        {
-          id: user.user.id,
-          nickName: user.user.nickname,
-          firstName: user.user.firstName,
-          lastName: user.user.lastName,
-          photo: user.user.profilePic,
-          type: user.userType,
-          isBanned: user.isBanned,
-        }
-      )
-    } 
-  )
-    return (_users)
-}
 
 const ConvList = () => {
     const {socket, room_created, set_room_created, rooms, setRooms, userData} = useContext(Context)
@@ -58,13 +30,14 @@ const ConvList = () => {
       // return socket?.off('list-rooms',fillUserList)
     }
 
-    socket?.on('list-rooms',fillUserList)
+    useEffect( () => {
+      socket.on('list-rooms',fillUserList)
+    }, [])
 
     const AddUserToRoom = (res) => {
       const newuser = res.userInfos.find(o => o.userId === res.newUserAdded.userId)
       console.log(newuser)
       if (newuser.user.nickname === userData.nickname) {
-        console.log("**", "LMAOAAAAOAOAOOAOOAOA", "**")
         rooms.unshift({
         msgs: [],
         id: res.roomId.id,
@@ -86,19 +59,14 @@ const ConvList = () => {
         }
         )
       }
-      // setRooms(rooms.filter(o => o.name != res.roomId.room_name))
       set_room_created(old => !old)
       setUpdateList(old => !old)
       console.log(rooms)
-      // console.log("**", res.roomId, "**")
-      // console.log("**", res.userInfos.currentUser, "**")
-      // console.log("**", res.userInfos.userType, "**")
-      // console.log("**", res.userInfos[res.userInfo.length()], "**")
-      }
+    }
     
-      useEffect(() => {
-        socket.on('users-join', AddUserToRoom)
-      }, [])
+    useEffect(() => {
+      socket.on('users-join', AddUserToRoom)
+    }, [])
 
     return (
       <>

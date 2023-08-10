@@ -12,7 +12,9 @@ const Conversation = () => {
 
     const [showInfo, setShowInfo] = useState(false)
 
-    const {showConv, setShowConv, activeUserConv, setActiveUserConv, chatBoxMessages, setChatBoxMessages, rooms, socket, userData, msg_sent, set_msg_sent} = useContext(Context)
+    const [msg_sender, set_msg_sender] = useState('')
+
+    const {setAlertNewMessage, scrollToBottom, showConv, setShowConv, activeUserConv, setActiveUserConv, chatBoxMessages, setChatBoxMessages, rooms, socket, userData, msg_sent, set_msg_sent} = useContext(Context)
 
     useEffect( () => {
       typeof window != 'undefined' ? (window.innerWidth <= 768 ? setDeviceType('small') : setDeviceType('normal')) : setDeviceType('normal')
@@ -32,16 +34,21 @@ const Conversation = () => {
         e.preventDefault()
         const msg = e.target[0].value.trim()
         if (msg != '') {
-            socket.emit('send-message', {message:msg, roomName:activeUserConv.name ,
-                withCredentials: true,
-                headers: {
-                    'Authorization': `Bearer ${getCookie('access_token')}`,
-                        'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}})
+            socket.emit('send-message', {message:msg, roomName:activeUserConv.name})
             // setChatBoxMessages(old => [...old, {user:userData.nickname, msg:msg}])
             msg_sent == undefined ? set_msg_sent(1) : set_msg_sent(old => old == 1 ? 2 : 1)
             e.target[0].value = ''
+            set_msg_sender(userData.nickname)
         }
     }
+    
+    useEffect ( () => {
+        console.log("*", msg_sender)
+        if (userData.nickname === msg_sender) {
+            scrollToBottom()
+            setAlertNewMessage(false)
+        }
+    }, [chatBoxMessages])
 
     if (showConv) {
     return (

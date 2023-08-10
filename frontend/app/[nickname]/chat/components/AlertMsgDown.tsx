@@ -3,12 +3,9 @@ import { Context } from '../page'
 
 const AlertMsgDown = () => {
 
-    const {ref, chatBoxMessages, scrollToBottom} = useContext(Context)
+    const {alertNewMessage, setAlertNewMessage, chatBoxMessages, scrollToBottom} = useContext(Context)
 
     let temp = document.getElementById('chatbox')
-  
-    const [alertNewMessage, setAlertNewMessage] = useState(false)
-
 
     useEffect ( () => {
     if (temp) {

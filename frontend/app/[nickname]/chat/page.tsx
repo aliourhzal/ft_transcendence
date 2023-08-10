@@ -44,6 +44,34 @@ export interface Room {
 	}[]
 }
 
+export const getUsersInfo = (users) => {
+	let _users: {
+		  id: string,
+		  nickName: string,
+		  firstName: string,
+		  lastName: string,
+		  photo?: string,
+		  type: "OWNER"| "ADMIN" | "USER",
+		  isBanned: boolean
+	  }[] = []
+	// console.log(users)
+	users.map( (user) => {
+		_users.push(
+		  {
+			id: user.user.id,
+			nickName: user.user.nickname,
+			firstName: user.user.firstName,
+			lastName: user.user.lastName,
+			photo: user.user.profilePic,
+			type: user.userType,
+			isBanned: user.isBanned,
+		  }
+		)
+	  } 
+	)
+	  return (_users)
+  }
+
 const socket = io('ws://127.0.0.1:3004',{
 	extraHeaders: {
         Authorization: `Bearer ${getCookie('access_token')}`,
@@ -61,7 +89,7 @@ export default function Chat() {
 
 	const [rooms, setRooms] = useState<Room[]>([])
 
-	const [chatBoxMessages, setChatBoxMessages] = useState<{user:string, msg:string}[]>([])
+	const [chatBoxMessages, setChatBoxMessages] = useState<{user:string, msg:string, roomName?: string, id?:string}[]>([])
 
 	const [showForm, setShowForm] = useState(false)
 	const [showJoinForm, setShowJoinForm] = useState(false)
@@ -72,14 +100,16 @@ export default function Chat() {
 
 	const [showSearchUsersForm, setShowSearchUsersForm] = useState(false)
 
+	const [alertNewMessage, setAlertNewMessage] = useState(false)
+
 	const scrollToBottom = () => {
         const lastChildElement = ref.current?.lastElementChild;
-        lastChildElement?.scrollIntoView({ behavior: 'smooth' });
+        lastChildElement?.scrollIntoView({ behavior: 'smooth', block: 'end' });
     };
 
 	return (
 		<main className='select-none h-full w-full'>
-			<Context.Provider value={{ref, showConv, setShowConv, activeUserConv, setActiveUserConv, socket,
+			<Context.Provider value={{alertNewMessage, setAlertNewMessage, ref, showConv, setShowConv, activeUserConv, setActiveUserConv, socket,
 				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm, msg_sent, set_msg_sent,
 				set_room_created, room_created, rooms, setRooms, showSearchUsersForm, setShowSearchUsersForm, scrollToBottom}}>
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200">

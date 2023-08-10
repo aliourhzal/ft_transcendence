@@ -16,64 +16,15 @@ const JoinRoomForm = () => {
     //         hideForm()
     // }
 
-    const getUsersInfo = (users) => {
-        let _users: {
-                id: string, 
-                nickName: string,
-                firstName: string,
-                lastName: string,
-                photo?: string,
-                type: "OWNER"| "ADMIN" | "USER",
-                isBanned: boolean
-            }[] = []
-        // console.log(users)
-        users.map( (user) => {
-            _users.push(
-                {
-                id: user.user.userId,
-                nickName: user.user.nickname,
-                firstName: user.user.firstName,
-                lastName: user.user.lastName,
-                photo: user.user.profilePic,
-                type: user.userType,
-                isBanned: user.isBanned,
-                }
-            )
-            } 
-        )
-            return (_users)
-    }
-
     const hideForm = () => {
         setShowJoinForm(false)
         setName(''); setPass('')
     }
 
     const submitForm = () => {
-        console.log("lmao")
-        // socket.emit("join-room", {roomName:name, password:pass, userData.nickname})
-        socket.emit('join-room', {roomName:name, password:pass, withCredentials: true,
-            headers: {
-                'Authorization': `Bearer ${getCookie('access_token')}`,
-                    'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}})
-        // try {
-        //     axios.post('http://127.0.0.1:3000/rooms/join-room', {roomName:name, password:pass, auth: socket.auth['token']}, {withCredentials: true}).then(
-        //         res => {
-        //             rooms.unshift({
-        //                 name: res.data.room.room_name,
-        //                 lastmsg:'welcome to group chat',
-        //                 msgs: [],
-        //                 id: res.data.room.id,
-        //                 users: getUsersInfo(res.data.usersInfos),
-        //                 type: res.data.room.roomType
-        //             })
-        //         }
-        //     )
-        //     set_room_created(old => !old)
-        // }
-        // catch(error) {
-        //     console.log(error.data)
-        // }
+
+        socket.emit('join-room', {roomName:name, password:pass})
+
         setShowJoinForm(false)
     }
 
