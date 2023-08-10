@@ -19,7 +19,6 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
   const handleClick = async () => {
     setShowConv(true)
     setActiveUserConv(data.data)
-    // console.log(data.data)
     try {
       await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomName:data.data.name}, {
         withCredentials: true,

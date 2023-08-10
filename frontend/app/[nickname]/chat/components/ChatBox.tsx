@@ -18,7 +18,7 @@ const ChatBox = () => {
     // console.log(rooms.find(o => o.name === activeUserConv.name).msgs)
     // rooms.find(o => o.name === activeUserConv.name)
     // ((old:any) => [...old, {user:msg.user, msg:msg.message}] )
-    console.log(msg)
+    console.log("______", msg, "________")
     if (activeUserConv.name == msg.roomName) {
       setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.msg, id:msg.idOfmsg}])
     }
@@ -32,14 +32,16 @@ const ChatBox = () => {
 	},[msg_sent, chatBoxMessages])
 
   // let temp = document.getElementById('chatbox')
+
   useEffect ( () => {
     scrollToBottom();
   }, [])
+
   return (
       <div ref={ref} className='z-0'>
         {chatBoxMessages.map ((BoxMessage) => 
-          (BoxMessage.user == userData.nickname ? <SelfChatBox msg={BoxMessage.msg} user={currentRoom.users.find(o => o.nickName === BoxMessage.user)} key={BoxMessage.id}/>
-          : <OthersChatBox msg={BoxMessage.msg} user={currentRoom.users.find(o => o.nickName === BoxMessage.user)} key={BoxMessage.id}/>))}
+          (BoxMessage.user == userData.nickname ? <SelfChatBox msg={BoxMessage.msg} user={currentRoom.users.find(o => o.nickName === BoxMessage.user)} key={gimmeRandom()}/>
+          : <OthersChatBox msg={BoxMessage.msg} user={currentRoom.users.find(o => o.nickName === BoxMessage.user)} key={gimmeRandom()}/>))}
       </div>
   )
 }

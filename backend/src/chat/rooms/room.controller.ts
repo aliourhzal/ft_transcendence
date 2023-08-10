@@ -56,30 +56,30 @@ export class RoomController {
                     if(ifUserExist.error)
                         return res.status(404).send(ifUserExist.error);
 
-                        const roomId = await this.utils.getRoomIdByName(dto.roomName);
-                   
-                        
-                        if (roomId) // if room is founding check if current user is member into it and it not banned
-                        {
-                            const isUserInRoom = await this.utils.getUserType(roomId,[user['sub']]);
+                    const roomId = await this.utils.getRoomIdByName(dto.roomName);
+                
+                    
+                    if (roomId) // if room is founding check if current user is member into it and it not banned
+                    {
+                        const isUserInRoom = await this.utils.getUserType(roomId,[user['sub']]);
 
-                            if(isUserInRoom.error)
-                                return res.status(404).send(isUserInRoom.error);
+                        if(isUserInRoom.error)
+                            return res.status(404).send(isUserInRoom.error);
+                    
+                        // if(isUserInRoom.usersType[1].isBanned)
+                        // {
+                        //     return res.status(404).send('you are banned.');
+                        // }
                         
-                            if(isUserInRoom.usersType[1].isBanned)
-                            {
-                                return res.status(404).send('you are banned.');
-                            }
-                            
-                            
-                            const messageAndUserName = await this.messagesService.getAllMessagesofRoom(dto.roomName);
+                        
+                        const messageAndUserName = await this.messagesService.getAllMessagesofRoom(dto.roomName);
 
-                            return res.status(200).send({ msg: messageAndUserName });
-                        }
-                        else
-                        {
-                            return res.status(404).send('room not found.');
-                        }
+                        return res.status(200).send({ msg: messageAndUserName });
+                    }
+                    else
+                    {
+                        return res.status(404).send('room not found.');
+                    }
                 }
             }
             else
