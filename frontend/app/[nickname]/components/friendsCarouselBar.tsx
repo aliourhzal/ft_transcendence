@@ -67,14 +67,12 @@ export default function FriendCarouselBar()
 			withCredentials: true
 		})
 		.then(res => {
-			console.log(res.data);
 			setFriends(res.data);
 		})
 		socket.on('receive-friends', data => {
 			setFriends(data);
 		});
 		socket.on('update-status', data => {
-			console.log('friend caroussel: ', data);
 			setFriends(friends => {
 				return friends.map(friend => {
 					if (friend.nickname === data.user)
