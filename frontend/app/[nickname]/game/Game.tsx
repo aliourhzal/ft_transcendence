@@ -12,8 +12,8 @@ import Canvas from "./components/Canvas";
 */
 
 
-export default function Game()
-{
+export default function Game(props: any)
+{		
 	const userData = useContext(userDataContext);
 
 	// function getMousePos(evt: { clientY: number; }){
@@ -27,7 +27,7 @@ export default function Game()
 
 	//tlat khmis jm3a
 	// this hook used to start the game and connect to the socket
-
+	console.log(props);
 	return (
 		<section className="flex w-full h-full items-center bg-darken-200">
 			<div className="flex flex-col items-center w-full gap-5">
@@ -41,7 +41,7 @@ export default function Game()
 						<img className="w-16 h-16" src="../images/man.png" alt="man_hhhh" />
 					</div>
 				</div> */}
-				<Canvas />
+				<Canvas hell={props.hell} />
 			</div>
 			{/* <Navbar/ > */}
 			{/* <Script src="../../game-script.js" defer></Script> */}

@@ -6,11 +6,13 @@ import Player from "../utils/Player.class";
 import Ball from "../utils/Ball.class";
 
 
-export default function Canvas() {
+export default function Canvas(props) {
+	console.log(props);
     const socket = useContext(WebsocketContext);
     const ball = new Ball();
 	const player = new Player(0, 0, "#FFF")
 	const com = new Player(0, 0, "#5fed55")
+	let getSmaller = 0;
 
     function StartGame(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D)
 	{
@@ -66,6 +68,13 @@ export default function Canvas() {
 			// Math.PI/4 = 45degrees
 			collAngle = (Math.PI/4) * collidePoint;
 		}
+
+		if (props.hell === true && player.height > canvas.height / 25)
+		{
+			player.height -= 0.01;
+			com.height -= 0.01;
+		}
+
 		socket.emit("player", {
 			x: player.x,
 			y: player.y,
@@ -106,12 +115,6 @@ export default function Canvas() {
 		socket.on('send_canva_W_H', () => {
 			socket.emit("startGame", {w:canvas.width, h:canvas.height});
 		})
-		// socket.on("sendMe_canva_p2", ()=>{
-		// 	socket.emit("style", {w:canvas.width, h:canvas.height});
-		// })
-		// socket.on("sendMe_canva", ()=>{
-		// 	socket.emit("canva_cord", {w:canvas.width, h:canvas.height});
-		// })
 
         socket.on('game_Data', data => {
             ball.x = data.x;

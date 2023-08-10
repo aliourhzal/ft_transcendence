@@ -47,10 +47,10 @@ const BotGame = dynamic(() => import('./oldGame'), {
 
 export default function GameLogin()
 {
-    let playWith = "bot"; // online
+    const [playWith, setOp] = useState("bot"); // online
     const [themeN, setThemeN] = useState(1);
-    const [show, setShow] = useState(false);
-    const [bot, setBot] = useState(false);
+    const [hell, setHell] = useState(false);
+    const [Mode, setMode] = useState("");
     const def = useRef(null);
     const def2 = useRef(null);
     const def3 = useRef(null);
@@ -68,13 +68,13 @@ export default function GameLogin()
                     <div className="flex flex-col items-center gap-3 relative tooltip">
                         <span className="tooltiptext opacity-25 top-16">Practice With a Bot</span>
                         <h1 className="text-whiteSmoke text-lg font-bold">Practice</h1>
-                        <input className="h-5 w-5" type="radio" name="practice" id="" checked onChange={()=>{playWith="bot"}}/>
+                        <input className="h-5 w-5" type="radio" name="practice" id="" defaultChecked onChange={()=>{setOp("bot")}}/>
                         {/* <Radio color="primary" size="lg" ttvariant="soft" name="radio-buttons" checked/> */}
                     </div>
                     <div className="flex flex-col items-center gap-3 relative tooltip">
                         <span className="tooltiptext opacity-25 top-16">1 v 1 Online Game</span>
                         <h1 className="text-whiteSmoke text-lg font-bold">Play Online</h1>
-                        <input className="h-5 w-5" type="radio" name="practice" id="" onChange={()=>{playWith="online"}}/>
+                        <input className="h-5 w-5" type="radio" name="practice" id="" onChange={()=>{setOp("online")}}/>
                     </div>
                 </div>
                 {/* Themse */}
@@ -138,7 +138,7 @@ export default function GameLogin()
                         <h1 className=" text-whiteSmoke text-xl">Special Effects</h1>
                         <div className="flex gap-16">
                             <div className="flex flex-col items-center gap-3">
-                                <input className="h-5 w-5" type="radio" name="effects" id="" checked/>
+                                <input className="h-5 w-5" type="radio" name="effects" id="" defaultChecked/>
                                 <h1 className="text-whiteSmoke text-lg">ON</h1>
                             </div>
                             <div className="flex flex-col items-center gap-3">
@@ -151,7 +151,7 @@ export default function GameLogin()
                         <h1 className=" text-whiteSmoke text-xl">Ball Colorized</h1>
                         <div className="flex gap-16">
                             <div className="flex flex-col items-center gap-3">
-                                <input className="h-5 w-5" type="radio" name="ballC" id="" checked/>
+                                <input className="h-5 w-5" type="radio" name="ballC" id="" defaultChecked/>
                                 <h1 className="text-whiteSmoke text-lg">ON</h1>
                             </div>
                             <div className="flex flex-col items-center gap-3">
@@ -161,14 +161,14 @@ export default function GameLogin()
                         </div>
                     </div>
                     <div className="flex flex-col gap-8 items-center">
-                        <h1 className=" text-whiteSmoke text-xl">Targets</h1>
+                        <h1 className=" text-whiteSmoke text-xl">Hell Of Flame</h1>
                         <div className="flex gap-16">
                             <div className="flex flex-col items-center gap-3">
-                                <input className="h-5 w-5" type="radio" name="target" id="" checked/>
+                                <input className="h-5 w-5" type="radio" name="target" id="" onClick={() => setHell(true)}/>
                                 <h1 className="text-whiteSmoke text-lg">ON</h1>
                             </div>
                             <div className="flex flex-col items-center gap-3">
-                                <input className="h-5 w-5" type="radio" name="target" id=""/>
+                                <input className="h-5 w-5" type="radio" name="target" id="" onClick={() => setHell(false)} defaultChecked/>
                                 <h1 className="text-whiteSmoke text-lg">OFF</h1>
                             </div>
                         </div>
@@ -178,20 +178,11 @@ export default function GameLogin()
                     <button className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-semibold rounded-lg text-lg px-20 py-2.5 text-center mr-2 mb-2"
                     onClick={()=>{
                         main.current.style.display = 'none';
-                        if (playWith === "bot")
-                        {
-                            setBot(true);
-                            setShow(false);
-                        }
-                        else
-                        {
-                            setBot(false);
-                            setShow(c => !c);
-                        }
+                        (playWith === "bot" ? setMode("bot") : setMode('online'))
                     }}>Start</button>
                 </div>
             </div>
-            {show && <LazyGame /> || bot && <BotGame />}
+            {(Mode === "online" && <LazyGame hell={hell} />) || (Mode==="bot" && <BotGame />)}
             {/* {!show && } */}
         </div>
     );
