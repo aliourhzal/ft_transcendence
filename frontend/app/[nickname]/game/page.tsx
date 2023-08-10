@@ -5,6 +5,8 @@ import Game from "./Game";
 import dynamic from "next/dynamic";
 import Lottie from 'react-lottie';
 import * as pongLoading from "./utils/pongLoading.json";
+import botLoading from './utils/botLoading.json';
+import BotPractice from "./oldGame";
 
 const defaultOptions = {
     loop: true,
@@ -13,7 +15,15 @@ const defaultOptions = {
     rendererSettings: {
       preserveAspectRatio: "xMidYMid slice"
     }
-  };
+};
+const BotLottie = {
+    loop: true,
+    autoplay: true,
+    animationData: botLoading,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice"
+    }
+};
 
 const LazyGame = dynamic(() => import('./Game'), {
 	ssr: false,
@@ -25,10 +35,22 @@ const LazyGame = dynamic(() => import('./Game'), {
     />
 });
 
+const BotGame = dynamic(() => import('./oldGame'), {
+	ssr: false,
+	loading: () => 
+    <Lottie 
+        options={BotLottie}
+        width={400}
+        height={300}
+    />
+});
+
 export default function GameLogin()
 {
+    let playWith = "bot"; // online
     const [themeN, setThemeN] = useState(1);
     const [show, setShow] = useState(false);
+    const [bot, setBot] = useState(false);
     const def = useRef(null);
     const def2 = useRef(null);
     const def3 = useRef(null);
@@ -46,13 +68,13 @@ export default function GameLogin()
                     <div className="flex flex-col items-center gap-3 relative tooltip">
                         <span className="tooltiptext opacity-25 top-16">Practice With a Bot</span>
                         <h1 className="text-whiteSmoke text-lg font-bold">Practice</h1>
-                        <input className="h-5 w-5" type="radio" name="practice" id="" checked/>
+                        <input className="h-5 w-5" type="radio" name="practice" id="" checked onChange={()=>{playWith="bot"}}/>
                         {/* <Radio color="primary" size="lg" ttvariant="soft" name="radio-buttons" checked/> */}
                     </div>
                     <div className="flex flex-col items-center gap-3 relative tooltip">
                         <span className="tooltiptext opacity-25 top-16">1 v 1 Online Game</span>
                         <h1 className="text-whiteSmoke text-lg font-bold">Play Online</h1>
-                        <input className="h-5 w-5" type="radio" name="practice" id="" />
+                        <input className="h-5 w-5" type="radio" name="practice" id="" onChange={()=>{playWith="online"}}/>
                     </div>
                 </div>
                 {/* Themse */}
@@ -156,11 +178,21 @@ export default function GameLogin()
                     <button className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-semibold rounded-lg text-lg px-20 py-2.5 text-center mr-2 mb-2"
                     onClick={()=>{
                         main.current.style.display = 'none';
-                        setShow(c => !c);
+                        if (playWith === "bot")
+                        {
+                            setBot(true);
+                            setShow(false);
+                        }
+                        else
+                        {
+                            setBot(false);
+                            setShow(c => !c);
+                        }
                     }}>Start</button>
                 </div>
             </div>
-            {show && <LazyGame />}
+            {show && <LazyGame /> || bot && <BotGame />}
+            {/* {!show && } */}
         </div>
     );
 }

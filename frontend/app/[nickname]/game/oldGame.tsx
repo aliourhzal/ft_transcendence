@@ -14,7 +14,7 @@ import { useEffectmod } from "@/hooks/useAxiosFetch";
         Score
 */
 
-export function StartGame(socket: Socket)
+export function StartGame()
 {
     // declare interval ID
     let loop:NodeJS.Timer = null;
@@ -248,7 +248,6 @@ function render()
     {
         if (com.score === 5 || user.score === 5)
             clearInterval(loop);
-        socket.emit("gameData", ball);
         update();
         render();
     }
@@ -263,39 +262,19 @@ function render()
     return ;
 }
 
-export default function Game()
+export default function BotPractice()
 {
-    const socket = useContext(WebsocketContext);
-    const userData = useContext(userDataContext);
-    console.log('test', userData);
+    // const userData = useContext(userDataContext);
+    // console.log('test', userData);
     //tlat khmis jm3a
-    // this hook used to start the game and connect to the socket
     useEffect(() => {
-        // wait in a que || play with friend
-        socket.on("startGame", () => {
-            StartGame(socket);
-        });
-
-        socket.on('connect', () => {
-            console.log("connected");
-            socket.emit('newMessageAsalek', 'i\'m connected');
-        });
-        socket.on('onMessage', (data) => {
-            console.log(data);
-        });
-        return () => {
-            socket.off('connect');
-            socket.off('onMessage');
-            console.log("disconnect");
-        }
-        }
-    , []);
-
+        StartGame();
+    }, []);
     let width:string = '800px';
     return (
         <section className="flex w-full h-full items-center bg-darken-200">
             <div className="flex flex-col items-center w-full gap-5">
-                <div className="w-full flex justify-center gap-96">
+                {/* <div className="w-full flex justify-center gap-96">
                     <div className="flex items-center gap-x-5">
                         <img className="w-16 h-16" src="../images/man.png" alt="man_hhhh" />
                         <h2 className=" text-whiteSmoke">Ayoub</h2>
@@ -304,7 +283,7 @@ export default function Game()
                         <h2 className="text-whiteSmoke">Ayoub</h2>
                         <img className="w-16 h-16" src="../images/man.png" alt="man_hhhh" />
                     </div>
-                </div>
+                </div> */}
                 <canvas id="pongy" className="bg-darken-300 mx-auto rounded-md " width={width} height="450px"></canvas>
             </div>
             {/* <Navbar/ > */}
