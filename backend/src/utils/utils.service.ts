@@ -224,7 +224,7 @@ export class UtilsService {
     async   removeUserFromRoom(userId : string, roomId : string) 
     {
         // if remove the user from join table will not known if it is banned or not , so just remove all messages from the room
-        
+        // and cannot re joined to room .
         const userMessages = await this.prisma.messages.findMany({ //  messages of user in the room
             where: {
               user: {

@@ -37,7 +37,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         return false
     }
 
-    const promoteUser = (id) => { socket.emit('setOtherAasAdministrators', {roomName:info.room.name, newAdminUser:id}) }
+    const promoteUser = (id) => { socket.emit('user-promotion', {roomName:info.room.name, newAdminId:id}) }
 
     const demoteteUser = (id) => {
 

@@ -45,114 +45,9 @@
 - if is muted cannot send message , should wait after finish time of muted
 
 
-
-
- @SubscribeMessage('join-room') 
-    @UsePipes(new ValidationPipe()) // Add the ValidationPipe here
-    async joinRoom(@MessageBody() dto:JoinRoomDto) 
-    { 
-
-        try 
-        {
-            const user = this.jwtService.verify(dto.user,{ secret: process.env.JWT_SECRET })
-
-            const currentUser = await this.utils.getUserId(user['sub']);
-
-            if(!currentUser)
-            {
-                this.socketOfcurrentUser.emit('users-join','user not found.')
-                return ;
-            }
-            
-            const roomId:any = await this.utils.getRoomByName(dto.roomName);
-
-            if(roomId)
-            {
-                const usersInRoom:any = await this.utils.getUsersInRooms(roomId.id);
-                
-                const find = usersInRoom.find((item:any) => item.userId === user['sub']);
-    
-                if(!find)
-                {
-                    const roomType = await this.utils.getRoomById(roomId.id);
-                    const usersInroom = await this.utils.getUsersInRooms(roomId.id);                    
-                    if(roomType.roomType === 'PROTECTED')
-                    {
-                        if(comparePasswd(dto.password,roomType.password) )
-                        {
-                            await this.roomService.linkBetweenUsersAndRooms(roomId.id, user['sub']);
-                        
-                        const usersInroom = await this.utils.getUsersInRooms(roomId.id);
-                            
-                            for(const userInRoom of usersInroom)
-                            {
-                                for (let i = 0; i < this.soketsId.length; i++) 
-                                {
-                                    if(this.soketsId[i].userId === userInRoom.userId)
-                                    {
-                                        this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id) , newUserAdded : usersInroom[usersInroom.length - 1] });                                    }
-                                }
-
-                            }
-                            return ;
-                        }
-                        else
-                        {
-                            this.socketOfcurrentUser.emit('users-join',"password inccorect.")
-                            return ;
-                        }
-                    }
-                    else if(roomType.roomType === 'PUBLIC')
-                    {
-                        await this.roomService.linkBetweenUsersAndRooms(roomId.id, user['sub']);
-                        
-                        const usersInroom = await this.utils.getUsersInRooms(roomId.id);
-                        
-                        
-                        // this.server.to(dto.socketId).emit('current-user-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id)});
-
-                        for(const userInRoom of usersInroom)
-                        {
-                            for (let i = 0; i < this.soketsId.length; i++) 
-                            {
-                                if(this.soketsId[i].userId === userInRoom.userId)
-                                {
-                                    this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id) , newUserAdded : usersInroom[usersInroom.length - 1] });
-                                }
-                            }
-  
-                        } 
-                        return ;
-                    } 
-                }
-                else 
-                {
-                    // this.socketOfcurrentUser.emit('error-joinned-room','user aleredy in this room.')
-                    this.OnWebSocektError(this.socketOfcurrentUser);
-                }
-
-            }
-            else
-            {
-                // this.socketOfcurrentUser.emit('error-joinned-room','room not found.')
-                this.OnWebSocektError(this.socketOfcurrentUser);
-
-                return ;
-            }
-            
-        } 
-        catch (error : any) 
-        {
-            // this.socketOfcurrentUser.emit('error-joinned-room',error);
-            // this.OnWebSocektError(this.socketOfcurrentUser);
-        }
-    }
-
-
-
- @Post()
-    async createRoom(@Req() request: Request , @Body() dto:createRoom, @Res() res:any ,  @ConnectedSocket() socket: Socket)
-    { 
+ @Post('/setOtherAasAdministrators') // use dto
+    async setOtherAasAdministrators(@Req() request: Request , @Body() dto:SetOtherAasAdministrators, @Res() res:any)
+    {
         try 
         {
             const token = this.utils.verifyJwtFromHeader(request.headers['authorization']);
@@ -163,64 +58,51 @@
               
                 if (user) 
                 {
-                    const usersId = (await this.utils.getUsersIdByNickname(user['sub'],dto.users , 1)); // get ids of users 
-
-                    if(usersId.error)
-                        return res.status(404).send(usersId.error);
-
-                    const ifUserExist = await this.utils.getUserId([user['sub'] , ...usersId.uniqUsers]);
-                    
-                    if(ifUserExist.error)
-                        return res.status(404).send(ifUserExist.error);
-                    
-                    if (dto.type === RoomType.PRIVATE || dto.type === RoomType.PROTECTED || dto.type === RoomType.PUBLIC) 
+                    const existingUsers = await this.utils.getUserId([user['sub'] , dto.newAdminId]); // if both users is is exist
+        
+                    if(existingUsers.error)
+                        return res.status(404).send(existingUsers.error);
+        
+                    const roomId = await this.utils.getRoomIdByName(dto.roomName);
+        
+                    if(roomId)  
                     {
-                        if (dto.type === "PROTECTED") 
+                        // here check if the both users in this room and cannot set same user as admin
+                        const usersType = await this.utils.getUserType(roomId,existingUsers.existingUser);
+                        
+                        if(usersType.error)
+                            return res.status(404).send(usersType.error);
+                        
+                        if(usersType.usersType[1].isBanned)
                         {
-                            const room = await this.roomService.createRoom({roomName: dto.roomName, users: usersId.uniqUsers}, user['sub'], "PROTECTED", dto.password);
-        
-                            if(room === 1)
-                            {
-                                return res.status(406).send("room name aleredy exist.");
-                            }
-                            if(room === 0)
-                            {
-                                return res.status(406).send("should set password for this protected room.");
-                            }
-                            
-                            res.status(200).send({room  , usersInRoom: await this.utils.getUsersInRooms(room['id']) , userInfos: await this.utils.getUserInfosInRoom(room['id'])});
-                            
+                            return res.status(404).send('you are banned.');
                         }
-                        else
+                        
+                        if(usersType.usersType[0].userType !== 'USER') // if current user is admin or owner in this case can set admins
                         { 
-                            const room = await this.roomService.createRoom({roomName: dto.roomName, users: usersId.uniqUsers}, user['sub'], dto.type);
-        
-                            if(room === 1)
-                            {
-                                return res.status(406).send("room name aleredy exist.");
-                            }
-        
-                            res.status(200).send({room  , usersInRoom: await this.utils.getUsersInRooms(room['id']) , userInfos: await this.utils.getUserInfosInRoom(room['id'])});
-                        }
-                    }
-                    else
-                    {
-                        return res.status(406).send("error in type of room.")
-                    }
+                            // here before set admin check if it is aleredy admin or an  user
+                            const rtn = await this.roomService.setNewAdmins(roomId, usersType.usersType[1]);
 
+                            if(rtn.error)
+                                return res.status(404).send(rtn.error);
+
+                            return res.status(200).send(rtn.ok);
+                        }
+
+                        return res.status(404).send('dont have the permission to set an admin.');
+                    }
+                    return res.status(404).send('room not found.');
                 }
-            }
+            }    
             else
             {
                 return res.status(404).send('invalid jwt.')
             }
-            
-
         } 
         catch (error) 
         {
-            console.log('from createRoom()' )
-         
+            console.log('from set()')
             return res.status(500).json({ error: error.message });
-        } 
+        }
+
     }

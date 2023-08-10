@@ -17,6 +17,7 @@ import { SendMessage } from 'src/dto/sendMessage.dto';
 import { ClientRequest } from 'http';
 import { createRoom } from 'src/dto';
 import { RoomType } from 'src/utils/userData.interface';
+import { SetOtherAasAdministrators } from 'src/dto/setOtherAasAdministrators.dto';
 
 @WebSocketGateway(3004)
 export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
@@ -35,6 +36,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     user : UserData;
         
     soketsId :ArrayOfClinets[] = [];
+
     arrayOfJoinnedUsers :ArrayOfClinets[] = [];
     
     listOfRoomsOfUser :   any[] = [];
@@ -106,6 +108,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         try 
         {
             const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+
             if (token) 
             {
                 const decodedToken = await this.utils.verifyToken(token)
@@ -403,9 +406,114 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         }
     }
 
+    @SubscribeMessage('user-promotion') 
+    @UsePipes(new ValidationPipe()) 
+    async UserPromotion(@MessageBody() dto:SetOtherAasAdministrators , @ConnectedSocket() socket: Socket) 
+    {
+        try 
+        {
+            const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+            if (token) 
+            {
+                const user = await this.utils.verifyToken(token)
+
+                if (user) 
+                {
+                    const existingUser = await this.utils.getUserId([user['sub'] , dto.newAdminId]);
+                    
+                    if(existingUser.error)
+                    {
+                        console.log(existingUser.error);
+                        this.OnWebSocektError(socket);
+
+                        // emit existingUsers.error
+                        return ;
+                    } 
+
+                    
+                    const roomId = await this.utils.getRoomByName(dto.roomName);
+                    
+                    // demote
+                    // onPromote
+                    if(roomId)  
+                    {
+                        // here check if the both users in this room and cannot set same user as admin
+                        const usersType = await this.utils.getUserType(roomId.id,existingUser.existingUser);
+                         
+                        if(usersType.error)
+                        {
+                            console.log(usersType.error);
+                            return ;
+                        }
+                        
+                        if(usersType.usersType[1].isBanned)
+                        {
+                            console.log('you are banned.');
+                            return ;
+                        }
+                        
+                        if(usersType.usersType[0].userType === 'OWNER') // if current user is  owner in this case can set admins
+                        { 
+                            // here before set admin check if it is aleredy admin or an  user
+                            const rtn = await this.roomService.setNewAdmins(roomId.id, usersType.usersType[1]);
+
+                            if(rtn.error)
+                            {
+                                console.log(rtn.error);
+                                return ;
+                            }
+                            else
+                            {
+                                const usersInroom = await this.utils.getUsersInRooms(roomId.id);
+
+                                for(const userInRoom of usersInroom)
+                                {
+                                    for (let i = 0; i < this.soketsId.length; i++) 
+                                    {
+                                        if(this.soketsId[i].userId === userInRoom.userId)
+                                        {
+                                            this.server.to(this.soketsId[i].socketIds).emit("onPromote",{ roomId ,  newAdmin: usersType.usersType[1] });
+                                        } 
+                                    }
+                                }
+                                console.log(rtn.ok)
+                                return ;
+                                // return res.status(200).send(rtn.ok);
+                            }
+                        }
+                        else
+                        {
+                            console.log('dont have the permission to set an admin.');
+                            return ;
+                        }
+                    }
+                    else
+                    {
+                        console.log('room not found.');
+                        return ;
+                    }
+                
+                }
+                 
+            }
+            else
+            {
+                console.log('invalid jwt.');
+                this.OnWebSocektError(socket);
+            }
+
+        }
+        catch(error)
+        {
+                console.log(error.error)
+        }
+    }
+
+
 
     OnWebSocektError(socket:Socket)
     { 
+ 
         // socket.emit("error", new UnauthorizedException());
         socket.disconnect();
     }
@@ -414,7 +522,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     async handleDisconnect(socket: Socket) {
 
         // on deconect delete the socket id
-
+        this.soketsId.pop();
         console.log("disconnected from chat");
         
         // this.soketsId = []; // clear socket ids 

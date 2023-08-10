@@ -24,6 +24,7 @@ export class MessagesService
               users: true,
             },
         });
+
         if(messages)
         { 
 
@@ -35,12 +36,14 @@ export class MessagesService
                 };
                 allMessages.push(msg);
             }
+        
             return allMessages;
 
             // return {username:this.findUserById(messages.users[0].userId) , message:messages.messages};
         }
         else
         {
+            console.log('error from getAllMessagesofRoom() ')
             // room name not found
         }
         // return messages;

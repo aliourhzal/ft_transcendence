@@ -73,7 +73,6 @@ export class RoomController {
                         
                         
                         const messageAndUserName = await this.messagesService.getAllMessagesofRoom(dto.roomName);
-
                         return res.status(200).send({ msg: messageAndUserName });
                     }
                     else
@@ -101,7 +100,7 @@ export class RoomController {
     // test user ban owner
     // test user ban user
     // 
-    @Post('/banFromRoom') 
+    @Post('/banFromRoom')  // ban  for limmited time and admin can ban or kick any other user or admin exept owner
 	async banFromRoom(@Req() request: Request , @Body() dto:BanUser, @Res() res:any)
     {
         try 
@@ -162,66 +161,66 @@ export class RoomController {
         }
     }
     
-    @Post('/setOtherAasAdministrators') // use dto
-    async setOtherAasAdministrators(@Req() request: Request , @Body() dto:SetOtherAasAdministrators, @Res() res:any)
-    {
-        try 
-        {
-            const token = this.utils.verifyJwtFromHeader(request.headers['authorization']);
+    // @Post('/setOtherAasAdministrators') // use dto
+    // async setOtherAasAdministrators(@Req() request: Request , @Body() dto:SetOtherAasAdministrators, @Res() res:any)
+    // {
+    //     try 
+    //     {
+    //         const token = this.utils.verifyJwtFromHeader(request.headers['authorization']);
 
-            if (token) 
-            {
-                const user = await this.utils.verifyToken(token)
+    //         if (token) 
+    //         {
+    //             const user = await this.utils.verifyToken(token)
               
-                if (user) 
-                {
-                    const existingUsers = await this.utils.getUserId([user['sub'] , dto.newAdminId]); // if both users is is exist
+    //             if (user) 
+    //             {
+    //                 const existingUsers = await this.utils.getUserId([user['sub'] , dto.newAdminId]); // if both users is is exist
         
-                    if(existingUsers.error)
-                        return res.status(404).send(existingUsers.error);
+    //                 if(existingUsers.error)
+    //                     return res.status(404).send(existingUsers.error);
         
-                    const roomId = await this.utils.getRoomIdByName(dto.roomName);
+    //                 const roomId = await this.utils.getRoomIdByName(dto.roomName);
         
-                    if(roomId)  
-                    {
-                        // here check if the both users in this room and cannot set same user as admin
-                        const usersType = await this.utils.getUserType(roomId,existingUsers.existingUser);
+    //                 if(roomId)  
+    //                 {
+    //                     // here check if the both users in this room and cannot set same user as admin
+    //                     const usersType = await this.utils.getUserType(roomId,existingUsers.existingUser);
                         
-                        if(usersType.error)
-                            return res.status(404).send(usersType.error);
+    //                     if(usersType.error)
+    //                         return res.status(404).send(usersType.error);
                         
-                        if(usersType.usersType[1].isBanned)
-                        {
-                            return res.status(404).send('you are banned.');
-                        }
+    //                     if(usersType.usersType[1].isBanned)
+    //                     {
+    //                         return res.status(404).send('you are banned.');
+    //                     }
                         
-                        if(usersType.usersType[0].userType !== 'USER') // if current user is admin or owner in this case can set admins
-                        { 
-                            // here before set admin check if it is aleredy admin or an  user
-                            const rtn = await this.roomService.setNewAdmins(roomId, usersType.usersType[1]);
+    //                     if(usersType.usersType[0].userType !== 'USER') // if current user is admin or owner in this case can set admins
+    //                     { 
+    //                         // here before set admin check if it is aleredy admin or an  user
+    //                         const rtn = await this.roomService.setNewAdmins(roomId, usersType.usersType[1]);
 
-                            if(rtn.error)
-                                return res.status(404).send(rtn.error);
+    //                         if(rtn.error)
+    //                             return res.status(404).send(rtn.error);
 
-                            return res.status(200).send(rtn.ok);
-                        }
+    //                         return res.status(200).send(rtn.ok);
+    //                     }
 
-                        return res.status(404).send('dont have the permission to set an admin.');
-                    }
-                    return res.status(404).send('room not found.');
-                }
-            }    
-            else
-            {
-                return res.status(404).send('invalid jwt.')
-            }
-        } 
-        catch (error) 
-        {
-            console.log('from set()')
-            return res.status(500).json({ error: error.message });
-        }
+    //                     return res.status(404).send('dont have the permission to set an admin.');
+    //                 }
+    //                 return res.status(404).send('room not found.');
+    //             }
+    //         }    
+    //         else
+    //         {
+    //             return res.status(404).send('invalid jwt.')
+    //         }
+    //     } 
+    //     catch (error) 
+    //     {
+    //         console.log('from set()')
+    //         return res.status(500).json({ error: error.message });
+    //     }
 
-    }
+    // }
 
 }
