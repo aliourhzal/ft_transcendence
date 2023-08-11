@@ -131,10 +131,10 @@ export class RoomsService
     
     }   
 
-    async changeToUsers(roomId: string, demoteUserId: string)
+    async changeToUser(roomId: string, demoteUserId: string)
     {
         
-        await this.prisma.joinedTable.update({
+        const updatesUserType = await this.prisma.joinedTable.update({
             where: {
                 userId_roomId: {
                     userId: demoteUserId,
@@ -145,6 +145,7 @@ export class RoomsService
                 userType: "USER",
             },
         });
+        return {updatesUserType}
     }                                                                                                                            
 
     async updateRoom(roomType_: RoomType, roomId:string, password?: string )
