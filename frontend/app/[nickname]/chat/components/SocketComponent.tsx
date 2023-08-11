@@ -26,6 +26,11 @@ const SocketComponent:React.FC<SocketComponentProps> = (props) => {
 
   const demoteUser = res => {
     console.log(res)
+    // setRooms((_rooms: Room[]) => {
+    //   _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.newAdmin.userId).type = 'USER'
+    //   return _rooms
+    // })
+    // setInfoUpdate(old => !old)
   }
 
   useEffect (() => {

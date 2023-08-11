@@ -40,7 +40,6 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         return false
     }
     const isOwner = (user) => {
-        console.log(user)
         if (user.type === 'OWNER')
             return true
         return false
@@ -48,9 +47,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
 
     const promoteUser = (id) => { socket.emit('user-promotion', {roomName:info.room.name, newAdminId:id}) }
 
-    const demoteteUser = (id) => {
-
-    }
+    const demoteteUser = (id) => { socket.emit('user-demote', {roomName:info.room.name, newAdminId:id}) }
 
     const kickUser = (id) => {
 
@@ -94,7 +91,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
                                     !isOwner(info.room.users.find(o => o.nickName === user.nickName)) &&
                                     <>
                                         { isAdmin(info.room.users.find(o => o.nickName === user.nickName)) ? isOwner(info.room.users.find(o => o.nickName === info.userData.nickname)) &&
-                                            <TbUserDown className='hover:text-whiteSmoke text-blueStrong' title='demote' aria-label='demote' cursor="pointer" size={20} onClick={demoteteUser}/>
+                                            <TbUserDown className='hover:text-whiteSmoke text-blueStrong' title='demote' aria-label='demote' cursor="pointer" size={20} onClick={() => {demoteteUser(user.id)}}/>
                                             :
                                             isOwner(info.room.users.find(o => o.nickName === info.userData.nickname)) && <TbUserUp className='hover:text-whiteSmoke text-blueStrong' title='promote' strokeWidth={2.3} aria-label='promote' cursor="pointer" size={25} onClick={() => {promoteUser(user.id)}}/>
                                         }
