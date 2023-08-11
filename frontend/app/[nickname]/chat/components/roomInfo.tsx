@@ -40,6 +40,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         return false
     }
     const isOwner = (user) => {
+        console.log(user)
         if (user.type === 'OWNER')
             return true
         return false
@@ -90,6 +91,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
                             </div>
                             <div className='flex items-center gap-2'>
                                 {(isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) && user.nickName != info.userData.nickname) &&
+                                    !isOwner(info.room.users.find(o => o.nickName === user.nickName)) &&
                                     <>
                                         { isAdmin(info.room.users.find(o => o.nickName === user.nickName)) ? isOwner(info.room.users.find(o => o.nickName === info.userData.nickname)) &&
                                             <TbUserDown className='hover:text-whiteSmoke text-blueStrong' title='demote' aria-label='demote' cursor="pointer" size={20} onClick={demoteteUser}/>
