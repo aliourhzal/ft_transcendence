@@ -197,10 +197,10 @@ function Effects(props: any)
 export default function GameLogin()
 {
     const [playWith, setOp] = useState("bot"); // online
-    const [ballColors, setBall] = useState(false);
-    const [themeN, setThemeN] = useState(1);
-    const [hell, setHell] = useState(false);
-    const [Mode, setMode] = useState("");
+    const [ballColors, setBall] = useState(false); // ball colored
+    const [themeN, setThemeN] = useState(1);    //themes
+    const [hell, setHell] = useState(false);    // hell of flame mode
+    const [Mode, setMode] = useState("");   //bot online
     const def = useRef(null);
     const def2 = useRef(null);
     const def3 = useRef(null);

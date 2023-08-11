@@ -7,7 +7,7 @@ import Ball from "../utils/Ball.class";
 
 
 export default function Canvas(props) {
-	console.log(props);
+	let color = "#50CFED";
     const socket = useContext(WebsocketContext);
     const ball = new Ball();
 	const player = new Player(0, 0, "#FFF")
@@ -52,7 +52,17 @@ export default function Canvas(props) {
 		drawRect(canvas.offsetWidth - com.width, com.y , com.width, com.height, com.color);
 
 		//draw the ball
-		drawArc(ball.x, ball.y, ball.radius, ball.color);
+		if (props.ball === true)
+        {
+            color = "#" +  (Math.ceil(ball.x) < 0 ? Math.ceil(ball.x) * -1 : Math.ceil(ball.x))
+                + "" + (Math.ceil(ball.y) < 0 ? Math.ceil(ball.y) * -1 : Math.ceil(ball.x));
+            if (color.length !== 7)
+                color + "" + Math.floor(Math.random() * 10);
+        }
+        else
+            color = "white";
+        props.ball === true && drawArc(ball.x, ball.y, ball.radius + 2, "white");
+        drawArc(ball.x, ball.y, ball.radius, color);
 		let collAngle = 0;
 		const coll = collision();
 		if (coll)

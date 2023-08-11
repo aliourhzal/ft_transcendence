@@ -41,7 +41,7 @@ export default function Game(props: any)
 						<img className="w-16 h-16" src="../images/man.png" alt="man_hhhh" />
 					</div>
 				</div> */}
-				<Canvas hell={props.hell} />
+				<Canvas ball={props.ball}  hell={props.hell} />
 			</div>
 			{/* <Navbar/ > */}
 			{/* <Script src="../../game-script.js" defer></Script> */}
