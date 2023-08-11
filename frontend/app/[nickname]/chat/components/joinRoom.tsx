@@ -22,8 +22,8 @@ const JoinRoomForm = () => {
     }
 
     const submitForm = () => {
-
-        socket.emit('join-room', {roomName:name, password:pass})
+ 
+        socket.emit('join-room', {roomName:name, password:'pass'})
 
         setShowJoinForm(false)
     }

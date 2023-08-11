@@ -13,6 +13,7 @@ import { UniversalData } from '../../layout';
 import { Avatar } from '@nextui-org/react';
 import NewRoomUsers from './NewRoomUsers';
 import { Context } from '../page';
+import SocketComponent from './SocketComponent';
 
 interface RoomInfoProps {
     room:any
@@ -24,7 +25,9 @@ interface RoomInfoProps {
 
 const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     
-    const {socket} = useContext(Context)
+    const {socket, rooms, setRooms} = useContext(Context)
+
+    const [infoUpdate, setInfoUpdate] = useState(false)
 
     const hide = () => {
         info.setShow(false)
@@ -33,6 +36,11 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     
     const isAdmin = (user) => {
         if (user.type === 'OWNER' || user.type === 'ADMIN')
+            return true
+        return false
+    }
+    const isOwner = (user) => {
+        if (user.type === 'OWNER')
             return true
         return false
     }
@@ -64,6 +72,8 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     const [showUsersForm, setShowUsersForm] = useState(false)
 
   return (
+    <>
+    <SocketComponent rooms={rooms} socket={socket} setRooms={setRooms} setInfoUpdate={setInfoUpdate}/>
     <Popup isOpen={info.show} modalAppearance={hide}>
         <div className='flex items-end justify-center m-4'>
             <Avatar zoomed text={info.room.name} bordered color={"primary"} alt={info.room.name} className="ml-8 w-auto h-auto"></Avatar>
@@ -81,9 +91,10 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
                             <div className='flex items-center gap-2'>
                                 {(isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) && user.nickName != info.userData.nickname) &&
                                     <>
-                                        { isAdmin(info.room.users.find(o => o.nickName === user.nickName)) ? 
+                                        { isAdmin(info.room.users.find(o => o.nickName === user.nickName)) ? isOwner(info.room.users.find(o => o.nickName === info.userData.nickname)) &&
                                             <TbUserDown className='hover:text-whiteSmoke text-blueStrong' title='demote' aria-label='demote' cursor="pointer" size={20} onClick={demoteteUser}/>
-                                            :   <TbUserUp className='hover:text-whiteSmoke text-blueStrong' title='promote' strokeWidth={2.3} aria-label='promote' cursor="pointer" size={25} onClick={() => {promoteUser(user.id)}}/>
+                                            :
+                                            isOwner(info.room.users.find(o => o.nickName === info.userData.nickname)) && <TbUserUp className='hover:text-whiteSmoke text-blueStrong' title='promote' strokeWidth={2.3} aria-label='promote' cursor="pointer" size={25} onClick={() => {promoteUser(user.id)}}/>
                                         }
                                         <BiUserMinus className='hover:text-whiteSmoke text-blueStrong' title='kick' strokeWidth={0} aria-label='kick' cursor="pointer" size={30} onClick={kickUser}/>
                                         <BiUserX className='hover:text-whiteSmoke text-blueStrong' title='ban' aria-label='ban' cursor="pointer" size={30} onClick={banUser}/>
@@ -100,6 +111,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
             <button type="button" className="w-auto text-white bg-red-900 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Leave</button>
         </div>
     </Popup>
+    </>
   )
 }
 

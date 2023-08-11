@@ -14,10 +14,11 @@ import { MessagesService } from '../messages/messages.service';
 import { JoinRoomDto } from 'src/dto/join-room.dto';
 import { comparePasswd } from 'src/utils/bcrypt';
 import { SendMessage } from 'src/dto/sendMessage.dto';
-import { ClientRequest } from 'http';
 import { createRoom } from 'src/dto';
 import { RoomType } from 'src/utils/userData.interface';
 import { SetOtherAasAdministrators } from 'src/dto/setOtherAasAdministrators.dto';
+import { DemoteUser } from 'src/dto/DemoteUser.dto';
+import { KickUser } from 'src/dto/Kickusers.sto';
 
 @WebSocketGateway(3004)
 export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
@@ -46,57 +47,33 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         try 
         {
             const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
-        
+
             if (token) 
             {
-                const decodedToken = await this.utils.verifyToken(token)
-              
-                if (decodedToken) 
+                const user  = await this.utils.verifyToken(token); // // if has error will catch it
+                
+                const rtn = await this.utilsFunction(socket , user);
+                
+                if(rtn.error)
                 {
-
-                    console.log('connected from chat');
-                
-                    const existingUser = await this.utils.getUserId([decodedToken['sub']]);
-                    
-                    if(existingUser.error)
-                    {
-                        this.OnWebSocektError(socket);
-
-                        // emit existingUsers.error
-                        return ;
-                    }                
-                
-                    this.soketsId.push({userId:existingUser.existingUser[0], socketIds:socket.id})
-
-                    const rooms = await this.utils.getRoomsForUser(existingUser.existingUser[0]); // all rooms who this user is member into it
-        
-                    let messages:any[] = [];
-
-            
-                    for(let i = 0; i < rooms.length; i++)
-                    {
-                        messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i]['room']['room_name']) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId) })
-                    }
-                    
-
-                    this.server.to(socket.id).emit("list-rooms",{messages});  //  evry client will connected will display the rooms who is member into it
-                    
+                    this.OnWebSocektError(socket);
+                    console.log(rtn.error)
+                    return ;
                 }
-            }
+                else
+                    console.log(rtn.ok)
+            
+            } 
             else
             {
                 console.log('invalid jwt.');
                 this.OnWebSocektError(socket);
-
             }
-            
-        } 
+        }   
         catch (error) 
         {
-            console.log('from catch');
-            console.log(error)    
             this.OnWebSocektError(socket);
-
+            console.log(error)
         }
     }
    
@@ -211,77 +188,49 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         try 
         {
             const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+
             if (token) 
             {
-                const decodedToken = await this.utils.verifyToken(token)
-              
-                if (decodedToken) 
-                {
-                    const existingUser = await this.utils.getUserId([decodedToken['sub']]);
-                    
-                    if(existingUser.error)
-                    {
-                        this.OnWebSocektError(socket);
-
-                        // emit existingUsers.error
-                        return ;
-                    }                
+                const user  = await this.utils.verifyToken(token); // // if has error will catch it
                 
-                    const roomId =  await this.utils.getRoomByName(dto.roomName);
-                    if(roomId)
-                    {
-                        const userType = await this.utils.getUserType(roomId.id, [decodedToken['sub']]);
-                        // if(userType.isBanned)
-                        // {
-                        //     console.log('you are banned from this room.')
-                        //     return ;
-                        // }
-                        if(userType)
-                        {
-                            const createdMsg = await this.messagesService.createMessages(dto.message ,decodedToken['sub'], roomId.id);
-                            
-                            
-                            const usersInroom = await this.utils.getUsersInRooms(roomId.id);
-                            
-                            for(const userInRoom of usersInroom)
-                            {
-                                for (let i = 0; i < this.soketsId.length; i++) 
-                                {
-                                    if(this.soketsId[i].userId === userInRoom.userId)
-                                    {
-                                        this.server.to(this.soketsId[i].socketIds).emit("add-message", {user: createdMsg.username, msg: createdMsg.msg , roomName: roomId.room_name , idOfmsg : createdMsg.idOfMsg})
-                                    }
-                                }
-        
-                            }
-                             
-                        }
-                        else
-                        {
-                            // emmit user is not in this room
-                        }
-        
-                    }
-                    else
-                    {
-                        // emmit room not found
-                    }
-                    
-                    
+                const rtn = await this.utilsFunction(socket , user , dto.roomName);
+                
+                if(rtn.error)
+                {
+                    this.OnWebSocektError(socket);
+                    console.log(rtn.error)
+                    return ;
                 }
-            }
+                else
+                {
+                    const createdMsg = await this.messagesService.createMessages(dto.message ,user['sub'], rtn.room.id);
+                            
+                            
+                    const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
+                    
+                    for(const userInRoom of usersInroom)
+                    {
+                        for (let i = 0; i < this.soketsId.length; i++) 
+                        {
+                            if(this.soketsId[i].userId === userInRoom.userId)
+                            {
+                                this.server.to(this.soketsId[i].socketIds).emit("add-message", {user: createdMsg.username, msg: createdMsg.msg , roomName: rtn.room.room_name , idOfmsg : createdMsg.idOfMsg})
+                            }
+                        }
+
+                    }
+                }
+            } 
             else
             {
                 console.log('invalid jwt.');
                 this.OnWebSocektError(socket);
-
             }
-            
-        } 
+        }   
         catch (error) 
         {
             this.OnWebSocektError(socket);
-            console.log(error.error)
+            console.log(error)
         }
     }
 
@@ -290,126 +239,110 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     @UsePipes(new ValidationPipe()) // Add the ValidationPipe here
     async joinRoom(@MessageBody() dto:JoinRoomDto , @ConnectedSocket() socket: Socket) 
     {
-     
         try 
         {
             const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+
             if (token) 
             {
-                const decodedToken = await this.utils.verifyToken(token)
-
-                if (decodedToken) 
-                {
-                    const existingUser = await this.utils.getUserId([decodedToken['sub']]);
-                    
-                    if(existingUser.error)
-                    {
-                        this.OnWebSocektError(socket);
-
-                        // emit existingUsers.error
-                        return ;
-                    }                
+                const user  = await this.utils.verifyToken(token); // // if has error will catch it
                 
-                    const roomId =  await this.utils.getRoomByName(dto.roomName);
-
-                    if(roomId)
+                const rtn = await this.utilsFunction(socket , user , dto.roomName);
+                if(rtn.error)
+                {
+                    this.OnWebSocektError(socket);
+                    console.log(rtn.error)
+                    return ;
+                }
+                else
+                {
+                    if(rtn.room.roomType !== 'PRIVATE')
                     {
-
-                        if(roomId.roomType !== 'PRIVATE')
+                        const usersInRoom:any = await this.utils.getUsersInRooms(rtn.room.id);
+                
+                        const find = usersInRoom.find((item:any) => item.userId === user['sub']); // search in room if user who want to join this room it is into it or not
+                      
+                        if(!find)
                         {
-                            const usersInRoom:any = await this.utils.getUsersInRooms(roomId.id);
-                    
-                            const find = usersInRoom.find((item:any) => item.userId === decodedToken['sub']);
-                            if(!find)
+
+                            if(rtn.room.roomType === 'PROTECTED')
                             {
-                                const roomType = await this.utils.getRoomById(roomId.id);
-                                const usersInroom = await this.utils.getUsersInRooms(roomId.id);                    
-                                if(roomType.roomType === 'PROTECTED')
+                                if(comparePasswd(dto.password,rtn.room.password) )
                                 {
-                                    if(comparePasswd(dto.password,roomType.password) )
-                                    {
-                                        await this.roomService.linkBetweenUsersAndRooms(roomId.id, [decodedToken['sub']]);
+                                    await this.roomService.linkBetweenUsersAndRooms(rtn.room.id, [user['sub']]);
+                                
+                                    const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
                                     
-                                    const usersInroom = await this.utils.getUsersInRooms(roomId.id);
-                                        
-                                        for(const userInRoom of usersInroom)
-                                        {
-                                            for (let i = 0; i < this.soketsId.length; i++) 
-                                            {
-                                                if(this.soketsId[i].userId === userInRoom.userId)
-                                                {
-                                                    this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id) , newUserAdded : usersInroom[usersInroom.length - 1] });                                    }
-                                            }
-     
-                                        }
-                                        return ;
-                                    }
-                                    else
-                                    {
-                                        console.log("password inccorect.")
-                                        // socket.emit('users-join',"password inccorect.")
-                                        return ;
-                                    }
-                                }
-                                else if(roomType.roomType === 'PUBLIC')
-                                {
-                                    await this.roomService.linkBetweenUsersAndRooms(roomId.id, [decodedToken['sub']]);
-                                    
-                                    const usersInroom = await this.utils.getUsersInRooms(roomId.id);
-                                    
-                                    // this.server.to(dto.socketId).emit('current-user-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id)});
-    
                                     for(const userInRoom of usersInroom)
                                     {
                                         for (let i = 0; i < this.soketsId.length; i++) 
                                         {
                                             if(this.soketsId[i].userId === userInRoom.userId)
                                             {
-                                                this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId , userInfos: await this.utils.getUserInfosInRoom(roomId.id) , newUserAdded : usersInroom[usersInroom.length - 1] });
+                                                this.server.to(this.soketsId[i].socketIds).emit('users-join', {room : rtn.room , userInfos: await this.utils.getUserInfosInRoom(rtn.room.id) , newUserAdded : usersInroom[usersInroom.length - 1] });                                  
                                             }
                                         }
-            
-                                    } 
+ 
+                                    }
                                     return ;
-                                } 
+                                }
+                                else
+                                {
+                                    console.log("password inccorect.")
+                                    // socket.emit('users-join',"password inccorect.")
+                                    return ;
+                                }
                             }
-                            else 
+                            else if(rtn.room.roomType === 'PUBLIC')
                             {
-                                console.log('user aleredy in this room.')
-                                // socket.emit('error-joinned-room','user aleredy in this room.')
-                                // this.OnWebSocektError(socket);
-                            }
+                                await this.roomService.linkBetweenUsersAndRooms(rtn.room.id, [user['sub']]);
+                                
+                                const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
+                                
+                                for(const userInRoom of usersInroom)
+                                {
+                                    for (let i = 0; i < this.soketsId.length; i++) 
+                                    {
+                                        if(this.soketsId[i].userId === userInRoom.userId)
+                                        {
+                                            this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId : rtn.room , userInfos: await this.utils.getUserInfosInRoom(rtn.room.id) , newUserAdded : usersInroom[usersInroom.length - 1] });
+                                        }
+                                    }
+        
+                                } 
+                                return ;
+                            } 
+                    
                         }
-
+                        else 
+                        {
+                            console.log('user aleredy in this room.')
+                            // socket.emit('error-joinned-room','user aleredy in this room.')
+                            // this.OnWebSocektError(socket);
+                        }
                     }
-                    else
-                    {
-                        console.log('room not found')
-                        // emmit room not found
-                    }
-                    
-                    
                 }
-            }
+            } 
             else
             {
                 console.log('invalid jwt.');
                 this.OnWebSocektError(socket);
-
             }
-            
-        } 
+        }   
         catch (error) 
         {
             this.OnWebSocektError(socket);
-            console.log(error.error)
+            console.log(error)
         }
+     
+        
     }
 
     @SubscribeMessage('user-promotion') 
     @UsePipes(new ValidationPipe()) 
     async UserPromotion(@MessageBody() dto:SetOtherAasAdministrators , @ConnectedSocket() socket: Socket) 
-    {
+    { 
+
         try 
         {
             const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
@@ -433,8 +366,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                     
                     const roomId = await this.utils.getRoomByName(dto.roomName);
                     
-                    // demote
-                    // onPromote
                     if(roomId)  
                     {
                         // here check if the both users in this room and cannot set same user as admin
@@ -472,11 +403,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                     {
                                         if(this.soketsId[i].userId === userInRoom.userId)
                                         {
-                                            this.server.to(this.soketsId[i].socketIds).emit("onPromote",{ roomId ,  newAdmin: usersType.usersType[1] });
+                                            this.server.to(this.soketsId[i].socketIds).emit("onPromote",{ roomId ,  newAdmin: rtn.updatesUserType });
                                         } 
                                     }
                                 }
-                                console.log(rtn.ok)
                                 return ;
                                 // return res.status(200).send(rtn.ok);
                             }
@@ -496,11 +426,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 }
                  
             }
-            else
-            {
-                console.log('invalid jwt.');
-                this.OnWebSocektError(socket);
-            }
+        
 
         }
         catch(error)
@@ -509,6 +435,245 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         }
     }
 
+    /*
+        * before demte admin
+        - check if both user is exist
+        - check room if exsit
+        - check if both user in same room 
+        - if is banned
+        - check if current user is owner
+        - check if who want to be domted is admin
+        - if aleredy admin
+    */
+    @SubscribeMessage('user-demote') 
+    @UsePipes(new ValidationPipe()) 
+    async DemoteAdmin(@MessageBody() dto:DemoteUser , @ConnectedSocket() socket: Socket) 
+    {
+        try 
+        {
+            const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+            if (token) 
+            {
+                const user = await this.utils.verifyToken(token)
+
+                if (user) 
+                {
+                    const existingUser = await this.utils.getUserId([user['sub'] , dto.dmotedUserId]);
+                    
+                    if(existingUser.error)
+                    {
+                        console.log(existingUser.error);
+                        this.OnWebSocektError(socket);
+
+                        // emit existingUsers.error
+                        return ;
+                    } 
+
+                    const roomId = await this.utils.getRoomByName(dto.roomName);
+                    
+                    if(roomId)  
+                    {
+                        const usersType = await this.utils.getUserType(roomId.id,existingUser.existingUser);
+                         
+                        if(usersType.error)
+                        {
+                            console.log(usersType.error);
+                            return ;
+                        }
+                        
+                        if(usersType.usersType[1].isBanned)
+                        {
+                            console.log('you are banned.');
+                            return ;
+                        }
+                        
+                        if(usersType.usersType[0].userType === 'OWNER')  
+                        { 
+                            if(usersType.usersType[1].userType === 'USER')
+                            {
+                                console.log('you are not admin.');
+                                return ;
+                            }
+                            
+                            await this.roomService.changeToUsers(roomId.id, usersType.usersType[1].id);
+                        }
+                        else
+                        {
+                            console.log('dont have the permission to set an admin.');
+                            return ;
+                        }
+
+                    }
+                    else
+                    {
+                        console.log('room not found.');
+                        return ;
+                    }
+                }
+            }
+            else
+            {
+                console.log('invalid jwt.');
+                this.OnWebSocektError(socket);
+            }
+        }
+        catch(error)
+        {
+            this.OnWebSocektError(socket);
+
+            console.log(error.error);
+        }
+    }
+
+
+     /*
+        * before kick
+        - check if both user is exist
+        - check room if exsit
+        - check if both user in same room 
+        - if is banned
+        - check if current user is owner or admin
+        - check if who want to be kick is not the owner
+    */
+
+        @SubscribeMessage('kcik-user') 
+        @UsePipes(new ValidationPipe()) 
+        async KcickUser(@MessageBody() dto:KickUser , @ConnectedSocket() socket: Socket) 
+        {
+            try 
+            {
+                const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization); // make reusable in function
+                if (token) 
+                {
+                    const user = await this.utils.verifyToken(token)
+    
+                    if (user)  // if null will catch the error
+                    {
+                        const existingUser = await this.utils.getUserId([user['sub'] , dto.kickedUserId]);
+                        
+                        if(existingUser.error)
+                        {
+                            console.log(existingUser.error);
+                            this.OnWebSocektError(socket);
+    
+                            // emit existingUsers.error
+                            return ;
+                        } 
+    
+                        const roomId = await this.utils.getRoomByName(dto.roomName);
+                        
+                        if(roomId)  
+                        {
+                            
+                            const usersType = await this.utils.getUserType(roomId.id,existingUser.existingUser);
+                         
+                            if(usersType.error)
+                            {
+                                console.log(usersType.error);
+                                return ;
+                            }
+                            
+                            if(usersType.usersType[1].isBanned)
+                            {
+                                console.log('you are banned.');
+                                return ;
+                            }
+
+                            // if current user is and admin or owner can kick
+                            // and if th euser who want to kick them is an admin or user
+                            if(usersType.usersType[0].userType !== 'USER' && usersType.usersType[1].userType !== 'OWNER') 
+                            {
+                                await this.roomService.removeUserFromRoom(roomId.id, usersType.usersType[1].userType); 
+                                console.log('user kcicked succsufully')
+                            }  
+                            else
+                            {
+                                console.log('dont have the permission to set an admin.');
+                                return ;
+                            }
+
+                        }
+                        else
+                        {
+                            console.log('room not found')
+                            return;
+                        }
+
+                    }
+                }
+                else
+                {
+                    console.log('invalid jwt.');
+                    this.OnWebSocektError(socket);
+                }
+            }
+            catch(error)
+            {
+                this.OnWebSocektError(socket);
+
+                console.log(error.error);
+            }
+        }
+
+
+
+        async utilsFunction(@ConnectedSocket() socket: Socket , user :any , roomName ? :string , userId ?:string )
+        {
+            let existingUser:any;
+            if(userId)
+            {
+                existingUser = await this.utils.getUserId([user['sub']  , userId]); // if both users in db
+            }
+            else
+            {
+                existingUser = await this.utils.getUserId([user['sub']]); // if current user in db
+            }
+
+            if(existingUser.error)
+            {
+                this.OnWebSocektError(socket);
+                
+                return existingUser;
+                // emit existingUsers.error
+            } 
+            
+            if(roomName) // if pass room name
+            {
+                const roomId = await this.utils.getRoomByName(roomName); 
+    
+                if(roomId)  // if room exist
+                {
+                    const usersType = await this.utils.getUserType(roomId.id,existingUser.existingUser); // if both users in this room
+                
+                    if(usersType.error)
+                    {
+                        return usersType;
+                    }
+    
+                    return {room : roomId , usersType , existingUser };
+                }
+                else
+                {
+                    return {error : 'room not found'}
+                }
+            }
+            
+            this.soketsId.push({userId : existingUser.existingUser[0], socketIds:socket.id})
+
+            const rooms = await this.utils.getRoomsForUser(existingUser.existingUser[0]); // all rooms who this user is member into it
+
+            let messages:any[] = [];
+
+    
+            for(let i = 0; i < rooms.length; i++)
+            {
+                messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i]['room']['room_name']) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId) })
+            }
+            
+
+            this.server.to(socket.id).emit("list-rooms",{messages});  //  evry client will connected will display the rooms who is member into 
+            return {ok : 'connected from chat'}
+        }
 
 
     OnWebSocektError(socket:Socket)
@@ -522,7 +687,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     async handleDisconnect(socket: Socket) {
 
         // on deconect delete the socket id
-        this.soketsId.pop();
+        // this.soketsId.pop();
         console.log("disconnected from chat");
         
         // this.soketsId = []; // clear socket ids 

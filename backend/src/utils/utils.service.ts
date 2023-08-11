@@ -38,6 +38,7 @@ export class UtilsService {
 
         for(const id of ids)
         {
+          
             const userId = await this.prisma.user.findUnique({
                 where: {
                     id,
@@ -49,7 +50,7 @@ export class UtilsService {
             
             existingUser.push(userId.id);
         }
-         return {existingUser};
+        return {existingUser};
     }
 
     async getUsersIdByNickname(adminId: string, users?: string[], flag?: number)

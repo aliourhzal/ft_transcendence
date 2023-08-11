@@ -43,7 +43,6 @@ const Conversation = () => {
     }
     
     useEffect ( () => {
-        console.log("*", msg_sender)
         if (userData.nickname === msg_sender) {
             scrollToBottom()
             setAlertNewMessage(false)

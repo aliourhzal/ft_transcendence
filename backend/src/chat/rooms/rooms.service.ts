@@ -131,43 +131,20 @@ export class RoomsService
     
     }   
 
-    async changeToUsers(roomId: string, usersIds: any, ownerId:string)
+    async changeToUsers(roomId: string, demoteUserId: string)
     {
-        for(const user of usersIds) 
-        {
-            if(user === ownerId)
-                return 0;
-        }
         
-        for (let i = 0; i < usersIds.length; i++) 
-        {
-            const existingLink = await this.prisma.joinedTable.findFirst({
-                where: {
-                  userId : usersIds[i],
-                  roomId,
+        await this.prisma.joinedTable.update({
+            where: {
+                userId_roomId: {
+                    userId: demoteUserId,
+                    roomId,
                 },
-            });
-            
-            if (!existingLink) 
-            {
-                return 1;
-            }
-            if (existingLink.userType === 'ADMIN')  
-            {
-                await this.prisma.joinedTable.update({
-                    where: {
-                        userId_roomId: {
-                            userId: usersIds[i],
-                            roomId,
-                        },
-                    },
-                    data: {
-                        userType: "USER",
-                    },
-                });
-            }
-        }
-        return 2;
+            },
+            data: {
+                userType: "USER",
+            },
+        });
     }                                                                                                                            
 
     async updateRoom(roomType_: RoomType, roomId:string, password?: string )
@@ -227,33 +204,18 @@ export class RoomsService
         });
     }
     
-    async   removeUserFromRoom(roomId: string, usersIds: string[] | string ) {
+    async   removeUserFromRoom(roomId: string, kickedUserId: string ) {
         
-        if(Array.isArray(usersIds))
-        {
-            for(const userId of usersIds)
-            {
-                await this.prisma.joinedTable.delete({
-                  where: {
-                    userId_roomId: {
-                      roomId: roomId,
-                      userId: userId,
-                    },
-                  },
-                });
-            }
-        }
-        else
-        {
-            await this.prisma.joinedTable.delete({
-                where: {
-                  userId_roomId: {
-                    roomId: roomId,
-                    userId: usersIds,
-                  },
+        
+        await this.prisma.joinedTable.delete({
+            where: {
+                userId_roomId: {
+                roomId: roomId,
+                userId: kickedUserId,
                 },
-              });
-        }
+            },
+            });
+   
 
     } 
       
@@ -291,21 +253,21 @@ export class RoomsService
       }
       
       async setNewAdmins(roomId: string, user:any)
-    {
-        if(user.userType === 'ADMIN' || user.userType === 'OWNER')
-            return {error : `you are aleredy seted to ${user.userType}.`}
-        
-        await this.prisma.joinedTable.update({
-            where: {
-                userId_roomId: {
-                    userId: user.userId,
-                    roomId,
-                },
-            },
-            data: {
-                userType: "ADMIN",
-            },
-        });
-        return {ok : 'new admin seted succssufuly.'};
-    }  
+      {
+          if(user.userType === 'ADMIN' || user.userType === 'OWNER')
+              return {error : `you are aleredy seted to ${user.userType}.`}
+          
+          const updatesUserType = await this.prisma.joinedTable.update({
+              where: {
+                  userId_roomId: {
+                      userId: user.userId,
+                      roomId,
+                  },
+              },
+              data: {
+                  userType: "ADMIN",
+              },
+          });
+          return {updatesUserType};
+      }  
 }
