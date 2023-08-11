@@ -87,7 +87,7 @@ function Themes(props: any)
             onMouseEnter={()=>{props.def.current.style.visibility = 'hidden'}} onMouseOut={()=>{props.def.current.style.visibility = 'visible'}}>
                 <h1 style={{fontFamily: "Comic Sans MS"}} ref={props.def} className="outlineT absolute top-[40%] z-10 left-[36%] font-semibold font-mono">Default</h1>
                 {/* <input id="theme1" type="radio" className="hidden" /> */}
-                <img ref={props.T1} className="border-[5px] border-blueStrong rounded-md w-[200px] h-28 blur-[2px] hover:blur-none" src="/images/42.jpg" alt="" />
+                <img ref={props.T1} className="border-[5px] border-blueStrong rounded-md w-[200px] h-28 blur-[2px] hover:blur-none" src="/images/default_T1.png" alt="" />
             </label>
             <label className="relative text-center cursor-pointer"
             onClick={()=>{
@@ -100,7 +100,7 @@ function Themes(props: any)
             onMouseEnter={()=>{props.def1.current.style.visibility = 'hidden'}} onMouseOut={()=>{props.def1.current.style.visibility = 'visible'}}>
                 <h1 style={{fontFamily: "Comic Sans MS"}} ref={props.def1} className="outlineT absolute top-[40%] z-10 left-[40%] font-semibold font-mono">1988</h1>
                 {/* <input id="theme1" type="radio" className="hidden" /> */}
-                <img ref={props.T2} className="rounded-md w-[200px] h-28 blur-[2px] hover:blur-none" src="/images/42.jpg" alt="" />
+                <img ref={props.T2} className="rounded-md w-[200px] h-28 blur-[2px] hover:blur-none" src="/images/1988_T2.png" alt="" />
             </label>
             <label className="relative text-center cursor-pointer"
             onClick={()=>{
@@ -212,7 +212,7 @@ export default function GameLogin()
     const main = useRef(null);
     return(
         <div className=" w-full bg-darken-200 flex items-center justify-center h-full">
-            <div ref={main} className="w-[90%] h-auto px-5 py-1 max-sm:h-[95%] border-collapse bg-darken-100 rounded-xl">
+            <div ref={main} className="w-[90%] h-auto px-5 py-1 max-sm:h-[95%] border-collapse bg-darken-100 rounded-xl overflow-y-auto">
                 {/* Game Mode Radio Buttons */}
                 <ModeRadio setOp={setOp}/>
                 {/* Themse */}
@@ -221,7 +221,7 @@ export default function GameLogin()
                 <Effects setBall={setBall} setHell={setHell} setMode={setMode} main={main} playWith={playWith} />
             </div>
             {/* {!show && } */}
-            {(Mode === "online" && <LazyGame ball={ballColors} hell={hell} />) || (Mode==="bot" && <BotGame ball={ballColors} />)}
+            {(Mode === "online" && <LazyGame themeN={themeN} ball={ballColors} hell={hell} />) || (Mode==="bot" && <BotGame themeN={themeN} ball={ballColors} />)}
         </div>
     );
 }

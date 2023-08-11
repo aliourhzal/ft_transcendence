@@ -16,6 +16,8 @@ import { useEffectmod } from "@/hooks/useAxiosFetch";
 
 export function StartGame(props)
 {
+    const n = props.themeN;
+    let bgColor = "#353D49";
     // declare interval ID
     let loop:NodeJS.Timer = null;
     let color = "#50CFED";
@@ -88,7 +90,10 @@ function drawRect(x, y, w, h, color){
 function drawArc(x, y, r, color){
     ctx.fillStyle = color;
     ctx.beginPath();
-    ctx.arc(x,y,r,0,Math.PI*2,true);
+    if (n === 2)
+        drawRect(x, y, ball.radius*1.5, ball.radius*1.5, color);
+    else
+        ctx.arc(x,y,r,0,Math.PI*2,true);
     ctx.closePath();
     ctx.fill();
 }
@@ -225,7 +230,7 @@ function update(){
 function render()
 {
         // clear the canvas
-        drawRect(0, 0, canvas.width, canvas.height, "#353D49");
+        drawRect(0, 0, canvas.width, canvas.height, bgColor);
         
         // draw the user score to the left
         drawText(user.score,canvas.width/4,canvas.height/5);
@@ -257,6 +262,11 @@ function render()
     } 
     function game()
     {
+        if (n === 2)
+        {
+            bgColor = "#000";
+            user.color = "#FFF";
+        }
         if (com.score === 5 || user.score === 5)
             clearInterval(loop);
         update();

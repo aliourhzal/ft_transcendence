@@ -27,7 +27,6 @@ export default function Game(props: any)
 
 	//tlat khmis jm3a
 	// this hook used to start the game and connect to the socket
-	console.log(props);
 	return (
 		<section className="flex w-full h-full items-center bg-darken-200">
 			<div className="flex flex-col justify-center items-center w-full gap-5 h-full">
@@ -41,7 +40,7 @@ export default function Game(props: any)
 						<img className="w-16 h-16" src="../images/man.png" alt="man_hhhh" />
 					</div>
 				</div> */}
-				<Canvas ball={props.ball}  hell={props.hell} />
+				<Canvas themeN={props.themeN} ball={props.ball}  hell={props.hell} />
 			</div>
 			{/* <Navbar/ > */}
 			{/* <Script src="../../game-script.js" defer></Script> */}

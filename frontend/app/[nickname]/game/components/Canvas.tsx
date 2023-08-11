@@ -6,7 +6,9 @@ import Player from "../utils/Player.class";
 import Ball from "../utils/Ball.class";
 
 
-export default function Canvas(props) {
+export default function Canvas(props: { themeN: number; ball: boolean; hell: boolean; }) {
+	const n = props.themeN;
+    let bgColor = "#353D49";
 	let color = "#50CFED";
     const socket = useContext(WebsocketContext);
     const ball = new Ball();
@@ -14,13 +16,22 @@ export default function Canvas(props) {
 	const com = new Player(0, 0, "#5fed55")
 	let getSmaller = 0;
 
+	if (n === 2)//theme 1988 switch colors
+	{
+		bgColor = "#000";
+		com.color = "#FFF";
+		player.color = "#FFF";
+	}
     function StartGame(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D)
 	{
 		// draw circle, will be used to draw the ball
 		function drawArc(x, y, r, color){
 			ctx.fillStyle = color;
 			ctx.beginPath();
-			ctx.arc(x,y,r,0,Math.PI*2,true);
+			if (n === 2)
+				drawRect(x, y, ball.radius*1.5, ball.radius*1.5, color);
+			else
+				ctx.arc(x,y,r,0,Math.PI*2,true);
 			ctx.closePath();
 			ctx.fill();
 		}
@@ -44,7 +55,7 @@ export default function Canvas(props) {
 			return player.left < ball.right && player.top < ball.bottom && player.right > ball.left && player.bottom > ball.top;
 		}
 		//clear canvas
-		drawRect(0, 0, canvas.offsetWidth, canvas.offsetHeight, "#353D49");
+		drawRect(0, 0, canvas.offsetWidth, canvas.offsetHeight, bgColor);
 		
 		//draw player Paddle
 		drawRect(player.x, player.y, player.width, player.height, player.color);
