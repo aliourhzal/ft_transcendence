@@ -253,21 +253,21 @@ export class RoomsService
       }
       
       async setNewAdmins(roomId: string, user:any)
-    {
-        if(user.userType === 'ADMIN' || user.userType === 'OWNER')
-            return {error : `you are aleredy seted to ${user.userType}.`}
-        
-        await this.prisma.joinedTable.update({
-            where: {
-                userId_roomId: {
-                    userId: user.userId,
-                    roomId,
-                },
-            },
-            data: {
-                userType: "ADMIN",
-            },
-        });
-        return {ok : 'new admin seted succssufuly.'};
-    }  
+      {
+          if(user.userType === 'ADMIN' || user.userType === 'OWNER')
+              return {error : `you are aleredy seted to ${user.userType}.`}
+          
+          const updatesUserType = await this.prisma.joinedTable.update({
+              where: {
+                  userId_roomId: {
+                      userId: user.userId,
+                      roomId,
+                  },
+              },
+              data: {
+                  userType: "ADMIN",
+              },
+          });
+          return {updatesUserType};
+      }   
 }

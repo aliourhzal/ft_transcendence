@@ -396,7 +396,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                             else
                             {
                                 const usersInroom = await this.utils.getUsersInRooms(roomId.id);
-
+ 
                                 for(const userInRoom of usersInroom)
                                 {
                                     for (let i = 0; i < this.soketsId.length; i++) 
