@@ -47,7 +47,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
 
     const promoteUser = (id) => { socket.emit('user-promotion', {roomName:info.room.name, newAdminId:id}) }
 
-    const demoteteUser = (id) => { socket.emit('user-demote', {roomName:info.room.name, newAdminId:id}) }
+    const demoteteUser = (id) => { socket.emit('user-demote', {roomName:info.room.name, dmotedUserId:id}) }
 
     const kickUser = (id) => {
 
