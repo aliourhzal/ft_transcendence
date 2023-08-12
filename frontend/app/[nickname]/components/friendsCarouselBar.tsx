@@ -70,7 +70,7 @@ export default function FriendCarouselBar()
 			setFriends(res.data);
 		})
 		socket.on('receive-friends', data => {
-			setFriends(data);
+			setFriends(oldFriends => [...oldFriends, data]);
 		});
 		socket.on('update-status', data => {
 			setFriends(friends => {
@@ -80,6 +80,16 @@ export default function FriendCarouselBar()
 					return friend;
 				})
 			})
+		})
+		socket.on('friend-deleted', data => {
+			console.log(data);
+			const friendIndex = friends.findIndex((friend => friend.nickname === data.friend));
+			console.log(friendIndex);
+			setFriends(friends => {
+				const old = [...friends];
+				old.splice(friendIndex, 1);
+				return old;
+			});
 		})
 	}, [])
 
