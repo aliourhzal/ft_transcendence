@@ -11,6 +11,8 @@ class Player {
 	readonly socket: Socket;
 	ball: coords;
 	score: number;
+	nickName: string;
+	avatar: string;
 
 	constructor(socket: Socket, height = 0, width = 0, score = 0) {
 		this.canvas = {height, width};
@@ -38,11 +40,17 @@ class Player {
 	initBallPos(x: number, y: number) {
 		this.ball = {x, y};
 	}
+
+	setData(nickName: string, avatar: string)
+	{
+		this.nickName = nickName;
+		this.avatar = avatar;
+	}
 }
 
 type userNode = {
 	socket: Socket,
-	nickname: string
+	user: Player
 }
 
 type paddleInfo = {
@@ -73,15 +81,14 @@ type roomT = {
 	player1: Player,
 	player2: Player,
 	roomId: string,
-	ballDynamics: Ball,
-	in : number
+	ballDynamics: Ball
 }
 
 class Ball {
 	radius = 10;
 	velocityX = 5; //ball direction
 	velocityY = 5;
-	speed = 3;
+	speed = 7;
 	color = "WHITE";
 
 	resetForNewGame() {
@@ -97,7 +104,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	@WebSocketServer()
 	server:Server;
 
-	private connectedUsers: userNode[] = [];
+	private connectedUsers: {socket: Socket, nickname: string}[] = [];
 	private gameQueue: userNode[] = [];
 
 	private rooms : roomT[] = [];
@@ -114,8 +121,8 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
     }
 
 	handleDisconnect(socket: Socket) {///delete room when someone disconnected
-		console.log(this.connectedUsers.find(x => x.socket === socket ).nickname ,' : disconnected from game socket')//
-		try {//
+		console.log(this.connectedUsers.find(x => x.socket === socket ).nickname ,' : has disconnected from game socket')//
+		try {
 			clearInterval(this.rooms.find(x => 
 				x.player1.socket === socket || x.player2.socket === socket
 			).loop);
@@ -123,6 +130,8 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		catch(e){}
 		const disconnectedUser =  this.connectedUsers.findIndex(x => x.socket.id === socket.id);
 		this.connectedUsers.splice(disconnectedUser, 1);
+		const QueuedUser =  this.gameQueue.findIndex(x => x.socket.id === socket.id);
+		this.gameQueue.splice(QueuedUser, 1);
 	}
 
 	update(room: roomT) {
@@ -178,6 +187,13 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		});
 	}
 
+	findPlayerInRoom(socket: Socket)
+	{
+		let room: roomT;
+		room = this.findRoomBySocket(socket);
+		return (socket === room.player1.socket ? room.player1.socket : room.player2.socket)
+	}
+
 	checkPlayerOrder(socket: Socket, room: roomT) {
 		if(socket.id === room.player1.socket.id)
 			return (1);
@@ -197,8 +213,8 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	async createGameRoom() {
 		const roomId = randomUUID();
 		const ballDynamics = new Ball();
-		const player1Socket = this.gameQueue[0].socket;//ask fot his canva width
-		const player2Socket = this.gameQueue[1].socket;//ask fot his canva width
+		const player1Socket = this.gameQueue[0].socket;
+		const player2Socket = this.gameQueue[1].socket;
 		player1Socket.join(roomId);
 		player2Socket.join(roomId);
 
@@ -207,9 +223,15 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			player2: new Player(player2Socket),
 			roomId,
 			ballDynamics,
-			loop: null,//
-			in: 0//
+			loop: null,
 		};
+		newRoom.player1.setData(this.gameQueue[0].user.nickName, this.gameQueue[0].user.avatar);
+		newRoom.player2.setData(this.gameQueue[1].user.nickName, this.gameQueue[1].user.avatar);
+		this.server.to(newRoom.player1.socket.id).emit("playersInfo", {nickname:newRoom.player2.nickName,
+								avatar:newRoom.player2.avatar});
+		this.server.to(newRoom.player2.socket.id).emit("playersInfo", {nickname:newRoom.player1.nickName,
+								avatar:newRoom.player1.avatar});
+
 		this.rooms.push(newRoom);
 		this.gameQueue.splice(0, 2);
 		this.server.to(roomId).emit("send_canva_W_H");
@@ -217,6 +239,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	}
 
 	async handleConnection(socket: Socket) {
+		let player = new Player(socket);
 		console.log('the user connected to game socket');
 		let decodeJWt: any;
 		try {
@@ -233,14 +256,17 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			this.OnWebSocektError(socket);
 		}
 		this.connectedUsers.push({socket, nickname: user.nickname});
-		this.gameQueue.push({socket, nickname: user.nickname});
+		player.setData(user.nickname, user.profilePic);
+		this.gameQueue.push({socket, user: player});
 		if (this.gameQueue.length < 2 || this.connectedUsers.length < 2)
 			return ;
-		if (this.connectedUsers[0].nickname === this.connectedUsers[1].nickname)
-		{
-			this.connectedUsers.splice(0, 1);
-			return ;
-		}
+		if (this.gameQueue[0].user.nickName === this.gameQueue[1].user.nickName)
+			this.gameQueue.pop();
+		// if (this.connectedUsers[0].nickname === this.connectedUsers[1].nickname)
+		// {
+		// 	this.connectedUsers.splice(0, 1);
+		// 	return ;
+		// }
 		this.createGameRoom();
 	}
 
@@ -268,7 +294,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			room.ballDynamics.velocityY = room.ballDynamics.speed * Math.sin(data.collAngle);
 			room.ballDynamics.speed += 0.2;
 		}
-		const newY = emiter.canvas.height - data.y - (emiter.canvas.height / 4);
+		const newY = emiter.canvas.height - data.y - (emiter.canvas.height / 4);//hna
 		this.server.to(receiver.socket.id).emit("playerMov", {x: data.x, y: newY * receiver.canvas.height / emiter.canvas.height});
 	}
 
