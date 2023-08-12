@@ -16,7 +16,7 @@ import { Context } from '../page';
 import SocketComponent from './SocketComponent';
 
 interface RoomInfoProps {
-    room:string
+    room:any
     setShow: any
     show: boolean
     userData: UniversalData
