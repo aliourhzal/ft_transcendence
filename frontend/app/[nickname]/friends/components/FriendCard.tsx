@@ -1,13 +1,20 @@
 import Container from "@/components/UI/ProfileBoxs";
 import { UniversalData } from "../../layout";
+import Link from "next/link"
+import { useContext, useEffect } from "react";
+import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
 
 
 export default function FriendCard({user}: {
 	user: UniversalData
 }) {
 	const [lvl, progess] = user.level.toString().split('.');
-	console.log(progess);
-	console.log(user);
+	const socket = useContext(InvitationSocketContext);
+	
+	function removeFriend() {
+		socket.emit('delete-friend', user.nickname);
+	}
+
 	return (
 		<Container className="p-0 overflow-hidden flex flex-col items-center relative">
 			<div style={{backgroundImage: `url(${user.coverPic})`}} className="bg-cover bg-center bg-no-repeat w-full h-[150px] rounded-lg"></div>
@@ -29,6 +36,10 @@ export default function FriendCard({user}: {
 						<span className="text-[12px] font-medium text-white">{`${progess}%`}</span>
 					</div>
 				</div>
+			</div>
+			<div className="flex justify-between w-full">
+				<Link href={`/${user.nickname}`} className="p-2 bg-green-500 text-white font-medium rounded-xl">See Profile</Link>
+				<button onClick={removeFriend} className="p-2 bg-red-500 text-white font-medium rounded-xl">Remove Friend</button>
 			</div>
 			{
 				user.status === 'offline' && <div className="absolute top-0 left-0 h-full w-full z-10 bg-black opacity-50"></div>
