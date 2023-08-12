@@ -124,15 +124,15 @@ export default class InvitationsGateway implements OnGatewayConnection, OnGatewa
 			if (user.nickname === senderNickname)
 				return (true);
 		})
-		const receiverNewFriends = await this.usersService.findOneByNickname(senderNickname);
-		const senderNewFriends = await this.usersService.findOneByNickname(receiver.nickname);
+		const receiverNewFriend = await this.usersService.findOneByNickname(senderNickname);
+		const senderNewFriend = await this.usersService.findOneByNickname(receiver.nickname);
 		const requests = await this.usersService.getFriendsRequests(receiver.nickname);
 		receiverSockets.map(instant => {
 			this.server.to(instant.socket.id).emit('receive-request', requests);
-			this.server.to(instant.socket.id).emit('receive-friends', receiverNewFriends);
+			this.server.to(instant.socket.id).emit('receive-friends', receiverNewFriend);
 		})
 		senderSockets.map(instant => {
-			this.server.to(instant.socket.id).emit('receive-friends', senderNewFriends);
+			this.server.to(instant.socket.id).emit('receive-friends', senderNewFriend);
 		})
 	}
 
@@ -149,6 +149,28 @@ export default class InvitationsGateway implements OnGatewayConnection, OnGatewa
 		await this.usersService.refuseRequest(target.requestId, receiver.nickname);
 		const requests = await this.usersService.getFriendsRequests(receiver.nickname);
 		this.server.to(socket.id).emit('receive-request', requests);
+	}
+
+	@SubscribeMessage('delete-friend')
+	async onDeleteFriend(socket: Socket, friendNickname: string) {
+		const {nickname: emiterNickname} = this.connectedUsers.find(user => user.socket.id === socket.id)
+		const target = this.connectedUsers.filter(user => user.nickname === friendNickname)
+		const emiterSockets = this.connectedUsers.filter(user => user.nickname === emiterNickname)
+		await this.usersService.removeFriend(friendNickname, emiterNickname);
+		if (emiterSockets) {
+			emiterSockets.map(socket => {
+				this.server.to(socket.socket.id).emit('friend-deleted', {
+					friend: friendNickname
+				});
+			})
+		}
+		if (target) {
+			target.map(socket => {
+				this.server.to(socket.socket.id).emit('friend-deleted', {
+					friend: emiterNickname
+				});
+			})
+		}
 	}
 
 }

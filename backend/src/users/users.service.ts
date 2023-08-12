@@ -195,8 +195,22 @@ export class UsersService {
 			})
 			return (userFriends);
 		} catch(err) {
-			throw new NotFoundException('user not found');
+			console.log(nickname + ' user not found');
 		}
+	}
+
+	async isPossibleToSendRequest(friendNickname: string, nickname: string) {
+		const target = await this.findOneByNickname(friendNickname);
+		const user = await this.findOneByNicknameWithRequests(nickname);
+		for (const request of user.sentRequests) {
+			if (request.targetId === target.id)
+				return (false);
+		}
+		for (const friend of user.userFriends) {
+			if (friend.id === target.id)
+				return (false);
+		}
+		return (true);
 	}
 
 	async acceptRequest(requestId: string, nickname: string) {
@@ -288,6 +302,34 @@ export class UsersService {
 		})
 	}
 
+	async removeFriend(friendNickname: string, nickname: string) {
+		const user = await this.findOneByNicknameWithRequests(nickname);
+		const friend = await this.findOneByNicknameWithRequests(friendNickname);
+
+		if (!user || !friend)
+			throw new NotFoundException('user not found!!');
+		await this.prisma.user.update({
+			where: {
+				nickname
+			},
+			data: {
+				userFriends: {
+					disconnect: [{id: friend.id}]
+				}
+			}
+		})
+		await this.prisma.user.update({
+			where: {
+				nickname: friend.nickname
+			},
+			data: {
+				userFriends: {
+					disconnect: [{id: user.id}]
+				}
+			}
+		})
+	}
+
 	async getFriendsRequests(nickname: string) {
 		const user = await this.findOneByNicknameWithReceived(nickname);
 		return (user.receivedRequest);
@@ -304,7 +346,7 @@ export class UsersService {
 				}
 			})
 		} catch(err) {
-			throw new NotFoundException('user not found');
+			console.log(`${nickname} not found!!`);
 		}
 	}
 }
