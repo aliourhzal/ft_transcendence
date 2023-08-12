@@ -103,6 +103,13 @@ export class UsersController{
 	}
 
 	@UseGuards(AuthGuard('jwt'))
+	@Get('/friend/checkFriend')
+	async checkIsFriend(@Query('nickname') friendName: string, @Req() request: any)
+	{
+		return await this.usersService.isPossibleToSendRequest(friendName, request.user.nickname);
+	}
+
+	@UseGuards(AuthGuard('jwt'))
 	@Get('/friends')
 	async getFriends(@Req() request: any) {
 		return await this.usersService.getFriends(request.user.nickname);
