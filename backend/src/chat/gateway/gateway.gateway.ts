@@ -521,19 +521,20 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                     }
                     else
                     {
+                        
                         if(rtn.usersType.usersType[0].userType !== 'USER' && rtn.usersType.usersType[1].userType !== 'OWNER') 
                         {
-                            const result = await this.roomService.removeUserFromRoom(rtn.room.id, rtn.usersType.usersType[1].userType);
+                            const result = await this.roomService.removeUserFromRoom(rtn.room.id, rtn.usersType.usersType[1].userId);
 
                             const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
-
+ 
                             for(const userInRoom of usersInroom)
                             {
                                 for (let i = 0; i < this.soketsId.length; i++) 
                                 {
                                     if(this.soketsId[i].userId === userInRoom.userId)
                                     {
-                                        this.server.to(this.soketsId[i].socketIds).emit("onPromote",{ roomId: rtn.room ,  kickedUser: result.kickedUser });
+                                        this.server.to(this.soketsId[i].socketIds).emit("onKick",{ roomId: rtn.room ,  kickedUser: result.kickedUser });
                                     } 
                                 }
                             }
@@ -565,7 +566,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
 
 
-        async utilsFunction(@ConnectedSocket() socket: Socket , user :any , roomName ? :string , userId ?:string )
+        async utilsFunction(@ConnectedSocket() socket: Socket  ,user :any , roomName ? :string , userId ?:string )
         {
             let existingUser:any;
             if(userId)
