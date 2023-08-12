@@ -37,7 +37,6 @@ export default function Friends() {
 			setFriends(res.data);
 		})
 		socket.on('receive-friends', data => {
-			console.log(data.nickname);
 			setFriends(oldFriends => [...oldFriends, data]);
 		});
 		socket.on('request-response', response => {
@@ -55,6 +54,15 @@ export default function Friends() {
 					return friend;
 				})
 			})
+		});
+		socket.on('friend-deleted', data => {
+			console.log(data);
+			const friendIndex = friends.findIndex((friend => friend.nickname === data.friend));
+			setFriends(friends => {
+				const old = [...friends];
+				old.splice(friendIndex, 1);
+				return old;
+			});
 		})
 	}, [])
 
