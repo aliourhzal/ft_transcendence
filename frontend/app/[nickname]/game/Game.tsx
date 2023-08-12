@@ -1,8 +1,9 @@
 'use client'
 
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { userDataContext } from "../layout";
 import Canvas from "./components/Canvas";
+import { WebsocketContext } from "@/app/context_sockets/gameWebSocket";
 
 /*
 	send via socket emit :  
@@ -14,34 +15,44 @@ import Canvas from "./components/Canvas";
 
 export default function Game(props: any)
 {		
+	const socket = useContext(WebsocketContext);
 	const userData = useContext(userDataContext);
+	const [nickname, setN] = useState("");
+	const [avatar, setA] = useState("");
+	const [com, setCom] = useState(false);
+	let opData : {nickname: string, profilePic: string} = {
+		nickname: "notSetYet",
+		profilePic: ""
+	}
 
-	// function getMousePos(evt: { clientY: number; }){
-		
-	// 	let rect = canvas.getBoundingClientRect();
-	// 	if (evt.clientY < rect.bottom - user.height)
-	// 		user.y = evt.clientY - rect.top + 2; 
-	// 	else
-	// 		return ;
-	// }
+	useEffect(()=>{
 
-	//tlat khmis jm3a
-	// this hook used to start the game and connect to the socket
+		socket.on("playersInfo", (data: {nickname:string, profilePic:string}) => {
+			opData = {...data};
+			setCom(true);
+		});
+	}
+	,[]);
+
 	return (
 		<section className="flex w-full h-full items-center bg-darken-200">
-			<div className="flex flex-col justify-center items-center w-full gap-5 h-full">
-				{/* <div className="w-full flex justify-center gap-96">
-					<div className="flex items-center gap-x-5">
-						<img className="w-16 h-16" src="../images/man.png" alt="man_hhhh" />
-						<h2 className=" text-whiteSmoke">Ayoub</h2>
+			{
+				com &&
+				<div className="flex flex-col justify-center items-center w-full gap-5 h-full">
+					<div className="w-[80%] aspec flex justify-between max-sm:">
+						<div className="flex items-center gap-x-5">
+							<img className="w-16 h-16" src={userData.profilePic} alt="man_hhhh" />
+							<h2 className=" text-whiteSmoke">{userData.nickname}</h2>
+						</div>
+						<div className="flex items-center gap-x-5">
+							<h2 className="text-whiteSmoke">{opData.nickname}</h2>
+							<img className="w-16 h-16" src={opData.profilePic} alt="man_hhhh" />
+						</div>
 					</div>
-					<div className="flex items-center gap-x-5">
-						<h2 className="text-whiteSmoke">Ayoub</h2>
-						<img className="w-16 h-16" src="../images/man.png" alt="man_hhhh" />
-					</div>
-				</div> */}
-				<Canvas themeN={props.themeN} ball={props.ball}  hell={props.hell} />
-			</div>
+					<Canvas socket={socket} themeN={props.themeN} ball={props.ball}  hell={props.hell} />
+				</div>
+
+			}
 			{/* <Navbar/ > */}
 			{/* <Script src="../../game-script.js" defer></Script> */}
 		</section>

@@ -4,13 +4,13 @@ import { WebsocketContext } from "@/app/context_sockets/gameWebSocket";
 import { useContext, useEffect, useState } from "react";
 import Player from "../utils/Player.class";
 import Ball from "../utils/Ball.class";
+import { Socket } from "socket.io-client";
 
 
-export default function Canvas(props: { themeN: number; ball: boolean; hell: boolean; }) {
+export default function Canvas(props: {socket:Socket, themeN: number; ball: boolean; hell: boolean; }) {
 	const n = props.themeN;
     let bgColor = "#353D49";
 	let color = "#50CFED";
-    const socket = useContext(WebsocketContext);
     const ball = new Ball();
 	const player = new Player(0, 0, "#FFF")
 	const com = new Player(0, 0, "#5fed55")
@@ -96,7 +96,7 @@ export default function Canvas(props: { themeN: number; ball: boolean; hell: boo
 			com.height -= 0.01;
 		}
 
-		socket.emit("player", {
+		props.socket.emit("player", {
 			x: player.x,
 			y: player.y,
 			collision: coll,
@@ -122,7 +122,7 @@ export default function Canvas(props: { themeN: number; ball: boolean; hell: boo
 			GodWilling(canvas.width);
 			canvas.width = canvas.offsetWidth;
 			canvas.height = canvas.offsetHeight;
-			socket.emit("resize", {w:canvas.width, h:canvas.height});
+			props.socket.emit("resize", {w:canvas.width, h:canvas.height});
 		});
 		//change player Paddle According to Mouse Position
 		function getMousePos(evt: { clientY: number, clientX: number }){
@@ -137,16 +137,16 @@ export default function Canvas(props: { themeN: number; ball: boolean; hell: boo
 			else
 				return ;
 		}
-		socket.on('send_canva_W_H', () => {
-			socket.emit("startGame", {w:canvas.width, h:canvas.height});
+		props.socket.on('send_canva_W_H', () => {
+			props.socket.emit("startGame", {w:canvas.width, h:canvas.height});
 		});
 
-        socket.on('game_Data', data => {
+        props.socket.on('game_Data', data => {
             ball.x = data.x;
 			ball.y = data.y;
             StartGame(canvas, ctx);
         });
-		socket.on("playerMov", data => {
+		props.socket.on("playerMov", data => {
 			com.x = canvas.width - com.width;
 			com.y = data.y;
 		});
@@ -162,7 +162,7 @@ export default function Canvas(props: { themeN: number; ball: boolean; hell: boo
 		//  xl:w-[1000px] xl:h-[562px]
 		//  "/>
         <canvas id="pongy" className="bg-darken-300 rounded-md
-			w-[90%] h-[32%]
+			w-[90%] aspect-[16/9]
 			max-sm:rotate-90 max-sm:w-[600px] max-sm:h-[337px]
 			xl:w-[1000px] xl:h-[562px]
 		 "/>
@@ -173,4 +173,5 @@ export default function Canvas(props: { themeN: number; ball: boolean; hell: boo
  * md	xl		sm
  * 800	1000	600
  * 450	562		337
+ * 1.77
  */

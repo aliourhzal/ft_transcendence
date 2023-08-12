@@ -121,8 +121,8 @@ export default function ProfileLayout({
 			{
 				completed && 
 				<section className='w-full flex h-screen'> 
-					<SideBar dispatch={dispatch}/>
-					{children}
+					<SideBar dispatch={dispatch}/>{/*any page.tsx have a sideBare*/}
+					{children} {/*page.tsx*/}
 				</section>
 			}
 		</userDataContext.Provider>
