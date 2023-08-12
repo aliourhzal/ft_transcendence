@@ -12,7 +12,6 @@ import JoinRoomForm from "./components/joinRoom";
 import { SocketAddress } from "net";
 import ButtomButtons from "./components/ButtomButtons";
 import SearchDm from "./components/SearchDm";
-import SocketComponent from "./components/SocketComponent";
 
 export interface conversation {
 	readonly name: string,
@@ -123,7 +122,7 @@ export default function Chat() {
 				<RoomForm />
 				<JoinRoomForm />
 				<SearchDm />
-		</Context.Provider>
+			</Context.Provider>
 		</main>
 	)
 }

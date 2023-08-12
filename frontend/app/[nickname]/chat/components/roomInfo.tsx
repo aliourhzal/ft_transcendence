@@ -16,7 +16,7 @@ import { Context } from '../page';
 import SocketComponent from './SocketComponent';
 
 interface RoomInfoProps {
-    room:any
+    room:string
     setShow: any
     show: boolean
     userData: UniversalData
@@ -25,7 +25,7 @@ interface RoomInfoProps {
 
 const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     
-    const {socket, rooms, setRooms} = useContext(Context)
+    const {setConvs, socket, rooms, setRooms, set_room_created} = useContext(Context)
 
     const [infoUpdate, setInfoUpdate] = useState(false)
 
@@ -35,10 +35,12 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     }
     
     const isAdmin = (user) => {
-        if (user.type === 'OWNER' || user.type === 'ADMIN')
-            return true
+        if (user)
+            if (user.type === 'OWNER' || user.type === 'ADMIN')
+                return true
         return false
     }
+
     const isOwner = (user) => {
         if (user.type === 'OWNER')
             return true
@@ -49,7 +51,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
 
     const demoteteUser = (id) => { socket.emit('user-demote', {roomName:info.room.name, dmotedUserId:id}) }
 
-    const kickUser = (id) => { console.log("kick"); socket.emit('kick-user', {roomName:info.room.name, kickedUserId:id}) }
+    const kickUser = (id) => { socket.emit('kick-user', {roomName:info.room.name, kickedUserId:id}) }
 
     const banUser = (id) => {
         
@@ -69,10 +71,10 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
 
   return (
     <>
-    <SocketComponent rooms={rooms} socket={socket} setRooms={setRooms} setInfoUpdate={setInfoUpdate}/>
+    <SocketComponent rooms={rooms} socket={socket} setRooms={setRooms} setInfoUpdate={setInfoUpdate} setConvs={setConvs}/>
     <Popup isOpen={info.show} modalAppearance={hide}>
         <div className='flex items-end justify-center m-4'>
-            <Avatar zoomed text={info.room.name} bordered color={"primary"} alt={info.room.name} className="ml-8 w-auto h-auto"></Avatar>
+            <Avatar zoomed text={info.room.name} bordered color={"primary"} alt={info.room.name} className="ml-4 w-auto h-auto"></Avatar>
             <AiOutlineUsergroupAdd color={showUsersForm ? 'rgb(41 120 242)' : ''} cursor={'pointer'} className='hover:text-whiteSmoke' onClick={ () => setShowUsersForm(old => !old) }/>
         </div>
         {showUsersForm && <NewRoomUsers addUsers={addUsersToRoom} />}

@@ -525,16 +525,18 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         
                         if(rtn.usersType.usersType[0].userType !== 'USER' && rtn.usersType.usersType[1].userType !== 'OWNER') 
                         {
+                            const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
+                            
                             const result = await this.roomService.removeUserFromRoom(rtn.room.id, rtn.usersType.usersType[1].userId);
 
-                            const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
- 
                             for(const userInRoom of usersInroom)
                             {
+                             
                                 for (let i = 0; i < this.soketsId.length; i++) 
                                 {
                                     if(this.soketsId[i].userId === userInRoom.userId)
                                     {
+                                        console.log(this.soketsId[i].socketIds)
                                         this.server.to(this.soketsId[i].socketIds).emit("onKick",{ roomId: rtn.room ,  kickedUser: result.kickedUser });
                                     } 
                                 }

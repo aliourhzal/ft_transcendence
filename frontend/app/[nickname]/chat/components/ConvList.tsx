@@ -35,7 +35,7 @@ const ConvList = () => {
     }, [])
 
     const AddUserToRoom = (res) => {
-      console.log(res)
+      console.log('join room ',res)
       const newuser = res.userInfos.find(o => o.userId === res.newUserAdded.userId)
       console.log(newuser)
       if (newuser.user.nickname === userData.nickname) {

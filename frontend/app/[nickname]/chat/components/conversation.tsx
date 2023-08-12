@@ -5,6 +5,7 @@ import ChatBox from './ChatBox'
 import RoomInfo from './roomInfo'
 import AlertMsgDown from './AlertMsgDown'
 import { getCookie } from '../../layout'
+import SocketComponent from './SocketComponent'
 
 const Conversation = () => {
 
@@ -14,7 +15,7 @@ const Conversation = () => {
 
     const [msg_sender, set_msg_sender] = useState('')
 
-    const {setAlertNewMessage, scrollToBottom, showConv, setShowConv, activeUserConv, setActiveUserConv, chatBoxMessages, setChatBoxMessages, rooms, socket, userData, msg_sent, set_msg_sent} = useContext(Context)
+    const {setAlertNewMessage, scrollToBottom, showConv, setShowConv, activeUserConv, setRooms, chatBoxMessages, rooms, socket, userData, msg_sent, set_msg_sent, setConvs} = useContext(Context)
 
     useEffect( () => {
       typeof window != 'undefined' ? (window.innerWidth <= 768 ? setDeviceType('small') : setDeviceType('normal')) : setDeviceType('normal')
@@ -35,7 +36,6 @@ const Conversation = () => {
         const msg = e.target[0].value.trim()
         if (msg != '') {
             socket.emit('send-message', {message:msg, roomName:activeUserConv.name})
-            // setChatBoxMessages(old => [...old, {user:userData.nickname, msg:msg}])
             msg_sent == undefined ? set_msg_sent(1) : set_msg_sent(old => old == 1 ? 2 : 1)
             e.target[0].value = ''
             set_msg_sender(userData.nickname)
