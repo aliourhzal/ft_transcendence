@@ -185,16 +185,11 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	}
 
 	async startGame(room: roomT) {
-		if (room.in > 0)//
-			return ;
-		console.log("onceeee");//
 		room.player1.score = 0;
 		room.player2.score = 0;
 		let framePerSecond = 50;
-		room.in = 1;//
 		room.loop = setInterval(() => {
 			this.update(room);
-			// clearInterval(room.loop);//
 		},1000/framePerSecond);
 		return ;
 	}
@@ -216,8 +211,9 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			in: 0//
 		};
 		this.rooms.push(newRoom);
-		this.server.to(roomId).emit("send_canva_W_H");
 		this.gameQueue.splice(0, 2);
+		this.server.to(roomId).emit("send_canva_W_H");
+		this.startGame(newRoom);
 	}
 
 	async handleConnection(socket: Socket) {
@@ -288,8 +284,8 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		if (room && this.checkPlayerOrder(socket, room) === 2) {
 			room.player2.setCanvasDim(data.h, data.w);
 		}
-		if (room.player1.socket.connected && room.player2.socket.connected)//
-			this.startGame(room);
+		// if (room.player1.socket.connected && room.player2.socket.connected)//
+		// 	this.startGame(room);
 	}
 	@SubscribeMessage('resize')
 	resize(socket: Socket, data: {w:number, h:number})
