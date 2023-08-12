@@ -45,6 +45,7 @@ const RoomForm = () => {
                 type: res.room.room.roomType
             })
             console.log(rooms)
+            set_room_created(old => !old)
         })
     }, [])
     
@@ -52,7 +53,6 @@ const RoomForm = () => {
         e.preventDefault()
         if (roomName != '' && users.length) {
             console.log( {roomName:roomName, users:users, type:roomType, password:pass})
-            set_room_created(old => !old)
             hideForm()
             socket.emit('create-room', {roomName:roomName, users:users, type:roomType, password:pass})
         }
