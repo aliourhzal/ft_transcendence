@@ -1,6 +1,5 @@
 'use client'
 
-import { useRouter } from "next/navigation";
 import { UniversalData, userDataContext } from "./layout";
 import { useContext, useEffect, useState } from "react";
 
@@ -14,24 +13,28 @@ import NotFound from "./components/not-found";
 export default function Profile(props) {
 	const [completed, setCompleted] = useState(false);
 	const [err, setErr] = useState(false);
-	const router = useRouter();
 	const loggedUser = useContext(userDataContext)
 	const [userData, setUserData] = useState<UniversalData>(loggedUser);
 
-	useEffect(() => {
-		if (loggedUser.nickname !== props.params.nickname) {
-			axios.get('http://127.0.0.1:3000/users/profile', {
+	async function fetchUserData(nickname: string) {
+		try {
+			const {data} = await axios.get('http://127.0.0.1:3000/users/profile', {
 				params: {
 					nickname: props.params.nickname
 				},
 				withCredentials: true
 			})
-			.then(res => {
-				setUserData(res.data);
-			})
-			.catch((err) => setErr(true))
-			.finally(() => setCompleted(true));
+			setUserData(data);
+			setCompleted(true);
+		} catch (err) {
+			setErr(true);
+			setCompleted(true);
 		}
+	}
+
+	useEffect(() => {
+		if (loggedUser.nickname !== props.params.nickname)
+			fetchUserData(props.params.nickname);
 		else 
 			setCompleted(true);
 	}, [])
@@ -41,7 +44,7 @@ export default function Profile(props) {
 				{
 					completed && !err ?
 					<>
-						<ProfileInfo data={userData}/>
+						<ProfileInfo data={userData} currentUser={loggedUser.nickname === props.params.nickname}/>
 						{
 							loggedUser.nickname === props.params.nickname && <FriendsCarouselBar />
 						}
