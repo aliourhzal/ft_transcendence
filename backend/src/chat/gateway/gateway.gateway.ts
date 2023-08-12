@@ -19,6 +19,8 @@ import { RoomType } from 'src/utils/userData.interface';
 import { SetOtherAasAdministrators } from 'src/dto/setOtherAasAdministrators.dto';
 import { DemoteUser } from 'src/dto/DemoteUser.dto';
 import { KickUser } from 'src/dto/Kickusers.sto';
+import { AddNewUsersToRoom } from 'src/dto/addNewUsersToRoom.dto';
+import { LeaveRoom } from 'src/dto/leaveRoom.dto';
 
 @WebSocketGateway(3004)
 export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
@@ -245,9 +247,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
             if (token) 
             {
-                const user  = await this.utils.verifyToken(token); // // if has error will catch it
+                const user  = await this.utils.verifyToken(token); // if has error will catch it
                 
-                const rtn = await this.utilsFunction(socket , user , dto.roomName);
+                const rtn = await this.utilsFunction(socket , user , dto.roomName , null , 1);
+                
                 if(rtn.error)
                 {
                     this.OnWebSocektError(socket);
@@ -470,7 +473,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         console.log('dont have the permission to set an admin.');
                         return ;
                     }
-                    
                 }
             } 
             else
@@ -484,8 +486,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             this.OnWebSocektError(socket);
             console.log(error)
         }
-
-        
     }
 
 
@@ -559,17 +559,104 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 this.OnWebSocektError(socket);
                 console.log(error)
             }
-
- 
         }
 
+        /*
+            * before add new users:
+            - check if current user is exist
+            - check room if exsit
+            - check if current user in same room 
+            - if is banned
+            - check if current user is owner or admin
+         
+        */
+
+            @SubscribeMessage('add-new-users-to-room') 
+            @UsePipes(new ValidationPipe()) 
+            async addNewUsersToRoom(@MessageBody() dto:AddNewUsersToRoom , @ConnectedSocket() socket: Socket) 
+            {
+                try 
+                {
+                    const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+    
+                    if (token) 
+                    {
+                        const user  = await this.utils.verifyToken(token); // // if has error will catch it
+    
+                        const rtn = await this.utilsFunction(socket , user , dto.roomName , dto.users, 1);
+                        
+                        if(rtn.error)
+                        {
+                            this.OnWebSocektError(socket);
+                            console.log(rtn.error)
+                            return ;
+                        }
+                        else
+                        {
+                            // console.log(rtn.usersType.usersType)
+                            
+                        }
+                    } 
+                    else
+                    {
+                        console.log('invalid jwt.');
+                        this.OnWebSocektError(socket);
+                    }
+                }   
+                catch (error) 
+                {
+                    this.OnWebSocektError(socket);
+                    console.log(error)
+                }
+            }
+
+        
+            @SubscribeMessage('leaveRoom') 
+            @UsePipes(new ValidationPipe()) 
+            async leaveRoom(@MessageBody() dto:LeaveRoom , @ConnectedSocket() socket: Socket) 
+            {
+                try 
+                {
+                    const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+    
+                    if (token) 
+                    {
+                        const user  = await this.utils.verifyToken(token); // // if has error will catch it
+    
+                        const rtn = await this.utilsFunction(socket , user , dto.roomName);
+                        
+                        if(rtn.error)
+                        {
+                            this.OnWebSocektError(socket);
+                            console.log(rtn.error)
+                            return ;
+                        }
+                        else
+                        {
+                            // console.log(rtn.usersType.usersType)
+                            
+                        }
+                    } 
+                    else
+                    {
+                        console.log('invalid jwt.');
+                        this.OnWebSocektError(socket);
+                    }
+                }   
+                catch (error) 
+                {
+                    this.OnWebSocektError(socket);
+                    console.log(error)
+                }
+            }
 
 
-        async utilsFunction(@ConnectedSocket() socket: Socket , user :any , roomName ? :string , userId ?:string )
+        async utilsFunction(@ConnectedSocket() socket: Socket , user :any , roomName ? :string , userId ?:string[] | string , flag?:number) // add flag for join room
         {
             let existingUser:any;
             if(userId)
             {
+                // console.log(userId)
                 existingUser = await this.utils.getUserId([user['sub']  , userId]); // if both users in db
             }
             else
@@ -591,14 +678,21 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     
                 if(roomId)  // if room exist
                 {
-                    const usersType = await this.utils.getUserType(roomId.id,existingUser.existingUser); // if both users in this room
-                
-                    if(usersType.error)
+                    if(!flag)
                     {
-                        return usersType;
+                        const usersType = await this.utils.getUserType(roomId.id,existingUser.existingUser); // if both users in this room
+                    
+                        if(usersType.error)
+                        {
+                            return usersType;
+                        }
+
+                        return {room : roomId , usersType , existingUser };
                     }
-    
-                    return {room : roomId , usersType , existingUser };
+                    else // for join room  and add new user to room because current user is not the room
+                    {
+                        return {room : roomId  , existingUser };
+                    }
                 }
                 else
                 {
@@ -634,15 +728,18 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
     async handleDisconnect(socket: Socket) {
 
-        // on deconect delete the socket id
-        
-        // 
+        // const index = this.soketsId.findIndex(user => user.socketIds === socket.id);
+		 
+        // if (index > -1) 
+        // {
+		// 	const sockets = this.soketsId.filter(user => user.userId === this.soketsId[index].userId);
 
-        // this.soketsId.pop();
+        //     if (sockets.length < 2)
+    	// 		this.soketsId.splice(index, 1);	
+		// }
+
         console.log("disconnected from chat");
-        
-        // this.soketsId = []; // clear socket ids 
-        // remove sockets from room
+         
         this.OnWebSocektError(socket);
     }
 
