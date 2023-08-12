@@ -94,18 +94,21 @@ export default function FriendCarouselBar()
 	}, [])
 
 	return (
-		<div className="w-[90%] rounded-xl flex bg-darken-100 h-20vh">
-			<div ref={imgCircle} className="overflow-hidden horizontal-scroll h-[110px] flex justify-between items-center relative w-full ">
+		<div className="w-[90%] rounded-xl flex bg-darken-100 h-20vh relative">
+			{
+				friends.length === 0 && <span className="text-white text-lg absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">You Have no Friends</span>
+			}
+			<div ref={imgCircle} className="overflow-hidden horizontal-scroll h-[110px] flex justify-between items-center w-full ">
 				{
 					friends.length > 7 && <img ref={imgL} className=" p-2 m-2 rounded-full btn-scroll max-sm:hidden w-[35px] aspect-square" src="../images/L_arrow.png"  alt="" onClick={()=>scrollHorizontal(-1)}/>
 				}
-				<div ref={imgContainer} className="storys-container flex items-center justify-center px-4 gap-6">
+				<div ref={imgContainer} className="bg-red-500 storys-container flex items-center justify-center px-4 gap-6">
 						{
-							friends.length > 0 ? friends.map((friend) => {
+							friends.map((friend) => {
 								return (
 									<FriendBarColumns key={friend.nickname} src={friend.profilePic} nickname={friend.nickname} status={friend.status}/>
 								);
-							}) : <span className="text-white text-lg absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">You Have no Friends</span>
+							}) 
 						}
 				</div>
 				{
