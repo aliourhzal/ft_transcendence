@@ -341,6 +341,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         
     }
 
+
     @SubscribeMessage('user-promotion') 
     @UsePipes(new ValidationPipe()) 
     async UserPromotion(@MessageBody() dto:SetOtherAasAdministrators , @ConnectedSocket() socket: Socket) 
@@ -566,7 +567,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
 
 
-        async utilsFunction(@ConnectedSocket() socket: Socket , user :any , roomName ? :string , userId ?:string )
+        async utilsFunction(@ConnectedSocket() socket: Socket , user :any , roomName ? :string , userId ?:string[] | string , flag?:number) // add flag for join room
         {
             let existingUser:any;
             if(userId)
