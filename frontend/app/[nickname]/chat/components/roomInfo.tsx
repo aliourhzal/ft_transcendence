@@ -8,12 +8,15 @@ import { TbUserUp } from "react-icons/Tb";
 import { TbUserDown } from "react-icons/Tb";
 import { BiConversation } from "react-icons/Bi";
 import { AiOutlineUsergroupAdd } from "react-icons/Ai";
+import { FiEdit3 } from "react-icons/Fi";
+import { IoIosArrowDown } from "react-icons/io";
 
 import { UniversalData } from '../../layout';
 import { Avatar } from '@nextui-org/react';
 import NewRoomUsers from './NewRoomUsers';
 import { Context } from '../page';
 import SocketComponent from './SocketComponent';
+import EditRoom from './EditRoom';
 
 interface RoomInfoProps {
     room:any
@@ -61,27 +64,47 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
 
     }
 
-    const   addUsersToRoom = (newUsers) => {
+    const   addUsersToRoom = (e, newUsers) => {
+        e.preventDefault()
+        setShowUsersForm(false)
         if (newUsers.length) {
-            setShowUsersForm(false)
             socket.emit('add-room-users', {roomName: info.room.name, users: newUsers})
+        }
+    }
+    const   editRoom = (e, name, pass) => {
+        e.preventDefault()
+        setshowRoomEditForm(false)
+        if (name || pass) {
+            console.log(name, pass)
+            socket.emit('edit-room', { newName: name, newPassword: pass })
         }
     }
 
     
     const [showUsersForm, setShowUsersForm] = useState(false)
+    const [showRoomEditForm, setshowRoomEditForm] = useState(false)
 
   return (
     <>
     <SocketComponent rooms={rooms} socket={socket} setRooms={setRooms} setInfoUpdate={setInfoUpdate} setConvs={setConvs}/>
     <Popup isOpen={info.show} modalAppearance={hide}>
         <div className='flex items-end justify-center m-4'>
-            <Avatar zoomed text={info.room.name} bordered color={"primary"} alt={info.room.name} className="ml-4 w-auto h-auto"></Avatar>
             {isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) &&
-                <AiOutlineUsergroupAdd color={showUsersForm ? 'rgb(41 120 242)' : ''} cursor={'pointer'} className='hover:text-whiteSmoke' onClick={ () => setShowUsersForm(old => !old) }/>
+                <AiOutlineUsergroupAdd color={showUsersForm ? 'rgb(41 120 242)' : ''} cursor={'pointer'} className='hover:text-whiteSmoke' onClick={ () => {
+                    setShowUsersForm(old => !old)
+                    showRoomEditForm ? setshowRoomEditForm(false) : ''
+                }}/>
+            }
+            <Avatar zoomed text={info.room.name} bordered color={"primary"} alt={info.room.name} className="w-auto h-auto"></Avatar>
+            {isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) &&
+                <FiEdit3  color={showRoomEditForm ? 'rgb(41 120 242)' : ''} cursor={'pointer'} className='hover:text-whiteSmoke' onClick={ () => {
+                    setshowRoomEditForm(old => !old)
+                    showUsersForm ? setShowUsersForm(false) : ''
+                }}/>
             }
         </div>
         {showUsersForm && <NewRoomUsers addUsers={addUsersToRoom} />}
+        {showRoomEditForm && <EditRoom editRoom={editRoom} />}
         <div className='flex flex-col justify-center items-center overflow-y-scroll'>
             {info.room.users.map(user => (
                     <div className='m-2 border-2 p-2 rounded-lg bg-slate-600 border-slate-500 w-full flex flex-col items-center justify-center' key={user.id}>
