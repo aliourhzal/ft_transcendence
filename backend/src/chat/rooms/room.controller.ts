@@ -34,7 +34,7 @@ export class RoomController {
         ) {}
  
         
-   
+    
    
     @Post('/select-room') // use here JoinRoomDto use socket
     async onJoinedRoom(@Req() request: Request , @Body() dto:SelectRoom, @Res() res:any) 

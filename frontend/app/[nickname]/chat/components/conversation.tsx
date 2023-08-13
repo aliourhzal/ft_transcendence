@@ -6,6 +6,8 @@ import RoomInfo from './roomInfo'
 import AlertMsgDown from './AlertMsgDown'
 import { getCookie } from '../../layout'
 import SocketComponent from './SocketComponent'
+import { headers } from 'next/dist/client/components/headers'
+import axios from 'axios'
 
 const Conversation = () => {
 
@@ -31,11 +33,24 @@ const Conversation = () => {
     //     if (e.key === 'Enter')
     //         sendMessage()
     // }
-    const sendMessage = (e) => {
+    const sendMessage = async (e) => {
         e.preventDefault()
         const msg = e.target[0].value.trim()
         if (msg != '') {
-            socket.emit('send-message', {message:msg, roomName:activeUserConv.name})
+            try {
+                 await axios.post('http://127.0.0.1:3000/rooms/send-message', {message:msg, roomName:activeUserConv.name}, {
+                    withCredentials: true,
+                    headers: {
+                        'Authorization': `Bearer ${getCookie('access_token')}`,
+                            'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
+                }).then((res) => {
+                    console.log(res)
+                })
+                
+            } catch (error) {
+                // alert(error)
+            }
+            // socket.emit('send-message', {message:msg, roomName:activeUserConv.name})
             msg_sent == undefined ? set_msg_sent(1) : set_msg_sent(old => old == 1 ? 2 : 1)
             e.target[0].value = ''
             set_msg_sender(userData.nickname)
