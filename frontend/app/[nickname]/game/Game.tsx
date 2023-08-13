@@ -6,6 +6,7 @@ import Canvas from "./components/Canvas";
 import { WebsocketContext } from "@/app/context_sockets/gameWebSocket";
 import loadingPong from "./utils/loadingPong.json";
 import Lottie from "react-lottie";
+import { data } from "autoprefixer";
 
 const startbuttonGame = {
     loop: true,
@@ -50,7 +51,8 @@ export default function Game(props: any)
 						<h2 className=" text-whiteSmoke">{userData.nickname}</h2>
 					</div>
 					<div className="flex items-center gap-x-5">
-						
+						<img className="w-16 h-16 rounded-full" src={opData.avatar} alt="man_hhhh" />
+						<h2 className=" text-whiteSmoke">{opData.nickname}</h2>
 					</div>
 				</div>
 				<Canvas socket={socket} themeN={props.themeN} ball={props.ball}  hell={props.hell} opData={setOpData}/>
