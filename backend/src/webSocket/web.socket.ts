@@ -92,7 +92,7 @@ class Ball {
 	color = "WHITE";
 
 	resetForNewGame() {
-		this.speed = 3;
+		this.speed = 7;
 		this.velocityX = 5;
 		this.velocityY = 5;
 	}
@@ -136,11 +136,19 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 
 	update(room: roomT) {
 		if (room.player1.ball.x - room.ballDynamics.radius < -20)//
+		{	
 			room.player2.score += 1;
-		if (room.player1.ball.x + room.ballDynamics.radius > room.player1.canvas.width + 20)//
+			this.server.to(room.roomId).emit("score", {soc:room.player2.socket.id, p1:room.player2.score, p2:room.player1.score});
+		}
+		
+		if (room.player1.ball.x + room.ballDynamics.radius > room.player1.canvas.width + 20)
+		{
 			room.player1.score += 1;
+			this.server.to(room.roomId).emit("score", {soc:room.player1.socket.id, p1:room.player1.score, p2:room.player2.score})
+		}
 		if (room.player1.score === 5 || room.player2.score === 5)//
 			clearInterval(room.loop);
+		
 		if (room.player1.ball.x - room.ballDynamics.radius < -20 || room.player1.ball.x + room.ballDynamics.radius > room.player1.canvas.width + 20) {
 			room.ballDynamics.resetForNewGame();
 			room.player1.resetBall(room.player1.canvas.width / 2, room.player1.canvas.height / 2);
