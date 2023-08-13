@@ -12,6 +12,7 @@ import JoinRoomForm from "./components/joinRoom";
 import { SocketAddress } from "net";
 import ButtomButtons from "./components/ButtomButtons";
 import SearchDm from "./components/SearchDm";
+import Notification from "./components/Notification";
 
 export interface conversation {
 	readonly name: string,
@@ -112,6 +113,7 @@ export default function Chat() {
 			<Context.Provider value={{alertNewMessage, setAlertNewMessage, ref, showConv, setShowConv, activeUserConv, setActiveUserConv, socket,
 				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm, msg_sent, set_msg_sent,
 				set_room_created, room_created, rooms, setRooms, showSearchUsersForm, setShowSearchUsersForm, scrollToBottom}}>
+				<Notification />
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200">
 					<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">
 						<ConvList />
