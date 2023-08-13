@@ -22,8 +22,8 @@ export class RoomsService
 
     async linkBetweenUsersAndRooms(roomId: string, usersIds:string[])  
     {
-        
-         
+        let users:any = [];
+
         for(let i = 0; i < usersIds.length; i++)
         {
             const existingUsers = await this.prisma.joinedTable.findFirst({
@@ -36,19 +36,19 @@ export class RoomsService
             if (!existingUsers) 
             {
                 
-                await this.prisma.joinedTable.create({
+                users.push(await this.prisma.joinedTable.create({
                     data: {
                     userId : usersIds[i],
                     roomId,
                     },
-                });
+                }));
                 
             }
         }
 
         
          
-        return {ok : 'ok'};
+        return {users};
     }
 
     async OWNERCreateRoom(room_name: string, adminOfRoom:string, roomType_: RoomType , password?: string)  

@@ -94,6 +94,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
               
                 if (decodedToken) 
                 {
+                    // check if curent user is exist
                     const usersId = (await this.utils.getUsersIdByNickname(decodedToken['sub'],dto.users , 1)); // get ids of users 
 
                     if(usersId.error)
@@ -272,7 +273,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                             {
                                 if(comparePasswd(dto.password,rtn.room.password) )
                                 {
-                                    await this.roomService.linkBetweenUsersAndRooms(rtn.room.id, [user['sub']]);
+                                    const newUserAdded = await this.roomService.linkBetweenUsersAndRooms(rtn.room.id, [user['sub']]);
                                 
                                     const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
                                     
@@ -282,7 +283,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                         {
                                             if(this.soketsId[i].userId === userInRoom.userId)
                                             {
-                                                this.server.to(this.soketsId[i].socketIds).emit('users-join', {room : rtn.room , userInfos: await this.utils.getUserInfosInRoom(rtn.room.id) , newUserAdded : usersInroom[usersInroom.length - 1] });                                  
+                                                this.server.to(this.soketsId[i].socketIds).emit('users-join', {room : rtn.room , userInfos: await this.utils.getUserInfosInRoom(rtn.room.id) , newUserAdded :[newUserAdded] });                                  
                                             }
                                         }
  
@@ -298,7 +299,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                             }
                             else if(rtn.room.roomType === 'PUBLIC')
                             {
-                                await this.roomService.linkBetweenUsersAndRooms(rtn.room.id, [user['sub']]);
+                                const newUserAdded = await this.roomService.linkBetweenUsersAndRooms(rtn.room.id, [user['sub']]);
                                 
                                 const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
                                 
@@ -308,7 +309,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                     {
                                         if(this.soketsId[i].userId === userInRoom.userId)
                                         {
-                                            this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId : rtn.room , userInfos: await this.utils.getUserInfosInRoom(rtn.room.id) , newUserAdded : usersInroom[usersInroom.length - 1] });
+                                            this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId : rtn.room , userInfos: await this.utils.getUserInfosInRoom(rtn.room.id) , newUserAdded  });
                                         }
                                     }
         
@@ -562,11 +563,86 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             {
                 this.OnWebSocektError(socket);
                 console.log(error)
-            }
-
- 
+            } 
         }
 
+
+        @SubscribeMessage('add-room-users') 
+        @UsePipes(new ValidationPipe()) 
+        async addNewUsersToRoom(@MessageBody() dto:AddNewUsersToRoom , @ConnectedSocket() socket: Socket) 
+        {
+            
+             try 
+            {
+                const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+                
+                if (token) 
+                {
+                    const user  = await this.utils.verifyToken(token); // // if has error will catch it
+
+                    const usersId = await this.utils.getUsersIdByNickname(user['sub'] , dto.users , 1);
+                    
+                    if(usersId.error)
+                    {
+                        console.log(usersId.error);
+                        return ;
+                    }
+                    const roomId = await this.utils.getRoomByName(dto.roomName);
+                   
+                    if(roomId)
+                    {
+                        const userType = await this.utils.getUserType(roomId.id, [user['sub']]);
+
+                        if(userType.error)
+                        {
+                            console.log(userType.error);
+                            return ;
+                        }
+                         
+                        if(userType.usersType[0] !== 'USER') // test one by one
+                        {
+                            const newUsers = await this.roomService.linkBetweenUsersAndRooms(roomId.id, usersId.uniqUsers);
+                            
+                            const usersInroom = await this.utils.getUsersInRooms(roomId.id);
+                                
+                            for(const userInRoom of usersInroom)
+                            {
+                                for (let i = 0; i < this.soketsId.length; i++) 
+                                {
+                                    if(this.soketsId[i].userId === userInRoom.userId)
+                                    {
+                                        this.server.to(this.soketsId[i].socketIds).emit('users-join', {roomId  , userInfos: await this.utils.getUserInfosInRoom(roomId.id) , newUserAdded : newUsers });
+                                    }
+                                }
+    
+                            } 
+                            
+                        }
+                        else
+                        {
+                            console.log('dont have the permmission to add users to this room.')
+                            return ;
+                        }
+                    }
+                    else
+                    {
+                        console.log('room not found')
+                        return;
+                    }
+                    
+                } 
+                else
+                {
+                    console.log('invalid jwt.');
+                    this.OnWebSocektError(socket);
+                }
+            }   
+            catch (error) 
+            {
+                this.OnWebSocektError(socket);
+                console.log(error)
+            } 
+        }
 
 
         async utilsFunction(@ConnectedSocket() socket: Socket , user :any , roomName ? :string , userId ?:string[] | string , flag?:number) // add flag for join room

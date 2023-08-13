@@ -38,7 +38,6 @@ export class UtilsService {
 
         for(const id of ids)
         {
-          
             const userId = await this.prisma.user.findUnique({
                 where: {
                     id,
@@ -57,7 +56,11 @@ export class UtilsService {
     {
         let usersFounding: string[] = [];
 
-         
+        const user = await this.getuserById(adminId);
+        
+        if(!user)
+            return {error : 'user not found.'};
+
         for (let i = 0; i < users.length; i++) 
         {
             const existingUser = await this.prisma.user.findUnique({
