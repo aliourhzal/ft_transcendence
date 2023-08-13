@@ -264,7 +264,10 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			this.OnWebSocektError(socket);
 		}
 		if (!decodeJWt)
+		{
 			this.OnWebSocektError(socket);
+			return ;
+		}
 		const user = await this.usersService.findOneByNickname(decodeJWt.nickname);
 		if (!user) {
 			this.OnWebSocektError(socket);
