@@ -129,8 +129,12 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		}
 		catch(e){}
 		const disconnectedUser =  this.connectedUsers.findIndex(x => x.socket.id === socket.id);
+		if (disconnectedUser === -1)
+			return ;
 		this.connectedUsers.splice(disconnectedUser, 1);
 		const QueuedUser =  this.gameQueue.findIndex(x => x.socket.id === socket.id);
+		if (QueuedUser === -1)
+			return ;
 		this.gameQueue.splice(QueuedUser, 1);
 	}
 
