@@ -35,12 +35,7 @@ const BotLottie = {
 
 const LazyGame = dynamic(() => import('./Game'), {
 	ssr: false,
-	loading: () => 
-    <Lottie 
-        options={defaultOptions}
-        width={400}
-        height={400}
-    />
+	loading: () => <p className="text-whiteSmoke text-7xl"> . . . </p>
 });
 
 const BotGame = dynamic(() => import('./oldGame'), {

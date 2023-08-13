@@ -7,7 +7,8 @@ import Ball from "../utils/Ball.class";
 import { Socket } from "socket.io-client";
 
 
-export default function Canvas(props: {socket:Socket, themeN: number; ball: boolean; hell: boolean; }) {
+export default function Canvas(props: {socket:Socket, themeN: number, ball: boolean, hell: boolean, opData: any }) {
+	const [ana, GodWilling] = useState(0);
 	const n = props.themeN;
     let bgColor = "#353D49";
 	let color = "#50CFED";
@@ -138,6 +139,12 @@ export default function Canvas(props: {socket:Socket, themeN: number; ball: bool
 				return ;
 		}
 		props.socket.on('send_canva_W_H', () => {
+			props.opData(oldata => {
+				const update = {...oldata};
+				update.loading = false;
+				return (update);
+			})
+			console.log({w:canvas.width, h:canvas.height});
 			props.socket.emit("startGame", {w:canvas.width, h:canvas.height});
 		});
 
@@ -152,7 +159,7 @@ export default function Canvas(props: {socket:Socket, themeN: number; ball: bool
 		});
     }, [])
 
-	const [ana, GodWilling] = useState(0);
+
 
     return (
 		//w-[800px] h-[450px]
