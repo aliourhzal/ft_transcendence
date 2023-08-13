@@ -77,7 +77,9 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     <Popup isOpen={info.show} modalAppearance={hide}>
         <div className='flex items-end justify-center m-4'>
             <Avatar zoomed text={info.room.name} bordered color={"primary"} alt={info.room.name} className="ml-4 w-auto h-auto"></Avatar>
-            <AiOutlineUsergroupAdd color={showUsersForm ? 'rgb(41 120 242)' : ''} cursor={'pointer'} className='hover:text-whiteSmoke' onClick={ () => setShowUsersForm(old => !old) }/>
+            {isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) &&
+                <AiOutlineUsergroupAdd color={showUsersForm ? 'rgb(41 120 242)' : ''} cursor={'pointer'} className='hover:text-whiteSmoke' onClick={ () => setShowUsersForm(old => !old) }/>
+            }
         </div>
         {showUsersForm && <NewRoomUsers addUsers={addUsersToRoom} />}
         <div className='flex flex-col justify-center items-center overflow-y-scroll'>
