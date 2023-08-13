@@ -1,6 +1,6 @@
 'use client'
 
-import { WebsocketContext } from "@/app/context_sockets/gameWebSocket";
+import { WebsocketContext, socket } from "@/app/context_sockets/gameWebSocket";
 import { useContext, useEffect, useState } from "react";
 import Player from "../utils/Player.class";
 import Ball from "../utils/Ball.class";
@@ -36,7 +36,11 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			ctx.closePath();
 			ctx.fill();
 		}
-
+		function drawText(text,x,y){
+			ctx.fillStyle = "#FFF";
+			ctx.font = "75px fantasy";
+			ctx.fillText(text, x, y);
+		}
 		function drawRect(x, y, w, h, color){
 			ctx.fillStyle = color;
 			ctx.fillRect(x, y, w, h);
@@ -57,7 +61,11 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		}
 		//clear canvas
 		drawRect(0, 0, canvas.offsetWidth, canvas.offsetHeight, bgColor);
-		
+		// draw the user score to the left
+		drawText(player.score,canvas.width/4,canvas.height/5);
+
+		// draw the COM score to the right
+		drawText(com.score,3*canvas.width/4,canvas.height/5);
 		//draw player Paddle
 		drawRect(player.x, player.y, player.width, player.height, player.color);
 		//draw the oposite Paddle
@@ -156,6 +164,18 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		props.socket.on("playerMov", data => {
 			com.x = canvas.width - com.width;
 			com.y = data.y;
+		});
+		props.socket.on("score", data => {
+			if (props.socket.id === data.soc)
+			{
+				player.score = data.p1;
+				com.score = data.p2;
+			}
+			else
+			{
+				com.score = data.p1;
+				player.score = data.p2;
+			}
 		});
     }, [])
 
