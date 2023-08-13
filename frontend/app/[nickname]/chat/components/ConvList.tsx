@@ -36,30 +36,35 @@ const ConvList = () => {
 
     const AddUserToRoom = (res) => {
       console.log('join room ',res)
-      const newuser = res.userInfos.find(o => o.userId === res.newUserAdded.userId)
-      console.log(newuser)
-      if (newuser.user.nickname === userData.nickname) {
-        rooms.unshift({
-        msgs: [],
-        id: res.roomId.id,
-        name: res.roomId.room_name,
-        type: res.roomId.roomType,
-        lastmsg:'welcome to group chat',
-        users: getUsersInfo(res.userInfos),
-        })
-      } else {
-        rooms.find(o => o.name === res.roomId.room_name).users.push(
-        {
-          id: newuser.user.id,
-          nickName: newuser.user.nickname,
-          firstName: newuser.user.firstName,
-          lastName: newuser.user.lastName,
-          photo: newuser.user.profilePic,
-          type: newuser.userType,
-          isBanned: newuser.isBanned,
+      const newusers = []
+      res.newUserAdded.users.map(_new => {
+        newusers.push(res.userInfos.find(o => o.userId === _new.userId))
+      })
+      console.log(newusers)
+      newusers.map((newuser) => {
+        if (newuser.user.nickname === userData.nickname || !rooms.find(o => o.name === res.roomId.room_name)) {
+          rooms.unshift({
+          msgs: [],
+          id: res.roomId.id,
+          name: res.roomId.room_name,
+          type: res.roomId.roomType,
+          lastmsg:'welcome to group chat',
+          users: getUsersInfo(res.userInfos),
+          })
+        } else {
+          rooms.find(o => o.name === res.roomId.room_name).users.push(
+          {
+            id: newuser.user.id,
+            nickName: newuser.user.nickname,
+            firstName: newuser.user.firstName,
+            lastName: newuser.user.lastName,
+            photo: newuser.user.profilePic,
+            type: newuser.userType,
+            isBanned: newuser.isBanned,
+          }
+          )
         }
-        )
-      }
+      })
       set_room_created(old => !old)
       setUpdateList(old => !old)
       console.log(rooms)
