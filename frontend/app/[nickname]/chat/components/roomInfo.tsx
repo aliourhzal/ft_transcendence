@@ -11,12 +11,13 @@ import { AiOutlineUsergroupAdd } from "react-icons/Ai";
 import { FiEdit3 } from "react-icons/Fi";
 import { IoIosArrowDown } from "react-icons/io";
 
-import { UniversalData } from '../../layout';
+import { UniversalData, getCookie } from '../../layout';
 import { Avatar } from '@nextui-org/react';
 import NewRoomUsers from './NewRoomUsers';
 import { Context } from '../page';
 import SocketComponent from './SocketComponent';
 import EditRoom from './EditRoom';
+import axios from 'axios';
 
 interface RoomInfoProps {
     room:any
@@ -50,11 +51,65 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         return false
     }
 
-    const promoteUser = (id) => { socket.emit('user-promotion', {roomName:info.room.name, newAdminId:id}) }
+    const promoteUser = async (id) => {
+        try {
+            await axios.post('http://127.0.0.1:3000/rooms/user-promotion', {roomName:info.room.name, newAdminId:id}, {
+               withCredentials: true,
+               headers: {
+                   'Authorization': `Bearer ${getCookie('access_token')}`,
+                       'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
+           }).then((res) => {
 
-    const demoteteUser = (id) => { socket.emit('user-demote', {roomName:info.room.name, dmotedUserId:id}) }
+               console.log(res)
+           })
+           
+       } catch (error) 
+       {
+           console.log(error)
+           // alert(error)
+       }
+        //  socket.emit('user-promotion', {roomName:info.room.name, newAdminId:id})
+    }
 
-    const kickUser = (id) => { socket.emit('kick-user', {roomName:info.room.name, kickedUserId:id}) }
+    const demoteteUser = async (id) => {
+        try {
+            await axios.post('http://127.0.0.1:3000/rooms/user-demote', {roomName:info.room.name, dmotedUserId:id}, {
+               withCredentials: true,
+               headers: {
+                   'Authorization': `Bearer ${getCookie('access_token')}`,
+                       'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
+           }).then((res) => {
+
+               console.log(res)
+           })
+           
+       } catch (error) 
+       {
+           console.log(error)
+           // alert(error)
+       }
+        // socket.emit('user-demote', {roomName:info.room.name, dmotedUserId:id})
+    }
+
+    const kickUser = async (id) => {
+        try {
+            await axios.post('http://127.0.0.1:3000/rooms/kick-user', {roomName:info.room.name, kickedUserId:id}, {
+               withCredentials: true,
+               headers: {
+                   'Authorization': `Bearer ${getCookie('access_token')}`,
+                       'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
+           }).then((res) => {
+
+               console.log(res)
+           })
+           
+       } catch (error) 
+       {
+           console.log(error)
+           // alert(error)
+       }
+        // socket.emit('kick-user', {roomName:info.room.name, kickedUserId:id})
+    }
 
     const banUser = (id) => {
         
@@ -64,19 +119,51 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
 
     }
 
-    const   addUsersToRoom = (e, newUsers) => {
+    const   addUsersToRoom = async (e, newUsers) => {
         e.preventDefault()
         setShowUsersForm(false)
         if (newUsers.length) {
-            socket.emit('add-room-users', {roomName: info.room.name, users: newUsers})
+            try {
+                await axios.post('http://127.0.0.1:3000/rooms/add-room-users', {roomName: info.room.name, users: newUsers}, {
+                   withCredentials: true,
+                   headers: {
+                       'Authorization': `Bearer ${getCookie('access_token')}`,
+                           'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
+               }).then((res) => {
+    
+                   console.log(res)
+               })
+               
+           } catch (error) 
+           {
+               console.log(error)
+               // alert(error)
+           }
+            // socket.emit('add-room-users', {roomName: info.room.name, users: newUsers})
         }
     }
-    const   editRoom = (e, name, pass) => {
+    const   editRoom = async (e, name, pass) => {
         e.preventDefault()
         setshowRoomEditForm(false)
         if (name || pass) {
             console.log(name, pass)
-            socket.emit('edit-room', { newName: name, newPassword: pass })
+            try {
+                await axios.post('http://127.0.0.1:3000/rooms/edit-room', { newName: name, newPassword: pass }, {
+                   withCredentials: true,
+                   headers: {
+                       'Authorization': `Bearer ${getCookie('access_token')}`,
+                           'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
+               }).then((res) => {
+    
+                   console.log(res)
+               })
+               
+           } catch (error) 
+           {
+               console.log(error)
+               // alert(error)
+           }
+            // socket.emit('edit-room', { newName: name, newPassword: pass })
         }
     }
 

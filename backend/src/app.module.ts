@@ -8,6 +8,7 @@ import { ChatModule } from './chat/chat.module';
 import { UtilsService } from './utils/utils.service';
 import { JwtService } from '@nestjs/jwt';
 import { ApiTokenCheckMiddleware } from './api-token-check/api-token-check.middleware';
+import { WebSocketServiceService } from './chat/web-socket-service/web-socket-service.service';
 
 
 @Module({
@@ -19,13 +20,13 @@ import { ApiTokenCheckMiddleware } from './api-token-check/api-token-check.middl
     ChatModule,
   ],
   controllers: [],
-  providers: [UtilsService , JwtService],
+  providers: [UtilsService , JwtService, WebSocketServiceService],
 })
 
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
       consumer
         .apply(ApiTokenCheckMiddleware)
-        .forRoutes({ path: '*', method: RequestMethod.ALL });
+        .forRoutes({ path: '/rooms/send-message' , method: RequestMethod.POST } , { path: '/rooms/select-room' , method: RequestMethod.POST });
     }
   }

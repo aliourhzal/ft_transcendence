@@ -182,59 +182,40 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
     }
 
-
+    
 
     @SubscribeMessage('send-message') 
-    @UsePipes(new ValidationPipe())
-    async sendMessage(@MessageBody() dto: SendMessage , @ConnectedSocket() socket: Socket) 
+    async sendMessage(@MessageBody() obj: any , @ConnectedSocket() socket: Socket) 
     {
-        try 
-        {
-            const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
-
-            if (token) 
-            {
-                const user  = await this.utils.verifyToken(token); // // if has error will catch it
-                
-                const rtn = await this.utilsFunction(socket , user , dto.roomName);
-                
-                if(rtn.error)
-                {
-                    this.OnWebSocektError(socket);
-                    console.log(rtn.error)
-                    return ;
-                }
-                else
-                {
-                    const createdMsg = await this.messagesService.createMessages(dto.message ,user['sub'], rtn.room.id);
-                            
-                            
-                    const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
+        console.log(obj)
+        // const rtn = await this.utilsFunction(socket , user , dto.roomName);
+        
+        // if(rtn.error)
+        // {
+        //     this.OnWebSocektError(socket);
+        //     console.log(rtn.error)
+        //     return ;
+        // }
+        // else
+        // {
+        //     const createdMsg = await this.messagesService.createMessages(dto.message ,user['sub'], rtn.room.id);
                     
-                    for(const userInRoom of usersInroom)
-                    {
-                        for (let i = 0; i < this.soketsId.length; i++) 
-                        {
-                            if(this.soketsId[i].userId === userInRoom.userId)
-                            {
-                                this.server.to(this.soketsId[i].socketIds).emit("add-message", {user: createdMsg.username, msg: createdMsg.msg , roomName: rtn.room.room_name , idOfmsg : createdMsg.idOfMsg})
-                            }
-                        }
+                    
+        //     const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
+            
+        //     for(const userInRoom of usersInroom)
+        //     {
+        //         for (let i = 0; i < this.soketsId.length; i++) 
+        //         {
+        //             if(this.soketsId[i].userId === userInRoom.userId)
+        //             {
+        //                 this.server.to(this.soketsId[i].socketIds).emit("add-message", {user: createdMsg.username, msg: createdMsg.msg , roomName: rtn.room.room_name , idOfmsg : createdMsg.idOfMsg})
+        //             }
+        //         }
 
-                    }
-                }
-            } 
-            else
-            {
-                console.log('invalid jwt.');
-                this.OnWebSocektError(socket);
-            }
-        }   
-        catch (error) 
-        {
-            this.OnWebSocektError(socket);
-            console.log(error)
-        }
+        //     }
+        // }
+            
     }
 
 

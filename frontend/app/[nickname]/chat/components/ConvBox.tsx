@@ -30,7 +30,8 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
           setChatBoxMessages(res.data.msg)
       })
     } catch(error) {
-        alert(error)
+        // alert(error)
+        console.log(error)
     }
     // const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
 }

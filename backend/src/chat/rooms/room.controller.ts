@@ -14,6 +14,9 @@ import { comparePasswd, encodePasswd } from 'src/utils/bcrypt';
 import { SetOtherAasAdministrators } from 'src/dto/setOtherAasAdministrators.dto';
 import { SelectRoom } from 'src/dto/select-room.dto';
 import { BanUser } from 'src/dto/banUser.dto';
+import { SendMessage } from 'src/dto/sendMessage.dto';
+import { Socket } from 'socket.io-client';
+import { WebSocketServiceService } from '../web-socket-service/web-socket-service.service';
 
 
 /**
@@ -30,9 +33,27 @@ export class RoomController {
         private readonly roomService:RoomsService,
         private readonly utils:UtilsService,
         private readonly messagesService:MessagesService,
-        private readonly usersServise:UsersService
+        private readonly usersServise:UsersService,
+        private readonly webSocketService:WebSocketServiceService
         ) {}
- 
+    
+    socket:Socket;
+    @Post()
+    async createRoom(@Body() dto:createRoom, @Res() res:any) 
+    {
+        try 
+        {
+
+            
+        } 
+        catch (error) 
+        {
+            
+        }
+        
+
+    }
+    
         
     
    
@@ -91,6 +112,23 @@ export class RoomController {
         }
     }
     
+    @Post('/send-message')
+    async sendMessage(@Req() request: Request , @Body() dto:SendMessage, @Res() res:any) 
+    {
+        try 
+        {
+            this.webSocketService.emitMessageEvent(this.socket, request['user']);
+            
+        } 
+        catch (error) 
+        {
+            console.log(error)
+        }
+
+
+    }
+
+
     // @Post('/addNewUsersToRoom')
     // async addNewUsersToRoom(@Body() dto:any, @Res() res:any)
     // {

@@ -44,10 +44,13 @@ const Conversation = () => {
                         'Authorization': `Bearer ${getCookie('access_token')}`,
                             'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
                 }).then((res) => {
+
                     console.log(res)
                 })
                 
-            } catch (error) {
+            } catch (error) 
+            {
+                console.log(error)
                 // alert(error)
             }
             // socket.emit('send-message', {message:msg, roomName:activeUserConv.name})

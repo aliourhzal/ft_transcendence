@@ -52,7 +52,23 @@ const RoomForm = () => {
         e.preventDefault()
         if (roomName != '' && users.length) {
             hideForm()
-            socket.emit('create-room', {roomName:roomName, users:users, type:roomType, password:pass})
+            try {
+                await axios.post('http://127.0.0.1:3000/rooms/create-room', {roomName:roomName, users:users, type:roomType, password:pass}, {
+                   withCredentials: true,
+                   headers: {
+                       'Authorization': `Bearer ${getCookie('access_token')}`,
+                           'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
+               }).then((res) => {
+
+                   console.log(res)
+               })
+               
+           } catch (error) 
+           {
+               console.log(error)
+               // alert(error)
+           }
+            // socket.emit('create-room', {roomName:roomName, users:users, type:roomType, password:pass})
         }
     }
 
