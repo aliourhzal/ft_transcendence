@@ -62,8 +62,10 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     }
 
     const   addUsersToRoom = (newUsers) => {
-        setShowUsersForm(false)
-        console.log(newUsers)
+        if (newUsers.length) {
+            setShowUsersForm(false)
+            socket.emit('add-room-users', newUsers)
+        }
     }
 
     
