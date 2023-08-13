@@ -234,8 +234,10 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 
 		this.rooms.push(newRoom);
 		this.gameQueue.splice(0, 2);
-		this.server.to(roomId).emit("send_canva_W_H");
-		this.startGame(newRoom);
+		setTimeout(()=>{
+			this.server.to(roomId).emit("send_canva_W_H");
+			this.startGame(newRoom);
+		}, 3000);
 	}
 
 	async handleConnection(socket: Socket) {
