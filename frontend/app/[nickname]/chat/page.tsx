@@ -89,10 +89,10 @@ export default function Chat() {
 	// const [new] = useState()
 
 	useEffect ( () => {
-		setInterval(() => {
-			// console.log("---->". cookies.access_token)
-		}, 5000);
-		console.log('useeeffect')
+		// setInterval(() => {
+		// 	console.log("---->", cookies.access_token)
+		// }, 5000);
+		// console.log('useeeffect')
 		// if (cookies.access_token != _cookie){
 		// 	console.log('cookie changed !')
 		// 	// document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"

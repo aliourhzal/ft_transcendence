@@ -71,12 +71,22 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         if (newUsers.length)
             socket.emit('add-room-users', {roomName: info.room.name, users: newUsers})
     }
-    const   editRoom = async (e, name, pass) => {
+
+    const   setNewName = async (e, name) => {
         e.preventDefault()
-        setshowRoomEditForm(false)
-        if (name || pass) {
-            console.log(name, pass)
-            socket.emit('edit-room', { newName: name, newPassword: pass })
+        // setshowRoomEditForm(false)
+        if (name) {
+            console.log(name)
+            socket.emit('edit-room-name', { roomName:info.room.name, newName: name })
+        }
+    }
+
+    const   setNewPass = async (e, pass) => {
+        e.preventDefault()
+        // setshowRoomEditForm(false)
+        if (pass) {
+            console.log(pass)
+            socket.emit('edit-room-password', { roomName:info.room.name, newPassword: pass })
         }
     }
 
@@ -104,7 +114,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
             }
         </div>
         {showUsersForm && <NewRoomUsers addUsers={addUsersToRoom} />}
-        {showRoomEditForm && <EditRoom editRoom={editRoom} />}
+        {showRoomEditForm && <EditRoom _setNewName={setNewName} _setNewPass={setNewPass} roomType={info.room.type} />}
         <div className='flex flex-col justify-center items-center overflow-y-scroll'>
             {info.room.users.map(user => (
                     <div className='m-2 border-2 p-2 rounded-lg bg-slate-600 border-slate-500 w-full flex flex-col items-center justify-center' key={user.id}>
