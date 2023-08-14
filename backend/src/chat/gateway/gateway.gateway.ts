@@ -785,7 +785,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                     {
                                         if(this.soketsId[i].userId === userInRoom.userId)
                                         {
-                                            this.server.to(this.soketsId[i].socketIds).emit("change-room-name",{ roomName : roomId.room_name , newPassword: newPassword.password});
+                                            this.server.to(this.soketsId[i].socketIds).emit("change-room-password",{ roomName : roomId.room_name , newPassword: newPassword.password});
                                         } 
                                     }
                                 }
