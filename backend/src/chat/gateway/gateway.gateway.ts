@@ -689,7 +689,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         {
                             if(!await this.utils.getRoomIdByName(dto.newName))
                             {
-                                const oldRoomName = dto.newName;
+                                const oldRoomName = dto.roomName;
                                 const newRoomName = await this.roomService.updateRoomName(roomId.id, dto.newName);
 
                                 const usersInroom = await this.utils.getUsersInRooms(roomId.id);
@@ -700,7 +700,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                     {
                                         if(this.soketsId[i].userId === userInRoom.userId)
                                         {
-                                            this.server.to(this.soketsId[i].socketIds).emit("change-room-name",{ oldRoomName, newRoomName});
+                                            this.server.to(this.soketsId[i].socketIds).emit("change-room-name",{ oldRoomName, newRoomName : newRoomName.room_name});
                                         } 
                                     }
                                 }
