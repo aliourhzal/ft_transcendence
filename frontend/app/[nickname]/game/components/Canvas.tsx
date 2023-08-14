@@ -31,6 +31,11 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		com.color = "#FFF";
 		player.color = "#FFF";
 	}
+	if (n === 3)
+	{
+		bgColor = "#FFF";
+		player.color = com.color = "#000";
+	}
     function StartGame(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D)
 	{
 		//line in the middle of canvas
@@ -48,7 +53,7 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			ctx.fill();
 		}
 		function drawText(text,x,y){
-			ctx.fillStyle = "#FFF";
+			(n === 3 ? ctx.fillStyle = "#000" : ctx.fillStyle = "#FFF")
 			ctx.font = "75px fantasy";
 			ctx.fillText(text, x, y);
 		}
@@ -58,6 +63,8 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		}
 		// draw the net
 		function drawNet(){
+			if (n === 3)
+				net.color = "#000";
 			for(let i = 0; i <= canvas.height; i+=15){
 				drawRect(net.x, net.y + i, net.width, net.height, net.color);
 			}
@@ -95,10 +102,13 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
             if (color.length !== 7)
                 color + "" + Math.floor(Math.random() * 10);
         }
-        else
+		else if (n === 3)
+			color = "#000";
+		else
             color = "white";
         props.ball === true && drawArc(ball.x, ball.y, ball.radius + 2, "white");
         drawArc(ball.x, ball.y, ball.radius, color);
+		
 		let collAngle = 0;
 		const coll = collision();
 		if (coll)
