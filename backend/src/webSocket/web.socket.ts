@@ -87,7 +87,6 @@ type roomT = {
 	roomId: string,
 	ballDynamics: Ball,
 	hell: boolean
-	// specials: SPECIAL_EFFECTS
 }
 
 class Ball {
@@ -102,14 +101,6 @@ class Ball {
 		this.velocityX = 5;
 		this.velocityY = 5;
 	}
-}
-
-enum SPECIAL_EFFECTS {
-	NONE,
-	GROW_PADDLE,
-	BALL_VANISH,
-	DWARF_PADDLE,
-	SUPER_SAIYAN
 }
 
 @WebSocketGateway(3003, { cors: true } ) //tell's the class that it using socket not http and use the port 3003 instead of default one 3000
@@ -156,12 +147,16 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		if (room.player1.ball.x - room.ballDynamics.radius < -20)//
 		{	
 			room.player2.score += 1;
+			room.player2.height = room.player2.canvas.height / 4;
+			room.player1.height = room.player1.canvas.height / 4;
 			this.server.to(room.roomId).emit("score", {soc:room.player2.socket.id, p1:room.player2.score, p2:room.player1.score});
 		}
 		
 		if (room.player1.ball.x + room.ballDynamics.radius > room.player1.canvas.width + 20)
 		{
 			room.player1.score += 1;
+			room.player2.height = room.player2.canvas.height / 4;
+			room.player1.height = room.player1.canvas.height / 4;
 			this.server.to(room.roomId).emit("score", {soc:room.player1.socket.id, p1:room.player1.score, p2:room.player2.score})
 		}
 		if (room.player1.score === 5 || room.player2.score === 5)//
