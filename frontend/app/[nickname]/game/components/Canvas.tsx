@@ -153,12 +153,14 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 				return (update);
 			})
 			console.log({w:canvas.width, h:canvas.height});
-			props.socket.emit("startGame", {w:canvas.width, h:canvas.height});
+			props.socket.emit("startGame", {w:canvas.width, h:canvas.height, hell: props.hell});
 		});
 
         props.socket.on('game_Data', data => {
             ball.x = data.x;
 			ball.y = data.y;
+			player.height = data.h;
+			com.height = data.h;
             StartGame(canvas, ctx);
         });
 		props.socket.on("playerMov", data => {
