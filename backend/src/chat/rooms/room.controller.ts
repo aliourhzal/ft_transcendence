@@ -91,59 +91,56 @@ export class RoomController {
         }
     }
     
-    //    @Post('/renameRoom')
-    // async renameRoom(@Body() dto:any, @Res() res:any)
+    // @Post('/changePasswordOfProtectedRoom')
+    // async changePasswordOfProtectedRoom(@Body() dto:any, @Res() res:any)
     // {
-    //    
-    //     try
-    //     {
+    //     /**
+    //      * check if usser is exist
+    //      * check if room if exist
+    //      * check if user who want to change the password is an admin or owner
+    //      * if room is protected change the password 
+    //     */
+
+    //     try 
+    //     { // if error in jwt
     //         const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
-    //         if(!await this.utils.getUserId(user['sub']))
+
+    //         if(!await this.utils.getUserId(user['sub'])) //if jwt expired
     //         {
     //             console.log('user not found.')
     //             return;
     //         }
-                
+
     //         const roomId = await this.utils.getRoomById(dto.idOfRoom);
 
-    //         if(roomId)
+    //         if(roomId.roomType === 'PROTECTED')
     //         {
     //             const userType = await this.utils.getUserType(roomId.id,user['sub']);
-                
-    //             if(userType)
+
+    //             if(userType.userType !== 'USER') // test one by one
     //             {
-    //                 if (userType.userType === 'ADMIN' || userType.userType === 'OWNER') 
-    //                 {
-    //                     if(!await this.utils.getRoomIdByName(dto.newNameOfRoom))
-    //                     {
-    //                         await this.roomService.updateRoomName(roomId.id, dto.newNameOfRoom);
-    //                     }
-    //                     else
-    //                     {
-    //                         console.log('name of room aleredy exist')
-    //                     }
-    //                 }
-    //                 else
-    //                 {
-    //                     console.log("cannot have the permission to change room Type.")
-    //                 }
+    //                 await this.roomService.changePasswordOfProtectedRoom(roomId.id, encodePasswd(dto.newPassword))
     //             }
     //             else
     //             {
-    //                 console.log('user is not in this room')
+    //                 console.log('dont have the permmission to add users to this room.')
+    //                 return ;
     //             }
     //         }
     //         else
     //         {
-    //             console.log("room  not found");
+    //             console.log('room is not PROTECTED')
+    //             return;
     //         }
-    //     }  
+    //     } 
     //     catch (error) 
     //     {
-    //         console.log("from catch")
+    //         console.log('from changePasswordOfProtectedRoom()')
     //         console.log(error)    
     //     }
     // }
+
+    
     // @Post('/leaveRoom')
     // async leaveRoom(@Body() dto:any, @Res() res:any)
     // {

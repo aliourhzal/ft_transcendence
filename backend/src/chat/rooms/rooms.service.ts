@@ -195,7 +195,7 @@ export class RoomsService
 
     async changePasswordOfProtectedRoom(roomId:string, hash: string )
     {
-        await this.prisma.room.update({
+        return await this.prisma.room.update({
             where: {
                 id: roomId,
             },

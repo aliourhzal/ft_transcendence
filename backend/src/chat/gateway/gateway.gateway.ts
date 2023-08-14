@@ -12,7 +12,7 @@ import { RoomsService } from '../rooms/rooms.service';
 import { UtilsService } from 'src/utils/utils.service';
 import { MessagesService } from '../messages/messages.service';
 import { JoinRoomDto } from 'src/dto/join-room.dto';
-import { comparePasswd } from 'src/utils/bcrypt';
+import { comparePasswd, encodePasswd } from 'src/utils/bcrypt';
 import { SendMessage } from 'src/dto/sendMessage.dto';
 import { createRoom } from 'src/dto';
 import { RoomType } from 'src/utils/userData.interface';
@@ -22,6 +22,7 @@ import { KickUser } from 'src/dto/Kickusers.sto';
 import { AddNewUsersToRoom } from 'src/dto/addNewUsersToRoom.dto';
 import { LeaveRoom } from 'src/dto/leaveRoom.dto';
 import { RenameRoom } from 'src/dto/renameRoom.dto';
+import { ChangeRoomPassword } from 'src/dto/changeRoomPassword.dto';
 
 @WebSocketGateway(3004)
 export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
@@ -117,7 +118,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         if (dto.type === "PROTECTED") 
                         {
                             const room = await this.roomService.createRoom({roomName: dto.roomName, users: usersId.uniqUsers}, decodedToken['sub'], "PROTECTED", dto.password);
-        
                             if(room.error)
                             {
                                 console.log(room.error)
@@ -131,7 +131,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                 {
                                     if(this.soketsId[i].userId === userInRoom.userId)
                                     {
-                                        this.server.to(this.soketsId[i].socketIds).emit("new-room",{room  , usersInRoom: await this.utils.getUsersInRooms(room['id']) , userInfos: await this.utils.getUserInfosInRoom(room.room.id)});
+                                        this.server.to(this.soketsId[i].socketIds).emit("new-room",{room  , usersInroom , userInfos: await this.utils.getUserInfosInRoom(room.room.id)});
+                                        // this.server.to(this.soketsId[i].socketIds).emit("new-room",{room  , usersInRoom: await this.utils.getUsersInRooms(room['id']) , userInfos: await this.utils.getUserInfosInRoom(room.room.id)});
                                     }
                                 }
                             }
@@ -736,6 +737,93 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 console.log(error)
             } 
         }
+
+
+
+        @SubscribeMessage('edit-room-password') 
+        @UsePipes(new ValidationPipe()) 
+        async changeRoomPassword(@MessageBody() dto:ChangeRoomPassword , @ConnectedSocket() socket: Socket) 
+        {
+            try 
+            {
+                const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+                
+                if (token) 
+                {
+                    const user  = await this.utils.verifyToken(token); // // if has error will catch it
+
+                    const existingUser = await this.utils.getUserId([user['sub']]);
+                     
+                    if(existingUser.error)
+                    {
+                        console.log(existingUser.error);
+                        return ;
+                    }
+
+                    const roomId = await this.utils.getRoomByName(dto.roomName);
+
+                    if(roomId)
+                    {
+                        const userType = await this.utils.getUserType(roomId.id,[user['sub']]);
+
+                        if(userType.error)
+                        {
+                            console.log(userType.error);
+                            return ;
+                        }
+                        if (userType.usersType[0].userType !== 'USER') 
+                        {
+                            if(roomId.roomType === 'PROTECTED')
+                            {
+                                const newPassword =  await this.roomService.changePasswordOfProtectedRoom(roomId.id, encodePasswd(dto.newPassword));
+                                
+                                const usersInroom = await this.utils.getUsersInRooms(roomId.id);
+
+                                for(const userInRoom of usersInroom)
+                                {
+                                    for (let i = 0; i < this.soketsId.length; i++) 
+                                    {
+                                        if(this.soketsId[i].userId === userInRoom.userId)
+                                        {
+                                            this.server.to(this.soketsId[i].socketIds).emit("change-room-name",{ roomName : roomId.room_name , newPassword: newPassword.password});
+                                        } 
+                                    }
+                                }
+
+                            }
+                            else
+                            {
+                                console.log('room is not PROTECTED')
+                                return;
+                            }
+                            
+                        }
+                        else
+                        {
+                            console.log("cannot have the permission to change room Type.")
+                        }   
+                    }
+                    else
+                    {
+                        console.log('room not found')
+                        return;
+                    }
+                    
+                } 
+                else
+                {
+                    console.log('invalid jwt.');
+                    this.OnWebSocektError(socket);
+                }
+            }   
+            catch (error) 
+            {
+               
+                this.OnWebSocektError(socket);
+                console.log(error)
+            } 
+        }
+
 
         async utilsFunction(@ConnectedSocket() socket: Socket , user :any , roomName ? :string , userId ?:string[] | string , flag?:number) // add flag for join room
         {
