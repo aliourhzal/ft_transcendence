@@ -74,7 +74,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
 
     const   setNewName = async (e, name) => {
         e.preventDefault()
-        // setshowRoomEditForm(false)
+        setshowRoomEditForm(false)
         if (name) {
             console.log(name)
             socket.emit('edit-room-name', { roomName:info.room.name, newName: name })
@@ -83,7 +83,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
 
     const   setNewPass = async (e, pass) => {
         e.preventDefault()
-        // setshowRoomEditForm(false)
+        setshowRoomEditForm(false)
         if (pass) {
             console.log(pass)
             socket.emit('edit-room-password', { roomName:info.room.name, newPassword: pass })

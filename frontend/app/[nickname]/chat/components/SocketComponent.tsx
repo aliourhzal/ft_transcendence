@@ -46,10 +46,20 @@ const SocketComponent:React.FC<SocketComponentProps> = (props) => {
     setInfoUpdate(old => !old)
   }
 
+  const changeRoomName = (res) => {
+    console.log(res.newRoomName, res.oldRoomName)
+    setRooms( (_rooms: Room[]) => {
+      _rooms.find(o => o.name === res.oldRoomName).name = res.newRoomName
+      return _rooms
+    })
+    setInfoUpdate(old => !old)
+  }
+
   useEffect (() => {
     socket.on('onPromote', (res) => {console.log('promote'), promoteUser(res)})
     socket.on('onDemote', (res) => {console.log('demote'), demoteUser(res)})
     socket.on('onKick', (res) => {console.log('kick'), kickUser(res)})
+    socket.on('change-room-name', (res) => {console.log('change name'), changeRoomName(res)})
 }, []) 
 
   return (
