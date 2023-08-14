@@ -89,13 +89,19 @@ function drawRect(x, y, w, h, color){
 // draw circle, will be used to draw the ball
 function drawArc(x, y, r, color){
     ctx.fillStyle = color;
+    // ctx.strokeStyle = color;
     ctx.beginPath();
     if (n === 2)
-        drawRect(x, y, ball.radius*1.5, ball.radius*1.5, color);
+        drawRect(x, y, ball.radius*1.5, ball.radius*1.5, color);//square ball
     else
         ctx.arc(x,y,r,0,Math.PI*2,true);
     ctx.closePath();
     ctx.fill();
+    // ctx.stroke();
+    // ctx.beginPath();
+    // ctx.arc(x,y,r+5,0,Math.PI*2,true);
+    // ctx.stroke();
+
 }
 
 // listening to the mouse
@@ -122,6 +128,8 @@ function resetBall(){
 
 // draw the net
 function drawNet(){
+    if (n === 3)
+        net.color = "#000";
     for(let i = 0; i <= canvas.height; i+=15){
         drawRect(net.x, net.y + i, net.width, net.height, net.color);
     }
@@ -129,7 +137,7 @@ function drawNet(){
 
 // draw text
 function drawText(text,x,y){
-    ctx.fillStyle = "#FFF";
+    (n === 3 ? ctx.fillStyle = "#000" : ctx.fillStyle = "#FFF")
     ctx.font = "75px fantasy";
     ctx.fillText(text, x, y);
 }
@@ -255,13 +263,20 @@ function render()
             if (color.length !== 7)
                 color + "" + Math.floor(Math.random() * 10);
         }
+        else if (n === 3)
+            color = "#000";
         else
-            color = "white";
+            color = "#FFF";
         props.ball === true && drawArc(ball.x, ball.y, ball.radius + 2, "white");
         drawArc(ball.x, ball.y, ball.radius, color);
     } 
     function game()
     {
+        if (n === 3)
+        {
+            bgColor = "#FFF";
+            user.color = com.color = "#000";
+        }
         if (n === 2)
         {
             bgColor = "#000";

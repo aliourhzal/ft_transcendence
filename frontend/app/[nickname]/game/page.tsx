@@ -106,9 +106,9 @@ function Themes(props: any)
                 props.T4.current.style.border = 'none';
             }}
             onMouseEnter={()=>{props.def2.current.style.visibility = 'hidden'}} onMouseOut={()=>{props.def2.current.style.visibility = 'visible'}}>
-                <h1 style={{fontFamily: "Comic Sans MS"}} ref={props.def2} className="outlineT absolute top-[40%] z-10 left-[36%] font-semibold font-mono">Colory</h1>
+                <h1 style={{fontFamily: "Comic Sans MS"}} ref={props.def2} className="outlineT absolute top-[40%] z-10 left-[36%] font-semibold font-mono">Bright</h1>
                 {/* <input id="theme1" type="radio" className="hidden" /> */}
-                <img ref={props.T3} className="rounded-md w-[200px] h-28 blur-[2px] hover:blur-none" src="/images/42.jpg" alt="" />
+                <img ref={props.T3} className="rounded-md w-[200px] h-28 blur-[2px] hover:blur-none" src="/images/bright_T3.png" alt="" />
             </label>
             <label className="relative text-center cursor-pointer"
             onClick={()=>{

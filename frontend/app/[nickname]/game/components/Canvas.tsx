@@ -17,6 +17,14 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 	const com = new Player(0, 0, "#5fed55")
 	let getSmaller = 0;
 
+	const net = {
+		x : 0,
+		y : 0,
+		height : 10,
+		width : 2,
+		color : "WHITE"
+	}
+
 	if (n === 2)//theme 1988 switch colors
 	{
 		bgColor = "#000";
@@ -25,6 +33,9 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 	}
     function StartGame(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D)
 	{
+		//line in the middle of canvas
+		net.x = (canvas.width - 2)/2;
+
 		// draw circle, will be used to draw the ball
 		function drawArc(x, y, r, color){
 			ctx.fillStyle = color;
@@ -45,7 +56,12 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			ctx.fillStyle = color;
 			ctx.fillRect(x, y, w, h);
 		}
-
+		// draw the net
+		function drawNet(){
+			for(let i = 0; i <= canvas.height; i+=15){
+				drawRect(net.x, net.y + i, net.width, net.height, net.color);
+			}
+		}
 		function collision() {
 			player.top = player.y;
 			player.bottom = player.y + player.height;
@@ -63,7 +79,7 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		drawRect(0, 0, canvas.offsetWidth, canvas.offsetHeight, bgColor);
 		// draw the user score to the left
 		drawText(player.score,canvas.width/4,canvas.height/5);
-
+		drawNet();
 		// draw the COM score to the right
 		drawText(com.score,3*canvas.width/4,canvas.height/5);
 		//draw player Paddle
