@@ -2,7 +2,6 @@ import { UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { randomUUID } from "crypto";
-import { find } from "rxjs";
 import { Server, Socket } from 'socket.io'
 import { UsersService } from "src/users/users.service";
 
@@ -13,6 +12,7 @@ class Player {
 	score: number;
 	nickName: string;
 	avatar: string;
+	height: number
 
 	constructor(socket: Socket, height = 0, width = 0, score = 0) {
 		this.canvas = {height, width};
@@ -34,17 +34,21 @@ class Player {
 	}
 
 	setCanvasDim(height: number, width: number) {
-		this.canvas = {height, width}
+		this.canvas = {height, width};
+		this.height = height / 4;
 	}
 
 	initBallPos(x: number, y: number) {
 		this.ball = {x, y};
 	}
 
-	setData(nickName: string, avatar: string)
-	{
+	setData(nickName: string, avatar: string) {
 		this.nickName = nickName;
 		this.avatar = avatar;
+	}
+
+	setHeight() {
+		this.height = this.canvas.height / 4;
 	}
 }
 
@@ -81,7 +85,9 @@ type roomT = {
 	player1: Player,
 	player2: Player,
 	roomId: string,
-	ballDynamics: Ball
+	ballDynamics: Ball,
+	hell: boolean
+	// specials: SPECIAL_EFFECTS
 }
 
 class Ball {
@@ -96,6 +102,14 @@ class Ball {
 		this.velocityX = 5;
 		this.velocityY = 5;
 	}
+}
+
+enum SPECIAL_EFFECTS {
+	NONE,
+	GROW_PADDLE,
+	BALL_VANISH,
+	DWARF_PADDLE,
+	SUPER_SAIYAN
 }
 
 @WebSocketGateway(3003, { cors: true } ) //tell's the class that it using socket not http and use the port 3003 instead of default one 3000
@@ -171,13 +185,19 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			}
 			room.ballDynamics.velocityY = -room.ballDynamics.velocityY;
 		}
+		if (room.hell && room.player1.height >= room.player1.canvas.height / 10 ) {
+			room.player1.height -= room.player1.canvas.height * 0.01 / 450;
+			room.player2.height -= room.player2.canvas.height * 0.01 / 450;
+		}
 		this.server.to(room.player1.socket.id).emit('game_Data', {
 			x: room.player1.ball.x,
-			y: room.player1.ball.y
+			y: room.player1.ball.y,
+			h: room.player1.height
 		})
 		this.server.to(room.player2.socket.id).emit('game_Data', {
 			x: room.player2.ball.x * room.player2.canvas.width / room.player1.canvas.width,
-			y: room.player2.ball.y * room.player2.canvas.height / room.player1.canvas.height
+			y: room.player2.ball.y * room.player2.canvas.height / room.player1.canvas.height,
+			h: room.player2.height
 		})
 	}
 
@@ -236,6 +256,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			roomId,
 			ballDynamics,
 			loop: null,
+			hell: false
 		};
 		newRoom.player1.setData(this.gameQueue[0].user.nickName, this.gameQueue[0].user.avatar);
 		newRoom.player2.setData(this.gameQueue[1].user.nickName, this.gameQueue[1].user.avatar);
@@ -311,15 +332,16 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			room.ballDynamics.velocityY = room.ballDynamics.speed * Math.sin(data.collAngle);
 			room.ballDynamics.speed += 0.2;
 		}
-		const newY = emiter.canvas.height - data.y - (emiter.canvas.height / 4);//hna
+		const newY = emiter.canvas.height - data.y - emiter.height;//hna
 		this.server.to(receiver.socket.id).emit("playerMov", {x: data.x, y: newY * receiver.canvas.height / emiter.canvas.height});
 	}
 
 	@SubscribeMessage('startGame')
-	setStyles(socket: Socket, data: {w:number, h:number})
+	setStyles(socket: Socket, data: {w:number, h:number, hell: boolean})
 	{
 		const room = this.findRoomBySocket(socket);
 		if (room && this.checkPlayerOrder(socket, room) === 1) {
+			room.hell = data.hell;
 			room.player1.initBallPos(data.w / 2, data.h / 2)
 			room.player2.initBallPos(data.w / 2, data.h / 2)
 			room.player1.setCanvasDim(data.h, data.w);
