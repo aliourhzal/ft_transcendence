@@ -86,6 +86,7 @@ export const getCookie = (cookieLable: string) => {
         if (label === cookieLable)
             return (content);
     }
+	return (undefined)
 }
 
 export default function ProfileLayout({

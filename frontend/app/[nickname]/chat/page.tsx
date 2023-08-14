@@ -13,6 +13,8 @@ import { SocketAddress } from "net";
 import ButtomButtons from "./components/ButtomButtons";
 import SearchDm from "./components/SearchDm";
 import Notification from "./components/Notification";
+import { useRouter } from 'next/navigation'
+import { useCookies } from "react-cookie";
 
 export interface conversation {
 	readonly name: string,
@@ -73,6 +75,8 @@ export const getUsersInfo = (users) => {
 	  return (_users)
   }
 
+const _cookie = getCookie('access_token')
+
 const socket = io('ws://127.0.0.1:3004',{
 	extraHeaders: {
         Authorization: `Bearer ${getCookie('access_token')}`,
@@ -80,6 +84,23 @@ const socket = io('ws://127.0.0.1:3004',{
 })
 
 export default function Chat() {
+	
+	const [cookies, setCookie, removeCookie] = useCookies();
+	// const [new] = useState()
+
+	useEffect ( () => {
+		setInterval(() => {
+			// console.log("---->". cookies.access_token)
+		}, 5000);
+		console.log('useeeffect')
+		// if (cookies.access_token != _cookie){
+		// 	console.log('cookie changed !')
+		// 	// document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+		// 	removeCookie('access_token')
+		// 	const router = useRouter()
+		// 	router.push('/')
+		// }
+	}, [cookies.access_token])
 
 	const ref = useRef(null);
 

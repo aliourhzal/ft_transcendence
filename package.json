@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "prop-types": "^15.8.1",
-    "react-avatar": "^5.0.3"
+    "react-avatar": "^5.0.3",
+    "react-cookie": "^5.0.0"
   }
 }

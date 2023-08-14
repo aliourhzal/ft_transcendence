@@ -37,23 +37,7 @@ const Conversation = () => {
         e.preventDefault()
         const msg = e.target[0].value.trim()
         if (msg != '') {
-            try {
-                 await axios.post('http://127.0.0.1:3000/rooms/send-message', {message:msg, roomName:activeUserConv.name}, {
-                    withCredentials: true,
-                    headers: {
-                        'Authorization': `Bearer ${getCookie('access_token')}`,
-                            'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
-                }).then((res) => {
-
-                    console.log(res)
-                })
-                
-            } catch (error) 
-            {
-                console.log(error)
-                // alert(error)
-            }
-            // socket.emit('send-message', {message:msg, roomName:activeUserConv.name})
+            socket.emit('send-message', {message:msg, roomName:activeUserConv.name})
             msg_sent == undefined ? set_msg_sent(1) : set_msg_sent(old => old == 1 ? 2 : 1)
             e.target[0].value = ''
             set_msg_sender(userData.nickname)

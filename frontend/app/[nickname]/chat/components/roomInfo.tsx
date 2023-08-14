@@ -51,65 +51,11 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         return false
     }
 
-    const promoteUser = async (id) => {
-        try {
-            await axios.post('http://127.0.0.1:3000/rooms/user-promotion', {roomName:info.room.name, newAdminId:id}, {
-               withCredentials: true,
-               headers: {
-                   'Authorization': `Bearer ${getCookie('access_token')}`,
-                       'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
-           }).then((res) => {
+    const promoteUser = async (id) => { socket.emit('user-promotion', {roomName:info.room.name, newAdminId:id}) }
 
-               console.log(res)
-           })
-           
-       } catch (error) 
-       {
-           console.log(error)
-           // alert(error)
-       }
-        //  socket.emit('user-promotion', {roomName:info.room.name, newAdminId:id})
-    }
+    const demoteteUser = async (id) => { socket.emit('user-demote', {roomName:info.room.name, dmotedUserId:id}) }
 
-    const demoteteUser = async (id) => {
-        try {
-            await axios.post('http://127.0.0.1:3000/rooms/user-demote', {roomName:info.room.name, dmotedUserId:id}, {
-               withCredentials: true,
-               headers: {
-                   'Authorization': `Bearer ${getCookie('access_token')}`,
-                       'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
-           }).then((res) => {
-
-               console.log(res)
-           })
-           
-       } catch (error) 
-       {
-           console.log(error)
-           // alert(error)
-       }
-        // socket.emit('user-demote', {roomName:info.room.name, dmotedUserId:id})
-    }
-
-    const kickUser = async (id) => {
-        try {
-            await axios.post('http://127.0.0.1:3000/rooms/kick-user', {roomName:info.room.name, kickedUserId:id}, {
-               withCredentials: true,
-               headers: {
-                   'Authorization': `Bearer ${getCookie('access_token')}`,
-                       'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
-           }).then((res) => {
-
-               console.log(res)
-           })
-           
-       } catch (error) 
-       {
-           console.log(error)
-           // alert(error)
-       }
-        // socket.emit('kick-user', {roomName:info.room.name, kickedUserId:id})
-    }
+    const kickUser = async (id) => { socket.emit('kick-user', {roomName:info.room.name, kickedUserId:id}) }
 
     const banUser = (id) => {
         
@@ -122,48 +68,15 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     const   addUsersToRoom = async (e, newUsers) => {
         e.preventDefault()
         setShowUsersForm(false)
-        if (newUsers.length) {
-            try {
-                await axios.post('http://127.0.0.1:3000/rooms/add-room-users', {roomName: info.room.name, users: newUsers}, {
-                   withCredentials: true,
-                   headers: {
-                       'Authorization': `Bearer ${getCookie('access_token')}`,
-                           'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
-               }).then((res) => {
-    
-                   console.log(res)
-               })
-               
-           } catch (error) 
-           {
-               console.log(error)
-               // alert(error)
-           }
-            // socket.emit('add-room-users', {roomName: info.room.name, users: newUsers})
-        }
+        if (newUsers.length)
+            socket.emit('add-room-users', {roomName: info.room.name, users: newUsers})
     }
     const   editRoom = async (e, name, pass) => {
         e.preventDefault()
         setshowRoomEditForm(false)
         if (name || pass) {
             console.log(name, pass)
-            try {
-                await axios.post('http://127.0.0.1:3000/rooms/edit-room', { newName: name, newPassword: pass }, {
-                   withCredentials: true,
-                   headers: {
-                       'Authorization': `Bearer ${getCookie('access_token')}`,
-                           'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
-               }).then((res) => {
-    
-                   console.log(res)
-               })
-               
-           } catch (error) 
-           {
-               console.log(error)
-               // alert(error)
-           }
-            // socket.emit('edit-room', { newName: name, newPassword: pass })
+            socket.emit('edit-room', { newName: name, newPassword: pass })
         }
     }
 
