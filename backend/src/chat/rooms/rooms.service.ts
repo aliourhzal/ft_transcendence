@@ -183,7 +183,7 @@ export class RoomsService
 
     async updateRoomName(roomId:string, newRoomName: string )
     {
-        await this.prisma.room.update({
+        return await this.prisma.room.update({
             where: {
                 id: roomId,
             },

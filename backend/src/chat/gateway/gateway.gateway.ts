@@ -21,6 +21,7 @@ import { DemoteUser } from 'src/dto/DemoteUser.dto';
 import { KickUser } from 'src/dto/Kickusers.sto';
 import { AddNewUsersToRoom } from 'src/dto/addNewUsersToRoom.dto';
 import { LeaveRoom } from 'src/dto/leaveRoom.dto';
+import { RenameRoom } from 'src/dto/renameRoom.dto';
 
 @WebSocketGateway(3004)
 export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
@@ -153,9 +154,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                 {
                                     if(this.soketsId[i].userId === userInRoom.userId)
                                     {
-                                  
+                                        
                                         this.server.to(this.soketsId[i].socketIds).emit("new-room",{ room  , usersInRoom : usersInroom_ , userInfos: await this.utils.getUserInfosInRoom(room.room.id)});
-                                        // console.log(room, usersInroom_ , await this.utils.getUserInfosInRoom(room.room.id))
                                     } 
                                 }
                             }
@@ -645,6 +645,98 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         }
 
 
+
+
+         /**
+    //      * before rename the room:
+    //      *  - check the user if is valid
+    // - if current user in this room
+    //      *  - if room is exist
+    //      *  - if new name of the room not found in db
+    //      * - if admin or owner 
+    //      */
+        @SubscribeMessage('edit-room-name') 
+        @UsePipes(new ValidationPipe()) 
+        async renameRoom(@MessageBody() dto:RenameRoom , @ConnectedSocket() socket: Socket) 
+        {
+            try 
+            {
+                const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+                
+                if (token) 
+                {
+                    const user  = await this.utils.verifyToken(token); // // if has error will catch it
+
+                    const existingUser = await this.utils.getUserId([user['sub']]);
+                     
+                    if(existingUser.error)
+                    {
+                        console.log(existingUser.error);
+                        return ;
+                    }
+
+                    const roomId = await this.utils.getRoomByName(dto.roomName);
+
+                    if(roomId)
+                    {
+                        const userType = await this.utils.getUserType(roomId.id,[user['sub']]);
+                        if(userType.error)
+                        {
+                            console.log(userType.error);
+                            return ;
+                        }
+                        if (userType.usersType[0].userType !== 'USER') 
+                        {
+                            if(!await this.utils.getRoomIdByName(dto.newName))
+                            {
+                                const oldRoomName = dto.newName;
+                                const newRoomName = await this.roomService.updateRoomName(roomId.id, dto.newName);
+
+                                const usersInroom = await this.utils.getUsersInRooms(roomId.id);
+
+                                for(const userInRoom of usersInroom)
+                                {
+                                    for (let i = 0; i < this.soketsId.length; i++) 
+                                    {
+                                        if(this.soketsId[i].userId === userInRoom.userId)
+                                        {
+                                            this.server.to(this.soketsId[i].socketIds).emit("change-room-name",{ oldRoomName, newRoomName});
+                                        } 
+                                    }
+                                }
+
+                            }
+                            else
+                            {
+                                console.log('name of room aleredy exist');
+                            }
+                        }
+                        else
+                        {
+                            console.log("cannot have the permission to change room Type.")
+                        }   
+                    }
+                    else
+                    {
+                        console.log('room not found')
+                        return;
+                    }
+                    
+                } 
+                else
+                {
+                    console.log('invalid jwt.');
+                    this.OnWebSocektError(socket);
+                }
+            }   
+            catch (error) 
+            {
+               
+                this.OnWebSocektError(socket);
+                console.log(error)
+            } 
+        }
+
         async utilsFunction(@ConnectedSocket() socket: Socket , user :any , roomName ? :string , userId ?:string[] | string , flag?:number) // add flag for join room
         {
             let existingUser:any;
@@ -720,20 +812,9 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     }
 
 
-    async handleDisconnect(socket: Socket) {
-
-        // const index = this.soketsId.findIndex(user => user.socketIds === socket.id);
-		 
-        // if (index > -1) 
-        // {
-		// 	const sockets = this.soketsId.filter(user => user.userId === this.soketsId[index].userId);
-
-        //     if (sockets.length < 2)
-    	// 		this.soketsId.splice(index, 1);	
-		// }
-
-        console.log("disconnected from chat");
-         
+    async handleDisconnect(socket: Socket) 
+    {
+        console.log("disconnected from chat");     
         this.OnWebSocektError(socket);
     }
 

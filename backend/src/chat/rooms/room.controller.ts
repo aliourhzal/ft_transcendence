@@ -91,70 +91,59 @@ export class RoomController {
         }
     }
     
-    // @Post('/addNewUsersToRoom')
-    // async addNewUsersToRoom(@Body() dto:any, @Res() res:any)
+    //    @Post('/renameRoom')
+    // async renameRoom(@Body() dto:any, @Res() res:any)
     // {
-    //     try 
-    //     { // if error in jwt
+    //    
+    //     try
+    //     {
     //         const user = this.jwtService.verify(dto.auth,{ secret: process.env.JWT_SECRET })
-
-    //         if(!await this.utils.getUserId(user['sub'])) //if jwt expired
+    //         if(!await this.utils.getUserId(user['sub']))
     //         {
     //             console.log('user not found.')
     //             return;
     //         }
-
+                
     //         const roomId = await this.utils.getRoomById(dto.idOfRoom);
+
     //         if(roomId)
     //         {
     //             const userType = await this.utils.getUserType(roomId.id,user['sub']);
+                
     //             if(userType)
     //             {
-    //                 if(userType.userType !== 'USER') // test one by one
+    //                 if (userType.userType === 'ADMIN' || userType.userType === 'OWNER') 
     //                 {
-    //                     const usersIds = await this.utils.getUsersId(user['sub'],dto.users, 1)
-                        
-    //                     if(usersIds === 0)
+    //                     if(!await this.utils.getRoomIdByName(dto.newNameOfRoom))
     //                     {
-    //                         console.log("you try to add the current user")
-    //                         return;
-    //                     }
-                        
-    //                     if(usersIds)
-    //                     {
-    //                         await this.roomService.linkBetweenUsersAndRooms(roomId.id, usersIds);
+    //                         await this.roomService.updateRoomName(roomId.id, dto.newNameOfRoom);
     //                     }
     //                     else
     //                     {
-    //                         console.log('users not found')
-    //                         return;
+    //                         console.log('name of room aleredy exist')
     //                     }
     //                 }
     //                 else
     //                 {
-    //                     console.log('dont have the permmission to add users to this room.')
-    //                     return ;
+    //                     console.log("cannot have the permission to change room Type.")
     //                 }
     //             }
     //             else
     //             {
     //                 console.log('user is not in this room')
-
     //             }
     //         }
     //         else
     //         {
-    //             console.log('room not found')
-    //             return;
+    //             console.log("room  not found");
     //         }
-    //     } 
+    //     }  
     //     catch (error) 
     //     {
-    //         console.log('from addNewUsersToRoom()')
+    //         console.log("from catch")
     //         console.log(error)    
     //     }
     // }
-
     // @Post('/leaveRoom')
     // async leaveRoom(@Body() dto:any, @Res() res:any)
     // {
