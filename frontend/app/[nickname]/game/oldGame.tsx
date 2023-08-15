@@ -12,7 +12,7 @@ import { SetStateAction, useEffect } from "react";
 var p1Color:SetStateAction<string> = "#2879F2";
 
 
-export function StartGame(props: { themeN: any; ball: boolean; })
+export function StartGame(props: {hell:boolean; themeN: any; ball: boolean; })
 {
     const n = props.themeN;
     let bgColor = "#353D49";
@@ -127,6 +127,8 @@ export function StartGame(props: { themeN: any; ball: boolean; })
         // ball.velocityX = -ball.velocityX;
         ball.velocityY = 5;
         ball.velocityX = 5;
+        user.height = 100;
+        com.height = 100;
     }
 
 // draw the net
@@ -186,14 +188,18 @@ export function StartGame(props: { themeN: any; ball: boolean; })
             resetBall();
             return ;
         }
-        
+        if (props.hell === true && user.height > canvas.height / 25)
+		{
+			user.height -= 0.04;
+			com.height -= 0.04;
+		}
         // the ball has a velocity
         ball.x += ball.velocityX;
         ball.y += ball.velocityY;
         
         // computer plays for itself, and we must be able to beat it
         // simple AI
-        com.y += ((ball.y - (com.y + com.height/2)))*0.1;
+        com.y += ((ball.y - (com.y + com.height/2)))*0.2;
         
         // when the ball collides with bottom and top walls we inverse the y velocity.
         if(ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height){
