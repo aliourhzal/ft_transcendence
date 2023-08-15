@@ -57,9 +57,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
 
     const kickUser = async (id) => { socket.emit('kick-user', {roomName:info.room.name, kickedUserId:id}) }
 
-    const banUser = (id) => {
-        
-    }
+    const banUser = (id, duration) => { socket.emit('ban-user', {roomName:info.room.name, bannedUserId:id, duration: duration}) }
 
     const muteUser = (id) => {
 
@@ -133,7 +131,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
                                             isOwner(info.room.users.find(o => o.nickName === info.userData.nickname)) && <TbUserUp className='hover:text-whiteSmoke text-blueStrong' title='promote' strokeWidth={2.3} aria-label='promote' cursor="pointer" size={25} onClick={() => {promoteUser(user.id)}}/>
                                         }
                                         <BiUserMinus className='hover:text-whiteSmoke text-blueStrong' title='kick' strokeWidth={0} aria-label='kick' cursor="pointer" size={30} onClick={() => {kickUser(user.id)}}/>
-                                        <BiUserX className='hover:text-whiteSmoke text-blueStrong' title='ban' aria-label='ban' cursor="pointer" size={30} onClick={banUser}/>
+                                        <BiUserX className='hover:text-whiteSmoke text-blueStrong' title='ban' aria-label='ban' cursor="pointer" size={30} onClick={() => {banUser(user.id, 3)}}/>
                                         <BiVolumeMute className='hover:text-whiteSmoke text-blueStrong' title='mute' aria-label='mute' cursor="pointer" size={25} onClick={muteUser}/>
                                     </>}
                                 { user.nickName != info.userData.nickname &&
