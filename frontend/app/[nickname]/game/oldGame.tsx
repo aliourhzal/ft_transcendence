@@ -12,7 +12,7 @@ import { SetStateAction, useEffect } from "react";
 var p1Color:SetStateAction<string> = "#2879F2";
 
 
-export function StartGame(props: {hell:boolean; themeN: any; ball: boolean; })
+export function StartGame(props)
 {
     const n = props.themeN;
     let bgColor = "#353D49";
@@ -199,7 +199,7 @@ export function StartGame(props: {hell:boolean; themeN: any; ball: boolean; })
         
         // computer plays for itself, and we must be able to beat it
         // simple AI
-        com.y += ((ball.y - (com.y + com.height/2)))*0.2;
+        com.y += ((ball.y - (com.y + com.height/2)))*0.13;
         
         // when the ball collides with bottom and top walls we inverse the y velocity.
         if(ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height){
@@ -278,6 +278,8 @@ export function StartGame(props: {hell:boolean; themeN: any; ball: boolean; })
             }
             else if (n === 3)
                 color = "#000";
+            else if (n === 4)
+                color = props.colors.bc;
             else
                 color = "#FFF";
             props.ball === true && drawArc(ball.x, ball.y, ball.radius + 2, "white");
@@ -287,7 +289,9 @@ export function StartGame(props: {hell:boolean; themeN: any; ball: boolean; })
         {
             if (n === 4)
             {
-                // user.color = props.Colors.p1;
+                bgColor = props.colors.bg;
+                com.color = props.colors.p2;
+                user.color = props.colors.p1;
             }
             if (n === 3)
             {

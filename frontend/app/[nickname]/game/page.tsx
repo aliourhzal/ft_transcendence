@@ -334,7 +334,7 @@ export default function GameLogin()
             </div>
             {/* {!show && } */}
             {(Mode === "online" && <LazyGame colors={colors} themeN={themeN} ball={ballColors} hell={hell} />) ||
-                (Mode==="bot" && <BotGame themeN={themeN} ball={ballColors} hell={hell} />)}
+                (Mode==="bot" && <BotGame  colors={colors} themeN={themeN} ball={ballColors} hell={hell} />)}
         </div>
     );
 }
