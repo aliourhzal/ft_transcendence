@@ -269,7 +269,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                       
                         if(!find)
                         {
-
                             if(rtn.room.roomType === 'PROTECTED')
                             {
                                 if(comparePasswd(dto.password,rtn.room.password) )
@@ -775,21 +774,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         {
                             if(roomId.roomType === 'PROTECTED')
                             {
-                                const newPassword =  await this.roomService.changePasswordOfProtectedRoom(roomId.id, encodePasswd(dto.newPassword));
-                                
-                                const usersInroom = await this.utils.getUsersInRooms(roomId.id);
-
-                                for(const userInRoom of usersInroom)
-                                {
-                                    for (let i = 0; i < this.soketsId.length; i++) 
-                                    {
-                                        if(this.soketsId[i].userId === userInRoom.userId)
-                                        {
-                                            this.server.to(this.soketsId[i].socketIds).emit("change-room-password",{ roomName : roomId.room_name , newPassword: newPassword.password});
-                                        } 
-                                    }
-                                }
-
+                                const newPass = await this.roomService.changePasswordOfProtectedRoom(roomId.id, encodePasswd(dto.newPassword));
+                                console.log(newPass)
                             }
                             else
                             {

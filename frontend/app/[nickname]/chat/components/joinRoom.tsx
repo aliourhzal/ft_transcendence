@@ -22,23 +22,8 @@ const JoinRoomForm = () => {
     }
 
     const submitForm = async () => {
-        try {
-            await axios.post('http://127.0.0.1:3000/rooms/send-messagejoin-room', {roomName:name, password:'pass'}, {
-               withCredentials: true,
-               headers: {
-                   'Authorization': `Bearer ${getCookie('access_token')}`,
-                       'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
-           }).then((res) => {
-
-               console.log(res)
-           })
-           
-       } catch (error) 
-       {
-           console.log(error)
-           // alert(error)
-       }
-        // socket.emit('join-room', {roomName:name, password:'pass'})
+    
+        socket.emit('join-room', {roomName:name, password:pass})
 
         setShowJoinForm(false)
     }
