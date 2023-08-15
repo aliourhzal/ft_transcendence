@@ -1,13 +1,12 @@
 'use client'
 
-import { WebsocketContext, socket } from "@/app/context_sockets/gameWebSocket";
-import { useContext, useEffect, useState } from "react";
+
+import { useEffect, useState } from "react";
 import Player from "../utils/Player.class";
 import Ball from "../utils/Ball.class";
-import { Socket } from "socket.io-client";
 
 
-export default function Canvas(props: {socket:Socket, themeN: number, ball: boolean, hell: boolean, opData: any }) {
+export default function Canvas(props) {
 	const [ana, GodWilling] = useState(0);
 	const n = props.themeN;
     let bgColor = "#353D49";
@@ -25,6 +24,12 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		color : "WHITE"
 	}
 
+	if (n === 4)
+	{
+		bgColor = props.colors.bg;
+		com.color = props.colors.p2;
+		player.color = props.colors.p1;
+	}
 	if (n === 2)//theme 1988 switch colors
 	{
 		bgColor = "#000";
@@ -102,6 +107,8 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
             if (color.length !== 7)
                 color + "" + Math.floor(Math.random() * 10);
         }
+		else if (n === 4)
+			color = props.colors.bc;
 		else if (n === 3)
 			color = "#000";
 		else
