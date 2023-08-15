@@ -142,7 +142,8 @@ export default function Canvas(props) {
 			x: player.x,
 			y: player.y,
 			collision: coll,
-			collAngle
+			collAngle,
+			h: player.height
 		});
 	}
 
@@ -211,6 +212,8 @@ export default function Canvas(props) {
 				com.score = data.p1;
 				player.score = data.p2;
 			}
+			player.height = canvas.height / 4;
+			com.height = canvas.height / 4;
 		});
     }, [])
 
