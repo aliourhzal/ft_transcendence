@@ -29,7 +29,7 @@ interface RoomInfoProps {
 
 const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     
-    const {setConvs, socket, rooms, setRooms, set_room_created} = useContext(Context)
+    const {setConvs, socket, rooms, setRooms, set_room_created, _notification} = useContext(Context)
 
     const [infoUpdate, setInfoUpdate] = useState(false)
 
@@ -96,7 +96,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
 
   return (
     <>
-    <SocketComponent rooms={rooms} socket={socket} setRooms={setRooms} setInfoUpdate={setInfoUpdate} setConvs={setConvs}/>
+    <SocketComponent rooms={rooms} socket={socket} setRooms={setRooms} setInfoUpdate={setInfoUpdate} setConvs={setConvs} _notification={_notification}/>
     <Popup isOpen={info.show} modalAppearance={hide}>
         <div className='flex items-end justify-center m-4'>
             {isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) &&

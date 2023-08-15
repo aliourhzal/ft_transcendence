@@ -8,6 +8,7 @@ interface SocketComponentProps {
   setRooms: any
   setInfoUpdate: any
   setConvs?: any
+  _notification: any
 }
 
 const SocketComponent:React.FC<SocketComponentProps> = (props) => {
@@ -16,8 +17,10 @@ const SocketComponent:React.FC<SocketComponentProps> = (props) => {
   const rooms = props.rooms
   const setRooms = props.setRooms
   const setInfoUpdate = props.setInfoUpdate
+  const _notification = props._notification
   
   const promoteUser = (res) => {
+    _notification()
     setRooms((_rooms: Room[]) => {
       _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.newAdmin.userId).type = 'ADMIN'
       return _rooms

@@ -19,6 +19,7 @@ module.exports = {
       },
       animation: {
         'ping-it': 'ping 0.4s linear',
+        'notify': 'ping 2s linear',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
