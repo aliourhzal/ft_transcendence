@@ -86,6 +86,7 @@ const ConvList = () => {
 
     useEffect(() => {
       socket.on('users-join', AddUserToRoom)
+      socket.on('update-conv-list', () => { console.log('yollooooo') })
       // socket.on('onKick', removeConv)
     }, [])
 

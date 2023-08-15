@@ -38,6 +38,7 @@ const SocketComponent:React.FC<SocketComponentProps> = (props) => {
   }
   
   const kickUser = (res) => {
+    console.log(res)
     setRooms((_rooms: Room[]) => {
       var userToBeKicked = _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.kickedUser.userId)
       console.log(userToBeKicked)
@@ -45,8 +46,8 @@ const SocketComponent:React.FC<SocketComponentProps> = (props) => {
       currentRoomUsers.splice(currentRoomUsers.indexOf(userToBeKicked), 1)
       return _rooms
     })
-    // setConvs(rooms)
     setInfoUpdate(old => !old)
+    socket.emit('update-conv-list')
   }
 
   const changeRoomName = (res) => {
@@ -56,6 +57,7 @@ const SocketComponent:React.FC<SocketComponentProps> = (props) => {
       return _rooms
     })
     setInfoUpdate(old => !old)
+    socket.emit('update-conv-list')
   }
 
   useEffect (() => {
