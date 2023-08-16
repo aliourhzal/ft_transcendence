@@ -14,8 +14,8 @@ interface ConvBoxProps {
 
 const ConvBox: React.FC<ConvBoxProps> = (data) => {
 
-  const {scrollToBottom, ref, activeUserConv, showConv, setShowConv, setActiveUserConv, socket, setChatBoxMessages, rooms} = useContext(Context)
-
+  const {setShowConv, setActiveUserConv, setChatBoxMessages} = useContext(Context)
+  console.log('CONVBOX YEE')
   const handleClick = async () => {
     setShowConv(true)
     setActiveUserConv(data.data)
@@ -58,7 +58,7 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
         <Avatar pointer zoomed text={data.data.name} bordered color={"gradient"} alt={data.data.name} className="w-auto h-auto left-[6%] top-[30%] absolute"
             src={data.data.photo} />
         <div className="left-[30%] top-[50%] absolute text-gray-200 text-opacity-70 font-normal">{
-            data.data.lastmsg ? data.data.lastmsg.length > 20 ? data.data.lastmsg.substring(0, 20)+'...' : data.data.lastmsg : ''}</div>
+            data.data.lastmsg ? data.data.lastmsg.length > 15 ? data.data.lastmsg.substring(0, 15)+'...' : data.data.lastmsg : ''}</div>
         {/* <div className="left-[85%] top-[70%] lg:top-[50%] absolute text-gray-200 text-opacity-70 font-normal">10:30</div> */}
     </div>
   )

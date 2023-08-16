@@ -7,8 +7,8 @@ import Search from "./search"
 // import { Context } from "../page"
 
 const ConvList = () => {
-    const {socket, room_created, set_room_created, rooms, setRooms, userData, convs, setConvs} = useContext(Context)
-
+    const {socket, set_room_created, rooms, userData, convs, setConvs} = useContext(Context)
+    console.log(convs)
     const [updateList, setUpdateList] = useState(false)
 
     const fillUserList = (listOfRoomsOfUser) => {
@@ -23,9 +23,7 @@ const ConvList = () => {
           type: room.room.room.roomType
         })
       })
-      // console.log(rooms)
       setConvs(rooms)
-      // return socket?.off('list-rooms',fillUserList)
     }
 
     useEffect( () => {
@@ -84,14 +82,12 @@ const ConvList = () => {
 
     useEffect(() => {
       socket.on('users-join', AddUserToRoom)
-      socket.on('update-conv-list', () => { console.log('yollooooo') })
-      // socket.on('onKick', removeConv)
     }, [])
 
     return (
       <>
         <Search users={convs} />
-        <div className='group left-[10%] flex-col bg-transparent w-full h-[80%] bg-slate-500 mt-8 overflow-hidden overflow-y-scroll'>
+        <div className='group left-[10%] flex-col bg-transparent w-full h-[80%] mt-8 overflow-hidden overflow-y-scroll'>
             {convs.map ((item:conversation) =>  (<ConvBox key={gimmeRandom()} data={item} />))}
         </div>
       </>

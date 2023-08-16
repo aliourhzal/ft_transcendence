@@ -127,12 +127,16 @@ export default function Chat() {
 	const [convs, setConvs] = useState<conversation[]>([])
 
 	const [notify, setNotify] = useState(false)
-	const _notification = () => {
+	const [notif_text, set_notif_text] = useState('')
+	const [notif_type, set_notif_type] = useState('')
+	const _notification = (_notif_text: string, _notif_type: string) => {
+		set_notif_text(_notif_text)
+		set_notif_type(_notif_type)
 		setNotify(true)
 		setInterval(() => {
 			setNotify(false)
 			return clearInterval
-		}, 5000)
+		}, 2500)
 	}
 
 	const scrollToBottom = () => {
@@ -145,7 +149,7 @@ export default function Chat() {
 			<Context.Provider value={{alertNewMessage, setAlertNewMessage, ref, showConv, setShowConv, activeUserConv, setActiveUserConv, socket,
 				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm, msg_sent, set_msg_sent,
 				set_room_created, room_created, rooms, setRooms, showSearchUsersForm, setShowSearchUsersForm, scrollToBottom, _notification, convs,setConvs}}>
-				{/* {notify && <Notification />} */}
+				{notify && <Notification text={notif_text} type={notif_type}/>}
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200">
 					<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">
 						<ConvList />

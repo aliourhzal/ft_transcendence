@@ -49,13 +49,13 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
     setRooms( (_rooms: Room[]) => {
       _rooms.find(o => o.name === res.oldRoomName).name = res.newRoomName
       setConvs((_convs) => {
-        console.log(_convs)
-        _convs.find(o => o.name === res.newRoomName).name = res.newRoomName
+        _convs = [...rooms]
         return _convs
       })
       return _rooms
     })
     setInfoUpdate(old => !old)
+    _notification("Name of room changed successfully", "good")
   }
 
   useEffect (() => {
