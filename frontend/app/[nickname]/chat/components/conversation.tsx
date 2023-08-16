@@ -19,15 +19,15 @@ const Conversation = () => {
 
     const {setAlertNewMessage, scrollToBottom, showConv, setShowConv, activeUserConv, setRooms, chatBoxMessages, rooms, socket, userData, msg_sent, set_msg_sent, setConvs} = useContext(Context)
 
-    useEffect( () => {
-      typeof window != 'undefined' ? (window.innerWidth <= 768 ? setDeviceType('small') : setDeviceType('normal')) : setDeviceType('normal')
-      typeof window != 'undefined' ? window.onresize = () => {
-        if (window.innerWidth <= 768)
-          setDeviceType('small')
-        else
-          setDeviceType('normal')
-      } : setDeviceType('normal')
-    } , [])
+    // useEffect( () => {
+    //   typeof window != 'undefined' ? (window.innerWidth <= 768 ? setDeviceType('small') : setDeviceType('normal')) : setDeviceType('normal')
+    //   typeof window != 'undefined' ? window.onresize = () => {
+    //     if (window.innerWidth <= 768)
+    //       setDeviceType('small')
+    //     else
+    //       setDeviceType('normal')
+    //   } : setDeviceType('normal')
+    // } , [])
 
     // const handleKeyDown = (e:any) => {
     //     if (e.key === 'Enter')
@@ -67,7 +67,7 @@ const Conversation = () => {
                     <RoomInfo room={rooms.find(o => o.name === activeUserConv.name)} setShow={setShowInfo} show={showInfo} userData={userData} />
                     {/* <Image className=' object-contain' alt='bg' src='/assets/images/conv_bg.gif' width={500} height={500}/> */}
                 </div>
-                <AlertMsgDown />
+                {/* <AlertMsgDown /> */}
 
                 <div className='h-[8%] w-[90%] flex items-center justify-center'>
 					<div className='w-full h-[70%] rounded-[100px] bg-zinc-800 flex items-center justify-between'>

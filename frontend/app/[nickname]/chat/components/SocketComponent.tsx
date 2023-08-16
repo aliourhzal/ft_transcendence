@@ -11,13 +11,7 @@ interface SocketComponentProps {
   _notification: any
 }
 
-const SocketComponent:React.FC<SocketComponentProps> = (props) => {
-
-  const socket = props.socket
-  const rooms = props.rooms
-  const setRooms = props.setRooms
-  const setInfoUpdate = props.setInfoUpdate
-  const _notification = props._notification
+const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRooms, setInfoUpdate, _notification, setConvs } ) => {
   
   const promoteUser = (res) => {
     _notification()
@@ -47,17 +41,21 @@ const SocketComponent:React.FC<SocketComponentProps> = (props) => {
       return _rooms
     })
     setInfoUpdate(old => !old)
-    socket.emit('update-conv-list')
+    
   }
 
   const changeRoomName = (res) => {
     console.log(res.newRoomName, res.oldRoomName)
     setRooms( (_rooms: Room[]) => {
       _rooms.find(o => o.name === res.oldRoomName).name = res.newRoomName
+      setConvs((_convs) => {
+        console.log(_convs)
+        _convs.find(o => o.name === res.newRoomName).name = res.newRoomName
+        return _convs
+      })
       return _rooms
     })
     setInfoUpdate(old => !old)
-    socket.emit('update-conv-list')
   }
 
   useEffect (() => {

@@ -11,7 +11,7 @@ interface SelfChatBoxProps {
     console.log(msg)
     return (
         <div className={'z-0 flex items-start justify-start gap-3 m-2'} key={gimmeRandom()}>
-            <Avatar pointer src={msg.user.photo}/>
+            <Avatar color={"primary"} pointer src={msg.user ? msg.user.photo : '/images/unknownUser.png'}/>
             <div className="overflow-hidden py-2 bg-slate-400 rounded-3xl p-5 flex items-center justify-center flex-wrap">{msg.msg}</div>
         </div>
     )

@@ -64,9 +64,8 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
             return
         }
         var temp_duration: number
-        if (durationType === 'secs')
-        temp_duration = duration
-        else if (durationType === 'mins')
+
+        if (durationType === 'mins')
             temp_duration = duration * 60
         else if (durationType === 'hours')
             temp_duration = duration * 60 * 60
@@ -163,7 +162,6 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
                                                 <input type='number' onChange={ (e) => { setBanDuration(+e.target.value) }}/>
                                                 <select name="banDuration" id="banDuration" onChange={(e) => { setBanDurationType(e.target.value) }}>
                                                     <option>select unit</option>
-                                                    <option value={"secs"}>seconds</option>
                                                     <option value={"mins"}>minutes</option>
                                                     <option value={"hours"}>hours</option>
                                                     <option value={"days"}>days</option>

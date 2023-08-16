@@ -7,9 +7,7 @@ import Search from "./search"
 // import { Context } from "../page"
 
 const ConvList = () => {
-    const {socket, room_created, set_room_created, rooms, setRooms, userData} = useContext(Context)
-
-    const [convs, setConvs] = useState<conversation[]>([])
+    const {socket, room_created, set_room_created, rooms, setRooms, userData, convs, setConvs} = useContext(Context)
 
     const [updateList, setUpdateList] = useState(false)
 
