@@ -68,7 +68,9 @@ model JoinedTable{
     room                Room        @relation(fields: [roomId], references: [id]) // not compile in the query
     roomId              String 
 
-    isBanned            Boolean   @default(false) // Add the isBanned column and set it to false by default
+    isBanned            UserBnned     	@default(UNBANNED)
+
+    banExpiresAt        DateTime?
 
     createdAt  DateTime   @default(now())  // Add this field to track creation date
 
@@ -99,4 +101,16 @@ enum UserType {
     USER
     ADMIN
     OWNER
+}
+
+enum UserBnned {
+    BANNEDFORLIMMITED_TIME
+    BANNEDUNLIMMITED_TIME
+    UNBANNED
+}
+
+
+enum UserMUTE {
+    MUTED_TIME
+    UNMUTED_TIME
 }

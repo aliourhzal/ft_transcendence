@@ -23,6 +23,7 @@ import { AddNewUsersToRoom } from 'src/dto/addNewUsersToRoom.dto';
 import { LeaveRoom } from 'src/dto/leaveRoom.dto';
 import { RenameRoom } from 'src/dto/renameRoom.dto';
 import { ChangeRoomPassword } from 'src/dto/changeRoomPassword.dto';
+import { BanFromRoom } from 'src/dto/banFromRoom.dto';
 
 @WebSocketGateway(3004)
 export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
@@ -196,12 +197,11 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             if (token) 
             {
                 const user  = await this.utils.verifyToken(token); // // if has error will catch it
-                
+              
                 const rtn = await this.utilsFunction(socket , user , dto.roomName);
-                
                 if(rtn.error)
                 {
-                    this.OnWebSocektError(socket);
+                    // this.OnWebSocektError(socket);
                     console.log(rtn.error)
                     return ;
                 }
@@ -811,6 +811,103 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         }
 
 
+        // implement remove password of protected room
+
+
+
+
+
+        /*
+            * before ban user:
+            - check if both user is exist
+            - check room if exsit
+            - check if both user in same room 
+            - if is banned
+            - check if current user is owner or admin
+            - check if who want to be ban is not the owner
+
+            - if finish duration remove the ban
+        */
+
+
+
+
+
+        @SubscribeMessage('ban-user')  // test ban for unlimeted timej
+        @UsePipes(new ValidationPipe()) 
+        async banFromRoom(@MessageBody() dto:BanFromRoom , @ConnectedSocket() socket: Socket) 
+        {
+            console.log(dto.duration)
+            try 
+            {
+                const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+                if (token) 
+                {
+
+                    const user  = await this.utils.verifyToken(token); // // if has error will catch it
+                    const rtn = await this.utilsFunction(socket , user , dto.roomName , dto.bannedUserId , 2);
+
+                    if(rtn.error)
+                    {
+                        this.OnWebSocektError(socket);
+                        console.log(rtn.error)
+                        return ;
+                    }
+                     
+                    else
+                    {
+                        if(rtn.usersType.usersType[0].userType !== 'USER' && rtn.usersType.usersType[1].userType !== 'OWNER') 
+                        { 
+                            
+                            if(dto.duration > 3600000) // if it banned for limmited time can update the time of ban or set it first time
+                            {
+                                // in evry function like send message check if is banned for limmited time and if time is out
+                                    
+                                const banExpiresAt = new Date(Date.now() + (dto.duration * 1000) + 3600000); // because date of now less then 1h
+                               
+                                // set exporation time
+                                this.roomService.setExpirention(banExpiresAt, dto.bannedUserId , rtn.room.id , "BANNEDFORLIMMITED_TIME");
+
+                                console.log('banned succufly')
+                            
+                            }
+                            else if(dto.duration === -1)// banned for unlimeted time and remove her mesasges
+                            {
+                                await this.utils.removeUserFromRoom(dto.bannedUserId, rtn.room.id);
+                            }
+                            else
+                            {
+                                console.log('should ban from 1 hour to 3 days')
+                            }
+                        }
+                        else
+                        {
+                            console.log('dont have the permission to set an admin.');
+                            return ;
+                        }
+                    }  
+                }
+                else
+                {
+                    console.log('invalid jwt.');
+                    this.OnWebSocektError(socket);
+                }
+            } 
+            catch (error) 
+            {
+    
+                this.OnWebSocektError(socket);
+                console.log(error)
+            } 
+        }
+
+
+
+
+
+
+
+
         async utilsFunction(@ConnectedSocket() socket: Socket , user :any , roomName ? :string , userId ?:string[] | string , flag?:number) // add flag for join room
         {
             let existingUser:any;
@@ -826,7 +923,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
             if(existingUser.error)
             {
-                this.OnWebSocektError(socket);
                 
                 return existingUser;
                 // emit existingUsers.error
@@ -838,13 +934,39 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     
                 if(roomId)  // if room exist
                 {
+                    const usersType = await this.utils.getUserType(roomId.id,existingUser.existingUser); // if both users in this room
+                    
+                    if(flag === 2)
+                    {
+                        if(usersType.usersType[0].isBanned === "BANNEDUNLIMMITED_TIME")
+                        {
+                            return {error : 'you are banned for life.'}
+                        }
+                        return {room : roomId , usersType , existingUser };
+                    }
+                    
                     if(!flag)
                     {
-                        const usersType = await this.utils.getUserType(roomId.id,existingUser.existingUser); // if both users in this room
-                    
                         if(usersType.error)
                         {
                             return usersType;
+                        }
+                        
+                        if(usersType.usersType[0].isBanned === 'BANNEDFORLIMMITED_TIME') // check if ban time is finish and rest it is unbanned
+                        {
+                            const currentTime = new Date();
+                            const banExpirationTime = usersType.usersType[0].banExpiresAt; // Assuming you have the ban's expiration timestamp
+                            const timeRemainingMillis = banExpirationTime.getTime() - currentTime.getTime();
+
+                            // Convert milliseconds to hours
+                            const timeRemainingHours = Math.floor(timeRemainingMillis / (1000 * 60 * 60)); // Milliseconds in an hour
+
+                            return {error: `Time remaining for finish ban: ${timeRemainingHours} hours`}
+                        }
+
+                        else if(usersType.usersType[0].isBanned === 'BANNEDUNLIMMITED_TIME')
+                        {
+                            return {error : 'you are banned for life.'}
                         }
 
                         return {room : roomId , usersType , existingUser };

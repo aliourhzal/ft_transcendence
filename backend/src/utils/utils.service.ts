@@ -248,7 +248,7 @@ export class UtilsService {
           
         await this.prisma.joinedTable.update({ // make the user banned from the room
             where: { userId_roomId: { userId: userId, roomId: roomId } },
-            data: { isBanned: true },
+            data: { isBanned: "BANNEDUNLIMMITED_TIME" },
         });
           
           

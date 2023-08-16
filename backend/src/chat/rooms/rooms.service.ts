@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
-import { PrismaClient, RoomType, UserType } from '@prisma/client';
+import { PrismaClient, RoomType, UserBnned, UserType } from '@prisma/client';
 import { AuthService } from 'src/auth/auth.service';
 import { encodePasswd } from 'src/utils/bcrypt';
 import { roomAndUsers, roomShape } from 'src/utils/userData.interface';
@@ -270,5 +270,24 @@ export class RoomsService
               },
           });
           return {updatesUserType};
-      }   
+    }
+    
+
+    async setExpirention(banExpiresAt : any , userId:string,roomId:string , isBanned_type:UserBnned )
+    {
+        await this.prisma.joinedTable.update({
+            where: {
+              userId_roomId: {
+                userId: userId,
+                roomId: roomId,
+              },
+            },
+            data: {
+              isBanned: isBanned_type,
+              banExpiresAt: banExpiresAt,
+            },
+          });
+    }
+
+
 }
