@@ -5,6 +5,7 @@ import { randomUUID } from "crypto";
 import { Server, Socket } from 'socket.io'
 import { UsersService } from "src/users/users.service";
 
+
 class Player {
 	canvas: canvasDim;
 	readonly socket: Socket;
@@ -26,7 +27,7 @@ class Player {
 	}
 
 	resetBall(x: number, y: number) {
-		this.ball = {x, y};
+		this.ball = {x, y };
 	}
 
 	correctHorizantalColl(y: number) {
@@ -38,7 +39,7 @@ class Player {
 		this.height = height / 4;
 	}
 
-	initBallPos(x: number, y: number) {
+	initBallPos(x: number, y: number, radius: number) {
 		this.ball = {x, y};
 	}
 
@@ -47,7 +48,7 @@ class Player {
 		this.avatar = avatar;
 	}
 
-	setHeight() {
+	resetHeight() {
 		this.height = this.canvas.height / 4;
 	}
 }
@@ -86,7 +87,9 @@ type roomT = {
 	player2: Player,
 	roomId: string,
 	ballDynamics: Ball,
-	hell: boolean
+	hell: boolean,
+	specialsMode: boolean,
+	specials: Specials,
 }
 
 class Ball {
@@ -100,6 +103,61 @@ class Ball {
 		this.speed = 7;
 		this.velocityX = 5;
 		this.velocityY = 5;
+	}
+
+}
+
+class Specials {
+	dwarf: boolean;
+	big_foot: boolean;
+	position: coords;
+	sent: boolean
+	activated: boolean;
+
+	constructor() {
+		this.big_foot = false;
+		this.dwarf = false;
+		this.activated = false;
+		this.position = {
+			x: 0,
+			y: 0
+		}
+	}
+
+	randomIntFromInterval(min: number, max: number) { // min and max included 
+		return Math.floor(Math.random() * (max - min + 1) + min)
+	}
+
+	activateSpecial(canvasH: number, canvasW: number) {
+		const specials = ['dwarf', 'big_foot'];
+		let randomX = this.randomIntFromInterval(2 / 10 * canvasW, 8 / 10 * canvasW);
+		let randomY = this.randomIntFromInterval(2 / 10 * canvasH, 8 / 10 * canvasH);
+		const randomSpecial = this.randomIntFromInterval(0, 1);
+		console.log('test: ', specials[randomSpecial]);
+		specials.forEach((s) => {
+			this[s] = false;
+		})
+		this[specials[randomSpecial]] = true;
+		this.position = {
+			x: randomX,
+			y: randomY
+		}
+		this.activated = true;
+		this.sent = false;
+	}
+
+	desactivateSpecial() {
+		this.activated = false;
+	}
+
+	isSpecialActivated() {
+		return (this.activated);
+	}
+
+	getSpecial() {
+		const specials = ['dwarf', 'big_foot'];
+		const selected = specials.find(s => this[s]);
+		return (selected);
 	}
 }
 
@@ -133,11 +191,11 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			).loop);
 		}
 		catch(e){}
-		const disconnectedUser =  this.connectedUsers.findIndex(x => x.socket.id === socket.id);
+		const disconnectedUser = this.connectedUsers.findIndex(x => x.socket.id === socket.id);
 		if (disconnectedUser === -1)
 			return ;
 		this.connectedUsers.splice(disconnectedUser, 1);
-		const QueuedUser =  this.gameQueue.findIndex(x => x.socket.id === socket.id);
+		const QueuedUser = this.gameQueue.findIndex(x => x.socket.id === socket.id);
 		if (QueuedUser === -1)
 			return ;
 		this.gameQueue.splice(QueuedUser, 1);
@@ -159,7 +217,8 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			room.player1.height = room.player1.canvas.height / 4;
 			this.server.to(room.roomId).emit("score", {soc:room.player1.socket.id, p1:room.player1.score, p2:room.player2.score})
 		}
-		if (room.player1.score === 5 || room.player2.score === 5)//
+
+		if (room.player1.score === 7 || room.player2.score === 7)//
 			clearInterval(room.loop);
 		
 		if (room.player1.ball.x - room.ballDynamics.radius < -20 || room.player1.ball.x + room.ballDynamics.radius > room.player1.canvas.width + 20) {
@@ -184,15 +243,32 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			room.player1.height -= room.player1.canvas.height * 0.01 / 450;
 			room.player2.height -= room.player2.canvas.height * 0.01 / 450;
 		}
+
+		if (room.specialsMode && room.specials.isSpecialActivated() && !room.specials.sent) {
+			room.specials.sent = true;
+			this.server.to(room.player1.socket.id).emit('special_effect', {
+				x: room.specials.position.x,
+				y: room.specials.position.y,
+				type: room.specials.getSpecial()
+			})
+			this.server.to(room.player2.socket.id).emit('special_effect', {
+				x: (room.player1.canvas.width - room.specials.position.x) * (room.player2.canvas.width / room.player1.canvas.width),
+				y: (room.player1.canvas.height - room.specials.position.y) * (room.player2.canvas.height / room.player1.canvas.height),
+				type: room.specials.getSpecial()
+			})
+		}
+
 		this.server.to(room.player1.socket.id).emit('game_Data', {
 			x: room.player1.ball.x,
 			y: room.player1.ball.y,
-			h: room.player1.height
+			ph: room.player1.height,
+			ch: room.player2.height * room.player1.canvas.height / room.player2.canvas.height
 		})
 		this.server.to(room.player2.socket.id).emit('game_Data', {
 			x: room.player2.ball.x * room.player2.canvas.width / room.player1.canvas.width,
 			y: room.player2.ball.y * room.player2.canvas.height / room.player1.canvas.height,
-			h: room.player2.height
+			ph: room.player2.height,
+			ch: room.player1.height * room.player2.canvas.height / room.player1.canvas.height
 		})
 	}
 
@@ -231,6 +307,8 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		room.player1.score = 0;
 		room.player2.score = 0;
 		let framePerSecond = 50;
+		if (room.specialsMode)
+			room.specials.activateSpecial(room.player1.canvas.height, room.player1.canvas.width);
 		room.loop = setInterval(() => {
 			this.update(room);
 		},1000/framePerSecond);
@@ -251,7 +329,9 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			roomId,
 			ballDynamics,
 			loop: null,
-			hell: false
+			hell: false,
+			specialsMode: false,
+			specials: new Specials()
 		};
 		newRoom.player1.setData(this.gameQueue[0].user.nickName, this.gameQueue[0].user.avatar);
 		newRoom.player2.setData(this.gameQueue[1].user.nickName, this.gameQueue[1].user.avatar);
@@ -332,20 +412,21 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	}
 
 	@SubscribeMessage('startGame')
-	setStyles(socket: Socket, data: {w:number, h:number, hell: boolean})
+	setStyles(socket: Socket, data: {w:number, h:number, hell: boolean, specials: boolean})
 	{
 		const room = this.findRoomBySocket(socket);
 		if (room && this.checkPlayerOrder(socket, room) === 1) {
 			room.hell = data.hell;
-			room.player1.initBallPos(data.w / 2, data.h / 2)
-			room.player2.initBallPos(data.w / 2, data.h / 2)
+			room.specialsMode = data.specials;
+			if (room.specialsMode)
+				room.specials.activateSpecial(data.h, data.w);
+			room.player1.initBallPos(data.w / 2, data.h / 2, data.w * 10 / 800);
+			room.player2.initBallPos(data.w / 2, data.h / 2, data.w * 10 / 800);
 			room.player1.setCanvasDim(data.h, data.w);
 		}
-		if (room && this.checkPlayerOrder(socket, room) === 2) {
+		else if (room && this.checkPlayerOrder(socket, room) === 2) {
 			room.player2.setCanvasDim(data.h, data.w);
 		}
-		// if (room.player1.socket.connected && room.player2.socket.connected)//
-		// 	this.startGame(room);
 	}
 	@SubscribeMessage('resize')
 	resize(socket: Socket, data: {w:number, h:number})
@@ -354,8 +435,64 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		if (room && this.checkPlayerOrder(socket, room) === 1) {
 			room.player1.setCanvasDim(data.h, data.w);
 		}
-		if (room && this.checkPlayerOrder(socket, room) === 2) {
+		else if (room && this.checkPlayerOrder(socket, room) === 2) {
 			room.player2.setCanvasDim(data.h, data.w);
+		}
+	}
+
+	@SubscribeMessage('consume-special')
+	consumeSpecial(socket: Socket) {
+		const room = this.findRoomBySocket(socket);
+		if (room) {
+			room.specials.desactivateSpecial();
+			setTimeout(() => {
+				room.player1.resetHeight();
+				room.player2.resetHeight();
+				room.specials.activateSpecial(room.player1.canvas.height, room.player1.canvas.width);
+			}, 6000);
+		}
+		if (room && room.ballDynamics.velocityX > 0) {
+			const special = room.specials.getSpecial();
+			console.log(special);
+			if (special === 'big_foot') {
+				room.player1.height = room.player1.canvas.height;
+				this.server.to(room.player1.socket.id).emit('activate-special', {
+					type: room.specials.getSpecial(),
+					role: 'me'
+				})
+				this.server.to(room.player2.socket.id).emit('activate-special', {
+					type: room.specials.getSpecial(),
+					role: 'opponent'
+				})
+			}
+			else if (special === 'dwarf') {
+				console.log('apply for player1');
+				room.player2.height = room.player2.canvas.height / 10;
+				this.server.to(room.roomId).emit('activate-special', {
+					type: room.specials.getSpecial()
+				})
+			}
+		}
+		else if (room && room.ballDynamics.velocityX < 0) {
+			const special = room.specials.getSpecial();
+			if (special === 'big_foot') {
+				room.player2.height = room.player2.canvas.height;
+				this.server.to(room.player2.socket.id).emit('activate-special', {
+					type: room.specials.getSpecial(),
+					role: 'me'
+				})
+				this.server.to(room.player1.socket.id).emit('activate-special', {
+					type: room.specials.getSpecial(),
+					role: 'opponent'
+				})
+			}
+			else if (special === 'dwarf') {
+				console.log('apply for player2');
+				room.player1.height = room.player1.canvas.height / 10;
+				this.server.to(room.roomId).emit('activate-special', {
+					type: room.specials.getSpecial()
+				})
+			}
 		}
 	}
 }
