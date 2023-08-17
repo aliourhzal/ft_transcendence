@@ -7,8 +7,7 @@ import Search from "./search"
 // import { Context } from "../page"
 
 const ConvList = () => {
-    const {socket, set_room_created, rooms, userData, convs, setConvs} = useContext(Context)
-    console.log(convs)
+    const {socket, set_room_created, rooms, userData, convs, setConvs, _notification  } = useContext(Context)
     const [updateList, setUpdateList] = useState(false)
 
     const fillUserList = (listOfRoomsOfUser) => {
@@ -31,39 +30,49 @@ const ConvList = () => {
     }, [])
 
     const AddUserToRoom = (res) => {
+      var _newUser;
       console.log('join room ',res)
       const newusers = []
       res.newUserAdded.users.map(_new => {
         newusers.push(res.userInfos.find(o => o.userId === _new.userId))
       })
-      console.log(newusers)
-      newusers.map((newuser) => {
-        if (newuser.user.nickname === userData.nickname || !rooms.find(o => o.name === res.roomId.room_name)) {
-          rooms.unshift({
-          msgs: [],
-          id: res.roomId.id,
-          name: res.roomId.room_name,
-          type: res.roomId.roomType,
-          lastmsg:'welcome to group chat',
-          users: getUsersInfo(res.userInfos),
-          })
-        } else {
-          rooms.find(o => o.name === res.roomId.room_name).users.push(
-          {
-            id: newuser.user.id,
-            nickName: newuser.user.nickname,
-            firstName: newuser.user.firstName,
-            lastName: newuser.user.lastName,
-            photo: newuser.user.profilePic,
-            type: newuser.userType,
-            isBanned: newuser.isBanned,
+      if (newusers.length) {
+        newusers.map((newuser) => {
+          if (newuser.user.nickname === userData.nickname || !rooms.find(o => o.name === res.roomId.room_name)) {
+            _newUser = newuser.user.nickname
+            rooms.unshift({
+            msgs: [],
+            id: res.roomId.id,
+            name: res.roomId.room_name,
+            type: res.roomId.roomType,
+            lastmsg:'welcome to group chat',
+            users: getUsersInfo(res.userInfos),
+            })
+          } else {
+            rooms.find(o => o.name === res.roomId.room_name).users.push(
+            {
+              id: newuser.user.id,
+              nickName: newuser.user.nickname,
+              firstName: newuser.user.firstName,
+              lastName: newuser.user.lastName,
+              photo: newuser.user.profilePic,
+              type: newuser.userType,
+              isBanned: newuser.isBanned,
+            }
+            )
           }
-          )
+        })
+        set_room_created(old => !old)
+        setUpdateList(old => !old)
+        console.log(rooms)
+        if (userData.nickname === _newUser)
+          _notification(`You have joined '${res.roomId.room_name}'`, "good")
+        else {
+          newusers.map(_new => {
+            _notification(`"${_new.user.nickname}" joined '${res.roomId.room_name}'`, "good")
+          })
         }
-      })
-      set_room_created(old => !old)
-      setUpdateList(old => !old)
-      console.log(rooms)
+      }
     }
     
     // const removeConv = (res) => {

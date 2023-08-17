@@ -73,16 +73,21 @@ export const getUsersInfo = (users) => {
 		)
 	  } 
 	)
-	  return (_users)
-  }
+	return (_users)
+}
 
 const _cookie = getCookie('access_token')
 
 const socket = io('ws://127.0.0.1:3004',{
 	extraHeaders: {
-        Authorization: `Bearer ${getCookie('access_token')}`,
+		Authorization: `Bearer ${getCookie('access_token')}`,
     },
 })
+
+export interface _Notification {
+	text: string
+	type: string
+}
 
 export default function Chat() {
 	
@@ -128,16 +133,18 @@ export default function Chat() {
 	const [convs, setConvs] = useState<conversation[]>([])
 
 	const [notify, setNotify] = useState(false)
-	const [notifications, setNotifications] = useState<string[]>([])
-	const [notif_type, set_notif_type] = useState('')
+
+
+	const [notifications, setNotifications] = useState<_Notification[]>([])
+	const [newNotif, setNewNotif] = useState(false)
 	const _notification = (_notif_text: string, _notif_type: string) => {
 		// set_notif_text(_notif_text)
 		setNotifications(_param => {
-			_param.unshift(_notif_text)
+			_param.unshift({text: _notif_text, type: _notif_type})
 			return _param
 		})
-		// set_notif_type(_notif_type)
-		setNotify(true)
+		setNewNotif(true)
+		// setNotify(true)
 		// setInterval(() => {
 		// 	setNotify(false)
 		// 	return clearInterval
@@ -151,7 +158,7 @@ export default function Chat() {
 
 	return (
 		<main className='select-none h-full w-full'>
-			<Notification notifications={notifications} type={notif_type} notify={notify} setNotify={setNotify}/>
+			<Notification newNotif={newNotif} setNewNotif={setNewNotif} notifications={notifications} notify={notify} setNotify={setNotify}/>
 			<Context.Provider value={{alertNewMessage, setAlertNewMessage, ref, showConv, setShowConv, activeUserConv, setActiveUserConv, socket,
 				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm, msg_sent, set_msg_sent,
 				set_room_created, room_created, rooms, setRooms, showSearchUsersForm, setShowSearchUsersForm, scrollToBottom, _notification, convs,setConvs}}>

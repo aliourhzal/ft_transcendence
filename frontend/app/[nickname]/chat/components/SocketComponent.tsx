@@ -16,28 +16,29 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
   const { userData, setShowConv } = useContext(Context)
 
   const promoteUser = (res) => {
-    _notification()
+    var _promotedUser = rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.newAdmin.userId)
     setRooms((_rooms: Room[]) => {
-      _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.newAdmin.userId).type = 'ADMIN'
+      _promotedUser.type = 'ADMIN'
       return _rooms
     })
     if (res.newAdmin.userId === userData.id)
-      _notification(`You have been promoted at ${res.roomId.room_name}`, "good")
+      _notification(`You are now admin at '${res.roomId.room_name}'`, "good")
     else
-      _notification("User promoted successfully", "good")
+      _notification(`"${_promotedUser.nickName}" promoted at '${res.roomId.room_name}'`, "good")
     setInfoUpdate(old => !old)
   }
   
   const demoteUser = (res) => {
     console.log(res)
+    var _demotedUser = rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.domotedAdmin.userId)
     setRooms((_rooms: Room[]) => {
-      _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.domotedAdmin.userId).type = 'USER'
+      _demotedUser.type = 'USER'
       return _rooms
     })
     if (res.domotedAdmin.userId === userData.id)
-      _notification(`You have been demoted at ${res.roomId.room_name}`, "bad")
+      _notification(`You have been demoted at '${res.roomId.room_name}'`, "bad")
     else
-      _notification("User demoted successfully", "good")
+      _notification(`"${_demotedUser.nickName}" demoted at '${res.roomId.room_name}'`, "good")
     setInfoUpdate(old => !old)
   }
   
@@ -50,11 +51,11 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
       currentRoomUsers.splice(currentRoomUsers.indexOf(userToBeKicked), 1)
       if (res.kickedUser.userId === userData.id) {
         _rooms.splice(_rooms.indexOf(current_room), 1)
-        _notification(`You have been kicked from ${res.roomId.room_name}`, "bad")
+        _notification(`You have been kicked from '${res.roomId.room_name}'`, "bad")
         setShowConv(false)
       }
       else
-        _notification("User kicked successfully", "good")
+        _notification(`"${userToBeKicked.nickName}" has been kicked from '${res.roomId.room_name}'`, "good")
       setConvs((_convs) => {
         _convs = [...rooms]
         return _convs
@@ -74,8 +75,10 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
       return _rooms
     })
     setInfoUpdate(old => !old)
-    // if (_user === userData.nickname)
-      _notification("Name of room changed successfully", "good")
+    _notification(`Name of room changed from '${res.oldRoomName}' to '${res.newRoomName}'`, "good")
+  }
+  const changeRoomPass = (res) => {
+    _notification(`'${res.room_name}' password changed !`, "good")
   }
 
   useEffect (() => {
@@ -83,6 +86,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
     socket.on('onDemote', (res) => {console.log('demote'), demoteUser(res)})
     socket.on('onKick', (res) => {console.log('kick'), kickUser(res)})
     socket.on('change-room-name', (res) => {console.log('change name'), changeRoomName(res)})
+    socket.on('change-room-password', (res) => {console.log('change pass'), changeRoomPass(res)})
 }, []) 
 
   return (
