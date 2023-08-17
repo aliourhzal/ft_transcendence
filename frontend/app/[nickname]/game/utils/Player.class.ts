@@ -18,6 +18,16 @@ export default class Player {
 		this.x = initX;
 		this.y = initY;
 		this.color = initColor;
-	
 	}
+
+	setDims(h: number, w: number) {
+		this.height = h;
+		this.width = w
+	}
+
+	setPos(x: number, y: number) {
+		this.x = x;
+		this.y = y;
+	}
+
 }

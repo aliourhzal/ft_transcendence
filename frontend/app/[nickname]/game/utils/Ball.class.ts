@@ -1,4 +1,4 @@
-export default class Ball {
+export class Ball {
 	x: number;
 	y: number;
 
@@ -13,4 +13,20 @@ export default class Ball {
 	speed = 7;
 	color = "WHITE";
 
+	setRadius(r: number) {
+		this.radius = r;
+	}
+}
+
+export class Special extends Ball {
+	type: string;
+	active: boolean;
+
+	setType(type: string) {
+		this.type = type;
+	}
+
+	setActive(active: boolean) {
+		this.active = active;
+	}
 }
