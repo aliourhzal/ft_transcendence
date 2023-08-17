@@ -1,13 +1,14 @@
 'use client'
 
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Player from "../utils/Player.class";
 import {Ball, Special} from "../utils/Ball.class";
 import { Socket } from "socket.io-client";
+import { WebsocketContext } from "@/app/context_sockets/gameWebSocket";
 
 
-export default function Canvas(props: {socket:Socket, themeN: number, ball: boolean, specials: boolean, hell: boolean, opData: any }) {
+export default function Canvas(props: {socket:Socket, themeN: number, ball: boolean, specials: boolean, hell: boolean, colors: any, opData: any }) {
 	const [ana, GodWilling] = useState(0);
 	const n = props.themeN;
     let bgColor = "#353D49";
@@ -119,14 +120,12 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
                 color + "" + Math.floor(Math.random() * 10);
 			ball.color = color;
         }
-		else
-            ball.color = "white";
 		else if (n === 4)
-			color = props.colors.bc;
+			ball.color = props.colors.bc;
 		else if (n === 3)
-			color = "#000";
+			ball.color = "#000";
 		else
-            color = "white";
+			ball.color = "white";
         props.ball === true && drawArc(ball.x, ball.y, ball.radius + 2, "white");
         drawArc(ball.x, ball.y, ball.radius, ball.color);
 		
@@ -157,7 +156,7 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		if (props.specials && special.active && effectCollision()) {
 			special.active = false;
 			console.log('effect consumed!!');
-			socket.emit('consume-special');
+			props.socket.emit('consume-special');
 		}
 
 		props.socket.emit("player", {
