@@ -201,7 +201,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		this.gameQueue.splice(QueuedUser, 1);
 	}
 
-	update(room: roomT) {
+	async update(room: roomT) {
 		if (room.player1.ball.x - room.ballDynamics.radius < -20)//
 		{	
 			room.player2.score += 1;
@@ -219,7 +219,10 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		}
 
 		if (room.player1.score === 7 || room.player2.score === 7)//
+		{
+			await this.usersService.createMatch(room.player1.nickName, room.player2.nickName, room.player1.score, room.player2.score);
 			clearInterval(room.loop);
+		}
 		
 		if (room.player1.ball.x - room.ballDynamics.radius < -20 || room.player1.ball.x + room.ballDynamics.radius > room.player1.canvas.width + 20) {
 			room.ballDynamics.resetForNewGame();

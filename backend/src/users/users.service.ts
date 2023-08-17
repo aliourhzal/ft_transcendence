@@ -184,4 +184,23 @@ export class UsersService {
         });
   
 	}
+
+	async	createMatch(p1 :string, p2: string, score1:number, score2: number)
+	{
+		const user1 = await this.findOneByNickname(p1);
+		const user2 = await this.findOneByNickname(p2);
+		if (!user1 || !user2)
+			throw new NotFoundException("not users to insert in match");
+		const match = await this.prisma.match.create({
+			data:{
+				players:{
+					connect:[
+						user1,
+						user2
+					]
+				},
+				scores: [score1, score2]
+			}
+		});
+	}
 }
