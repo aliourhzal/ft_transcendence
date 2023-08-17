@@ -58,7 +58,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     const kickUser = async (id) => { socket.emit('kick-user', {roomName:info.room.name, kickedUserId:id}) }
 
     const banUser = async (id, duration, durationType) => {
-        if (duration == 0)
+        if (duration <= 0)
         {
             // notify user
             return
@@ -80,8 +80,27 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         socket.emit('ban-user', {roomName:info.room.name, bannedUserId:id, duration: temp_duration})
     }
 
-    const muteUser = async (id) => {
+    const muteUser = async (id, duration, durationType) => {
+        if (duration <= 0)
+        {
+            // notify user
+            return
+        }
+        var temp_duration: number
 
+        if (durationType === 'mins')
+            temp_duration = duration * 60
+        else if (durationType === 'hours')
+            temp_duration = duration * 60 * 60
+        else if (durationType === 'days')
+            temp_duration = duration * 60 * 60 * 24
+        else 
+            return
+
+        if (temp_duration > 3 * 60 * 60 * 24)
+            temp_duration = -1
+        console.log(id, temp_duration, durationType)
+        socket.emit('mute-user', {roomName:info.room.name, mutedUserId:id, duration: temp_duration})
     }
 
     const   addUsersToRoom = async (e, newUsers) => {
@@ -112,6 +131,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     
     const [showUsersForm, setShowUsersForm] = useState(false)
     const [showRoomEditForm, setshowRoomEditForm] = useState(false)
+
     const [showBanDuration, setShowBanDuration] = useState(false)
     const [banDurationType, setBanDurationType] = useState('')
     const [banDuration, setBanDuration] = useState<number>(0)
@@ -175,7 +195,25 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
                                                 }}>confirm</button>
                                             </div>
                                         }
-                                        <BiVolumeMute className='hover:text-whiteSmoke text-blueStrong' title='mute' aria-label='mute' cursor="pointer" size={25} onClick={muteUser}/>
+                                        <BiVolumeMute className='hover:text-whiteSmoke text-blueStrong' title='mute' aria-label='mute' cursor="pointer" size={25} onClick={ () => { setShowBanDuration(old => !old) }}/>
+                                        {showBanDuration && 
+                                            <div>
+                                                <span>select ban duration</span>
+                                                <input type='number' onChange={ (e) => { setBanDuration(+e.target.value) }}/>
+                                                <select name="banDuration" id="banDuration" onChange={(e) => { setBanDurationType(e.target.value) }}>
+                                                    <option>select unit</option>
+                                                    <option value={"mins"}>minutes</option>
+                                                    <option value={"hours"}>hours</option>
+                                                    <option value={"days"}>days</option>
+                                                </select>
+                                                <button type="button" className="w-auto text-white bg-red-900 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" onClick={() => {
+                                                    muteUser(user.id, banDuration, banDurationType)
+                                                    setBanDuration(0)
+                                                    setBanDurationType('')
+                                                    setShowBanDuration(false)
+                                                }}>confirm</button>
+                                            </div>
+                                        }
                                     </>}
                                 { user.nickName != info.userData.nickname &&
                                 <BiConversation className='hover:text-whiteSmoke text-blueStrong' title='DM' aria-label='DM' cursor="pointer" size={25}/>}
