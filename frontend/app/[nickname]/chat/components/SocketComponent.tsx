@@ -13,7 +13,7 @@ interface SocketComponentProps {
 
 const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRooms, setInfoUpdate, _notification, setConvs } ) => {
   
-  const { userData } = useContext(Context)
+  const { userData, setShowConv } = useContext(Context)
 
   const promoteUser = (res) => {
     _notification()
@@ -51,6 +51,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
       if (res.kickedUser.userId === userData.id) {
         _rooms.splice(_rooms.indexOf(current_room), 1)
         _notification(`You have been kicked from ${res.roomId.room_name}`, "bad")
+        setShowConv(false)
       }
       else
         _notification("User kicked successfully", "good")

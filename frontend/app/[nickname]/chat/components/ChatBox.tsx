@@ -8,7 +8,7 @@ const ChatBox = () => {
   
   const {scrollToBottom, ref, socket, chatBoxMessages, setChatBoxMessages, userData, msg_sent, rooms, setRooms, activeUserConv} = useContext(Context)
   
-  const currentRoom = rooms.find(o => o.name === activeUserConv.name)
+  const [currentRoom, setCurrentRoom] = useState(rooms.find(o => o.name === activeUserConv.name))
 
   const addmsg = (msg) => {
     let temp_rooms = [...rooms]

@@ -117,6 +117,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     const [banDuration, setBanDuration] = useState<number>(0)
 
   return (
+    info.room && 
     <>
     <SocketComponent rooms={rooms} socket={socket} setRooms={setRooms} setInfoUpdate={setInfoUpdate} setConvs={setConvs} _notification={_notification}/>
     <Popup isOpen={info.show} modalAppearance={hide}>
