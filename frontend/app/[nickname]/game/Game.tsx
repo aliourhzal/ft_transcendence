@@ -55,7 +55,7 @@ export default function Game(props: any)
 						<h2 className=" text-whiteSmoke">{opData.nickname}</h2>
 					</div>
 				</div>
-				<Canvas socket={socket} specials={props.specials} themeN={props.themeN} ball={props.ball}  hell={props.hell} opData={setOpData}/>
+				<Canvas colors={props.colors} socket={socket} specials={props.specials} themeN={props.themeN} ball={props.ball}  hell={props.hell} opData={setOpData}/>
 			</div>
 
 			{/* <Navbar/ > */}

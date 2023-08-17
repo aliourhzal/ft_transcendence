@@ -384,7 +384,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	}
 
 	@SubscribeMessage('player')
-	handleEvent(socket: Socket, data: paddleInfo) {
+	handleEvent(socket: Socket, data: {x: number;y: number;collision: boolean;collAngle: number;h:number}) {
 		const room = this.findRoomBySocket(socket);
 		let emiter: Player;
 		let receiver: Player;
@@ -407,7 +407,8 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			room.ballDynamics.velocityY = room.ballDynamics.speed * Math.sin(data.collAngle);
 			room.ballDynamics.speed += 0.2;
 		}
-		const newY = emiter.canvas.height - data.y - emiter.height;//hna
+		const newY = emiter.canvas.height - data.y - data.h;//hna
+		// const newY = emiter.canvas.height - data.y - miter.height;//hna
 		this.server.to(receiver.socket.id).emit("playerMov", {x: data.x, y: newY * receiver.canvas.height / emiter.canvas.height});
 	}
 

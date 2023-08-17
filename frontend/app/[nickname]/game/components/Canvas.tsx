@@ -1,7 +1,7 @@
 'use client'
 
-import { WebsocketContext, socket } from "@/app/context_sockets/gameWebSocket";
-import { useContext, useEffect, useState } from "react";
+
+import { useEffect, useState } from "react";
 import Player from "../utils/Player.class";
 import {Ball, Special} from "../utils/Ball.class";
 import { Socket } from "socket.io-client";
@@ -18,14 +18,36 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 	let special = new Special();
 	let getSmaller = 0;
 
+	const net = {
+		x : 0,
+		y : 0,
+		height : 10,
+		width : 2,
+		color : "WHITE"
+	}
+
+	if (n === 4)
+	{
+		bgColor = props.colors.bg;
+		com.color = props.colors.p2;
+		player.color = props.colors.p1;
+	}
 	if (n === 2)//theme 1988 switch colors
 	{
 		bgColor = "#000";
 		com.color = "#FFF";
 		player.color = "#FFF";
 	}
+	if (n === 3)
+	{
+		bgColor = "#FFF";
+		player.color = com.color = "#000";
+	}
     function StartGame(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D)
 	{
+		//line in the middle of canvas
+		net.x = (canvas.width - 2)/2;
+
 		// draw circle, will be used to draw the ball
 		function drawArc(x, y, r, color){
 			ctx.fillStyle = color;
@@ -38,7 +60,7 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			ctx.fill();
 		}
 		function drawText(text,x,y){
-			ctx.fillStyle = "#FFF";
+			(n === 3 ? ctx.fillStyle = "#000" : ctx.fillStyle = "#FFF")
 			ctx.font = "75px fantasy";
 			ctx.fillText(text, x, y);
 		}
@@ -54,7 +76,14 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 
 			return (Math.sqrt(c) <= special.radius + ball.radius);
 		}
-
+		// draw the net
+		function drawNet(){
+			if (n === 3)
+				net.color = "#000";
+			for(let i = 0; i <= canvas.height; i+=15){
+				drawRect(net.x, net.y + i, net.width, net.height, net.color);
+			}
+		}
 		function collision() {
 			player.top = player.y;
 			player.bottom = player.y + player.height;
@@ -72,7 +101,7 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		drawRect(0, 0, canvas.offsetWidth, canvas.offsetHeight, bgColor);
 		// draw the user score to the left
 		drawText(player.score, canvas.width / 4, canvas.height / 5);
-
+		drawNet();
 		// draw the COM score to the right
 		drawText(com.score,3 * canvas.width / 4,canvas.height / 5);
 		//draw player Paddle
@@ -92,8 +121,15 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
         }
 		else
             ball.color = "white";
+		else if (n === 4)
+			color = props.colors.bc;
+		else if (n === 3)
+			color = "#000";
+		else
+            color = "white";
         props.ball === true && drawArc(ball.x, ball.y, ball.radius + 2, "white");
         drawArc(ball.x, ball.y, ball.radius, ball.color);
+		
 		if (props.specials && special.active)
 			drawArc(special.x, special.y, special.radius, '#9c3333');
 		let collAngle = 0;
@@ -128,7 +164,8 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			x: player.x,
 			y: player.y,
 			collision: coll,
-			collAngle
+			collAngle,
+			h: player.height
 		});
 	}
 
