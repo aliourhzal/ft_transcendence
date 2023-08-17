@@ -137,11 +137,11 @@ function Effects(props: any)
                 <h1 className=" text-whiteSmoke text-xl">Special Effects</h1>
                 <div className="flex gap-16">
                     <div className="flex flex-col items-center gap-3">
-                        <input className="h-5 w-5" type="radio" name="effects" id=""/>
+                        <input className="h-5 w-5" type="radio" name="effects" id="" onClick={() => props.setEffect(true)}/>
                         <h1 className="text-whiteSmoke text-lg">ON</h1>
                     </div>
                     <div className="flex flex-col items-center gap-3">
-                        <input className="h-5 w-5" type="radio" name="effects" id="" defaultChecked/>
+                        <input className="h-5 w-5" type="radio" name="effects" id="" onClick={() => props.setEffect(false)} defaultChecked/>
                         <h1 className="text-whiteSmoke text-lg">OFF</h1>
                     </div>
                 </div>
@@ -196,6 +196,7 @@ export default function GameLogin()
     const [themeN, setThemeN] = useState(1);    //themes
     const [hell, setHell] = useState(false);    // hell of flame mode
     const [Mode, setMode] = useState("");   //bot online
+    const [Effect, setEffect] = useState(false);   //Special Effects
     const def = useRef(null);
     const def2 = useRef(null);
     const def3 = useRef(null);
@@ -213,10 +214,10 @@ export default function GameLogin()
                 {/* Themse */}
                 <Themes setThemeN={setThemeN} T1={T1} T2={T2} T3={T3} T4={T4} def={def} def1={def1} def2={def2} def3={def3} />
                 {/* Effects */}
-                <Effects setBall={setBall} setHell={setHell} setMode={setMode} main={main} playWith={playWith} />
+                <Effects setBall={setBall} setEffect={setEffect} setHell={setHell} setMode={setMode} main={main} playWith={playWith} />
             </div>
             {/* {!show && } */}
-            {(Mode === "online" && <LazyGame themeN={themeN} ball={ballColors} hell={hell} />) || (Mode==="bot" && <BotGame themeN={themeN} ball={ballColors} />)}
+            {(Mode === "online" && <LazyGame specials={Effect} themeN={themeN} ball={ballColors} hell={hell} />) || (Mode==="bot" && <BotGame themeN={themeN} ball={ballColors} />)}
         </div>
     );
 }
