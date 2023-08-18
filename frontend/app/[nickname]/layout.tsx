@@ -27,8 +27,7 @@ export interface UniversalData {
 	losses?: number,
 	password?: boolean,
 	profilePic?: string,
-	coverPic?: string,
-	chatSocket: Socket
+	coverPic?: string
 }
 
 export const userDataContext = createContext<UniversalData>(null);
@@ -51,7 +50,6 @@ export async function fetchUserData(url: string) {
 function reducer(state, action) {
 	if (action.type === ACTIONS.INIT) {
 		const user: UniversalData = {...action.payload.data};
-		user.chatSocket = action.payload.socket;
 		return({...user});
 	}
 	else if (action.type === ACTIONS.UPDATE_AVATAR) {
@@ -105,8 +103,7 @@ export default function ProfileLayout({
 		fetchUserData('http://127.0.0.1:3000/users/profile')
 		.then(res => {
 			dispatch({type: ACTIONS.INIT, payload: {
-				data: res,
-				socket
+				data: res
 			}});
 			setCompleted(true);
 		})
