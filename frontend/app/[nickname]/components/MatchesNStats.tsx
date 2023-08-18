@@ -1,6 +1,8 @@
 
 import Container from '@/components/UI/ProfileBoxs';
 import './style.css'
+import { useEffect } from 'react';
+import axios from 'axios';
 
 interface StatsProps {
     for: string,
@@ -78,6 +80,18 @@ function StatsTemplate(props: StatsProps) {
 }
 
 export function GameStats() {
+    useEffect(()=>{
+        axios.get('http://127.0.0.1:3000/users/profile/stats',{
+            withCredentials: true
+        })
+        .then(res => {
+            console.log(res);
+        })
+        .catch(e => {
+            console.log(e);
+        })
+    }
+    , []);
     return (
         <Container>
             <h2 className='text-white'>Statistics</h2>

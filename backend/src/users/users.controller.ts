@@ -99,4 +99,15 @@ export class UsersController{
 	{
 		return await this.usersService.addFriend(friendName, request.user.nickname);
 	}
+
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/profile/stats')
+	async stats(@Req() req: any)
+	{
+		console.log(req.user.nickname);
+		const matches = await this.usersService.returnMatches(req.user.nickname);
+		if (!matches)
+			return null;
+		return matches.matches;
+	}
 }

@@ -203,4 +203,20 @@ export class UsersService {
 			}
 		});
 	}
+
+	async	returnMatches(user: string)
+	{
+		return await this.prisma.user.findFirst({
+			where :{
+				nickname: user
+			},
+			include : {
+				matches : {
+					include : {
+						players :true
+					}
+				}
+			}
+		})
+	}
 }
