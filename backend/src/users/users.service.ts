@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Match, PrismaClient, User } from '@prisma/client';
 import { unlinkSync } from 'fs';
 import { extname } from 'path';
 import { parse } from 'path';
@@ -218,5 +218,35 @@ export class UsersService {
 				}
 			}
 		})
+	}
+
+	async	stats(nickname : string)
+	{
+		let matchesStats = {
+			total : 0,
+			totalP : 0,
+			scoreW : 0,
+			scoreL : 0,
+			wins : 0,
+			loss : 0
+		}
+		const matches = (await this.returnMatches(nickname)).matches;
+		matches.map(x => {
+			matchesStats.total++;
+			matchesStats.totalP += (x.scores[0] + x.scores[1]);
+			if (x.players[0].nickname === nickname)
+			{
+				matchesStats.scoreW += x.scores[0];
+				matchesStats.scoreL += x.scores[1];
+				(x.scores[0] > x.scores[1] ? matchesStats.wins++ : matchesStats.loss++);
+			}
+			else
+			{
+				matchesStats.scoreW += x.scores[1];
+				matchesStats.scoreL += x.scores[0];
+				(x.scores[0] > x.scores[1] ? matchesStats.wins++ : matchesStats.loss++);
+			}
+		});
+		return matchesStats;
 	}
 }

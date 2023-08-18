@@ -104,10 +104,6 @@ export class UsersController{
 	@Get('/profile/stats')
 	async stats(@Req() req: any)
 	{
-		console.log(req.user.nickname);
-		const matches = await this.usersService.returnMatches(req.user.nickname);
-		if (!matches)
-			return null;
-		return matches.matches;
+		return await this.usersService.stats(req.user.nickname);
 	}
 }
