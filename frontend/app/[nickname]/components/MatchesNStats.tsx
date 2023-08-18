@@ -1,8 +1,9 @@
 
 import Container from '@/components/UI/ProfileBoxs';
 import './style.css'
-import { useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import { userDataContext } from '../layout';
 
 interface StatsProps {
     for: string,
@@ -57,8 +58,9 @@ export function MatchHistory() {
 }
 
 function StatsTemplate(props: StatsProps) {
-    const winsPercent = props.wins * 100 / props.total
-    let lossesPercent = props.losses * 100 / props.total
+    const winsPercent = (props.total === 0 ? 0 : props.wins * 100 / props.total);
+    let lossesPercent = (props.total === 0 ? 0 : props.losses * 100 / props.total);
+    console.log('stat', props);
     return (
         <div className='text-white flex flex-col gap-5 min-[1375]:w-3/5 min-[540px]:w-2/5 mb-2'>
             <h3 className='font-semibold'>{props.for}</h3>
@@ -80,12 +82,23 @@ function StatsTemplate(props: StatsProps) {
 }
 
 export function GameStats() {
+    const userData = useContext(userDataContext);
+    const [data, setdata] = useState({
+        total : 0,
+        totatP : 0,
+        wins : 0,
+        loss : 0,
+        scoreW : 0,
+        scoreL : 0
+    });
+
+    // console.log(userData);
     useEffect(()=>{
         axios.get('http://127.0.0.1:3000/users/profile/stats',{
             withCredentials: true
         })
         .then(res => {
-            console.log(res);
+            setdata(res.data);
         })
         .catch(e => {
             console.log(e);
@@ -96,8 +109,8 @@ export function GameStats() {
         <Container>
             <h2 className='text-white'>Statistics</h2>
             <div className='flex justify-evenly flex-col min-[540px]:flex-row gap-4'>
-                <StatsTemplate for='Game' total={27} wins={16} losses={11}/>
-                <StatsTemplate for='Point' total={248} wins={150} losses={98}/>
+                <StatsTemplate for='Game' total={data.total} wins={data.wins} losses={data.loss}/>
+                <StatsTemplate for='Point' total={data.totatP} wins={data.scoreW} losses={data.scoreL}/>
             </div>
         </Container>
     );
