@@ -101,7 +101,7 @@ export function MatchHistory() {
 }
 
 function StatsTemplate(props) {
-    const winsPercent = (props.total === 0 ? 0 : props.wins * 100 / props.total);
+    const winsPercent = ( props.total === 0 ? 0 : props.wins * 100 / props.total);
     const lossesPercent = (props.total === 0 ? 0 : props.losses * 100 / props.total);
 
     return (
@@ -128,7 +128,7 @@ export function GameStats() {
     const userData = useContext(userDataContext);
     const [data, setdata] = useState({
         total : 0,
-        totatP : 0,
+        totalP : 0,
         wins : 0,
         loss : 0,
         scoreW : 0,
@@ -141,6 +141,8 @@ export function GameStats() {
             withCredentials: true
         })
         .then(res => {
+            if (res.data.lentgh === 0)
+                return ;
             setdata(res.data);
         })
         .catch(e => {
@@ -148,12 +150,13 @@ export function GameStats() {
         })
     }
     , []);
+    console.log(data);
     return (
         <Container>
             <h2 className='text-white'>Statistics</h2>
             <div className='flex justify-evenly flex-col min-[540px]:flex-row gap-4'>
                 <StatsTemplate type1="Wins" type2="Losses" for='Game' total={data.total} wins={data.wins} losses={data.loss}/>
-                <StatsTemplate type1="Goals For" type2="Goals Against " for='Point' total={data.totatP} wins={data.scoreW} losses={data.scoreL}/>
+                <StatsTemplate type1="Goals For" type2="Goals Against " for='Point' total={data.totalP} wins={data.scoreW} losses={data.scoreL}/>
             </div>
         </Container>
     );

@@ -244,7 +244,7 @@ export class UsersService {
 			{
 				matchesStats.scoreW += x.scores[1];
 				matchesStats.scoreL += x.scores[0];
-				(x.scores[0] > x.scores[1] ? matchesStats.wins++ : matchesStats.loss++);
+				(x.scores[1] > x.scores[0] ? matchesStats.wins++ : matchesStats.loss++);
 			}
 		});
 		return matchesStats;
