@@ -76,7 +76,10 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         
     }
 
-    
+    const changeRoomType = async () => {
+        socket.emit('make-public', {roomName:info.room.name})
+    }
+
     const [showUsersForm, setShowUsersForm] = useState(false)
     const [showRoomEditForm, setshowRoomEditForm] = useState(false)
 
@@ -103,7 +106,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
                 }
             </div>
             {showUsersForm && <NewRoomUsers addUsers={addUsersToRoom} />}
-            {showRoomEditForm && <EditRoom _setNewName={setNewName} _setNewPass={setNewPass} roomType={info.room.type} />}
+            {showRoomEditForm && <EditRoom _setNewName={setNewName} _setNewPass={setNewPass} roomType={info.room.type} changeRoomType={changeRoomType}/>}
             <div className='flex flex-col justify-center items-center overflow-y-scroll'>
                 {info.room.users.map(user => (
                         <div className='m-2 border-2 p-2 rounded-lg bg-slate-600 border-slate-500 w-full flex flex-col items-center justify-center' key={user.id}>

@@ -1,13 +1,15 @@
 import React, { useState } from 'react'
 import { PiWarningFill } from 'react-icons/Pi'
+import { IoIosWarning } from 'react-icons/io'
 
 interface EditRoomProps {
   _setNewName: any
   _setNewPass: any
+  changeRoomType: any
   roomType: string
 }
 
-const EditRoom:React.FC<EditRoomProps> = ({_setNewName, _setNewPass, roomType}) => {
+const EditRoom:React.FC<EditRoomProps> = ({_setNewName, _setNewPass, roomType, changeRoomType}) => {
 
     const [newName, setNewName] = useState('')
     const [newPass, setNewPass] = useState('')
@@ -29,6 +31,9 @@ const EditRoom:React.FC<EditRoomProps> = ({_setNewName, _setNewPass, roomType}) 
         </div>
         <button type="submit" className="w-[10.4rem] text-white bg-blueStrong hover:bg-blue-400 focus:ring-4 focus:outline-none focus:ring-blue-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center">change password</button>
       </form>}
+        <div className='text-sm flex items-center justify-center'>
+          <button type='button' className="w-[10.4rem] text-white bg-blueStrong hover:bg-blue-400 focus:ring-4 focus:outline-none focus:ring-blue-100 font-medium rounded-lg px-5 py-2.5 text-center text-xs" onClick={changeRoomType}>make room public</button>
+        </div>
     </div>
   )
 }
