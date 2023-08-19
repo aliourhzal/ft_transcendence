@@ -32,11 +32,13 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner 
             temp_duration = duration * 60 * 60
         else if (durationType === 'days')
             temp_duration = duration * 60 * 60 * 24
-        else 
+        else if (durationType === 'permanent')
+            temp_duration = -1
+        else
             return
 
         if (temp_duration > 3 * 60 * 60 * 24)
-            temp_duration = -1
+            return;
         console.log(id, temp_duration , durationType)
         socket.emit('ban-user', {roomName:info.room.name, bannedUserId:id, duration: temp_duration * 1000})
     }
@@ -53,7 +55,9 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner 
             temp_duration = duration * 60 * 60
         else if (durationType === 'days')
             temp_duration = duration * 60 * 60 * 24
-        else 
+        else if (durationType === 'permanent')
+            temp_duration = -1
+        else
             return
 
         if (temp_duration > 3 * 60 * 60 * 24)
@@ -86,6 +90,7 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner 
                             <option>select unit</option>
                             <option value={"hours"}>hours</option>
                             <option value={"days"}>days</option>
+                            <option value={"permanent"}>permanent</option>
                         </select>
                         <button type="button" className="w-auto text-white bg-red-900 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" onClick={() => {
                             banUser(user.id, banDuration, banDurationType)
@@ -104,6 +109,7 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner 
                             <option>select unit</option>
                             <option value={"hours"}>hours</option>
                             <option value={"days"}>days</option>
+                            <option value={"permanent"}>permanent</option>
                         </select>
                         <button type="button" className="w-auto text-white bg-red-900 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" onClick={() => {
                             muteUser(user.id, banDuration, banDurationType)
