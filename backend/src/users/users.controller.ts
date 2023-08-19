@@ -106,4 +106,12 @@ export class UsersController{
 	{
 		return await this.usersService.stats(req.user.nickname);
 	}
+
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/profile/history')
+	async history(@Req() req: any)
+	{
+		return await this.usersService.matchHistory(req.user.nickname);
+	}
+
 }
