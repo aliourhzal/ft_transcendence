@@ -3,8 +3,6 @@ import { Context, conversation, getUsersInfo, gimmeRandom } from "../page"
 import ConvBox from "./ConvBox"
 import { userInfo } from "os"
 import Search from "./search"
-// import { useContext } from "react"
-// import { Context } from "../page"
 
 const ConvList = () => {
     const {socket, set_room_created, rooms, userData, convs, setConvs, _notification, setChatBoxMessages } = useContext(Context)
@@ -44,7 +42,6 @@ const ConvList = () => {
           if (newuser.user.isBanned != 'UNBANNED')
           {
             if (newuser.user.nickname === userData.nickname || !rooms.find(o => o.name === res.roomId.room_name)) {
-              console.log("*****/*/*/*/*/*", newusers)
               _newUser = newuser.user.nickname
               rooms.unshift({
               msgs: [],

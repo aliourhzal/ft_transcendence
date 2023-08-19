@@ -62,7 +62,7 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner 
         socket.emit('mute-user', {roomName:info.room.name, mutedUserId:id, duration: temp_duration * 1000})
     }
 
-    const [showBanDuration, setShowBanDuration] = useState(false)
+    const [showDuration, setShowDuration] = useState(false)
     const [banDurationType, setBanDurationType] = useState('')
     const [banDuration, setBanDuration] = useState<number>(0)
 
@@ -78,7 +78,7 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner 
                 }
                 <BiUserMinus className='hover:text-whiteSmoke text-blueStrong' title='kick' strokeWidth={0} aria-label='kick' cursor="pointer" size={30} onClick={() => {kickUser(user.id)}}/>
                 <BiUserX className='hover:text-whiteSmoke text-blueStrong' title='ban' aria-label='ban' cursor="pointer" size={30} onClick={() => {setShowBanDuration(old => !old)}}/>
-                {showBanDuration && 
+                {showDuration && 
                     <div>
                         <span>select ban duration</span>
                         <input type='number' onChange={ (e) => { setBanDuration(+e.target.value) }}/>
@@ -91,12 +91,12 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner 
                             banUser(user.id, banDuration, banDurationType)
                             setBanDuration(0)
                             setBanDurationType('')
-                            setShowBanDuration(false)
+                            setShowDuration(old => !old)
                         }}>confirm</button>
                     </div>
                 }
                 <BiVolumeMute className='hover:text-whiteSmoke text-blueStrong' title='mute' aria-label='mute' cursor="pointer" size={25} onClick={ () => { setShowBanDuration(old => !old) }}/>
-                {showBanDuration && 
+                {showDuration && 
                     <div>
                         <span>select ban duration</span>
                         <input type='number' onChange={ (e) => { setBanDuration(+e.target.value) }}/>
@@ -109,7 +109,7 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner 
                             muteUser(user.id, banDuration, banDurationType)
                             setBanDuration(0)
                             setBanDurationType('')
-                            setShowBanDuration(false)
+                            setShowDuration(old => !old)
                         }}>confirm</button>
                     </div>
                 }

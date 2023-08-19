@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { Context } from '../page';
 import { LiaUsersSolid } from 'react-icons/Lia'
 import { AiOutlineUsergroupAdd } from 'react-icons/Ai'
-import { PiUserCirclePlusDuotone } from 'react-icons/Pi'
+import { TbMessage2Search } from 'react-icons/Tb';
 
 const ButtomButtons = () => {
 
@@ -23,7 +23,7 @@ const ButtomButtons = () => {
         <div className='cursor-pointer border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center' onClick={ () => {
                 setShowSearchUsersForm(true)
             }}>
-            <PiUserCirclePlusDuotone title='DM users' color='white' className='w-[80%] h-[80%]'/>
+            <TbMessage2Search title='DM users' color='white' className='w-[80%] h-[80%]'/>
         </div>
     </div>
   )

@@ -1,16 +1,8 @@
 import React, { useContext, useState } from 'react'
 import Popup from './Popup'
 
-import { BiVolumeMute } from "react-icons/Bi";
-import { BiUserMinus } from "react-icons/Bi";
-import { BiUserX } from "react-icons/Bi";
-import { TbUserUp } from "react-icons/Tb";
-import { TbUserDown } from "react-icons/Tb";
-import { BiConversation } from "react-icons/Bi";
-import { AiOutlineUsergroupAdd } from "react-icons/Ai";
+import { AiFillStar, AiOutlineUsergroupAdd } from "react-icons/Ai";
 import { FiEdit3 } from "react-icons/Fi";
-import { IoIosArrowDown } from "react-icons/io";
-import { RiVipCrown2Fill } from "react-icons/Ri";
 import { SlArrowDown, SlArrowUp } from "react-icons/Sl";
 
 import { UniversalData, getCookie } from '../../layout';
@@ -19,9 +11,8 @@ import NewRoomUsers from './NewRoomUsers';
 import { Context } from '../page';
 import SocketComponent from './SocketComponent';
 import EditRoom from './EditRoom';
-import axios from 'axios';
-import { FaBold } from 'react-icons/fa';
 import RoomOptions from './RoomOptions';
+import { FaCrown } from 'react-icons/fa';
 
 interface RoomInfoProps {
     room:any
@@ -76,10 +67,13 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     const   setNewPass = async (e, pass) => {
         e.preventDefault()
         setshowRoomEditForm(false)
-        if (pass) {
+        if (pass != '') {
             console.log(pass)
             socket.emit('edit-room-password', { roomName:info.room.name, newPassword: pass })
         }
+        else
+            socket.emit('set-room-public', { roomName:info.room.name, newPassword: pass })
+        
     }
 
     
@@ -91,7 +85,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
   return (
     <>
     <SocketComponent rooms={rooms} socket={socket} setRooms={setRooms} setInfoUpdate={setInfoUpdate} setConvs={setConvs} _notification={_notification}/>
-    {info.room &&
+    {(info.room && info.show) &&
         <Popup isOpen={info.show} modalAppearance={hide}>
             <div className='flex items-end justify-center m-4'>
                 {isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) &&
@@ -117,10 +111,14 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
                                 <div className='font-bold flex justify-between items-center gap-3'>
                                     <Avatar bordered color={"primary"} pointer zoomed src={info.room.users.find(o => o.nickName === user.nickName).photo}/>
                                     <div>{user.nickName === info.userData.nickname ? 'you' : user.nickName}</div>
+                                    {isOwner(info.room.users.find(o => o.nickName === user.nickName)) ? <FaCrown/> : ''}
+                                    {isAdmin(info.room.users.find(o => o.nickName === user.nickName)) && !isOwner(info.room.users.find(o => o.nickName === user.nickName)) ? <AiFillStar/> : ''}
                                 </div>
                                 <div className='w-10 font-extrabold flex items-center justify-center'>
-                                    {!showOptions && <SlArrowDown size={20} fontWeight={'bold'} className='font-extrabold'/>}
-                                    {showOptions && <SlArrowUp className='font-extrabold'/>}
+                                    {user.nickName != info.userData.nickname ?
+                                        !showOptions && <SlArrowDown size={20} fontWeight={'bold'} className='font-extrabold'/> : ''}
+                                    {user.nickName != info.userData.nickname ?
+                                        showOptions && <SlArrowUp className='font-extrabold'/>: ''}
                                 </div>
                             </div>
                             {showOptions && <RoomOptions info={info} user={user} isAdmin={isAdmin} isOwner={isOwner}/>}
