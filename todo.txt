@@ -106,3 +106,61 @@
         }
 
     }
+
+
+
+
+
+
+if(flag === 2)
+                    {
+                        const isBanned = await this.utils.ifUserIsBanned(existingUser.existingUser[1]);
+
+                        if(isBanned[0].isBanned === 'BANNEDUNLIMMITED_TIME')
+                        {
+                            return {error : 'you are banned for life.'}
+                        }
+                        
+                        return {room : roomId , usersType , existingUser };
+                    }
+                    
+                    const isBanned = await this.utils.ifUserIsBanned(existingUser.existingUser[0]);
+                    
+                    if(!flag)
+                    {
+                        if(usersType.error)
+                        {
+                            return usersType;
+                        }
+                        
+                        if(isBanned)
+                        {
+                            if(isBanned[0].isBanned === 'BANNEDFORLIMMITED_TIME')
+                            {
+                                if (isBanned[0].banExpiresAt <= new Date()) 
+                                {
+                                    await this.roomService.makeUserUnbanned(existingUser.existingUser[0], roomId.id); // make user unbanned
+                                    return {ok : 'user is unbanned.'}
+                                }
+     
+                                return {error : 'user is banned for limmited time.'}
+                            }
+                        }
+
+                        return {room : roomId , usersType , existingUser };
+                    }
+                    else // for join room  and add new user to room because current user is not the room
+                    {
+                         
+                        if(isBanned[0].isBanned === 'BANNEDFORLIMMITED_TIME')
+                        {
+                            if (isBanned[0].banExpiresAt <= new Date()) 
+                            {
+                                await this.roomService.makeUserUnbanned(existingUser.existingUser[0], roomId.id); // make user unbanned
+                                return {ok : 'user is unbanned.'}
+                            }
+    
+                            return {error : 'user is banned for limmited time.'}
+                        }
+                        return {room : roomId  , existingUser };
+                    }

@@ -211,7 +211,6 @@ export class UtilsService {
 
     async  getUserInfosInRoom(roomId: string) 
     {
-        let usersInRooms:any;
         
         const rooms = await this.prisma.joinedTable.findMany({
             where: {
@@ -279,8 +278,16 @@ export class UtilsService {
       async verifyToken(token: string)
        {
 
-          const decoded = this.jwtService.verify(token , { secret: process.env.JWT_SECRET });
-          return decoded;
+        const decoded = this.jwtService.verify(token , { secret: process.env.JWT_SECRET });
+        return decoded;
          
+      }
+
+
+      async ifUserIsBanned(userId : string , roomId : string)
+      {
+        return await this.prisma.bannedUsersForLimmitedTime.findUnique({
+            where: { userId_roomId: { userId, roomId } },
+          });
       }
 }

@@ -28,6 +28,7 @@ model User {
  
 	messages                    Messages[]
     rooms                   JoinedTable[]
+    bannedUsers                   BannedUsersForLimmitedTime[]
 
 	matches			Match[]
 }
@@ -43,6 +44,7 @@ model Room{
 	messages                    Messages[]
 
     users                       JoinedTable[]
+    bannedusers                       BannedUsersForLimmitedTime[]
 }
  
 
@@ -74,6 +76,24 @@ model JoinedTable{
 
     createdAt  DateTime   @default(now())  // Add this field to track creation date
 
+
+    @@id([userId, roomId])
+}
+
+model BannedUsersForLimmitedTime{
+    
+    user                User       @relation(fields: [userId], references: [id])
+    userId              String  
+	userType    UserType     	@default(USER)
+
+    room                Room        @relation(fields: [roomId], references: [id]) // not compile in the query
+    roomId              String 
+
+    isBanned            UserBnned     	@default(UNBANNED)
+
+    banExpiresAt        DateTime?
+
+    createdAt  DateTime   @default(now())  // Add this field to track creation date
 
     @@id([userId, roomId])
 }

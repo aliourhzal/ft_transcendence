@@ -238,12 +238,13 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             console.log(error)
         }
     }
-
+ 
 
     @SubscribeMessage('join-room') 
     @UsePipes(new ValidationPipe()) // Add the ValidationPipe here
     async joinRoom(@MessageBody() dto:JoinRoomDto , @ConnectedSocket() socket: Socket) 
     {
+        
         try 
         {
             const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
@@ -256,7 +257,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 
                 if(rtn.error)
                 {
-                    this.OnWebSocektError(socket);
                     console.log(rtn.error)
                     return ;
                 }
@@ -771,7 +771,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         {
                             if(roomId.roomType === 'PROTECTED')
                             {
-                                const newPass = await this.roomService.changePasswordOfProtectedRoom(roomId.id, encodePasswd(dto.newPassword));
+                                await this.roomService.changePasswordOfProtectedRoom(roomId.id, encodePasswd(dto.newPassword));
                              }
                             else
                             {
@@ -829,7 +829,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
 
 
-        @SubscribeMessage('ban-user')  // test ban for unlimeted timej
+        @SubscribeMessage('ban-user')  // test  if is banned for limmited time and want to banned for ever
+
         @UsePipes(new ValidationPipe()) 
         async banFromRoom(@MessageBody() dto:BanFromRoom , @ConnectedSocket() socket: Socket) 
         {
@@ -840,7 +841,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 {
                     const user  = await this.utils.verifyToken(token); // // if has error will catch it
                     const rtn = await this.utilsFunction(socket , user , dto.roomName , dto.bannedUserId , 2);
-
+                    
                     if(rtn.error)
                     {
                         this.OnWebSocektError(socket);
@@ -856,12 +857,15 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                             if(dto.duration >= 3600000) // if it banned for limmited time can update the time of ban or set it first time
                             {
                                 // in evry function like send message check if is banned for limmited time and if time is out
-                                    
-                                const banExpiresAt = new Date(Date.now() + dto.duration  + 3600000); // because date of now less then 1h
+                                const banExpiresAt = new Date(Date.now() + dto.duration ); // because date of now less then 1h
                                
                                 // set exporation time
-                                const   bannedUser = await this.roomService.setExpirention(banExpiresAt, dto.bannedUserId , rtn.room.id , "BANNEDFORLIMMITED_TIME");
-                            
+                                const   bannedUser = await this.roomService.setExpirention(banExpiresAt, dto.bannedUserId , rtn.room.id );
+                                
+                                
+                                await this.roomService.removeUserFromRoom(rtn.room.id, rtn.usersType.usersType[1].userId);
+
+                                
                                 const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
 
                                 for(const userInRoom of usersInroom)
@@ -880,9 +884,12 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                             }
                             else if(dto.duration < 0)// banned for unlimeted time and remove her mesasges
                             {
-                                const bannedUser = await this.roomService.banUserForEver(dto.bannedUserId, rtn.room.id);
+                                const   bannedUser =  await this.roomService.banUserForEver(dto.bannedUserId, rtn.room.id);
+
+                                await this.roomService.removeUserFromRoom(rtn.room.id, rtn.usersType.usersType[1].userId);
 
                                 const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
+                                
                                 for(const userInRoom of usersInroom)
                                 {
                                     for (let i = 0; i < this.soketsId.length; i++) 
@@ -956,48 +963,50 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 {
                     const usersType = await this.utils.getUserType(roomId.id,existingUser.existingUser); // if both users in this room
                     
-                    if(flag === 2)
+                    if(flag === 1)  
+                    {
+                        const isBanned = await this.utils.ifUserIsBanned(existingUser.existingUser[0] , roomId.id);
+                        
+                        if(!isBanned) // if first time want to join the room
+                        {
+                            return {room : roomId  , existingUser };
+                        }
+                        else // if this user is banned from the room and want to join another time
+                        {
+                            if(isBanned.isBanned === 'BANNEDFORLIMMITED_TIME')
+                            {
+                                if (isBanned.banExpiresAt <= new Date()) // if ban Expire
+                                {
+                                    await this.roomService.makeUserUnbanned(existingUser.existingUser[0], roomId.id); // make user unbanned
+                                    console.log('user is unbanned.')
+                                    return {room : roomId  , existingUser };
+                                }
+        
+                                return {error : 'user is banned for limmited time.'}
+                            }
+                        }
+                    }
+
+                    if(flag === 2) // if want to ban user
                     {
                         
-                        if(usersType.usersType[1].isBanned === "BANNEDUNLIMMITED_TIME")
-                        {
-                            return {error : 'you are banned for life.'}
-                        }
-                        return {room : roomId , usersType , existingUser };
-                    }
-                    
-                    if(!flag)
-                    {
-                        if(usersType.error)
-                        {
-                            return usersType;
-                        }
+                        const isBanned = await this.utils.ifUserIsBanned(existingUser.existingUser[1] , roomId.id);
                         
-                        if(usersType.usersType[0].isBanned === 'BANNEDFORLIMMITED_TIME') // check if ban time is finish and rest it is unbanned
+                        if(!isBanned) // if first time will ban means is not in table of banned users
+                            return {room : roomId , usersType , existingUser };
+                        
+                        else
                         {
-                            const currentTime = new Date();
-                            const banExpirationTime = usersType.usersType[0].banExpiresAt; // Assuming you have the ban's expiration timestamp
-                            const timeRemainingMillis = banExpirationTime.getTime() - currentTime.getTime();
-
-                            // Convert milliseconds to hours
-                            const timeRemainingHours = Math.floor(timeRemainingMillis / (1000 * 60 * 60)); // Milliseconds in an hour
-
-                            return {error: `Time remaining for finish ban: ${timeRemainingHours} hours`}
+                            if(isBanned.isBanned === 'BANNEDUNLIMMITED_TIME')
+                            {
+                                return {error : 'you are banned for life.'}
+                            }
+                            // else we do it if want to refresh time of baning
                         }
 
-                        else if(usersType.usersType[0].isBanned === 'BANNEDUNLIMMITED_TIME')
-                        {
-                            return {error : 'you are banned for life.'}
-                        }
-
-                        return {room : roomId , usersType , existingUser };
-                    }
-                    else // for join room  and add new user to room because current user is not the room
-                    {
-                        return {room : roomId  , existingUser };
                     }
                 }
-                else
+                else 
                 {
                     return {error : 'room not found'}
                 }
