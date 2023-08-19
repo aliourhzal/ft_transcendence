@@ -60,17 +60,20 @@ export const getUsersInfo = (users) => {
 	  }[] = []
 	// console.log(users)
 	users.map( (user) => {
-		_users.push(
-		  {
-			id: user.user.id,
-			nickName: user.user.nickname,
-			firstName: user.user.firstName,
-			lastName: user.user.lastName,
-			photo: user.user.profilePic,
-			type: user.userType,
-			isBanned: user.isBanned,
-		  }
-		)
+		if (user.user.isBanned != 'UNBANNED')
+		{
+			_users.push(
+			  {
+				id: user.user.id,
+				nickName: user.user.nickname,
+				firstName: user.user.firstName,
+				lastName: user.user.lastName,
+				photo: user.user.profilePic,
+				type: user.userType,
+				isBanned: user.isBanned,
+			  }
+			)
+		}
 	  } 
 	)
 	return (_users)

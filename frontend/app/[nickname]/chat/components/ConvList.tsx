@@ -13,14 +13,17 @@ const ConvList = () => {
     const fillUserList = (listOfRoomsOfUser) => {
       setConvs([])
       listOfRoomsOfUser.messages.map( (room: any) => {
-        rooms.unshift({
-          name: room.room.room.room_name,
-          lastmsg:'welcome to group chat',
-          msgs: room.msg,
-          id: room.room.room.id,
-          users: getUsersInfo(room.usersInRoom),
-          type: room.room.room.roomType
-        })
+        if (room.usersInRoom.find(o => o.userId === userData.id).isbanned !== 'UNBANNED')
+        {
+          rooms.unshift({
+            name: room.room.room.room_name,
+            lastmsg:'welcome to group chat',
+            msgs: room.msg,
+            id: room.room.room.id,
+            users: getUsersInfo(room.usersInRoom),
+            type: room.room.room.roomType
+          })
+        }
       })
       setConvs(rooms)
     }
@@ -38,30 +41,33 @@ const ConvList = () => {
       })
       if (newusers.length) {
         newusers.map((newuser) => {
-          if (newuser.user.nickname === userData.nickname || !rooms.find(o => o.name === res.roomId.room_name)) {
-            console.log("*****/*/*/*/*/*", newusers)
-            _newUser = newuser.user.nickname
-            rooms.unshift({
-            msgs: [],
-            id: res.roomId.id,
-            name: res.roomId.room_name,
-            type: res.roomId.roomType,
-            lastmsg:'welcome to group chat',
-            users: getUsersInfo(res.userInfos),
-            })
-            setConvs([...rooms])
-          } else {
-            rooms.find(o => o.name === res.roomId.room_name).users.push(
-            {
-              id: newuser.user.id,
-              nickName: newuser.user.nickname,
-              firstName: newuser.user.firstName,
-              lastName: newuser.user.lastName,
-              photo: newuser.user.profilePic,
-              type: newuser.userType,
-              isBanned: newuser.isBanned,
+          if (newuser.user.isBanned != 'UNBANNED')
+          {
+            if (newuser.user.nickname === userData.nickname || !rooms.find(o => o.name === res.roomId.room_name)) {
+              console.log("*****/*/*/*/*/*", newusers)
+              _newUser = newuser.user.nickname
+              rooms.unshift({
+              msgs: [],
+              id: res.roomId.id,
+              name: res.roomId.room_name,
+              type: res.roomId.roomType,
+              lastmsg:'welcome to group chat',
+              users: getUsersInfo(res.userInfos),
+              })
+              setConvs([...rooms])
+            } else {
+              rooms.find(o => o.name === res.roomId.room_name).users.push(
+              {
+                id: newuser.user.id,
+                nickName: newuser.user.nickname,
+                firstName: newuser.user.firstName,
+                lastName: newuser.user.lastName,
+                photo: newuser.user.profilePic,
+                type: newuser.userType,
+                isBanned: newuser.isBanned,
+              }
+              )
             }
-            )
           }
         })
         set_room_created(old => !old)

@@ -65,6 +65,29 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
     setInfoUpdate(old => !old)
   }
 
+  const banUser = (res) => {
+    console.log(res)
+    setRooms((_rooms: Room[]) => {
+    var current_room = _rooms.find(o => o.name === res.roomId.room_name)
+    var userToBeKicked = current_room.users.find(o => o.id === res.bannedUser.userId)
+    if (res.bannedUser.userId != userData.id)
+      _notification(`"${userToBeKicked.nickName}" has been banned from '${res.roomId.room_name}'`, "good")
+    var currentRoomUsers = _rooms.find(o => o.name === res.roomId.room_name).users
+    currentRoomUsers.splice(currentRoomUsers.indexOf(userToBeKicked), 1)
+    if (res.bannedUser.userId === userData.id) {
+      _notification(`You have been banned from '${res.roomId.room_name}'`, "bad")
+      _rooms.splice(_rooms.indexOf(current_room), 1)
+      setShowConv(false)
+    }
+    setConvs((_convs) => {
+        _convs = [...rooms]
+        return _convs
+      })
+      return _rooms
+    })
+    setInfoUpdate(old => !old)
+  }
+
   const changeRoomName = (res) => {
     console.log(res.newRoomName, res.oldRoomName)
     setRooms( (_rooms: Room[]) => {
@@ -87,6 +110,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
     socket.on('onPromote', (res) => {console.log('promote'), promoteUser(res)})
     socket.on('onDemote', (res) => {console.log('demote'), demoteUser(res)})
     socket.on('onKick', (res) => {console.log('kick'), kickUser(res)})
+    socket.on('onBan', (res) => {console.log('ban'), banUser(res)})
     socket.on('change-room-name', (res) => {console.log('change name'), changeRoomName(res)})
     socket.on('change-room-password', (res) => {console.log('change pass'), changeRoomPass(res)})
 }, []) 
