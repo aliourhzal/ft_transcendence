@@ -211,8 +211,8 @@ export class RoomsService
         const kickedUser = await this.prisma.joinedTable.delete({
             where: {
                 userId_roomId: {
-                roomId: roomId,
-                userId: kickedUserId,
+                    roomId: roomId,
+                    userId: kickedUserId,
                 },
             },
             });

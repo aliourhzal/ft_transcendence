@@ -76,8 +76,8 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
 
         if (temp_duration > 3 * 60 * 60 * 24)
             temp_duration = -1
-        console.log(id, temp_duration, durationType)
-        socket.emit('ban-user', {roomName:info.room.name, bannedUserId:id, duration: temp_duration})
+        console.log(id, temp_duration , durationType)
+        socket.emit('ban-user', {roomName:info.room.name, bannedUserId:id, duration: temp_duration * 1000})
     }
 
     const muteUser = async (id, duration, durationType) => {

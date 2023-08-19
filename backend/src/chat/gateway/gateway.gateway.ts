@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket, Server } from  'socket.io';
 import { UsersService } from 'src/users/users.service';
-import {  UserData, ArrayOfClinets, ListOfRoomsOfUser } from 'src/utils/userData.interface';
+import {  UserData, ArrayOfClinets } from 'src/utils/userData.interface';
 import { RoomsService } from '../rooms/rooms.service';
 import { UtilsService } from 'src/utils/utils.service';
 import { MessagesService } from '../messages/messages.service';
@@ -42,10 +42,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     user : UserData;
         
     soketsId :ArrayOfClinets[] = [];
-
-    arrayOfJoinnedUsers :ArrayOfClinets[] = [];
-    
-    listOfRoomsOfUser :   any[] = [];
 
     async handleConnection(socket: Socket) 
     {
@@ -314,7 +310,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                     }
         
                                 } 
-                                return ;
                             } 
                     
                         }
@@ -389,9 +384,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                     } 
                                 }
                             }
-                            return ;
                         }
-                    }
+                    }  
                     else
                     {
                         console.log('dont have the permission to set an admin.');
@@ -467,8 +461,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                     this.server.to(this.soketsId[i].socketIds).emit("onDemote",{ roomId : rtn.room ,  domotedAdmin: result.updatesUserType });
                                 } 
                             }
-                        }
-                        return ;                        
+                        }                        
                     }
                     else
                     {
@@ -537,7 +530,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                 {
                                     if(this.soketsId[i].userId === userInRoom.userId)
                                     {
-                                        console.log(this.soketsId[i].socketIds)
                                         this.server.to(this.soketsId[i].socketIds).emit("onKick",{ roomId: rtn.room ,  kickedUser: result.kickedUser });
                                     } 
                                 }
@@ -572,7 +564,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         async addNewUsersToRoom(@MessageBody() dto:AddNewUsersToRoom , @ConnectedSocket() socket: Socket) 
         {
             
-             try 
+            try 
             {
                 const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
                 
@@ -837,7 +829,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         @UsePipes(new ValidationPipe()) 
         async banFromRoom(@MessageBody() dto:BanFromRoom , @ConnectedSocket() socket: Socket) 
         {
-            console.log(dto.duration)
+            
             try 
             {
                 const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
@@ -859,11 +851,11 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         if(rtn.usersType.usersType[0].userType !== 'USER' && rtn.usersType.usersType[1].userType !== 'OWNER') 
                         { 
                             
-                            if(dto.duration > 3600000) // if it banned for limmited time can update the time of ban or set it first time
+                            if(dto.duration >= 3600000) // if it banned for limmited time can update the time of ban or set it first time
                             {
                                 // in evry function like send message check if is banned for limmited time and if time is out
                                     
-                                const banExpiresAt = new Date(Date.now() + (dto.duration * 1000) + 3600000); // because date of now less then 1h
+                                const banExpiresAt = new Date(Date.now() + dto.duration  + 3600000); // because date of now less then 1h
                                
                                 // set exporation time
                                 this.roomService.setExpirention(banExpiresAt, dto.bannedUserId , rtn.room.id , "BANNEDFORLIMMITED_TIME");
@@ -911,9 +903,9 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         async utilsFunction(@ConnectedSocket() socket: Socket , user :any , roomName ? :string , userId ?:string[] | string , flag?:number) // add flag for join room
         {
             let existingUser:any;
+
             if(userId)
             {
-                // console.log(userId)
                 existingUser = await this.utils.getUserId([user['sub']  , userId]); // if both users in db
             }
             else
@@ -923,9 +915,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
             if(existingUser.error)
             {
-                
                 return existingUser;
-                // emit existingUsers.error
             } 
             
             if(roomName) // if pass room name
@@ -1010,7 +1000,15 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
     async handleDisconnect(socket: Socket) 
     {
-        console.log("disconnected from chat");     
+        console.log("disconnected from chat");    
+        for (let i = 0; i < this.soketsId.length; i++) 
+        {
+            if(this.soketsId[i].socketIds === socket.id)
+            {
+                this.soketsId = this.soketsId.splice(i, i + 1);
+                break;
+            }
+        } 
         this.OnWebSocektError(socket);
     }
 
