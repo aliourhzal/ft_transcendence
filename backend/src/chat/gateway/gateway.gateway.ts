@@ -1012,10 +1012,12 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     
             for(let i = 0; i < rooms.length; i++)
             {
-                messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i]['room']['room_name']) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId) })
+                if(rooms[i].isBanned === "UNBANNED")
+                {
+                    messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i]['room']['room_name']) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
+                }
             }
             
-
             this.server.to(socket.id).emit("list-rooms",{messages});  //  evry client will connected will display the rooms who is member into 
             return {ok : 'connected from chat'}
         }
