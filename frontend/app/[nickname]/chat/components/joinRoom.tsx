@@ -26,6 +26,8 @@ const JoinRoomForm = () => {
         socket.emit('join-room', {roomName:name, password:pass})
 
         setShowJoinForm(false)
+        setName('')
+        setPass('')
     }
 
   return (
