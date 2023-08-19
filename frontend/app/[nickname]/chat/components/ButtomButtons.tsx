@@ -1,5 +1,8 @@
 import React, { useContext } from 'react'
 import { Context } from '../page';
+import { LiaUsersSolid } from 'react-icons/Lia'
+import { AiOutlineUsergroupAdd } from 'react-icons/Ai'
+import { PiUserCirclePlusDuotone } from 'react-icons/Pi'
 
 const ButtomButtons = () => {
 
@@ -10,17 +13,17 @@ const ButtomButtons = () => {
         <div className='cursor-pointer border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center' onClick={ () => {
                 setShowForm(true);
             }}>
-            <img className='w-auto h-auto' alt='CreateChannel' title='CreateChannel' src='/images/channel.svg'  width={30} height={30}/>
+            <AiOutlineUsergroupAdd title='create room' color='white' className='w-[80%] h-[80%]'/>
         </div>
         <div className='cursor-pointer border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center' onClick={ () => {
                 setShowJoinForm(true)
             }}>
-            <img title='JoinChannel' className='w-auto h-auto' alt='JoinChannel' src='/images/channel.svg' width={30} height={30}/>
+            <LiaUsersSolid title='join room' color='white' className='w-[80%] h-[80%]'/>
         </div>
-        <div className='cursor-pointer border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center'>
-            <img className='w-auto h-auto' alt='new channel' src='/images/groupe.svg' width={25} height={25} onClick={ () => {
+        <div className='cursor-pointer border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center' onClick={ () => {
                 setShowSearchUsersForm(true)
-            }}/>
+            }}>
+            <PiUserCirclePlusDuotone title='DM users' color='white' className='w-[80%] h-[80%]'/>
         </div>
     </div>
   )
