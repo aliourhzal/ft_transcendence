@@ -275,7 +275,7 @@ export class RoomsService
 
     async setExpirention(banExpiresAt : any , userId:string,roomId:string , isBanned_type:UserBnned )
     {
-        await this.prisma.joinedTable.update({
+        return await this.prisma.joinedTable.update({
             where: {
               userId_roomId: {
                 userId: userId,
@@ -287,6 +287,22 @@ export class RoomsService
               banExpiresAt: banExpiresAt,
             },
           });
+
+    }
+    async banUserForEver( userId:string,roomId:string  )
+    {
+        return await this.prisma.joinedTable.update({
+            where: {
+              userId_roomId: {
+                userId: userId,
+                roomId: roomId,
+              },
+            },
+            data: {
+              isBanned: 'BANNEDUNLIMMITED_TIME',
+            },
+          });
+        
     }
 
 
