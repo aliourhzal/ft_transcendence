@@ -39,6 +39,7 @@ const ConvList = () => {
       if (newusers.length) {
         newusers.map((newuser) => {
           if (newuser.user.nickname === userData.nickname || !rooms.find(o => o.name === res.roomId.room_name)) {
+            console.log("*****/*/*/*/*/*", newusers)
             _newUser = newuser.user.nickname
             rooms.unshift({
             msgs: [],
@@ -48,6 +49,7 @@ const ConvList = () => {
             lastmsg:'welcome to group chat',
             users: getUsersInfo(res.userInfos),
             })
+            setConvs([...rooms])
           } else {
             rooms.find(o => o.name === res.roomId.room_name).users.push(
             {

@@ -15,7 +15,6 @@ interface ConvBoxProps {
 const ConvBox: React.FC<ConvBoxProps> = (data) => {
 
   const {setShowConv, setActiveUserConv, setChatBoxMessages} = useContext(Context)
-  console.log('CONVBOX YEE')
   const handleClick = async () => {
     setShowConv(true)
     setActiveUserConv(data.data)

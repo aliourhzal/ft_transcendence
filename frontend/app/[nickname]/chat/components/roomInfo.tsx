@@ -10,6 +10,7 @@ import { BiConversation } from "react-icons/Bi";
 import { AiOutlineUsergroupAdd } from "react-icons/Ai";
 import { FiEdit3 } from "react-icons/Fi";
 import { IoIosArrowDown } from "react-icons/io";
+import { RiVipCrown2Fill } from "react-icons/Ri";
 
 import { UniversalData, getCookie } from '../../layout';
 import { Avatar } from '@nextui-org/react';
@@ -65,9 +66,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         }
         var temp_duration: number
 
-        if (durationType === 'mins')
-            temp_duration = duration * 60
-        else if (durationType === 'hours')
+        if (durationType === 'hours')
             temp_duration = duration * 60 * 60
         else if (durationType === 'days')
             temp_duration = duration * 60 * 60 * 24
@@ -87,10 +86,8 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
             return
         }
         var temp_duration: number
-
-        if (durationType === 'mins')
-            temp_duration = duration * 60
-        else if (durationType === 'hours')
+    
+        if (durationType === 'hours')
             temp_duration = duration * 60 * 60
         else if (durationType === 'days')
             temp_duration = duration * 60 * 60 * 24
@@ -100,7 +97,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         if (temp_duration > 3 * 60 * 60 * 24)
             temp_duration = -1
         console.log(id, temp_duration, durationType)
-        socket.emit('mute-user', {roomName:info.room.name, mutedUserId:id, duration: temp_duration})
+        socket.emit('mute-user', {roomName:info.room.name, mutedUserId:id, duration: temp_duration * 1000})
     }
 
     const   addUsersToRoom = async (e, newUsers) => {
@@ -183,7 +180,6 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
                                                     <input type='number' onChange={ (e) => { setBanDuration(+e.target.value) }}/>
                                                     <select name="banDuration" id="banDuration" onChange={(e) => { setBanDurationType(e.target.value) }}>
                                                         <option>select unit</option>
-                                                        <option value={"mins"}>minutes</option>
                                                         <option value={"hours"}>hours</option>
                                                         <option value={"days"}>days</option>
                                                     </select>
@@ -202,7 +198,6 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
                                                     <input type='number' onChange={ (e) => { setBanDuration(+e.target.value) }}/>
                                                     <select name="banDuration" id="banDuration" onChange={(e) => { setBanDurationType(e.target.value) }}>
                                                         <option>select unit</option>
-                                                        <option value={"mins"}>minutes</option>
                                                         <option value={"hours"}>hours</option>
                                                         <option value={"days"}>days</option>
                                                     </select>
