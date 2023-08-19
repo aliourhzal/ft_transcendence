@@ -3,6 +3,7 @@ import user, { Context, gimmeRandom } from '../page'
 import { Socket } from 'socket.io-client'
 import SelfChatBox from './selfChatBox'
 import OthersChatBox from './othersChatBox'
+import BotChatBox from './BotChatBox'
 
 const ChatBox = () => {
   
@@ -40,9 +41,12 @@ const ChatBox = () => {
   return (
     chatBoxMessages.length != 0 &&
       <div className='z-0' ref={ref}>
-        {chatBoxMessages.map ((BoxMessage) => 
-          (BoxMessage.user == userData.nickname ? <SelfChatBox msg={BoxMessage.msg} user={currentRoom.users.find(o => o.nickName === BoxMessage.user)} key={gimmeRandom()}/>
-          : <OthersChatBox msg={BoxMessage.msg} user={currentRoom.users.find(o => o.nickName === BoxMessage.user)} key={gimmeRandom()}/>))}
+        {chatBoxMessages.map ((BoxMessage) =>
+          BoxMessage.user != 'bot' ?
+              (BoxMessage.user == userData.nickname ? <SelfChatBox msg={BoxMessage.msg} user={currentRoom.users.find(o => o.nickName === BoxMessage.user)} key={gimmeRandom()}/>
+              : <OthersChatBox msg={BoxMessage.msg} user={currentRoom.users.find(o => o.nickName === BoxMessage.user)} key={gimmeRandom()}/>)
+          : <BotChatBox msg={BoxMessage.msg} />
+        )}
       </div>
   )
 }

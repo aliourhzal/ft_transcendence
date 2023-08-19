@@ -7,7 +7,7 @@ import Search from "./search"
 // import { Context } from "../page"
 
 const ConvList = () => {
-    const {socket, set_room_created, rooms, userData, convs, setConvs, _notification  } = useContext(Context)
+    const {socket, set_room_created, rooms, userData, convs, setConvs, _notification, setChatBoxMessages } = useContext(Context)
     const [updateList, setUpdateList] = useState(false)
 
     const fillUserList = (listOfRoomsOfUser) => {
@@ -65,11 +65,13 @@ const ConvList = () => {
         set_room_created(old => !old)
         setUpdateList(old => !old)
         console.log(rooms)
-        if (userData.nickname === _newUser)
+        if (userData.nickname === _newUser) {
           _notification(`You have joined '${res.roomId.room_name}'`, "good")
+        }
         else {
           newusers.map(_new => {
             _notification(`"${_new.user.nickname}" joined '${res.roomId.room_name}'`, "good")
+            setChatBoxMessages(old => [...old, {user: 'bot', msg : `"${_new.user.nickname}" joined '${res.roomId.room_name}'`}])
           })
         }
       }

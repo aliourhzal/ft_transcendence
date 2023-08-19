@@ -13,7 +13,7 @@ interface SocketComponentProps {
 
 const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRooms, setInfoUpdate, _notification, setConvs } ) => {
   
-  const { userData, setShowConv } = useContext(Context)
+  const { userData, setShowConv, setChatBoxMessages } = useContext(Context)
 
   const promoteUser = (res) => {
     var _promotedUser = rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.newAdmin.userId)
@@ -45,18 +45,18 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
   const kickUser = (res) => {
     console.log(res)
     setRooms((_rooms: Room[]) => {
-      var current_room = _rooms.find(o => o.name === res.roomId.room_name)
-      var userToBeKicked = current_room.users.find(o => o.id === res.kickedUser.userId)
-      var currentRoomUsers = _rooms.find(o => o.name === res.roomId.room_name).users
-      currentRoomUsers.splice(currentRoomUsers.indexOf(userToBeKicked), 1)
-      if (res.kickedUser.userId === userData.id) {
-        _rooms.splice(_rooms.indexOf(current_room), 1)
-        _notification(`You have been kicked from '${res.roomId.room_name}'`, "bad")
-        setShowConv(false)
-      }
-      else
-        _notification(`"${userToBeKicked.nickName}" has been kicked from '${res.roomId.room_name}'`, "good")
-      setConvs((_convs) => {
+    var current_room = _rooms.find(o => o.name === res.roomId.room_name)
+    var userToBeKicked = current_room.users.find(o => o.id === res.kickedUser.userId)
+    if (res.kickedUser.userId != userData.id)
+      _notification(`"${userToBeKicked.nickName}" has been kicked from '${res.roomId.room_name}'`, "good")
+    var currentRoomUsers = _rooms.find(o => o.name === res.roomId.room_name).users
+    currentRoomUsers.splice(currentRoomUsers.indexOf(userToBeKicked), 1)
+    if (res.kickedUser.userId === userData.id) {
+      _notification(`You have been kicked from '${res.roomId.room_name}'`, "bad")
+      _rooms.splice(_rooms.indexOf(current_room), 1)
+      setShowConv(false)
+    }
+    setConvs((_convs) => {
         _convs = [...rooms]
         return _convs
       })
@@ -64,6 +64,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
     })
     setInfoUpdate(old => !old)
   }
+
   const changeRoomName = (res) => {
     console.log(res.newRoomName, res.oldRoomName)
     setRooms( (_rooms: Room[]) => {
@@ -77,6 +78,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
     setInfoUpdate(old => !old)
     _notification(`Name of room changed from '${res.oldRoomName}' to '${res.newRoomName}'`, "good")
   }
+
   const changeRoomPass = (res) => {
     _notification(`'${res.room_name}' password changed !`, "good")
   }

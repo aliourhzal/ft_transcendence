@@ -124,7 +124,12 @@ export default function Chat() {
 	
 	const [showConv, setShowConv] = useState(false)
 
-	const [activeUserConv, setActiveUserConv] = useState<conversation | undefined>(undefined)
+	const [activeUserConv, setActiveUserConv] = useState<conversation | undefined>({
+		name: '',
+		photo: '',
+		lastmsg: '', 
+		id: 0,
+	})
 
 	const [showSearchUsersForm, setShowSearchUsersForm] = useState(false)
 
