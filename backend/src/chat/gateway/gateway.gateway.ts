@@ -126,7 +126,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                     if(this.soketsId[i].userId === userInRoom.userId)
                                     {
                                         this.server.to(this.soketsId[i].socketIds).emit("new-room",{room  , usersInroom , userInfos: await this.utils.getUserInfosInRoom(room.room.id)});
-                                        // this.server.to(this.soketsId[i].socketIds).emit("new-room",{room  , usersInRoom: await this.utils.getUsersInRooms(room['id']) , userInfos: await this.utils.getUserInfosInRoom(room.room.id)});
                                     }
                                 }
                             }
@@ -832,13 +831,13 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                 const banExpiresAt = new Date(Date.now() + (dto.duration - 3500100) ); // because date of now less then 1h
                                
                                 // set exporation time
+                                const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
+                                
                                 const   bannedUser = await this.roomService.setExpirention(banExpiresAt, dto.bannedUserId , rtn.room.id );
-                          
                                 
                                 await this.roomService.removeUserFromRoom(rtn.room.id, rtn.usersType.usersType[1].userId);
 
                                 
-                                const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
 
                                 for(const userInRoom of usersInroom)
                                 {
