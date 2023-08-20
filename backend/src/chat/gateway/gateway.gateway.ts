@@ -855,11 +855,12 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                             }
                             else if(dto.duration < 0)// banned for unlimeted time and remove her mesasges
                             {
+                                const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
+                                
                                 const   bannedUser =  await this.roomService.banUserForEver(dto.bannedUserId, rtn.room.id);
 
                                 await this.roomService.removeUserFromRoom(rtn.room.id, rtn.usersType.usersType[1].userId);
 
-                                const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
                                 
                                 for(const userInRoom of usersInroom)
                                 {
@@ -928,23 +929,55 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         {
                             if(rtn.usersType.usersType[0].userType === 'OWNER')
                             { 
-                                await this.roomService.removeUserFromRoom(rtn.room.id, user['sub']);
+                                const leavedUser:any = await this.roomService.removeUserFromRoom(rtn.room.id, user['sub']);
             
                                 let newOwner:any = await this.roomService.getFirstUser('ADMIN') // get first admin if found it
         
+                                const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
+
                                 if(!newOwner) // if not found an admin
                                 {
                                     newOwner = await this.roomService.getFirstUser('USER') // will search for the first user in the room
             
                                     await this.roomService.setNewOwner(rtn.room.id, newOwner.userId) // set first user in the room as owner
+                                    // roomName and 
                                     
-                                    return ;
+                                    
+                                    usersInroom.push(leavedUser.kickedUser);
+                                    
+                                    for(const userInRoom of usersInroom)
+                                    {
+                                        for (let i = 0; i < this.soketsId.length; i++) 
+                                        {
+                                            if(this.soketsId[i].userId === userInRoom.userId)
+                                            {
+                                                this.server.to(this.soketsId[i].socketIds).emit("onLeave",{ roomId: rtn.room , newOwner , leavedUser});
+                                            } 
+                                        }
+                                    }
+                                    
                                 }
-                                await this.roomService.setNewOwner(rtn.room.id, newOwner.userId) // set this first admin as the owne
+                                else
+                                {
+                                    usersInroom.push(leavedUser.kickedUser);
+                                        
+                                    const newOwner_ = await this.roomService.setNewOwner(rtn.room.id, newOwner.userId) // set this first admin as the owne
+                                    
+                                    for(const userInRoom of usersInroom)
+                                    {
+                                        for (let i = 0; i < this.soketsId.length; i++) 
+                                        {
+                                            if(this.soketsId[i].userId === userInRoom.userId)
+                                            {
+                                                this.server.to(this.soketsId[i].socketIds).emit("onLeave",{ roomId: rtn.room , newOwner : newOwner_, leavedUser});
+                                            } 
+                                        }
+                                    }
+    
+                                }
                             }
                             else
                             {
-                                // check here if banned
                                 await this.roomService.removeUserFromRoom(rtn.room.id, user['sub']); // if admin or user leave 
                             }      
                         }
