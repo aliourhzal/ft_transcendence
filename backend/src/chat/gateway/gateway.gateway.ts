@@ -935,18 +935,25 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                             if(rtn.usersType.usersType[0].userType === 'OWNER')
                             { 
 
-                                let firstUser : any = await this.roomService.getFirstUserInRoom(rtn.room.id, 'ADMIN') // get first admin if found it
+                                const firstUser : any = await this.roomService.getFirstUserInRoom(rtn.room.id, 'ADMIN') // get first admin if found it
                                 
                                 let newOwner:any;
 
                                 
                                 if(!firstUser) // if no admin found
                                 {
-                                    firstUser = await this.roomService.getFirstUserInRoom(rtn.room.id, 'USER')
+                                    const firstUser = await this.roomService.getFirstUserInRoom(rtn.room.id, 'USER')
+
+                                    if(!firstUser)
+                                    {
+                                        await this.roomService.removeRoom(rtn.room.id)
+                                        
+                                        return;
+                                    }
 
                                     newOwner =  await this.roomService.setNewOwner(rtn.room.id, firstUser.userId);
                                     
-                                    console.log(newOwner)
+                                  
 
                                     for(const userInRoom of usersInroom)
                                     {
@@ -958,7 +965,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                             } 
                                         }
                                     }
-
+                                    if(!await this.roomService.doesRoomHaveUsers(rtn.room.id)) {
+                                        console.log("yo")
+                                        await this.roomService.removeRoom(rtn.room.id)
+                                    }
                                 }
                                 else
                                 {
@@ -974,14 +984,17 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                             } 
                                         }
                                     }
-
+                                    if(!await this.roomService.doesRoomHaveUsers(rtn.room.id)) {
+                                        console.log("yo")
+                                        await this.roomService.removeRoom(rtn.room.id)
+                                    }
                                 }
 
 
                             }
                             else
                             {
-                                
+                                console.log('first')
                                 for(const userInRoom of usersInroom)
                                 {
                                     for (let i = 0; i < this.soketsId.length; i++) 
@@ -992,10 +1005,16 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                         } 
                                     }
                                 }
+                              
+                                if(!await this.roomService.doesRoomHaveUsers(rtn.room.id)) {
+                                    console.log("yo")
+                                    await this.roomService.removeRoom(rtn.room.id)
+                                }
+
                             }      
                         }
                         else{
-                            // remove room
+                            await this.roomService.removeRoom(rtn.room.id)
                         }
                     }  
                 }

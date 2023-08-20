@@ -5,7 +5,7 @@ import { userInfo } from "os"
 import Search from "./search"
 
 const ConvList = () => {
-    const {socket, set_room_created, rooms, userData, convs, setConvs, _notification, setChatBoxMessages, set_new_msg_notif, new_msg_notif } = useContext(Context)
+    const {socket, set_room_created, rooms, userData, convs, setConvs, _notification, setChatBoxMessages } = useContext(Context)
     const [updateList, setUpdateList] = useState(false)
 
     const fillUserList = (listOfRoomsOfUser) => {
@@ -105,7 +105,7 @@ const ConvList = () => {
       <>
         <Search users={convs} />
         <div className='group left-[10%] flex-col bg-transparent w-full h-[80%] mt-8 overflow-hidden overflow-y-scroll'>
-            {convs.map ((item:conversation) =>  (<ConvBox key={gimmeRandom()} data={item} set_new_msg_notif={set_new_msg_notif} new_msg_notif={new_msg_notif} />))}
+            {convs.map ((item:conversation) =>  (<ConvBox key={gimmeRandom()} data={item} />))}
         </div>
       </>
     )

@@ -113,11 +113,18 @@ export class RoomsService
 
     // ---------------------------------------------------------Set Roles Of Rooms ---------------------------------------------- //
 
-        
+    async removeRoom(roomId: string) 
+    {
+        await this.prisma.room.delete({
+            where : {
+                id: roomId,
+            }
+        })
+    }
 
     async setNewOwner(roomId: string, newOwnerId:string)
     {
-        await this.prisma.joinedTable.update({
+        return await this.prisma.joinedTable.update({
             where: {
                 userId_roomId: {
                     userId: newOwnerId,

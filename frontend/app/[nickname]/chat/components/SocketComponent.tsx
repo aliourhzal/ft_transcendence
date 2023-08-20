@@ -89,15 +89,22 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
   const leaveUser = (res) => {
     console.log("leave", res)
     const userToRemoveId = res.leavedUser.kickedUser.userId
-    const newOwnerId = res.newOwner.userId
+    const newOwnerId = res.newOwner
     const room = rooms.find(o => o.name === res.roomId.room_name)
-    setRooms(_rooms => {
-      if (userData.nickname === room.users.find(o => o.id === userToRemoveId))
+    console.log(userToRemoveId)
+    console.log(newOwnerId)
+    console.log(room)
+    setRooms((_rooms:Room[]) => {
+      if (userData.nickname === room.users.find(o => o.id === userToRemoveId).nickName) {
+        if (newOwnerId)
+          _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === newOwnerId.userId).type = 'OWNER'
         _rooms.splice(_rooms.indexOf(room), 1)
+      }
       else {
-        var _users = _rooms.find(room).users
+        var _users = _rooms.find(o => o.name === res.roomId.room_name).users
         _users.splice(_users.indexOf(_users.find(o => o.id === userToRemoveId)), 1)
-        _users.find(o => o.id === newOwnerId).type = 'OWNER'
+        if (newOwnerId)
+          _users.find(o => o.id === newOwnerId.userId).type = 'OWNER'
       }
       setConvs([..._rooms])
       return _rooms

@@ -10,18 +10,16 @@ import { getCookie } from '../../layout'
 
 interface ConvBoxProps {
     data : conversation
-    set_new_msg_notif: any
-    new_msg_notif: {state: boolean, name: string}
 }
 
 const ConvBox: React.FC<ConvBoxProps> = (data) => {
 
-  const {setShowConv, activeUserConv, setActiveUserConv, setChatBoxMessages, notify_conv_msg, new_msg_notif} = useContext(Context)
+  const {setShowConv, activeUserConv, setActiveUserConv, setChatBoxMessages} = useContext(Context)
   const handleClick = async () => {
     setShowConv(true)
     setActiveUserConv(data.data)
-    if (new_msg_notif.name == activeUserConv.name)
-      notify_conv_msg(false, '')
+    // if (new_msg_notif.name == activeUserConv.name)
+    //   notify_conv_msg(false, '')
     try {
       await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomName:data.data.name}, {
         withCredentials: true,
@@ -59,9 +57,9 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
         // activeDiv(e.currentTarget);
         // scrollToBottom()
       }}>
-        {data.new_msg_notif.state == true && data.new_msg_notif.name == data.data.name && <div className='absolute z-0 h-[100px] w-full flex flex-col items-end justify-center bg-transparent'>
+        {/* {data && <div className='absolute z-0 h-[100px] w-full flex flex-col items-end justify-center bg-transparent'>
           <span className='mx-5 animate-ping inline-flex w-2 h-2 rounded-full bg-blueStrong z-10 opacity-90'></span>
-        </div>}
+        </div>} */}
         <div className="left-[30%] top-[25%] absolute text-gray-200 font-medium">{data.data.name}</div>
         <Avatar pointer zoomed text={data.data.name} bordered color={"gradient"} alt={data.data.name} className="w-auto h-auto left-[6%] top-[30%] absolute"
           src={data.data.photo} />
