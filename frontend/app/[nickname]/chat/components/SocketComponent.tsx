@@ -16,6 +16,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
   const { userData, setShowConv, setChatBoxMessages } = useContext(Context)
 
   const promoteUser = (res) => {
+    console.log('promote')
     var _promotedUser = rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.newAdmin.userId)
     setRooms((_rooms: Room[]) => {
       _promotedUser.type = 'ADMIN'
@@ -29,7 +30,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
   }
   
   const demoteUser = (res) => {
-    console.log(res)
+    console.log('demote')
     var _demotedUser = rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.domotedAdmin.userId)
     setRooms((_rooms: Room[]) => {
       _demotedUser.type = 'USER'
@@ -43,7 +44,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
   }
   
   const kickUser = (res) => {
-    console.log(res)
+    console.log('kick')
     setRooms((_rooms: Room[]) => {
     var current_room = _rooms.find(o => o.name === res.roomId.room_name)
     var userToBeKicked = current_room.users.find(o => o.id === res.kickedUser.userId)
@@ -66,7 +67,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
   }
 
   const banUser = (res) => {
-    console.log(res)
+    console.log('ban')
     setRooms((_rooms: Room[]) => {
     var current_room = _rooms.find(o => o.name === res.roomId.room_name)
     var userToBeKicked = current_room.users.find(o => o.id === res.bannedUser.userId)
@@ -79,23 +80,21 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
       _rooms.splice(_rooms.indexOf(current_room), 1)
       setShowConv(false)
     }
-    setConvs((_convs) => {
-        _convs = [...rooms]
-        return _convs
-      })
+    setConvs([...rooms])
       return _rooms
     })
     setInfoUpdate(old => !old)
   }
 
+  const leaveUser = (res) => {
+    console.log("leave", res)
+  }
+
   const changeRoomName = (res) => {
-    console.log(res.newRoomName, res.oldRoomName)
+    console.log('change name')
     setRooms( (_rooms: Room[]) => {
       _rooms.find(o => o.name === res.oldRoomName).name = res.newRoomName
-      setConvs((_convs) => {
-        _convs = [...rooms]
-        return _convs
-      })
+      setConvs([...rooms])
       return _rooms
     })
     setInfoUpdate(old => !old)
@@ -103,16 +102,18 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
   }
 
   const changeRoomPass = (res) => {
+    console.log("change pass")
     _notification(`'${res.room_name}' password changed !`, "good")
   }
 
   useEffect (() => {
-    socket.on('onPromote', (res) => {console.log('promote'), promoteUser(res)})
-    socket.on('onDemote', (res) => {console.log('demote'), demoteUser(res)})
-    socket.on('onKick', (res) => {console.log('kick'), kickUser(res)})
-    socket.on('onBan', (res) => {console.log('ban'), banUser(res)})
-    socket.on('change-room-name', (res) => {console.log('change name'), changeRoomName(res)})
-    socket.on('change-room-password', (res) => {console.log('change pass'), changeRoomPass(res)})
+    socket.on('onPromote', promoteUser)
+    socket.on('onDemote', demoteUser)
+    socket.on('onKick', kickUser)
+    socket.on('onBan', banUser)
+    socket.on('onLeave', leaveUser)
+    socket.on('change-room-name', changeRoomName)
+    socket.on('change-room-password', changeRoomPass)
 }, []) 
 
   return (

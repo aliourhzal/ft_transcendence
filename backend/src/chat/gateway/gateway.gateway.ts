@@ -951,6 +951,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                         {
                                             if(this.soketsId[i].userId === userInRoom.userId)
                                             {
+                                                console.log("sent")
                                                 this.server.to(this.soketsId[i].socketIds).emit("onLeave",{ roomId: rtn.room , newOwner , leavedUser});
                                             } 
                                         }
@@ -980,6 +981,9 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                             {
                                 await this.roomService.removeUserFromRoom(rtn.room.id, user['sub']); // if admin or user leave 
                             }      
+                        }
+                        else{
+                            // remove room
                         }
                     }  
                 }

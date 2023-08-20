@@ -60,7 +60,6 @@ export const getUsersInfo = (users) => {
 	  }[] = []
 	// console.log(users)
 	users.map( (user) => {
-		console.log(user, "*/*/**/*")
 		if (user.isBanned === 'UNBANNED')
 		{
 			_users.push(
