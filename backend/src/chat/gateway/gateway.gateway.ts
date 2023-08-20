@@ -927,25 +927,27 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                     {
                         if(await this.roomService.doesRoomHaveUsers(rtn.room.id))
                         {
+                            
                             if(rtn.usersType.usersType[0].userType === 'OWNER')
                             { 
-                                const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
-                                
                                 const leavedUser:any = await this.roomService.removeUserFromRoom(rtn.room.id, user['sub']);
-            
-                                let newOwner:any = await this.roomService.getFirstUser('ADMIN') // get first admin if found it
-        
 
-                                if(!newOwner) // if not found an admin
+                                const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
+                               
+                                // const firstUser = await this.roomService.getFirstUserInRoom(rtn.room.id, 'USER')
+
+                                let firstUser:any = await this.roomService.getFirstUserInRoom(rtn.room.id, 'ADMIN') // get first admin if found it
+                                
+                                let newOwner:any;
+
+                                usersInroom.push(leavedUser.kickedUser);
+                                
+                                if(!firstUser) // if no admin found
                                 {
-                                    newOwner = await this.roomService.getFirstUser('USER') // will search for the first user in the room
-            
-                                    await this.roomService.setNewOwner(rtn.room.id, newOwner.userId) // set first user in the room as owner
-                                    // roomName and 
-                                    
-                                    
-                                    // usersInroom.push(leavedUser.kickedUser);
-                                    
+                                    firstUser = await this.roomService.getFirstUserInRoom(rtn.room.id, 'USER')
+
+                                    newOwner =  await this.roomService.setNewOwner(rtn.room.id, firstUser.userId);
+
                                     for(const userInRoom of usersInroom)
                                     {
                                         for (let i = 0; i < this.soketsId.length; i++) 
@@ -956,30 +958,43 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                             } 
                                         }
                                     }
-                                    
+
                                 }
                                 else
                                 {
-                                    // usersInroom.push(leavedUser.kickedUser);
-                                        
-                                    const newOwner_ = await this.roomService.setNewOwner(rtn.room.id, newOwner.userId) // set this first admin as the owne
-                                    
+                                    newOwner =  await this.roomService.setNewOwner(rtn.room.id, firstUser.userId);
                                     for(const userInRoom of usersInroom)
                                     {
                                         for (let i = 0; i < this.soketsId.length; i++) 
                                         {
                                             if(this.soketsId[i].userId === userInRoom.userId)
                                             {
-                                                this.server.to(this.soketsId[i].socketIds).emit("onLeave",{ roomId: rtn.room , newOwner : newOwner_, leavedUser});
+                                                this.server.to(this.soketsId[i].socketIds).emit("onLeave",{ roomId: rtn.room , newOwner , leavedUser});
                                             } 
                                         }
                                     }
-    
+
                                 }
+
+
+
+
+                                
+                                
+                                // console.log('------------------')
+                                
+                                // console.log(leavedUser)
+                                
+                                // console.log('------------------')
+                                
+                                // console.log(newOwner)
+
+
                             }
                             else
                             {
                                 await this.roomService.removeUserFromRoom(rtn.room.id, user['sub']); // if admin or user leave 
+                                
                             }      
                         }
                         else{

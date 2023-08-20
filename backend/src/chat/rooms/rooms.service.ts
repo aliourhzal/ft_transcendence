@@ -220,16 +220,16 @@ export class RoomsService
             return {kickedUser}
     } 
       
-    async   getFirstUser(userType_: UserType) {
-        
+    async getFirstUserInRoom(roomId: string, userType_: UserType) {
         return await this.prisma.joinedTable.findFirst({
             where: {
-              userType: userType_,
+                roomId,
+                userType: userType_,
             },
             orderBy: {
-              createdAt: 'asc'
+                createdAt: 'asc'
             }
-          });
+        });
     }
       
     async   doesRoomHaveUsers(roomId: string): Promise<boolean> {
