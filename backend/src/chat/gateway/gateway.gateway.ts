@@ -928,25 +928,25 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         if(await this.roomService.doesRoomHaveUsers(rtn.room.id))
                         {
                             
+                            const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
+                            
+                            const leavedUser : any = await this.roomService.removeUserFromRoom(rtn.room.id, user['sub']);
+                            
                             if(rtn.usersType.usersType[0].userType === 'OWNER')
                             { 
-                                const leavedUser:any = await this.roomService.removeUserFromRoom(rtn.room.id, user['sub']);
 
-                                const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
-                               
-                                // const firstUser = await this.roomService.getFirstUserInRoom(rtn.room.id, 'USER')
-
-                                let firstUser:any = await this.roomService.getFirstUserInRoom(rtn.room.id, 'ADMIN') // get first admin if found it
+                                let firstUser : any = await this.roomService.getFirstUserInRoom(rtn.room.id, 'ADMIN') // get first admin if found it
                                 
                                 let newOwner:any;
 
-                                usersInroom.push(leavedUser.kickedUser);
                                 
                                 if(!firstUser) // if no admin found
                                 {
                                     firstUser = await this.roomService.getFirstUserInRoom(rtn.room.id, 'USER')
 
                                     newOwner =  await this.roomService.setNewOwner(rtn.room.id, firstUser.userId);
+                                    
+                                    console.log(newOwner)
 
                                     for(const userInRoom of usersInroom)
                                     {
@@ -963,6 +963,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                 else
                                 {
                                     newOwner =  await this.roomService.setNewOwner(rtn.room.id, firstUser.userId);
+
                                     for(const userInRoom of usersInroom)
                                     {
                                         for (let i = 0; i < this.soketsId.length; i++) 
@@ -977,24 +978,20 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                 }
 
 
-
-
-                                
-                                
-                                // console.log('------------------')
-                                
-                                // console.log(leavedUser)
-                                
-                                // console.log('------------------')
-                                
-                                // console.log(newOwner)
-
-
                             }
                             else
                             {
-                                await this.roomService.removeUserFromRoom(rtn.room.id, user['sub']); // if admin or user leave 
                                 
+                                for(const userInRoom of usersInroom)
+                                {
+                                    for (let i = 0; i < this.soketsId.length; i++) 
+                                    {
+                                        if(this.soketsId[i].userId === userInRoom.userId)
+                                        {
+                                            this.server.to(this.soketsId[i].socketIds).emit("onLeave",{ roomId: rtn.room , newOwner : null , leavedUser  });
+                                        } 
+                                    }
+                                }
                             }      
                         }
                         else{
