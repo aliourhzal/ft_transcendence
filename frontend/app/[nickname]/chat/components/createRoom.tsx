@@ -71,7 +71,7 @@ const RoomForm = () => {
 
     return (
         <Popup isOpen={showForm} modalAppearance={hideForm}>
-            <div className='font-bold text-center text-3xl mb-2 drop-shadow-[0px_0px_5px_rgba(255,255,255,1)]'><h1>Create Chatroom</h1></div>
+            <div className='absolute top-[6%] text-center text-2xl mb-2 drop-shadow-[0px_0px_5px_rgba(150,150,150,0.7)]'><h1>Create Chatroom</h1></div>
             <form noValidate id="roomform" onSubmit={confirmForm}>
                 <div className="relative z-0 w-full mb-6 group">
                     <input aria-required='true' autoComplete='off' value={roomName} type="text" name="floating_text" id="floating_text" className="text-gray-300 block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required 

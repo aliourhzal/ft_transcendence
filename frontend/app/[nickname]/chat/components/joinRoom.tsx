@@ -32,7 +32,7 @@ const JoinRoomForm = () => {
 
   return (
     <Popup  isOpen={showJoinForm} modalAppearance={hideForm}>
-        <h1 className='text-center font-bold text-2xl mb-2 drop-shadow-[0px_0px_5px_rgba(255,255,255,1)]'>Join Chatroom</h1>
+        <h1 className='absolute top-[10%] text-center text-2xl mb-2 drop-shadow-[0px_0px_5px_rgba(150,150,150,0.7)]'>Join Chatroom</h1>
         <div className="relative z-0 w-full mb-6 group">
             <input value={name} autoComplete='off' aria-required='true' type="text" name="floating_text" id="floating_text" className=" text-gray-950 font-bold block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-black appearance-none focus:outline-none focus:ring-0 focus:border-blue-500 peer" placeholder=" " onChange={
                 (e) => setName(e.target.value)
