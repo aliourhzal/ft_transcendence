@@ -17,7 +17,7 @@ const Conversation = () => {
 
     const [msg_sender, set_msg_sender] = useState('')
 
-    const {setAlertNewMessage, scrollToBottom, showConv, setShowConv, activeUserConv, setRooms, chatBoxMessages, rooms, socket, userData, msg_sent, set_msg_sent, setConvs} = useContext(Context)
+    const {notify_conv_msg, setAlertNewMessage, scrollToBottom, showConv, setShowConv, activeUserConv, setRooms, chatBoxMessages, rooms, socket, userData, msg_sent, set_msg_sent, setConvs} = useContext(Context)
 
     // useEffect( () => {
     //   typeof window != 'undefined' ? (window.innerWidth <= 768 ? setDeviceType('small') : setDeviceType('normal')) : setDeviceType('normal')
@@ -35,6 +35,7 @@ const Conversation = () => {
     // }
     const sendMessage = async (e) => {
         e.preventDefault()
+        notify_conv_msg(true, activeUserConv.name)
         const msg = e.target[0].value.trim()
         if (msg != '') {
             socket.emit('send-message', {message:msg, roomName:activeUserConv.name})

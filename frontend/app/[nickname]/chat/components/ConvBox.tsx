@@ -10,14 +10,18 @@ import { getCookie } from '../../layout'
 
 interface ConvBoxProps {
     data : conversation
+    set_new_msg_notif: any
+    new_msg_notif: {state: boolean, name: string}
 }
 
 const ConvBox: React.FC<ConvBoxProps> = (data) => {
 
-  const {setShowConv, setActiveUserConv, setChatBoxMessages} = useContext(Context)
+  const {setShowConv, activeUserConv, setActiveUserConv, setChatBoxMessages, notify_conv_msg, new_msg_notif} = useContext(Context)
   const handleClick = async () => {
     setShowConv(true)
     setActiveUserConv(data.data)
+    if (new_msg_notif.name == activeUserConv.name)
+      notify_conv_msg(false, '')
     try {
       await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomName:data.data.name}, {
         withCredentials: true,
@@ -47,15 +51,20 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
     }
   }
 
+  
+
   return (
     <div className="convGroup z-0 bg-zinc-800 hover:bg-zinc-700 w-[70%] left-[15%] h-[100px] relative my-3 rounded-md active:bg-blue-500" onClick={(e) => {
         handleClick();
         // activeDiv(e.currentTarget);
         // scrollToBottom()
       }}>
+        {data.new_msg_notif.state == true && data.new_msg_notif.name == data.data.name && <div className='absolute z-0 h-[100px] w-full flex flex-col items-end justify-center bg-transparent'>
+          <span className='mx-5 animate-ping inline-flex w-2 h-2 rounded-full bg-blueStrong z-10 opacity-90'></span>
+        </div>}
         <div className="left-[30%] top-[25%] absolute text-gray-200 font-medium">{data.data.name}</div>
         <Avatar pointer zoomed text={data.data.name} bordered color={"gradient"} alt={data.data.name} className="w-auto h-auto left-[6%] top-[30%] absolute"
-            src={data.data.photo} />
+          src={data.data.photo} />
         <div className="left-[30%] top-[50%] absolute text-gray-200 text-opacity-70 font-normal">{
             data.data.lastmsg ? data.data.lastmsg.length > 15 ? data.data.lastmsg.substring(0, 15)+'...' : data.data.lastmsg : ''}</div>
         {/* <div className="left-[85%] top-[70%] lg:top-[50%] absolute text-gray-200 text-opacity-70 font-normal">10:30</div> */}

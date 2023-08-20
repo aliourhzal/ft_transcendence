@@ -11,11 +11,6 @@ const JoinRoomForm = () => {
     const [name, setName] = useState('')
     const [pass, setPass] = useState('')
 
-    // const selectDivToHide = (e) => {
-    //     if (e.target.id === 'big_div')
-    //         hideForm()
-    // }
-
     const hideForm = () => {
         setShowJoinForm(false)
         setName(''); setPass('')
