@@ -107,7 +107,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
             </div>
             {showUsersForm && <NewRoomUsers addUsers={addUsersToRoom} />}
             {showRoomEditForm && <EditRoom _setNewName={setNewName} _setNewPass={setNewPass} roomType={info.room.type} changeRoomType={changeRoomType}/>}
-            <div className='flex flex-col justify-center items-center overflow-y-scroll'>
+            <div className='flex flex-col justify-center items-center overflow-y-scroll overflow-x-hidden'>
                 {info.room.users.map(user => (
                         <div className='m-2 border-2 p-2 rounded-lg bg-slate-600 border-slate-500 w-full flex flex-col items-center justify-center' key={user.id}>
                             <div className='m-1 w-full flex justify-between items-center px-4 cursor-pointer' onClick={ () => {setShowOptions(old => !old)} }>
@@ -130,7 +130,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
             </div>
             <div className='w-full flex items-center justify-center'>
                 <button type="button" className="w-auto text-white bg-blueStrong hover:bg-red-300 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" onClick={
-                    () => { socket.emit('leave-room', { roomName: info.room.name}) }
+                    () => { socket.emit('leave-room', { roomName: info.room.name}); hide() }
                 }>Leave</button>
             </div>
         </Popup>

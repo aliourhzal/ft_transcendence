@@ -45,7 +45,6 @@ const RoomForm = () => {
                 type: res.room.room.roomType
             })
             set_room_created(old => !old)
-            setConvs([...rooms])
         })
     }, [])
     
