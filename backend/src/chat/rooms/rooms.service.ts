@@ -275,14 +275,33 @@ export class RoomsService
 
     async setExpirention(banExpiresAt : any , userId:string,roomId:string  )
     {
-        return await this.prisma.bannedUsersForLimmitedTime.create({
-            data: {
-              user: { connect: { id: userId } },
-              room: { connect: { id: roomId } },
-              isBanned: 'BANNEDFORLIMMITED_TIME',
-              banExpiresAt,
-            },
-        });
+        const existingBan = await this.prisma.bannedUsersForLimmitedTime.findUnique({
+            where: { userId_roomId: { userId, roomId } },
+          });
+        
+          if (existingBan) 
+          {
+            return await this.prisma.bannedUsersForLimmitedTime.update({
+              where: { userId_roomId: { userId, roomId } },
+              data: {
+                isBanned: 'BANNEDFORLIMMITED_TIME',
+                banExpiresAt,
+              },
+            });
+          } 
+          else 
+          {
+            // Create a new record
+            return await this.prisma.bannedUsersForLimmitedTime.create({
+              data: {
+                user: { connect: { id: userId } },
+                room: { connect: { id: roomId } },
+                isBanned: 'BANNEDFORLIMMITED_TIME',
+                banExpiresAt,
+              },
+            });
+          }
+        
     }
     
     async makeUserUnbanned( userId:string, roomId:string  )

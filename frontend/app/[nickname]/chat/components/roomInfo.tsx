@@ -130,7 +130,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
             </div>
             <div className='w-full flex items-center justify-center'>
                 <button type="button" className="w-auto text-white bg-blueStrong hover:bg-red-300 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" onClick={
-                    () => { socket.emit('leave-room', { roomId: info.room.id, userId: info.userData.nickname}) }
+                    () => { socket.emit('leave-room', { roomName: info.room.name}) }
                 }>Leave</button>
             </div>
         </Popup>

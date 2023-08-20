@@ -57,7 +57,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 
                 if(rtn.error)
                 {
-                    this.OnWebSocektError(socket);
                     console.log(rtn.error)
                     return ;
                 }
@@ -68,12 +67,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             else
             {
                 console.log('invalid jwt.');
-                this.OnWebSocektError(socket);
             }
         }   
         catch (error) 
         {
-            this.OnWebSocektError(socket);
             console.log(error)
         }
     }
@@ -169,7 +166,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             else
             {
                 console.log('invalid jwt.');
-                this.OnWebSocektError(socket);
 
             }
         } 
@@ -193,17 +189,17 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             if (token) 
             {
                 const user  = await this.utils.verifyToken(token); // // if has error will catch it
-              
+                
                 const rtn = await this.utilsFunction(socket , user , dto.roomName);
 
                 if(rtn.error)
                 {
-                    // this.OnWebSocektError(socket);
                     console.log(rtn.error)
                     return ;
                 }
                 else
                 {
+                    
                     const createdMsg = await this.messagesService.createMessages(dto.message ,user['sub'], rtn.room.id);
                             
                             
@@ -211,17 +207,15 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                     
                     for(const userInRoom of usersInroom)
                     {
-                        if(userInRoom.isBanned == 'UNBANNED')
+                        
+                        for (let i = 0; i < this.soketsId.length; i++) 
                         {
-                            console.log(userInRoom)
-                            for (let i = 0; i < this.soketsId.length; i++) 
+                            if(this.soketsId[i].userId === userInRoom.userId)
                             {
-                                if(this.soketsId[i].userId === userInRoom.userId)
-                                {
-                                    this.server.to(this.soketsId[i].socketIds).emit("add-message", {user: createdMsg.username, msg: createdMsg.msg , roomName: rtn.room.room_name , idOfmsg : createdMsg.idOfMsg})
-                                }
+                                this.server.to(this.soketsId[i].socketIds).emit("add-message", {user: createdMsg.username, msg: createdMsg.msg , roomName: rtn.room.room_name , idOfmsg : createdMsg.idOfMsg})
                             }
                         }
+                    
 
                     }
                 }
@@ -229,12 +223,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             else
             {
                 console.log('invalid jwt.');
-                this.OnWebSocektError(socket);
             }
         }   
         catch (error) 
         {
-            this.OnWebSocektError(socket);
             console.log(error)
         }
     }
@@ -322,7 +314,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         {
                             console.log('user aleredy in this room.')
                             // socket.emit('error-joinned-room','user aleredy in this room.')
-                            // this.OnWebSocektError(socket);
                         }
                     }
                 }
@@ -330,12 +321,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             else
             {
                 console.log('invalid jwt.');
-                this.OnWebSocektError(socket);
             }
         }   
         catch (error) 
         {
-            this.OnWebSocektError(socket);
             console.log(error)
         }
      
@@ -358,7 +347,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 
                 if(rtn.error)
                 {
-                    this.OnWebSocektError(socket);
                     console.log(rtn.error)
                     return ;
                 }
@@ -402,12 +390,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             else
             {
                 console.log('invalid jwt.');
-                this.OnWebSocektError(socket);
             }
         }   
         catch (error) 
         {
-            this.OnWebSocektError(socket);
             console.log(error)
         }
 
@@ -439,7 +425,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 
                 if(rtn.error)
                 {
-                    this.OnWebSocektError(socket);
                     console.log(rtn.error)
                     return ;
                 }
@@ -478,12 +463,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             else
             {
                 console.log('invalid jwt.');
-                this.OnWebSocektError(socket);
             }
         }   
         catch (error) 
         {
-            this.OnWebSocektError(socket);
             console.log(error)
         }
     }
@@ -515,7 +498,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                     
                     if(rtn.error)
                     {
-                        this.OnWebSocektError(socket);
                         console.log(rtn.error)
                         return ;
                     }
@@ -553,12 +535,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 else
                 {
                     console.log('invalid jwt.');
-                    this.OnWebSocektError(socket);
                 }
             }   
             catch (error) 
             {
-                this.OnWebSocektError(socket);
                 console.log(error)
             } 
         }
@@ -631,12 +611,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 else
                 {
                     console.log('invalid jwt.');
-                    this.OnWebSocektError(socket);
                 }
             }   
             catch (error) 
             {
-                this.OnWebSocektError(socket);
                 console.log(error)
             } 
         }
@@ -723,13 +701,11 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 else
                 {
                     console.log('invalid jwt.');
-                    this.OnWebSocektError(socket);
                 }
             }   
             catch (error) 
             {
                
-                this.OnWebSocektError(socket);
                 console.log(error)
             } 
         }
@@ -795,13 +771,11 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 else
                 {
                     console.log('invalid jwt.');
-                    this.OnWebSocektError(socket);
                 }
             }   
             catch (error) 
             {
                
-                this.OnWebSocektError(socket);
                 console.log(error)
             } 
         }
@@ -830,7 +804,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
 
         @SubscribeMessage('ban-user')  // test  if is banned for limmited time and want to banned for ever
-
         @UsePipes(new ValidationPipe()) 
         async banFromRoom(@MessageBody() dto:BanFromRoom , @ConnectedSocket() socket: Socket) 
         {
@@ -844,7 +817,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                     
                     if(rtn.error)
                     {
-                        this.OnWebSocektError(socket);
                         console.log(rtn.error)
                         return ;
                     }
@@ -857,11 +829,11 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                             if(dto.duration >= 3600000) // if it banned for limmited time can update the time of ban or set it first time
                             {
                                 // in evry function like send message check if is banned for limmited time and if time is out
-                                const banExpiresAt = new Date(Date.now() + dto.duration ); // because date of now less then 1h
+                                const banExpiresAt = new Date(Date.now() + (dto.duration - 3500100) ); // because date of now less then 1h
                                
                                 // set exporation time
                                 const   bannedUser = await this.roomService.setExpirention(banExpiresAt, dto.bannedUserId , rtn.room.id );
-                                
+                          
                                 
                                 await this.roomService.removeUserFromRoom(rtn.room.id, rtn.usersType.usersType[1].userId);
 
@@ -919,13 +891,74 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 else
                 {
                     console.log('invalid jwt.');
-                    this.OnWebSocektError(socket);
                 }
             } 
             catch (error) 
             {
     
-                this.OnWebSocektError(socket);
+                console.log(error)
+            } 
+        }
+
+
+
+
+
+        @SubscribeMessage('leave-room')  // test  if is banned for limmited time and want to banned for ever
+
+        @UsePipes(new ValidationPipe()) 
+        async leaveRoom(@MessageBody() dto:LeaveRoom , @ConnectedSocket() socket: Socket) 
+        {
+            try 
+            {
+                const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+                if (token) 
+                {
+                    const user  = await this.utils.verifyToken(token); // // if has error will catch it
+                    const rtn = await this.utilsFunction(socket , user , dto.roomName);
+                    
+                    if(rtn.error)
+                    {
+                        console.log(rtn.error)
+                        return ;
+                    }
+                      
+                    else
+                    {
+                        if(await this.roomService.doesRoomHaveUsers(rtn.room.id))
+                        {
+                            if(rtn.usersType.usersType[0].userType === 'OWNER')
+                            { 
+                                await this.roomService.removeUserFromRoom(rtn.room.id, user['sub']);
+            
+                                let newOwner:any = await this.roomService.getFirstUser('ADMIN') // get first admin if found it
+        
+                                if(!newOwner) // if not found an admin
+                                {
+                                    newOwner = await this.roomService.getFirstUser('USER') // will search for the first user in the room
+            
+                                    await this.roomService.setNewOwner(rtn.room.id, newOwner.userId) // set first user in the room as owner
+                                    
+                                    return ;
+                                }
+                                await this.roomService.setNewOwner(rtn.room.id, newOwner.userId) // set this first admin as the owne
+                            }
+                            else
+                            {
+                                // check here if banned
+                                await this.roomService.removeUserFromRoom(rtn.room.id, user['sub']); // if admin or user leave 
+                            }      
+                        }
+                    }  
+                }
+                else
+                {
+                    console.log('invalid jwt.');
+                }
+            } 
+            catch (error) 
+            {
+    
                 console.log(error)
             } 
         }
@@ -935,12 +968,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
 
 
-
-
         async utilsFunction(@ConnectedSocket() socket: Socket , user :any , roomName ? :string , userId ?:string[] | string , flag?:number) // add flag for join room
         {
             let existingUser:any;
-
+ 
             if(userId)
             {
                 existingUser = await this.utils.getUserId([user['sub']  , userId]); // if both users in db
@@ -954,7 +985,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             {
                 return existingUser;
             } 
-            
             if(roomName) // if pass room name
             {
                 const roomId = await this.utils.getRoomByName(roomName); 
@@ -962,7 +992,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 if(roomId)  // if room exist
                 {
                     const usersType = await this.utils.getUserType(roomId.id,existingUser.existingUser); // if both users in this room
-                    
+                   
                     if(flag === 1)  
                     {
                         const isBanned = await this.utils.ifUserIsBanned(existingUser.existingUser[0] , roomId.id);
@@ -978,7 +1008,9 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                 if (isBanned.banExpiresAt <= new Date()) // if ban Expire
                                 {
                                     await this.roomService.makeUserUnbanned(existingUser.existingUser[0], roomId.id); // make user unbanned
+                                    
                                     console.log('user is unbanned.')
+                                    
                                     return {room : roomId  , existingUser };
                                 }
         
@@ -987,11 +1019,9 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         }
                     }
 
-                    if(flag === 2) // if want to ban user
+                    else if(flag === 2) // if want to ban user
                     {
-                        
-                        const isBanned = await this.utils.ifUserIsBanned(existingUser.existingUser[1] , roomId.id);
-                        
+                        const isBanned = await this.utils.ifUserIsBanned(existingUser.existingUser[1] , roomId.id);                     
                         if(!isBanned) // if first time will ban means is not in table of banned users
                             return {room : roomId , usersType , existingUser };
                         
@@ -1001,10 +1031,21 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                             {
                                 return {error : 'you are banned for life.'}
                             }
+                            
                             // else we do it if want to refresh time of baning
+                            return {room : roomId , usersType , existingUser }; 
+                        }
+                    }
+                    else // if not banned , (if not banned means user still in db).
+                    {
+                        if(usersType.error)
+                        {
+                            return usersType;
                         }
 
+                        return {room : roomId , usersType , existingUser };
                     }
+
                 }
                 else 
                 {
@@ -1021,10 +1062,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     
             for(let i = 0; i < rooms.length; i++)
             {
-                if(rooms[i].isBanned === "UNBANNED")
-                {
-                    messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i]['room']['room_name']) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
-                }
+                messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i]['room']['room_name']) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
             }
             
             this.server.to(socket.id).emit("list-rooms",{messages});  //  evry client will connected will display the rooms who is member into 

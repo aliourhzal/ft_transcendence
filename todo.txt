@@ -45,122 +45,32 @@
 - if is muted cannot send message , should wait after finish time of muted
 
 
- @Post('/setOtherAasAdministrators') // use dto
-    async setOtherAasAdministrators(@Req() request: Request , @Body() dto:SetOtherAasAdministrators, @Res() res:any)
-    {
-        try 
-        {
-            const token = this.utils.verifyJwtFromHeader(request.headers['authorization']);
-
-            if (token) 
-            {
-                const user = await this.utils.verifyToken(token)
-              
-                if (user) 
-                {
-                    const existingUsers = await this.utils.getUserId([user['sub'] , dto.newAdminId]); // if both users is is exist
-        
-                    if(existingUsers.error)
-                        return res.status(404).send(existingUsers.error);
-        
-                    const roomId = await this.utils.getRoomIdByName(dto.roomName);
-        
-                    if(roomId)  
-                    {
-                        // here check if the both users in this room and cannot set same user as admin
-                        const usersType = await this.utils.getUserType(roomId,existingUsers.existingUser);
-                        
-                        if(usersType.error)
-                            return res.status(404).send(usersType.error);
-                        
-                        if(usersType.usersType[1].isBanned)
-                        {
-                            return res.status(404).send('you are banned.');
-                        }
-                        
-                        if(usersType.usersType[0].userType !== 'USER') // if current user is admin or owner in this case can set admins
-                        { 
-                            // here before set admin check if it is aleredy admin or an  user
-                            const rtn = await this.roomService.setNewAdmins(roomId, usersType.usersType[1]);
-
-                            if(rtn.error)
-                                return res.status(404).send(rtn.error);
-
-                            return res.status(200).send(rtn.ok);
-                        }
-
-                        return res.status(404).send('dont have the permission to set an admin.');
-                    }
-                    return res.status(404).send('room not found.');
-                }
-            }    
-            else
-            {
-                return res.status(404).send('invalid jwt.')
-            }
-        } 
-        catch (error) 
-        {
-            console.log('from set()')
-            return res.status(500).json({ error: error.message });
-        }
-
-    }
 
 
 
+- test ban normal user for limmited time and forever.
+
+- test when send message in room banned user not recsive it.
+
+- test (postman) send message by banned user in room.
+
+- test join to room first time.  *
+
+- test if this user is banned from the room and want to join another time (in banned and unbanned). *
+
+- test ban refresh time of banned.
+
+- test try ban owner.
+
+- test ban admin.
+
+- test admin ban user.
 
 
+=> when first time join room some time dont displayed on the page of new joined member.
 
-if(flag === 2)
-                    {
-                        const isBanned = await this.utils.ifUserIsBanned(existingUser.existingUser[1]);
+=> hen banned user not removed from her page.
 
-                        if(isBanned[0].isBanned === 'BANNEDUNLIMMITED_TIME')
-                        {
-                            return {error : 'you are banned for life.'}
-                        }
-                        
-                        return {room : roomId , usersType , existingUser };
-                    }
-                    
-                    const isBanned = await this.utils.ifUserIsBanned(existingUser.existingUser[0]);
-                    
-                    if(!flag)
-                    {
-                        if(usersType.error)
-                        {
-                            return usersType;
-                        }
-                        
-                        if(isBanned)
-                        {
-                            if(isBanned[0].isBanned === 'BANNEDFORLIMMITED_TIME')
-                            {
-                                if (isBanned[0].banExpiresAt <= new Date()) 
-                                {
-                                    await this.roomService.makeUserUnbanned(existingUser.existingUser[0], roomId.id); // make user unbanned
-                                    return {ok : 'user is unbanned.'}
-                                }
-     
-                                return {error : 'user is banned for limmited time.'}
-                            }
-                        }
+=> after user finish banned time,  send message other user not recsive the messages (should select to room name). (in this case owner cannot send the message)
 
-                        return {room : roomId , usersType , existingUser };
-                    }
-                    else // for join room  and add new user to room because current user is not the room
-                    {
-                         
-                        if(isBanned[0].isBanned === 'BANNEDFORLIMMITED_TIME')
-                        {
-                            if (isBanned[0].banExpiresAt <= new Date()) 
-                            {
-                                await this.roomService.makeUserUnbanned(existingUser.existingUser[0], roomId.id); // make user unbanned
-                                return {ok : 'user is unbanned.'}
-                            }
-    
-                            return {error : 'user is banned for limmited time.'}
-                        }
-                        return {room : roomId  , existingUser };
-                    }
+=> emmit banned for ever

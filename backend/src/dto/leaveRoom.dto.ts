@@ -10,5 +10,6 @@ export class LeaveRoom {
     @IsNotEmpty()
     @IsString()
     roomName: string;
+
 }
  
