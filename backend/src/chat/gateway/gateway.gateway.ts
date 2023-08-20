@@ -929,11 +929,12 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         {
                             if(rtn.usersType.usersType[0].userType === 'OWNER')
                             { 
+                                const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
+                                
                                 const leavedUser:any = await this.roomService.removeUserFromRoom(rtn.room.id, user['sub']);
             
                                 let newOwner:any = await this.roomService.getFirstUser('ADMIN') // get first admin if found it
         
-                                const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
 
                                 if(!newOwner) // if not found an admin
                                 {
@@ -943,7 +944,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                     // roomName and 
                                     
                                     
-                                    usersInroom.push(leavedUser.kickedUser);
+                                    // usersInroom.push(leavedUser.kickedUser);
                                     
                                     for(const userInRoom of usersInroom)
                                     {
@@ -951,7 +952,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                         {
                                             if(this.soketsId[i].userId === userInRoom.userId)
                                             {
-                                                console.log("sent")
                                                 this.server.to(this.soketsId[i].socketIds).emit("onLeave",{ roomId: rtn.room , newOwner , leavedUser});
                                             } 
                                         }
@@ -960,7 +960,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                 }
                                 else
                                 {
-                                    usersInroom.push(leavedUser.kickedUser);
+                                    // usersInroom.push(leavedUser.kickedUser);
                                         
                                     const newOwner_ = await this.roomService.setNewOwner(rtn.room.id, newOwner.userId) // set this first admin as the owne
                                     
