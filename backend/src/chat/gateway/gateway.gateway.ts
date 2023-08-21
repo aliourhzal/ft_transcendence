@@ -25,6 +25,7 @@ import { RenameRoom } from 'src/dto/renameRoom.dto';
 import { ChangeRoomPassword } from 'src/dto/changeRoomPassword.dto';
 import { BanFromRoom } from 'src/dto/banFromRoom.dto';
 import { Mute } from 'src/dto/mute.dto';
+import { UserType } from '@prisma/client';
 
 @WebSocketGateway(3004)
 export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
@@ -178,7 +179,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
 
 
-    @SubscribeMessage('send-message') 
+    @SubscribeMessage('send-message') // check if user is muted
     @UsePipes(new ValidationPipe())
     async sendMessage(@MessageBody() dto: SendMessage , @ConnectedSocket() socket: Socket) 
     {
@@ -332,7 +333,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     }
 
 
-    @SubscribeMessage('user-promotion') 
+    @SubscribeMessage('user-promotion') // check if user is muted
     @UsePipes(new ValidationPipe()) 
     async UserPromotion(@MessageBody() dto:SetOtherAasAdministrators , @ConnectedSocket() socket: Socket) 
     { 
@@ -576,8 +577,21 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                             return ;
                         }
                          
+                        // check her if banned , if it is banned set it not banned and join it to room
+
+                        
                         if(userType.usersType[0] !== 'USER') // test one by one
                         {
+                            for(const userId of usersId.uniqUsers)  
+                            {
+                                const isBanned = await this.utils.ifUserIsBanned(userId , roomId.id);
+    
+                                if(isBanned) // if is banned make it not banned
+                                {
+                                    await this.roomService.makeUserUnbanned(isBanned.userId, roomId.id);
+                                }
+                            }                      
+                            
                             const newUsers = await this.roomService.linkBetweenUsersAndRooms(roomId.id, usersId.uniqUsers);
                             
                             const usersInroom = await this.utils.getUsersInRooms(roomId.id);
@@ -813,7 +827,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 if (token) 
                 {
                     const user  = await this.utils.verifyToken(token); // // if has error will catch it
-
                     const rtn = await this.utilsFunction(socket , user , dto.roomName , dto.bannedUserId , 2);
                     
                     if(rtn.error)
@@ -830,12 +843,12 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                             if(dto.duration >= 3600000) // if it banned for limmited time can update the time of ban or set it first time
                             {
                                 // in evry function like send message check if is banned for limmited time and if time is out
-                                const banExpiresAt = new Date(Date.now() + (dto.duration - 3500100) ); // because date of now less then 1h
+                                const banExpiresAt = new Date(Date.now() + dto.duration  ); // because date of now less then 1h
                                
                                 // set exporation time
                                 const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
                                 
-                                const   bannedUser = await this.roomService.setExpirention(banExpiresAt, dto.bannedUserId , rtn.room.id );
+                                const   bannedUser = await this.roomService.setBanExpirention(banExpiresAt, dto.bannedUserId , rtn.room.id );
                                 
                                 await this.roomService.removeUserFromRoom(rtn.room.id, rtn.usersType.usersType[1].userId);
 
@@ -902,117 +915,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             } 
         }
 
-        /*
-            * before mute:
-                - check if   user is exist
-                - check room if exsit
-                - check if   user in same room 
-                - check if current user is owner or admin
-                - check if who want to be mute is not the owner
 
-        */
-
-
-
-        @SubscribeMessage('mute-user')  // test  if is banned for limmited time and want to banned for ever
-        @UsePipes(new ValidationPipe()) 
-        async mute(@MessageBody() dto:Mute , @ConnectedSocket() socket: Socket) 
-        {
-            try 
-            {
-                const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
-                
-                if (token) 
-                {
-                    const user  = await this.utils.verifyToken(token); // // if has error will catch it
-
-                    const rtn = await this.utilsFunction(socket , user , dto.roomName , dto.mutedUserId , 3);
-                    
-                    if(rtn.error)
-                    {
-                        console.log(rtn.error)
-                        return ;
-                    }
-                      
-                //     else
-                //     {
-                //         if(rtn.usersType.usersType[0].userType !== 'USER' && rtn.usersType.usersType[1].userType !== 'OWNER') 
-                //         { 
-                            
-                //             if(dto.duration >= 3600000) // if it banned for limmited time can update the time of ban or set it first time
-                //             {
-                //                 // in evry function like send message check if is banned for limmited time and if time is out
-                //                 const banExpiresAt = new Date(Date.now() + (dto.duration - 3500100) ); // because date of now less then 1h
-                               
-                //                 // set exporation time
-                //                 const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
-                                
-                //                 const   bannedUser = await this.roomService.setExpirention(banExpiresAt, dto.bannedUserId , rtn.room.id );
-                                
-                //                 await this.roomService.removeUserFromRoom(rtn.room.id, rtn.usersType.usersType[1].userId);
-
-                                
-
-                //                 for(const userInRoom of usersInroom)
-                //                 {
-                //                     for (let i = 0; i < this.soketsId.length; i++) 
-                //                     {
-                //                         if(this.soketsId[i].userId === userInRoom.userId)
-                //                         {
-                //                             this.server.to(this.soketsId[i].socketIds).emit("onBan",{ roomId: rtn.room , bannedUser , duration : dto.duration});
-                //                         } 
-                //                     }
-                //                 }
-
-                //                 console.log('banned succufly')
-                            
-                //             }
-                //             else if(dto.duration < 0)// banned for unlimeted time and remove her mesasges
-                //             {
-                //                 const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
-                                
-                //                 const   bannedUser =  await this.roomService.banUserForEver(dto.bannedUserId, rtn.room.id);
-
-                //                 await this.roomService.removeUserFromRoom(rtn.room.id, rtn.usersType.usersType[1].userId);
-
-                                
-                //                 for(const userInRoom of usersInroom)
-                //                 {
-                //                     for (let i = 0; i < this.soketsId.length; i++) 
-                //                     {
-                //                         if(this.soketsId[i].userId === userInRoom.userId)
-                //                         {
-                //                             this.server.to(this.soketsId[i].socketIds).emit("onBan",{ roomId: rtn.room , bannedUser , duration : dto.duration});
-                //                         } 
-                //                     }
-                //                 }
-
-                //                 console.log('banned succufly')
-                            
-                //             }
-                //             else
-                //             {
-                //                 console.log('should ban from 1 hour to 3 days')
-                //             }
-                //         }
-                //         else
-                //         {
-                //             console.log('dont have the permission to set an admin.');
-                //             return ;
-                //         }
-                //     }  
-                }
-                else
-                {
-                    console.log('invalid jwt.');
-                }
-            } 
-            catch (error) 
-            {
-    
-                console.log(error)
-            } 
-        }
 
 
 
@@ -1026,7 +929,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
                 if (token) 
                 {
-                    const user  = await this.utils.verifyToken(token); // // if has error will catch it
+                    const user  = await this.utils.verifyToken(token); // // if has error will catch it\
+
                     const rtn = await this.utilsFunction(socket , user , dto.roomName);
                     
                     if(rtn.error)
@@ -1056,10 +960,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                 {
                                     const firstUser = await this.roomService.getFirstUserInRoom(rtn.room.id, 'USER')
 
-                                    if(!firstUser) // if not found any user in the room
+                                    if(!firstUser)
                                     {
-                                        console.log('empty room')
                                         await this.roomService.removeRoom(rtn.room.id)
+                                        console.log(`${rtn.room.room_name} delted.`)
                                         return;
                                     }
 
@@ -1077,10 +981,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                             } 
                                         }
                                     }
-                                    // if(!await this.roomService.doesRoomHaveUsers(rtn.room.id)) {
-                                    //     console.log(" yo")
-                                    //     await this.roomService.removeRoom(rtn.room.id)
-                                    // }
+                                     
                                 }
                                 else
                                 {
@@ -1096,17 +997,12 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                             } 
                                         }
                                     }
-                                    // if(!await this.roomService.doesRoomHaveUsers(rtn.room.id)) {
-                                    //     console.log("yo")
-                                    //     await this.roomService.removeRoom(rtn.room.id)
-                                    // }
                                 }
 
 
                             }
                             else
                             {
-                              
                                 for(const userInRoom of usersInroom)
                                 {
                                     for (let i = 0; i < this.soketsId.length; i++) 
@@ -1117,20 +1013,82 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                         } 
                                     }
                                 }
-                              
-                                // if(!await this.roomService.doesRoomHaveUsers(rtn.room.id)) {
-                                //     console.log("y o")
-                                //     await this.roomService.removeRoom(rtn.room.id)
-                                // }
 
                             }      
                         }
                         else
-                        { 
-                            // console.log('object')
+                        {
                             await this.roomService.removeRoom(rtn.room.id)
                         }
                     }  
+                }
+                else
+                {
+                    console.log('invalid jwt.');
+                }
+            } 
+            catch (error) 
+            {
+    
+                console.log(error)
+            } 
+        }
+
+        @SubscribeMessage('mute-user')  // test  if is banned for limmited time and want to banned for ever
+        @UsePipes(new ValidationPipe()) 
+        async mute(@MessageBody() dto:Mute , @ConnectedSocket() socket: Socket) 
+        {
+            try 
+            {
+                const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+                
+                if (token) 
+                {
+                    const user  = await this.utils.verifyToken(token); // // if has error will catch it
+
+                    const rtn = await this.utilsFunction(socket , user , dto.roomName , dto.mutedUserId);
+                    
+                    if(rtn.error)
+                    {
+                        console.log(rtn.error)
+                        return ;
+                    }
+                      
+                    if(rtn.usersType.usersType[0].userType !== 'USER' && rtn.usersType.usersType[1].userType !== 'OWNER') 
+                    {
+                        // set user as muted
+                        if(dto.duration >= 3600000) // if it banned for limmited time can update the time of ban or set it first time
+                        {
+                            // in evry function like send message check if is banned for limmited time and if time is out
+                            const banExpiresAt = new Date(Date.now() + dto.duration  ); // because date of now less then 1h
+                            
+                            // set exporation time
+                                
+                            await this.roomService.setMuteExpirention(banExpiresAt, dto.mutedUserId , rtn.room.id , 'MUTEDFORLIMITEDTIME' );
+                            
+                            
+                            console.log('muted succufly')
+                        
+                        }
+                        else if(dto.duration < 0)// banned for unlimeted time and remove her mesasges
+                        {
+                                
+                            //   await this.roomService.banUserForEver(dto.bannedUserId, rtn.room.id);
+                            await this.roomService.setMuteExpirention(null, dto.mutedUserId , rtn.room.id , 'MUTEDFOREVER' );
+
+                            console.log('muted succufly')
+                        
+                        }
+                        else
+                        {
+                            console.log('should mute from 1 hour to 3 days')
+                        }
+                        
+                    }  
+                    else
+                    {
+                        console.log('dont have the permission to set an admin.');
+                    }
                 }
                 else
                 {
@@ -1165,8 +1123,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             if(existingUser.error)
             {
                 return existingUser;
-            }
-
+            } 
             if(roomName) // if pass room name
             {
                 const roomId = await this.utils.getRoomByName(roomName); 
@@ -1174,8 +1131,21 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 if(roomId)  // if room exist
                 {
                     const usersType = await this.utils.getUserType(roomId.id,existingUser.existingUser); // if both users in this room
-                   
-                    if(flag === 1)  // if user not in room
+                    
+                    if(usersType.error)
+                    {
+                        return usersType;
+                    }
+
+                    for(const userIsMuted of usersType.usersType)
+                    {
+                        if(userIsMuted.isMuted !== 'UNMUTED')
+                        {
+                            return {error : 'user is muted'}
+                        }
+                    }
+                    
+                    if(flag === 1)  
                     {
                         const isBanned = await this.utils.ifUserIsBanned(existingUser.existingUser[0] , roomId.id);
                         
@@ -1218,19 +1188,13 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                             return {room : roomId , usersType , existingUser }; 
                         }
                     }
-                    else if(flag === 3) // want to mute
-                    {
-                        
-
-
-                    }
                     else // if not banned , (if not banned means user still in db).
                     {
                         if(usersType.error)
                         {
                             return usersType;
                         }
-
+                    
                         return {room : roomId , usersType , existingUser };
                     }
 

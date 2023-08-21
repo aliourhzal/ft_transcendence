@@ -17,6 +17,7 @@ export class BanFromRoom {
 
     @IsNotEmpty()
     @IsNumber()
+    // @Min(1, { message: 'Duration must be a positive number' }) // Minimum value of 1
     duration:number;    
 }
  

@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
-import { PrismaClient, RoomType, UserBnned, UserType } from '@prisma/client';
+import { PrismaClient, RoomType, UserBnned, UserMUTE, UserType } from '@prisma/client';
 import { AuthService } from 'src/auth/auth.service';
 import { encodePasswd } from 'src/utils/bcrypt';
 import { roomAndUsers, roomShape } from 'src/utils/userData.interface';
@@ -280,7 +280,7 @@ export class RoomsService
     }
     
 
-    async setExpirention(banExpiresAt : any , userId:string,roomId:string  )
+    async setBanExpirention(banExpiresAt : any , userId:string,roomId:string  )
     {
         const existingBan = await this.prisma.bannedUsersForLimmitedTime.findUnique({
             where: { userId_roomId: { userId, roomId } },
@@ -305,6 +305,39 @@ export class RoomsService
                 room: { connect: { id: roomId } },
                 isBanned: 'BANNEDFORLIMMITED_TIME',
                 banExpiresAt,
+              },
+            });
+          }
+        
+    }
+
+
+    async setMuteExpirention(muteExpiresAt : any , userId:string, roomId:string , muteType : UserMUTE )
+    {
+        const existingBan = await this.prisma.joinedTable.findUnique({
+            where: { userId_roomId: { userId, roomId } },
+          });
+        
+          if (existingBan) 
+          {
+            return await this.prisma.joinedTable.update({
+              where: { userId_roomId: { userId, roomId } },
+              data: {
+                
+                isMuted: muteType,
+                muteExpiresAt,
+              },
+            });
+          } 
+          else 
+          {
+            // Create a new record
+            return await this.prisma.joinedTable.create({
+              data: {
+                user: { connect: { id: userId } },
+                room: { connect: { id: roomId } },
+                isMuted: muteType,
+                muteExpiresAt,
               },
             });
           }
