@@ -287,8 +287,31 @@ export class UtilsService {
 
       async ifUserIsBanned(userId : string , roomId : string)
       {
-        return await this.prisma.bannedUsersForLimmitedTime.findUnique({
-            where: { userId_roomId: { userId, roomId } },
-          });
+        return await this.prisma.blackList.findFirst({
+            where: {
+                userId,
+                roomId,
+            },
+            select: {
+                isBanned: true,
+                banExpiresAt : true
+            },
+        });
       }
+
+
+      async   isUserMuted(userId: string, roomId: string) {
+        
+        return await this.prisma.blackList.findFirst({
+            where: {
+                userId,
+                roomId,
+            },
+            select: {
+                isMuted: true,
+                muteExpiresAt : true
+            },
+        });
+
+    }
 }

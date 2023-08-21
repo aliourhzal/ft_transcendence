@@ -83,52 +83,105 @@
 
 
 
+=> before send message check if user in the room and  is not muted.
+
+- in send message need curent user 
+
+=> before join the room  if banned dont joined to room , if user is muted still muted,
 
 
- const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
+=> before promete user check user in the room and if user is not muted
+
+
+=> before kick user check if user in the room , and if is muted still muted
+
+
+=> when add user to room remove the ban and the mute
+
+
+
+
+
+
+
+
+
+
+
+
+const roomId = await this.utils.getRoomByName(roomName); 
+    
+                if(roomId)  // if room exist
+                {
+                    const usersType = await this.utils.getUserType(roomId.id,existingUser.existingUser); // if both users in this room
+                    
+                    if(flag === 1)  
+                    {
+                        const isBanned = await this.utils.ifUserIsBanned(existingUser.existingUser[0] , roomId.id);
+                        
+                        if(!isBanned) // if first time want to join the room
+                        {
+                            return {room : roomId  , existingUser };
+                        }
+                        else // if this user is banned from the room and want to join another time
+                        {
+                            if(isBanned.isBanned === 'BANNEDFORLIMMITED_TIME')
+                            {
+                                if (isBanned.banExpiresAt <= new Date()) // if ban Expire
+                                {
+                                    await this.roomService.makeUserUnbanned(existingUser.existingUser[0], roomId.id); // make user unbanned
+                                    
+                                    console.log('user is unbanned.')
+                                    
+                                    return {room : roomId  , existingUser };
+                                }
                                 
-    const leavedUser:any = await this.roomService.removeUserFromRoom(rtn.room.id, user['sub']);
+                                return {error : 'user is banned for limmited time.'}
+                            }
+                        }
+                    }
 
-let newOwner:any = await this.roomService.getFirstUser('ADMIN') // get first admin if found it
+                    for(const mutedUserId of existingUser.existingUser)
+                    {
+                        const isMuted = await this.utils.ifUsersIsMuted(mutedUserId , roomId.id);
+                        console.log(isMuted)
+
+                    }
 
 
-if(!newOwner) // if not found an admin
-{
-    newOwner = await this.roomService.getFirstUser('USER') // will search for the first user in the room
+                    // for(const userIsMuted of usersType.usersType)
+                    // {
+                    //     if(userIsMuted.isMuted !== 'UNMUTED')
+                    //     {
+                    //         return {error : 'user is muted'}
+                    //     }
+                    // }
 
-    await this.roomService.setNewOwner(rtn.room.id, newOwner.userId) // set first user in the room as owner
-    // roomName and 
-    
-    
-    // usersInroom.push(leavedUser.kickedUser);
-    
-    for(const userInRoom of usersInroom)
-    {
-        for (let i = 0; i < this.soketsId.length; i++) 
-        {
-            if(this.soketsId[i].userId === userInRoom.userId)
-            {
-                this.server.to(this.soketsId[i].socketIds).emit("onLeave",{ roomId: rtn.room , newOwner , leavedUser});
-            } 
-        }
-    }
-    
-}
-else
-{
-    // usersInroom.push(leavedUser.kickedUser);
-        
-    const newOwner_ = await this.roomService.setNewOwner(rtn.room.id, newOwner.userId) // set this first admin as the owne
-    
-    for(const userInRoom of usersInroom)
-    {
-        for (let i = 0; i < this.soketsId.length; i++) 
-        {
-            if(this.soketsId[i].userId === userInRoom.userId)
-            {
-                this.server.to(this.soketsId[i].socketIds).emit("onLeave",{ roomId: rtn.room , newOwner : newOwner_, leavedUser});
-            } 
-        }
-    }
+                    if(flag === 2) // if want to ban user
+                    {
+                        const isBanned = await this.utils.ifUserIsBanned(existingUser.existingUser[1] , roomId.id);  
 
-}
+                        if(!isBanned) // if first time will ban means is not in table of banned users
+                            return {room : roomId , usersType , existingUser };
+                        
+                        else
+                        {
+                            if(isBanned.isBanned === 'BANNEDUNLIMMITED_TIME')
+                            {
+                                return {error : 'you are banned for life.'}
+                            }
+                            
+                            // else we do it if want to refresh time of baning
+                            return {room : roomId , usersType , existingUser }; 
+                        }
+                    }
+
+                    else // if not banned , (if not banned means user still in db).
+                    {
+                        if(usersType.error)
+                        {
+                            return usersType;
+                        }
+                    
+                        return {room : roomId , usersType , existingUser };
+                    }
