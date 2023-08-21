@@ -5,7 +5,7 @@ import { RoomType } from 'src/utils/userData.interface';
 
 
 
-export class BanUser {
+export class Mute {
      
     @IsNotEmpty()
     @IsString()
@@ -13,6 +13,10 @@ export class BanUser {
   
     @IsNotEmpty()
     @IsString()
-    bannedUserId: string;
+    mutedUserId: string;
+
+    @IsNotEmpty()
+    @IsNumber()
+    duration:number;   
 }
  

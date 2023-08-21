@@ -70,7 +70,7 @@ model JoinedTable{
     room                Room        @relation(fields: [roomId], references: [id]) // not compile in the query
     roomId              String 
 
-    isBanned            UserBnned     	@default(UNBANNED)
+    isMuted            UserMUTE     	@default(UNMUTED)
 
     banExpiresAt        DateTime?
 
@@ -131,6 +131,7 @@ enum UserBnned {
 
 
 enum UserMUTE {
+    UNMUTED
     MUTED_TIME
     UNMUTED_TIME
 }

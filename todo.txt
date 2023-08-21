@@ -69,12 +69,13 @@
 
 => when first time join room some time dont displayed on the page of new joined member.
 
-=> hen banned user not removed from her page.
+=> when banned user not removed from her page.
 
 => after user finish banned time,  send message other user not recsive the messages (should select to room name). (in this case owner cannot send the message)
 
 => emmit banned for ever
 
+=> when join the romm not displayed   
 
 
 
@@ -82,53 +83,4 @@
 
 
 
-
-
-
- const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
-                                
-    const leavedUser:any = await this.roomService.removeUserFromRoom(rtn.room.id, user['sub']);
-
-let newOwner:any = await this.roomService.getFirstUser('ADMIN') // get first admin if found it
-
-
-if(!newOwner) // if not found an admin
-{
-    newOwner = await this.roomService.getFirstUser('USER') // will search for the first user in the room
-
-    await this.roomService.setNewOwner(rtn.room.id, newOwner.userId) // set first user in the room as owner
-    // roomName and 
-    
-    
-    // usersInroom.push(leavedUser.kickedUser);
-    
-    for(const userInRoom of usersInroom)
-    {
-        for (let i = 0; i < this.soketsId.length; i++) 
-        {
-            if(this.soketsId[i].userId === userInRoom.userId)
-            {
-                this.server.to(this.soketsId[i].socketIds).emit("onLeave",{ roomId: rtn.room , newOwner , leavedUser});
-            } 
-        }
-    }
-    
-}
-else
-{
-    // usersInroom.push(leavedUser.kickedUser);
-        
-    const newOwner_ = await this.roomService.setNewOwner(rtn.room.id, newOwner.userId) // set this first admin as the owne
-    
-    for(const userInRoom of usersInroom)
-    {
-        for (let i = 0; i < this.soketsId.length; i++) 
-        {
-            if(this.soketsId[i].userId === userInRoom.userId)
-            {
-                this.server.to(this.soketsId[i].socketIds).emit("onLeave",{ roomId: rtn.room , newOwner : newOwner_, leavedUser});
-            } 
-        }
-    }
-
-}
+=> after remove room, and craete new room don displayed.
