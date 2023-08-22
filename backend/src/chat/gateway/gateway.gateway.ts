@@ -220,10 +220,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         if(rtn.ifUserInroom.usersType[0].userType !== 'USER' && rtn.ifUserInroom.usersType[1].userType !== 'OWNER') 
                         { 
                             
-                            if(dto.duration >= 3600000) // if it banned for limmited time can update the time of ban or set it first time
+                            if(dto.duration >= 120000) // if it banned for limmited time can update the time of ban or set it first time
                             {
                                 // in evry function like send message check if is banned for limmited time and if time is out
-                                const banExpiresAt = new Date(Date.now() + (dto.duration - 3500100)  ); // because date of now less then 1h
+                                const banExpiresAt = new Date(Date.now() + dto.duration ); // because date of now less then 1h
                                
                                 // set exporation time
                                  
@@ -250,7 +250,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                             }
                             else
                             {
-                                console.log('should ban from 1 hour to 3 days')
+                                console.log('should ban from 2 min  to 8 hours.')
                             }
                         }
                         else
@@ -296,18 +296,17 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                       
                     if(rtn.ifUserInroom.usersType[0].userType !== 'USER' && rtn.ifUserInroom.usersType[1].userType !== 'OWNER') 
                     {
-                        const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
                         // set user as muted
-                        if(dto.duration >= 3600000) // if it banned for limmited time can update the time of ban or set it first time
+                        if(dto.duration >= 120000) // if it banned for limmited time can update the time of ban or set it first time
                         {
                             // in evry function like send message check if is banned for limmited time and if time is out
-                            const banExpiresAt = new Date(Date.now() + (dto.duration - 3500100) ); // because date of now less then 1h
+                            const banExpiresAt = new Date(Date.now() + dto.duration); // because date of now less then 1h
                             
                             // set exporation time
                                 
                             const mutedUser = await this.roomService.muteUser(banExpiresAt, dto.mutedUserId , rtn.room.id , 'MUTEDFORLIMITEDTIME' );
                             
-                            await this.emmiteEventesToUsers(socket, rtn.room.id  ,"onKick", { roomId: rtn.room , mutedUser })
+                            await this.emmiteEventesToUsers(socket, rtn.room.id  ,"onMute", { roomId: rtn.room , mutedUser })
                             
                             console.log('muted succufly')
                         
@@ -317,14 +316,14 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                 
                             const mutedUser = await this.roomService.muteUser(null, dto.mutedUserId , rtn.room.id , 'MUTEDFOREVER' );
 
-                            await this.emmiteEventesToUsers(socket, rtn.room.id  ,"onKick", { roomId: rtn.room , mutedUser })
+                            await this.emmiteEventesToUsers(socket, rtn.room.id  ,"onMute", { roomId: rtn.room , mutedUser })
 
                             console.log('muted succufly')
                         
                         }
                         else
                         {
-                            console.log('should mute from 1 hour to 3 days')
+                            console.log('should mute from 2 min  to 8 hours.')
                         }
                         
                     }  
@@ -450,7 +449,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         return ;
                     }
                                     
-                            
+              
                     const newUsers = await this.roomService.linkBetweenUsersAndRooms(rtn.roomId.id , rtn.usersId);
                         
                     await this.emmiteEventesToUsers(socket, rtn.roomId.id  , "users-join", {roomId : rtn.roomId , userInfos: await this.utils.getUserInfosInRoom(rtn.roomId.id) , newUserAdded : newUsers })
@@ -517,7 +516,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         
 
         @SubscribeMessage('leave-room')  // test  if is banned for limmited time and want to banned for ever
-
         @UsePipes(new ValidationPipe()) 
         async leaveRoom(@MessageBody() dto:LeaveRoom , @ConnectedSocket() socket: Socket) 
         {
@@ -558,15 +556,15 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                     {
                                          console.log('here')
                                          
-                                         for (let i = 0; i < this.soketsId.length; i++) 
-                                         {
-                                             if(this.soketsId[i].userId === user['sub'])
-                                             {
-                                                 this.server.to(this.soketsId[i].socketIds).emit("onLeave" , { roomId: rtn.room , newOwner : null , leavedUser});
-                                                } 
-                                            }
+                                        for(let i = 0; i < this.soketsId.length; i++) 
+                                        {
+                                            if(this.soketsId[i].userId === user['sub'])
+                                            {
+                                                this.server.to(this.soketsId[i].socketIds).emit("onLeave" , { roomId: rtn.room , newOwner : null , leavedUser});
+                                            } 
+                                        }
                                             
-                                            await this.roomService.removeRoom(rtn.room.id)
+                                        await this.roomService.removeRoom(rtn.room.id)
                                         console.log(`${rtn.room.room_name} delted.`)
                                         return;
                                     }

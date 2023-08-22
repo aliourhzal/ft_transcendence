@@ -41,16 +41,24 @@ export class GatewayService
                     {
                         const isBanned = await this.utils.ifUserIsBanned(userId , roomInfos.id);
 
-                        if(isBanned.isBanned !== 'UNBANNED') // if is banned make it not banned
+                        if(isBanned)
                         {
-                            await this.roomService.makeUserUnbanned(userId, roomInfos.id);
+                            if(isBanned.isBanned !== 'UNBANNED') // if is banned make it not banned
+                            {
+                                await this.roomService.makeUserUnbanned(userId, roomInfos.id);
+                                console.log('user unbanned')
+                            }
                         }
 
                         const isMuted = await this.utils.isUserMuted(userId , roomInfos.id);
-
-                        if(isMuted.isMuted !== 'UNMUTED') // if is muted make it not banned
+                        if(isMuted)
                         {
-                            await this.roomService.makeUserUnMuted(userId, roomInfos.id);
+                            if(isMuted.isMuted !== 'UNMUTED') // if is muted make it not banned
+                            {
+                                await this.roomService.makeUserUnMuted(userId, roomInfos.id);
+                                console.log('user unmuted')
+
+                            }
                         }
                     } 
                     return { roomId: roomInfos , usersId};
@@ -92,7 +100,7 @@ export class GatewayService
                 const isBanned = await this.utils.ifUserIsBanned(currentUserId , roomInfos.id);
                       
                  
-                if(!isBanned) // if first time want to join the room
+                if(!isBanned) // if first time want to join tfhe room
                 {
                     return {room : roomInfos  , currentUserId };
                 }

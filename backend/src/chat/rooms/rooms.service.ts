@@ -153,6 +153,9 @@ export class RoomsService
 
     async removeRoom(roomId: string) 
     {
+        await this.removeRoomFromJoinedTable(roomId);
+        await this.removeRoomFromBlackList(roomId);
+        
         const existingRoom = await this.prisma.room.findUnique({
             where: {
                 id: roomId,
@@ -161,9 +164,6 @@ export class RoomsService
     
         if (existingRoom) 
         {
-            await this.removeRoomFromJoinedTable(roomId);
-            await this.removeRoomFromBlackList(roomId);
-            
             await this.prisma.room.delete({
                 where : {
                     id: roomId,
