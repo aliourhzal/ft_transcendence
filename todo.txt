@@ -69,13 +69,12 @@
 
 => when first time join room some time dont displayed on the page of new joined member.
 
-=> when banned user not removed from her page.
+=> hen banned user not removed from her page.
 
 => after user finish banned time,  send message other user not recsive the messages (should select to room name). (in this case owner cannot send the message)
 
 => emmit banned for ever
 
-=> when join the romm not displayed   
 
 
 
@@ -83,4 +82,106 @@
 
 
 
-=> after remove room, and craete new room don displayed.
+
+=> before send message check if user in the room and  is not muted.
+
+- in send message need curent user 
+
+=> before join the room  if banned dont joined to room , if user is muted still muted,
+
+
+=> before promete user check user in the room and if user is not muted
+
+
+=> before kick user check if user in the room , and if is muted still muted
+
+
+=> when add user to room remove the ban and the mute
+
+
+
+
+
+
+
+
+
+
+
+
+const roomId = await this.utils.getRoomByName(roomName); 
+    
+                if(roomId)  // if room exist
+                {
+                    const usersType = await this.utils.getUserType(roomId.id,existingUser.existingUser); // if both users in this room
+                    
+                    if(flag === 1)  
+                    {
+                        const isBanned = await this.utils.ifUserIsBanned(existingUser.existingUser[0] , roomId.id);
+                        
+                        if(!isBanned) // if first time want to join the room
+                        {
+                            return {room : roomId  , existingUser };
+                        }
+                        else // if this user is banned from the room and want to join another time
+                        {
+                            if(isBanned.isBanned === 'BANNEDFORLIMMITED_TIME')
+                            {
+                                if (isBanned.banExpiresAt <= new Date()) // if ban Expire
+                                {
+                                    await this.roomService.makeUserUnbanned(existingUser.existingUser[0], roomId.id); // make user unbanned
+                                    
+                                    console.log('user is unbanned.')
+                                    
+                                    return {room : roomId  , existingUser };
+                                }
+                                
+                                return {error : 'user is banned for limmited time.'}
+                            }
+                        }
+                    }
+
+                    for(const mutedUserId of existingUser.existingUser)
+                    {
+                        const isMuted = await this.utils.ifUsersIsMuted(mutedUserId , roomId.id);
+                        console.log(isMuted)
+
+                    }
+
+
+                    // for(const userIsMuted of usersType.usersType)
+                    // {
+                    //     if(userIsMuted.isMuted !== 'UNMUTED')
+                    //     {
+                    //         return {error : 'user is muted'}
+                    //     }
+                    // }
+
+                    if(flag === 2) // if want to ban user
+                    {
+                        const isBanned = await this.utils.ifUserIsBanned(existingUser.existingUser[1] , roomId.id);  
+
+                        if(!isBanned) // if first time will ban means is not in table of banned users
+                            return {room : roomId , usersType , existingUser };
+                        
+                        else
+                        {
+                            if(isBanned.isBanned === 'BANNEDUNLIMMITED_TIME')
+                            {
+                                return {error : 'you are banned for life.'}
+                            }
+                            
+                            // else we do it if want to refresh time of baning
+                            return {room : roomId , usersType , existingUser }; 
+                        }
+                    }
+
+                    else // if not banned , (if not banned means user still in db).
+                    {
+                        if(usersType.error)
+                        {
+                            return usersType;
+                        }
+                    
+                        return {room : roomId , usersType , existingUser };
+                    }

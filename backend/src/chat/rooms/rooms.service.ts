@@ -222,9 +222,9 @@ export class RoomsService
                     userId: kickedUserId,
                 },
             },
-            });
+        });
    
-            return {kickedUser}
+        return {kickedUser}
     } 
       
     async getFirstUserInRoom(roomId: string, userType_: UserType) {
@@ -280,18 +280,18 @@ export class RoomsService
     }
     
 
-    async setBanExpirention(banExpiresAt : any , userId:string,roomId:string  )
+    async bannUser(banExpiresAt : any , userId:string,roomId:string , banType : UserBnned  )
     {
-        const existingBan = await this.prisma.bannedUsersForLimmitedTime.findUnique({
+        const existingBan = await this.prisma.blackList.findUnique({
             where: { userId_roomId: { userId, roomId } },
           });
         
           if (existingBan) 
           {
-            return await this.prisma.bannedUsersForLimmitedTime.update({
+            return await this.prisma.blackList.update({
               where: { userId_roomId: { userId, roomId } },
               data: {
-                isBanned: 'BANNEDFORLIMMITED_TIME',
+                isBanned: banType,
                 banExpiresAt,
               },
             });
@@ -299,11 +299,11 @@ export class RoomsService
           else 
           {
             // Create a new record
-            return await this.prisma.bannedUsersForLimmitedTime.create({
+            return await this.prisma.blackList.create({
               data: {
                 user: { connect: { id: userId } },
                 room: { connect: { id: roomId } },
-                isBanned: 'BANNEDFORLIMMITED_TIME',
+                isBanned: banType,
                 banExpiresAt,
               },
             });
@@ -312,18 +312,17 @@ export class RoomsService
     }
 
 
-    async setMuteExpirention(muteExpiresAt : any , userId:string, roomId:string , muteType : UserMUTE )
+    async muteUser(muteExpiresAt : any , userId:string, roomId:string , muteType : UserMUTE )
     {
-        const existingBan = await this.prisma.joinedTable.findUnique({
+        const existingmute = await this.prisma.blackList.findUnique({
             where: { userId_roomId: { userId, roomId } },
           });
         
-          if (existingBan) 
+          if (existingmute) 
           {
-            return await this.prisma.joinedTable.update({
+            return await this.prisma.blackList.update({
               where: { userId_roomId: { userId, roomId } },
               data: {
-                
                 isMuted: muteType,
                 muteExpiresAt,
               },
@@ -332,7 +331,7 @@ export class RoomsService
           else 
           {
             // Create a new record
-            return await this.prisma.joinedTable.create({
+            return await this.prisma.blackList.create({
               data: {
                 user: { connect: { id: userId } },
                 room: { connect: { id: roomId } },
@@ -346,7 +345,7 @@ export class RoomsService
     
     async makeUserUnbanned( userId:string, roomId:string  )
     {
-        await this.prisma.bannedUsersForLimmitedTime.update({
+        await this.prisma.blackList.update({
             where: 
             {
                 userId_roomId: 
@@ -359,17 +358,32 @@ export class RoomsService
         });
     }
     
-    async banUserForEver( userId:string,roomId:string  )
+    async makeUserUnMuted( userId:string, roomId:string  )
+    {
+        await this.prisma.blackList.update({
+            where: 
+            {
+                userId_roomId: 
+                    {
+                        userId , 
+                        roomId
+                    } 
+            },
+            data: { isMuted: 'UNMUTED', banExpiresAt: null },
+        });
+    }
+    
+    async banUserForEver( userId:string , roomId:string  )
     {
        
         // for if is banned for limmited time and want to banned for ever
-        const existingBan = await this.prisma.bannedUsersForLimmitedTime.findUnique({
+        const existingBan = await this.prisma.blackList.findUnique({
             where: { userId_roomId: { userId, roomId } },
           });
         
           if (existingBan) 
           {
-            await this.prisma.bannedUsersForLimmitedTime.update({
+            await this.prisma.blackList.update({
               where: { userId_roomId: { userId, roomId } },
               data: {
                 isBanned: 'BANNEDUNLIMMITED_TIME',
@@ -380,7 +394,7 @@ export class RoomsService
           else 
           {
             // Create a new record
-            await this.prisma.bannedUsersForLimmitedTime.create({
+            await this.prisma.blackList.create({
               data: {
                 user: { connect: { id: userId } },
                 room: { connect: { id: roomId } },
