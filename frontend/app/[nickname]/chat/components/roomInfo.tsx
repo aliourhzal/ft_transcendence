@@ -106,7 +106,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
             </div>
             {showUsersForm && <NewRoomUsers addUsers={addUsersToRoom} />}
             {showRoomEditForm && <EditRoom _setNewName={setNewName} _setNewPass={setNewPass} roomType={info.room.type} changeRoomType={changeRoomType}/>}
-            <div className='flex flex-col justify-center items-center overflow-y-scroll overflow-x-hidden'>
+            <div className='h-65 flex flex-col justify-start items-center overflow-y-scroll overflow-x-hidden'>
                 {info.room.users.map(user => (
                     <RoomMumbers info={info} user={user} isOwner={isOwner} isAdmin={isAdmin}/>
                 ))}

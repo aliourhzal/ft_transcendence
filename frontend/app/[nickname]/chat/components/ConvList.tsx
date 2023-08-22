@@ -10,18 +10,16 @@ const ConvList = () => {
 
     const fillUserList = (listOfRoomsOfUser) => {
       setConvs([])
+      console.log(listOfRoomsOfUser)
       listOfRoomsOfUser.messages.map( (room: any) => {
-        if (room.usersInRoom.find(o => o.userId === userData.id).isbanned !== 'UNBANNED')
-        {
-          rooms.unshift({
-            name: room.room.room.room_name,
-            lastmsg:'welcome to group chat',
-            msgs: room.msg,
-            id: room.room.room.id,
-            users: getUsersInfo(room.usersInRoom),
-            type: room.room.room.roomType
-          })
-        }
+        rooms.unshift({
+          name: room.room.room.room_name,
+          lastmsg:'welcome to group chat',
+          msgs: room.msg,
+          id: room.room.room.id,
+          users: getUsersInfo(room.usersInRoom),
+          type: room.room.room.roomType
+        })
       })
       setConvs(rooms)
     }
@@ -61,7 +59,7 @@ const ConvList = () => {
                   lastName: newuser.user.lastName,
                   photo: newuser.user.profilePic,
                   type: newuser.userType,
-                  isBanned: newuser.isBanned,
+                  isMuted: newuser.isMuted,
                 }
                 )
               }

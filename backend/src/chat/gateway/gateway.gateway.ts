@@ -867,20 +867,25 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
             const userInfosInRoom =  await this.utils.getInfosOfuserInRoom(existingUser.existingUser[0]);
 
+             
+            for(let i = 0; i < userInfosInRoom.length; i++)
+            {
+                if(userInfosInRoom[i].roomId === rooms[i].roomId)
+                    rooms[i].isMuted = userInfosInRoom[i].isMuted;
+            }
+             
             let messages:any[] = [];
-            
-            console.log(userInfosInRoom)
-            console.log('-----------')
-            console.log(rooms)
-            
 
+           
             for(let i = 0; i < rooms.length; i++)
             {
-                // if(userInfosInRoom[0].)
+                 
                 messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i]['room']['room_name']) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
             }
             
             this.server.to(socket.id).emit("list-rooms",{messages});  //  evry client will connected will display the rooms who is member into 
+ 
+
             return {ok : 'connected from chat'}
 
         }

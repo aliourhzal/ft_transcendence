@@ -3,7 +3,7 @@
 /* eslint-disable prefer-const */
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, UserMUTE } from '@prisma/client';
 import { BannedAndUnbannedUsers } from './userData.interface';
 import { JwtService } from '@nestjs/jwt';
 
@@ -190,11 +190,14 @@ export class UtilsService {
         return await this.prisma.blackList.findMany({
             where: {
                 userId,
+                isMuted: {
+                    not: UserMUTE.UNMUTED, // Exclude rooms where the user is muted
+                },
             },
             include: {
-                room:true,
+                room: true,
             },
-        }); 
+        })
     }
 
     async  getUsersInRooms(roomId: string) 

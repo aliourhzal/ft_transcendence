@@ -44,7 +44,7 @@ export interface Room {
 		lastName: string,
 		photo?: string,
 		type: "OWNER"| "ADMIN" | "USER",
-		isBanned: boolean
+		isMuted: string
 	}[]
 }
 
@@ -56,24 +56,21 @@ export const getUsersInfo = (users) => {
 		  lastName: string,
 		  photo?: string,
 		  type: "OWNER"| "ADMIN" | "USER",
-		  isBanned: boolean
+		  isMuted: string
 	  }[] = []
 	// console.log(users)
 	users.map( (user) => {
-		if (user.isBanned === 'UNBANNED')
-		{
-			_users.push(
-			  {
-				id: user.user.id,
-				nickName: user.user.nickname,
-				firstName: user.user.firstName,
-				lastName: user.user.lastName,
-				photo: user.user.profilePic,
-				type: user.userType,
-				isBanned: user.isBanned,
-			  }
-			)
-		}
+		_users.push(
+			{
+			id: user.user.id,
+			nickName: user.user.nickname,
+			firstName: user.user.firstName,
+			lastName: user.user.lastName,
+			photo: user.user.profilePic,
+			type: user.userType,
+			isMuted: user.isMuted,
+			}
+		)
 	  } 
 	)
 	return (_users)
