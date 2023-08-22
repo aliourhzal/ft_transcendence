@@ -4,6 +4,7 @@ import { AiFillStar } from 'react-icons/Ai'
 import { SlArrowDown, SlArrowUp } from 'react-icons/Sl'
 import { FaCrown } from 'react-icons/fa'
 import RoomOptions from './RoomOptions'
+import { Transition } from '@headlessui/react'
 
 interface RoomMumbersProps {
     info: any,
@@ -12,9 +13,28 @@ interface RoomMumbersProps {
     isAdmin: any,
 }
 
+const transitions = {
+    entering: {
+      display: 'block'
+    },
+    entered: {
+      opacity: 1,
+      display: 'block'
+    },
+    exiting: {
+      opacity: 0,
+      display: 'block'
+    },
+    exited: {
+      opacity: '0',
+      display: 'none'
+    }
+  };
+
 const RoomMumbers = ( { info, user, isOwner, isAdmin } ) => {
 
     const [showOptions, setShowOptions] = useState(false)
+    const [leaveAnim, setLeaveAnim] = useState(false)
 
   return (
     <div className='m-2 border-2 p-2 rounded-lg bg-slate-600 border-slate-500 w-full flex flex-col items-center justify-center' key={user.id}>
@@ -27,12 +47,12 @@ const RoomMumbers = ( { info, user, isOwner, isAdmin } ) => {
             </div>
             <div className='w-10 font-extrabold flex items-center justify-center'>
                 {user.nickName != info.userData.nickname ?
-                    !showOptions && <SlArrowDown size={20} fontWeight={'bold'} className='font-extrabold'/> : ''}
+                    !showOptions && <SlArrowDown size={20} fontWeight={'bold'} className='font-extrabold transition delay-130 time hover:rotate-180'/> : ''}
                 {user.nickName != info.userData.nickname ?
                     showOptions && <SlArrowUp className='font-extrabold'/>: ''}
             </div>
         </div>
-        {showOptions && <RoomOptions info={info} user={user} isAdmin={isAdmin} isOwner={isOwner}/>}
+        {showOptions && <RoomOptions info={info} user={user} isAdmin={isAdmin} isOwner={isOwner} setLeaveAnim={setLeaveAnim}/>}
     </div>
   )
 }

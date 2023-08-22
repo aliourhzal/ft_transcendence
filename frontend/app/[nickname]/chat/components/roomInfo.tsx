@@ -1,9 +1,8 @@
 import React, { useContext, useState } from 'react'
 import Popup from './Popup'
 
-import { AiFillStar, AiOutlineUsergroupAdd } from "react-icons/Ai";
+import { AiOutlineUsergroupAdd } from "react-icons/Ai";
 import { FiEdit3 } from "react-icons/Fi";
-import { SlArrowDown, SlArrowUp } from "react-icons/Sl";
 
 import { UniversalData, getCookie } from '../../layout';
 import { Avatar } from '@nextui-org/react';
@@ -11,8 +10,6 @@ import NewRoomUsers from './NewRoomUsers';
 import { Context } from '../page';
 import SocketComponent from './SocketComponent';
 import EditRoom from './EditRoom';
-import RoomOptions from './RoomOptions';
-import { FaCrown } from 'react-icons/fa';
 import RoomMumbers from './RoomMumbers';
 
 interface RoomInfoProps {

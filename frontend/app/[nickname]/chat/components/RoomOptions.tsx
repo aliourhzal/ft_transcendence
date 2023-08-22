@@ -2,15 +2,18 @@ import React, { useContext, useState } from 'react'
 import { BiConversation, BiUserMinus, BiUserX, BiVolumeMute } from 'react-icons/Bi'
 import { TbUserDown, TbUserUp } from 'react-icons/Tb'
 import { Context } from '../page'
+import Ban from './Ban'
+import Mute from './Mute'
 
 interface RoomOptionsProps {
     info : any,
     user: any,
     isAdmin: any,
     isOwner: any,
+    setLeaveAnim: any,
 }
 
-const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner } ) => {
+const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner, setLeaveAnim } ) => {
 
     const {socket} = useContext(Context)
 
@@ -41,6 +44,7 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner 
             return;
         console.log(id, temp_duration , durationType)
         socket.emit('ban-user', {roomName:info.room.name, bannedUserId:id, duration: temp_duration * 1000})
+        setLeaveAnim(true)
     }
 
     const muteUser = async (id, duration, durationType) => {
@@ -81,44 +85,8 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner 
                     isOwner(info.room.users.find(o => o.nickName === info.userData.nickname)) && <TbUserUp className='hover:text-whiteSmoke text-blueStrong' title='promote' strokeWidth={2.3} aria-label='promote' cursor="pointer" size={25} onClick={() => {promoteUser(user.id)}}/>
                 }
                 <BiUserMinus className='hover:text-whiteSmoke text-blueStrong' title='kick' strokeWidth={0} aria-label='kick' cursor="pointer" size={30} onClick={() => {kickUser(user.id)}}/>
-                <BiUserX className='hover:text-whiteSmoke text-blueStrong' title='ban' aria-label='ban' cursor="pointer" size={30} onClick={() => {setShowDuration(old => !old)}}/>
-                {showDuration && 
-                    <div>
-                        <span>select ban duration</span>
-                        <input type='number' onChange={ (e) => { setBanDuration(+e.target.value) }}/>
-                        <select name="banDuration" id="banDuration" onChange={(e) => { setBanDurationType(e.target.value) }}>
-                            <option>select unit</option>
-                            <option value={"hours"}>hours</option>
-                            <option value={"days"}>days</option>
-                            <option value={"permanent"}>permanent</option>
-                        </select>
-                        <button type="button" className="w-auto text-white bg-red-900 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" onClick={() => {
-                            banUser(user.id, banDuration, banDurationType)
-                            setBanDuration(0)
-                            setBanDurationType('')
-                            setShowDuration(old => !old)
-                        }}>confirm</button>
-                    </div>
-                }
-                <BiVolumeMute className='hover:text-whiteSmoke text-blueStrong' title='mute' aria-label='mute' cursor="pointer" size={25} onClick={ () => { setShowDuration(old => !old) }}/>
-                {showDuration && 
-                    <div>
-                        <span>select ban duration</span>
-                        <input type='number' onChange={ (e) => { setBanDuration(+e.target.value) }}/>
-                        <select name="banDuration" id="banDuration" onChange={(e) => { setBanDurationType(e.target.value) }}>
-                            <option>select unit</option>
-                            <option value={"hours"}>hours</option>
-                            <option value={"days"}>days</option>
-                            <option value={"permanent"}>permanent</option>
-                        </select>
-                        <button type="button" className="w-auto text-white bg-red-900 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" onClick={() => {
-                            muteUser(user.id, banDuration, banDurationType)
-                            setBanDuration(0)
-                            setBanDurationType('')
-                            setShowDuration(old => !old)
-                        }}>confirm</button>
-                    </div>
-                }
+                <Ban banUser={banUser} user={user}/>
+                <Mute muteUser={muteUser} user={user}/>
             </>}
         { user.nickName != info.userData.nickname &&
         <BiConversation className='hover:text-whiteSmoke text-blueStrong' title='DM' aria-label='DM' cursor="pointer" size={25}/>}
