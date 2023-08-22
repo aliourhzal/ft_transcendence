@@ -184,6 +184,19 @@ export class UtilsService {
         }); 
     }
 
+
+    async getInfosOfuserInRoom(userId: string)
+    {
+        return await this.prisma.blackList.findMany({
+            where: {
+                userId,
+            },
+            include: {
+                room:true,
+            },
+        }); 
+    }
+
     async  getUsersInRooms(roomId: string) 
     {
         let usersInRooms;

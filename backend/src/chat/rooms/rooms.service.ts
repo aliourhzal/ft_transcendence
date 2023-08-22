@@ -135,43 +135,30 @@ export class RoomsService
 
     // ---------------------------------------------------------Set Roles Of Rooms ---------------------------------------------- //
 
-    async removeRoomFromJoinedTable(roomId: string) {
-        await this.prisma.joinedTable.deleteMany({
-            where: {
-                roomId,
-            },
-        });
-    }
+     
 
-    async removeRoomFromBlackList(roomId: string) {
-        await this.prisma.blackList.deleteMany({
-            where: {
-                roomId,
-            },
-        });
-    }
+    
 
     async removeRoom(roomId: string) 
-    {
-        await this.removeRoomFromJoinedTable(roomId);
-        await this.removeRoomFromBlackList(roomId);
-        
-        const existingRoom = await this.prisma.room.findUnique({
+    { 
+        await this.prisma.joinedTable.deleteMany({
+            where: {
+                roomId: roomId,
+            },
+        });
+
+         await this.prisma.blackList.deleteMany({
+            where: {
+                roomId: roomId,
+            },
+        });
+ 
+        await this.prisma.room.delete({
             where: {
                 id: roomId,
             },
         });
-    
-        if (existingRoom) 
-        {
-            await this.prisma.room.delete({
-                where : {
-                    id: roomId,
-                }
-            })
-
-
-        }
+        
     }
 
     async setNewOwner(roomId: string, newOwnerId:string)
