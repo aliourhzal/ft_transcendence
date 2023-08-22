@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { Avatar } from '@nextui-org/react'
 import { AiFillStar } from 'react-icons/Ai'
-import { SlArrowDown } from 'react-icons/Sl'
 import { FaCrown } from 'react-icons/fa'
 import RoomOptions from './RoomOptions'
+import { IoIosArrowDown } from 'react-icons/io'
 
 interface RoomMumbersProps {
     info: any,
@@ -27,7 +27,7 @@ const RoomMumbers = ( { info, user, isOwner, isAdmin } ) => {
             </div>
             <div className='w-10 font-extrabold flex items-center justify-center'>
                 {user.nickName != info.userData.nickname ?
-                     <SlArrowDown size={20} fontWeight={'bold'} className={'font-extrabold transition duration-300 delay-130 ' +
+                     <IoIosArrowDown size={20} fontWeight={'bold'} className={'font-extrabold transition duration-300 delay-130 ' +
                     (showOptions ? 'rotate-180' : '')}/> : ''}
             </div>
         </div>

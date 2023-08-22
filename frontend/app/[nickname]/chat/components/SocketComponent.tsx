@@ -46,21 +46,18 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
   const kickUser = (res) => {
     console.log('kick')
     setRooms((_rooms: Room[]) => {
-    var current_room = _rooms.find(o => o.name === res.roomId.room_name)
-    var userToBeKicked = current_room.users.find(o => o.id === res.kickedUser.userId)
-    if (res.kickedUser.userId != userData.id)
-      _notification(`"${userToBeKicked.nickName}" has been kicked from '${res.roomId.room_name}'`, "good")
-    var currentRoomUsers = _rooms.find(o => o.name === res.roomId.room_name).users
-    currentRoomUsers.splice(currentRoomUsers.indexOf(userToBeKicked), 1)
-    if (res.kickedUser.userId === userData.id) {
-      _notification(`You have been kicked from '${res.roomId.room_name}'`, "bad")
-      _rooms.splice(_rooms.indexOf(current_room), 1)
-      setShowConv(false)
-    }
-    setConvs((_convs) => {
-        _convs = [...rooms]
-        return _convs
-      })
+      var current_room = _rooms.find(o => o.name === res.roomId.room_name)
+      var userToBeKicked = current_room.users.find(o => o.id === res.kickedUser.userId)
+      if (res.kickedUser.userId != userData.id)
+        _notification(`"${userToBeKicked.nickName}" has been kicked from '${res.roomId.room_name}'`, "good")
+      var currentRoomUsers = _rooms.find(o => o.name === res.roomId.room_name).users
+      currentRoomUsers.splice(currentRoomUsers.indexOf(userToBeKicked), 1)
+      if (res.kickedUser.userId === userData.id) {
+        _notification(`You have been kicked from '${res.roomId.room_name}'`, "bad")
+        _rooms.splice(_rooms.indexOf(current_room), 1)
+        setShowConv(false)
+      }
+      setConvs([..._rooms])
       return _rooms
     })
     setInfoUpdate(old => !old)
@@ -99,6 +96,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
         if (newOwnerId)
           _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === newOwnerId.userId).type = 'OWNER'
         _rooms.splice(_rooms.indexOf(room), 1)
+        setShowConv(false)
       }
       else {
         var _users = _rooms.find(o => o.name === res.roomId.room_name).users
@@ -109,6 +107,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
       setConvs([..._rooms])
       return _rooms
     })
+    setInfoUpdate(old => !old)
   }
 
   const changeRoomName = (res) => {
