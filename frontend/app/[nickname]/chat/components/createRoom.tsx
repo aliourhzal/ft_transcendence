@@ -18,6 +18,7 @@ const RoomForm = () => {
     const [pass, setPass] = useState('')
     const [isPrivate, setPrivate] = useState(false)
     const [roomType, setRoomType] = useState('PUBLIC')
+    const [showPassInput, setShowPassInput] = useState(true)
 
     const hideForm = () => {
         setShowForm(false)
@@ -96,11 +97,11 @@ const RoomForm = () => {
                 <AddedUsersForm users={users} setUsers={setUsers}/>
 
                 <div className="text-gray-200 my-5">
-                    <input id="checkbox" name="checkbox" type="checkbox" onChange={ () =>  {setPrivate(old => !old); setPass('')} }/>
+                    <input id="checkbox" name="checkbox" type="checkbox" onChange={ () =>  {setPrivate(old => !old); setPass(''); setShowPassInput(old => !old)} }/>
                     <label htmlFor="checkbox" className="mx-3">private</label>
                 </div>
 
-                <div className="flex relative z-0 w-full mb-6 group">
+                {showPassInput && <div className="flex relative z-0 w-full mb-6 group">
                     <input disabled={isPrivate? true : false} value={pass} type="password" name="password" id="password" className="text-gray-300 block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required
                     onChange={
                         (e) => {
@@ -109,7 +110,7 @@ const RoomForm = () => {
                         }
                     }/>
                     <label htmlFor="password" className="peer-focus:font-medium absolute text-xs lg:text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Password (optional)</label>
-                </div>
+                </div>}
 
                 <button type="submit" form="roomform" className="w-auto text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" onClick={confirmForm} disabled={roomName != '' && users.length ? false : true} >Submit</button>
                     </form>

@@ -32,6 +32,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     const hide = () => {
         info.setShow(false)
         setShowUsersForm(false)
+        setshowRoomEditForm(false)
     }
     
     const isAdmin = (user) => {
@@ -77,8 +78,10 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         
     }
 
-    const changeRoomType = async () => {
-        socket.emit('make-public', {roomName:info.room.name})
+    const changeRoomType = async (newType:string) => {
+        console.log(newType)
+        newType === 'public' ? socket.emit('make-public', {roomName:info.room.name}) :
+        socket.emit('make-protected', {roomName:info.room.name, newPassword: newType})
     }
 
     const [showUsersForm, setShowUsersForm] = useState(false)
