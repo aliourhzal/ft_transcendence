@@ -126,12 +126,23 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
     _notification(`'${res.room_name}' password changed !`, "good")
   }
 
+  const muteUser = (res) => {
+    console.log(res.roomId, res.mutedUser)
+    setRooms((_rooms: Room[]) => {
+      _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.mutedUser.userId).isMuted = 'MUTED'
+      setConvs([..._rooms])
+      return _rooms
+    })
+    console.log (rooms)
+  }
+
   useEffect (() => {
     socket.on('onPromote', promoteUser)
     socket.on('onDemote', demoteUser)
     socket.on('onKick', kickUser)
     socket.on('onBan', banUser)
     socket.on('onLeave', leaveUser)
+    socket.on('onMute', muteUser)
     socket.on('change-room-name', changeRoomName)
     socket.on('change-room-password', changeRoomPass)
 }, []) 

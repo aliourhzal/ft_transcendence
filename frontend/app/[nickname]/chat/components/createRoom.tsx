@@ -10,8 +10,8 @@ import { StyledInput } from "@nextui-org/react"
 
 const RoomForm = () => {
      
-    const {showConv, setShowConv, activeUserConv, setActiveUserConv, showForm, setShowForm, socket, setConvs, set_room_created, setRooms, rooms} = useContext(Context)
-    // const [roomInfo, setRoomInfo] = useState({name:'', users:[], password:''})
+    const {showForm, setShowForm, socket, setConvs, set_room_created, rooms} = useContext(Context)
+
     const [roomName, setName] = useState('')
     const [users, setUsers] = useState<string[]>([])
     const [user, setUser] = useState('')

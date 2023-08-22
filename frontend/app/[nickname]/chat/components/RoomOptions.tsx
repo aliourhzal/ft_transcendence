@@ -40,21 +40,23 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner 
         socket.emit('ban-user', {roomName:info.room.name, bannedUserId:id, duration: temp_duration * 1000})
     }
 
-    const muteUser = async (id, duration, durationType) => {
+    const muteUser = async (id, duration) => {
         var temp_duration: number
     
-        if (durationType === 'hours')
-            temp_duration = duration * 60 * 60
-        else if (durationType === 'days')
-            temp_duration = duration * 60 * 60 * 24
-        else if (durationType === 'permanent')
+        if (duration === '2')
+            temp_duration = 120
+        else if (duration === '1')
+            temp_duration = 3600
+        else if (duration === '8')
+            temp_duration = 3600 * 8
+        else if (duration === 'permanent')
             temp_duration = -1
         else
             return
 
         if (temp_duration > 3 * 60 * 60 * 24)
             temp_duration = -1
-        console.log(id, temp_duration, durationType)
+        console.log(id, temp_duration)
         socket.emit('mute-user', {roomName:info.room.name, mutedUserId:id, duration: temp_duration * 1000})
     }
 
