@@ -20,6 +20,28 @@ export class RoomsService
     
     // ----------------------------------------------Create Room---------------------------------------------- //
 
+    // create dual room
+
+    async createDualRoom(roomName : string, user1Id : string , user2Id  : string)
+    {
+        const room = await this.prisma.room.create({
+            data: 
+            {
+                roomType: 'DM', 
+            },
+        });
+    
+        // Create links between users and the room
+        await this.prisma.joinedTable.createMany({
+            data: [
+                { userId: user1Id, roomId: room.id },
+                { userId: user2Id, roomId: room.id },
+            ],
+        });
+    
+        return room;
+    }
+
     async linkBetweenUsersAndRooms(roomId: string, usersIds:string[])  
     {
         let users:any = [];
@@ -113,13 +135,43 @@ export class RoomsService
 
     // ---------------------------------------------------------Set Roles Of Rooms ---------------------------------------------- //
 
+    async removeRoomFromJoinedTable(roomId: string) {
+        await this.prisma.joinedTable.deleteMany({
+            where: {
+                roomId,
+            },
+        });
+    }
+
+    async removeRoomFromBlackList(roomId: string) {
+        await this.prisma.blackList.deleteMany({
+            where: {
+                roomId,
+            },
+        });
+    }
+
     async removeRoom(roomId: string) 
     {
-        await this.prisma.room.delete({
-            where : {
+        const existingRoom = await this.prisma.room.findUnique({
+            where: {
                 id: roomId,
-            }
-        })
+            },
+        });
+    
+        if (existingRoom) 
+        {
+            await this.removeRoomFromJoinedTable(roomId);
+            await this.removeRoomFromBlackList(roomId);
+            
+            await this.prisma.room.delete({
+                where : {
+                    id: roomId,
+                }
+            })
+
+
+        }
     }
 
     async setNewOwner(roomId: string, newOwnerId:string)
@@ -405,5 +457,18 @@ export class RoomsService
           }
     }
 
+    async deleteRoomPassword(roomId: string) {
+        const updatedRoom = await this.prisma.room.update({
+            where: {
+                id: roomId,
+            },
+            data: {
+                password: null,
+                roomType : 'PUBLIC',
+            },
+        });
+    
+        return updatedRoom;
+    }
 
 }

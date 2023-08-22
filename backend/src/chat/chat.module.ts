@@ -7,10 +7,11 @@ import { RoomsService } from './rooms/rooms.service';
 import { RoomController } from './rooms/room.controller';
 import { UtilsService } from 'src/utils/utils.service';
 import { MessagesService } from './messages/messages.service';
+import { GatewayService } from './gateway/gateway.service';
 
 @Module({
     imports: [JwtModule,UsersModule],
-    providers: [GatewayGateway,RoomsService,UtilsService,MessagesService],
+    providers: [GatewayGateway,RoomsService,UtilsService,MessagesService , GatewayService],
     controllers: [RoomController]
 
 })

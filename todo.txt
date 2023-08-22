@@ -76,7 +76,16 @@
 => emmit banned for ever
 
 
+-----------
 
+-  after user join after ban error in front
+
+- if room is protected not entered to it (not have access to parameteres of the room). (some time)
+
+- - password length should be big then 8 cahrateres
+
+- when join to protected room error in frontend
+-------
 
 
 

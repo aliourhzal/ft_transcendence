@@ -36,7 +36,7 @@ model User {
 model Room{
 
     id              String      @id @default(uuid())
-    room_name       String      @unique    
+    room_name       String?      @unique    
     password        String?
 
 	roomType    RoomType     	@default(PUBLIC)
@@ -119,6 +119,7 @@ enum RoomType {
     PUBLIC 
     PROTECTED 
     PRIVATE 
+    DM
 }
 
 enum UserType {
