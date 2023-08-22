@@ -10,10 +10,9 @@ interface RoomOptionsProps {
     user: any,
     isAdmin: any,
     isOwner: any,
-    setLeaveAnim: any,
 }
 
-const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner, setLeaveAnim } ) => {
+const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner } ) => {
 
     const {socket} = useContext(Context)
 
@@ -44,7 +43,6 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner,
             return;
         console.log(id, temp_duration , durationType)
         socket.emit('ban-user', {roomName:info.room.name, bannedUserId:id, duration: temp_duration * 1000})
-        setLeaveAnim(true)
     }
 
     const muteUser = async (id, duration, durationType) => {
@@ -69,10 +67,6 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner,
         console.log(id, temp_duration, durationType)
         socket.emit('mute-user', {roomName:info.room.name, mutedUserId:id, duration: temp_duration * 1000})
     }
-
-    const [showDuration, setShowDuration] = useState(false)
-    const [banDurationType, setBanDurationType] = useState('')
-    const [banDuration, setBanDuration] = useState<number>(0)
 
   return (
     <div className='flex items-center gap-2'>
