@@ -13,7 +13,7 @@ const ChatBox = () => {
 
   const addmsg = (msg) => {
     let temp_rooms = [...rooms]
-    temp_rooms.find(o => o.name === activeUserConv.name).msgs.push({user:msg.user, msg:msg.msg})
+    temp_rooms.find(o => o.name === activeUserConv.name)?.msgs.push({user:msg.user, msg:msg.msg})
     setRooms(temp_rooms)
     // setChatBoxMessages(rooms.find(o => o.name == activeUserConv.name).msgs)
     // console.log(rooms.find(o => o.name === activeUserConv.name).msgs)

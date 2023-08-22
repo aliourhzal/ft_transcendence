@@ -69,18 +69,18 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
   const banUser = (res) => {
     console.log('ban')
     setRooms((_rooms: Room[]) => {
-    var current_room = _rooms.find(o => o.name === res.roomId.room_name)
-    var userToBeKicked = current_room.users.find(o => o.id === res.bannedUser.userId)
-    if (res.bannedUser.userId != userData.id)
-      _notification(`"${userToBeKicked.nickName}" has been banned from '${res.roomId.room_name}'`, "good")
-    var currentRoomUsers = _rooms.find(o => o.name === res.roomId.room_name).users
-    currentRoomUsers.splice(currentRoomUsers.indexOf(userToBeKicked), 1)
-    if (res.bannedUser.userId === userData.id) {
-      _notification(`You have been banned from '${res.roomId.room_name}'`, "bad")
-      _rooms.splice(_rooms.indexOf(current_room), 1)
-      setShowConv(false)
-    }
-    setConvs([...rooms])
+      var current_room = _rooms.find(o => o.name === res.roomId.room_name)
+      var userToBeKicked = current_room.users.find(o => o.id === res.bannedUser.userId)
+      if (res.bannedUser.userId != userData.id)
+        _notification(`"${userToBeKicked.nickName}" has been banned from '${res.roomId.room_name}'`, "good")
+      var currentRoomUsers = _rooms.find(o => o.name === res.roomId.room_name).users
+      currentRoomUsers.splice(currentRoomUsers.indexOf(userToBeKicked), 1)
+      if (res.bannedUser.userId === userData.id) {
+        _notification(`You have been banned from '${res.roomId.room_name}'`, "bad")
+        _rooms.splice(_rooms.indexOf(current_room), 1)
+        setShowConv(false)
+      }
+      setConvs([..._rooms])
       return _rooms
     })
     setInfoUpdate(old => !old)

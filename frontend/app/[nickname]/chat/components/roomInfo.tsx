@@ -13,6 +13,7 @@ import SocketComponent from './SocketComponent';
 import EditRoom from './EditRoom';
 import RoomOptions from './RoomOptions';
 import { FaCrown } from 'react-icons/fa';
+import RoomMumbers from './RoomMumbers';
 
 interface RoomInfoProps {
     room:any
@@ -83,8 +84,6 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     const [showUsersForm, setShowUsersForm] = useState(false)
     const [showRoomEditForm, setshowRoomEditForm] = useState(false)
 
-    const [showOptions, setShowOptions] = useState(false)
-
   return (
     <>
     <SocketComponent rooms={rooms} socket={socket} setRooms={setRooms} setInfoUpdate={setInfoUpdate} setConvs={setConvs} _notification={_notification}/>
@@ -109,24 +108,8 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
             {showRoomEditForm && <EditRoom _setNewName={setNewName} _setNewPass={setNewPass} roomType={info.room.type} changeRoomType={changeRoomType}/>}
             <div className='flex flex-col justify-center items-center overflow-y-scroll overflow-x-hidden'>
                 {info.room.users.map(user => (
-                        <div className='m-2 border-2 p-2 rounded-lg bg-slate-600 border-slate-500 w-full flex flex-col items-center justify-center' key={user.id}>
-                            <div className='m-1 w-full flex justify-between items-center px-4 cursor-pointer' onClick={ () => {setShowOptions(old => !old)} }>
-                                <div className='font-bold flex justify-between items-center gap-3'>
-                                    <Avatar bordered color={"primary"} pointer zoomed src={info.room.users.find(o => o.nickName === user.nickName).photo}/>
-                                    <div>{user.nickName === info.userData.nickname ? 'you' : user.nickName}</div>
-                                    {isOwner(info.room.users.find(o => o.nickName === user.nickName)) ? <FaCrown/> : ''}
-                                    {isAdmin(info.room.users.find(o => o.nickName === user.nickName)) && !isOwner(info.room.users.find(o => o.nickName === user.nickName)) ? <AiFillStar/> : ''}
-                                </div>
-                                <div className='w-10 font-extrabold flex items-center justify-center'>
-                                    {user.nickName != info.userData.nickname ?
-                                        !showOptions && <SlArrowDown size={20} fontWeight={'bold'} className='font-extrabold'/> : ''}
-                                    {user.nickName != info.userData.nickname ?
-                                        showOptions && <SlArrowUp className='font-extrabold'/>: ''}
-                                </div>
-                            </div>
-                            {showOptions && <RoomOptions info={info} user={user} isAdmin={isAdmin} isOwner={isOwner}/>}
-                        </div>
-                    ) )}
+                    <RoomMumbers info={info} user={user} isOwner={isOwner} isAdmin={isAdmin}/>
+                ))}
             </div>
             <div className='w-full flex items-center justify-center'>
                 <button type="button" className="w-auto text-white bg-blueStrong hover:bg-red-300 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" onClick={
