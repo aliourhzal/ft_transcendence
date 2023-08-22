@@ -871,7 +871,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             let messages:any[] = [];
             
             
-            for(let i = 0; i < rooms.length; i++)
+            for(let i = 0; i < rooms.length; i++) 
             {
                 
                 messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i]['room']['room_name']) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId) })
