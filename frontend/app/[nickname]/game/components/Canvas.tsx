@@ -5,8 +5,18 @@ import { useEffect, useState } from "react";
 import Player from "../utils/Player.class";
 import {Ball, Special} from "../utils/Ball.class";
 import { Socket } from "socket.io-client";
-import { WebsocketContext } from "@/app/context_sockets/gameWebSocket";
+import { socket } from "@/app/context_sockets/gameWebSocket";
+import winner from '../utils/winner.json';
+import Lottie from "react-lottie";
 
+const startbuttonGame = {
+    loop: true,
+    autoplay: true,
+    animationData: winner,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice"
+    }
+};
 
 export default function Canvas(props: {socket:Socket, themeN: number, ball: boolean, specials: boolean, hell: boolean, colors: any, opData: any }) {
 	const [ana, GodWilling] = useState(0);
@@ -189,6 +199,7 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		});
 	}
 
+	const [state, setWin] = useState(false);
     useEffect(() => {
 		const canvas = document.getElementById('pongy') as HTMLCanvasElement;
 		const ctx = canvas.getContext('2d');
@@ -202,6 +213,14 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		// listening to the mouse
 		canvas.addEventListener("mousemove", getMousePos);
 		
+		socket.on("gameOver", data => {
+			if (data === props.socket.id)
+			{
+				ctx.fillStyle = bgColor;
+				ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+			}
+			setWin(true);
+		});
 		// listening to the window resize event
 		window.addEventListener("resize", () => {
 			GodWilling(canvas.width);
@@ -297,11 +316,23 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		//  md:w-[800px] md:h-[450px]
 		//  xl:w-[1000px] xl:h-[562px]
 		//  "/>
-        <canvas id="pongy" className="bg-darken-300 rounded-md
-			w-[90%] aspect-[16/9]
-			max-sm:rotate-90 max-sm:w-[600px] max-sm:h-[337px]
-			xl:w-[1000px] xl:h-[562px]
-		 "/>
+		<div className="w-full h-full items-center justify-center">
+			<div className=" relative z-10 top-1/2 left-1/2 w-full h-full">
+				{
+					state && <Lottie 
+						options={startbuttonGame}
+						width={400}
+						height={400}
+					/>
+				}
+			</div>
+
+	        <canvas id="pongy" className="bg-darken-300 rounded-md
+				w-[90%] aspect-[16/9]
+				max-sm:rotate-90 max-sm:w-[600px] max-sm:h-[337px]
+				xl:w-[1000px] xl:h-[562px]
+			"/>
+		</div>
     );
 }
 

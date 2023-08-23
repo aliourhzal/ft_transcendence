@@ -218,10 +218,14 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			this.server.to(room.roomId).emit("score", {soc:room.player1.socket.id, p1:room.player1.score, p2:room.player2.score})
 		}
 
-		if (room.player1.score === 7 || room.player2.score === 7)//
+		if (room.player1.score === 1 || room.player2.score === 1)//
 		{
 			await this.usersService.createMatch(room.player1.nickName, room.player2.nickName, room.player1.score, room.player2.score);
 			clearInterval(room.loop);
+			this.server.to(room.roomId).emit("gameOver", 
+				room[room.player1.score === 1 ? 'player1' : 'player2'].socket.id
+			);
+			return ;
 		}
 		
 		if (room.player1.ball.x - room.ballDynamics.radius < -20 || room.player1.ball.x + room.ballDynamics.radius > room.player1.canvas.width + 20) {
