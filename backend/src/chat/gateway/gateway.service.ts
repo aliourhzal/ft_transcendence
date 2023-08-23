@@ -34,8 +34,7 @@ export class GatewayService
                 {
                     return {error : ifUserInRoom.error}
                 }
-
-                if(ifUserInRoom.usersType[0] !== 'USER')
+                if(ifUserInRoom.usersType[0].userType !== 'USER')
                 {
                     for(const userId of usersId)  
                     {
@@ -98,8 +97,8 @@ export class GatewayService
             if(roomInfos)  // if room exist
             {
                 const isBanned = await this.utils.ifUserIsBanned(currentUserId , roomInfos.id);
-                      
-                 
+                    
+
                 if(!isBanned) // if first time want to join tfhe room
                 {
                     return {room : roomInfos  , currentUserId };
@@ -119,7 +118,10 @@ export class GatewayService
                         return {error : 'you are banned for limmited time.'}
                         
                     }
-                    return {error : 'you are banned for forever.'}
+                    else if(isBanned.isBanned === 'UNBANNED')
+                        return {room : roomInfos  , currentUserId };
+                    else
+                        return {error : 'you are banned for forever.'}
                 }
             }
             else 
@@ -135,6 +137,61 @@ export class GatewayService
 
 
 
+        async checkUnMuteUser(currentUserId :string , roomName  : string, bannedUserId : string)
+        {
+            const existingUser = await this.utils.getUserId([currentUserId , bannedUserId ]); // if current user in db
+
+            if(existingUser.error)
+            {
+                return {error : 'user not found.'};
+            } 
+
+            const roomInfos = await this.utils.getRoomByName(roomName); 
+
+            if(roomInfos)  // if room exist
+            {
+                const ifUserInroom = await this.utils.getUserType(roomInfos.id , [currentUserId , bannedUserId ]); // if both users in this room
+                
+                if(ifUserInroom.error)
+                {
+                    return {error : ifUserInroom.error};
+                }
+
+                // check if user is muted , if its make it unmute
+                 
+                if(ifUserInroom.usersType[0].userType !== 'USER')
+                {
+                    for(const userId of existingUser.existingUser)  
+                    {
+                        const isMuted = await this.utils.isUserMuted(userId , roomInfos.id);
+                        
+                        if(isMuted)
+                        {
+                            if(isMuted.isMuted !== 'UNMUTED') // if is muted make it not banned
+                            {
+                                await this.roomService.makeUserUnMuted(userId, roomInfos.id);
+                                console.log('user unmuted')
+                            }
+                        }
+                        else
+                        {
+                            return {error : "user not muted."};
+                        }
+                    } 
+                }
+                else
+                {
+                    return {error : 'dont have the permmission to add users to this room.'}
+                }
+                // return {room : roomInfos , ifUserInroom , currentUserId };
+            }
+            else 
+            {
+                return {error : 'room not found'}
+            }
+
+        }
+        
 
         /*-------------------------------------------------when send mute user use this utils function--------------------------------------------------------- */
         

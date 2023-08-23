@@ -57,7 +57,6 @@ export class RoomsService
             
             if (!existingUsers) 
             {
-                
                 users.push(await this.prisma.joinedTable.create({
                     data: {
                     userId : usersIds[i],

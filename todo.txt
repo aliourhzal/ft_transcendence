@@ -110,87 +110,10 @@
 
 
 
+-----
 
+- on connect rooms dont displayed
 
+- when mute user and when join room join as banned
 
-
-
-
-
-
-const roomId = await this.utils.getRoomByName(roomName); 
-    
-                if(roomId)  // if room exist
-                {
-                    const usersType = await this.utils.getUserType(roomId.id,existingUser.existingUser); // if both users in this room
-                    
-                    if(flag === 1)  
-                    {
-                        const isBanned = await this.utils.ifUserIsBanned(existingUser.existingUser[0] , roomId.id);
-                        
-                        if(!isBanned) // if first time want to join the room
-                        {
-                            return {room : roomId  , existingUser };
-                        }
-                        else // if this user is banned from the room and want to join another time
-                        {
-                            if(isBanned.isBanned === 'BANNEDFORLIMMITED_TIME')
-                            {
-                                if (isBanned.banExpiresAt <= new Date()) // if ban Expire
-                                {
-                                    await this.roomService.makeUserUnbanned(existingUser.existingUser[0], roomId.id); // make user unbanned
-                                    
-                                    console.log('user is unbanned.')
-                                    
-                                    return {room : roomId  , existingUser };
-                                }
-                                
-                                return {error : 'user is banned for limmited time.'}
-                            }
-                        }
-                    }
-
-                    for(const mutedUserId of existingUser.existingUser)
-                    {
-                        const isMuted = await this.utils.ifUsersIsMuted(mutedUserId , roomId.id);
-                        console.log(isMuted)
-
-                    }
-
-
-                    // for(const userIsMuted of usersType.usersType)
-                    // {
-                    //     if(userIsMuted.isMuted !== 'UNMUTED')
-                    //     {
-                    //         return {error : 'user is muted'}
-                    //     }
-                    // }
-
-                    if(flag === 2) // if want to ban user
-                    {
-                        const isBanned = await this.utils.ifUserIsBanned(existingUser.existingUser[1] , roomId.id);  
-
-                        if(!isBanned) // if first time will ban means is not in table of banned users
-                            return {room : roomId , usersType , existingUser };
-                        
-                        else
-                        {
-                            if(isBanned.isBanned === 'BANNEDUNLIMMITED_TIME')
-                            {
-                                return {error : 'you are banned for life.'}
-                            }
-                            
-                            // else we do it if want to refresh time of baning
-                            return {room : roomId , usersType , existingUser }; 
-                        }
-                    }
-
-                    else // if not banned , (if not banned means user still in db).
-                    {
-                        if(usersType.error)
-                        {
-                            return usersType;
-                        }
-                    
-                        return {room : roomId , usersType , existingUser };
-                    }
+- handle when user is muted and when kick from leave from room and when join it join muted

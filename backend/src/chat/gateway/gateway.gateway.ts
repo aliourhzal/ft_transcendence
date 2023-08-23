@@ -27,6 +27,7 @@ import { SetOtherAasAdministrators } from 'src/dto/setOtherAasAdministrators.dto
 import { ChangeRoomPassword } from 'src/dto/changeRoomPassword.dto';
 import { RenameRoom } from 'src/dto/renameRoom.dto';
 import { RemoveRoomPassword } from 'src/dto/removeRoomPassword.dto';
+import { Unmute } from 'src/dto/unmute.dto';
  
 
 @WebSocketGateway(3004)
@@ -300,12 +301,12 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         if(dto.duration >= 120000) // if it banned for limmited time can update the time of ban or set it first time
                         {
                             // in evry function like send message check if is banned for limmited time and if time is out
-                            const banExpiresAt = new Date(Date.now() + dto.duration); // because date of now less then 1h
+                            const muteExpiresAt = new Date(Date.now() + dto.duration); // because date of now less then 1h
                             
                             // set exporation time
                                 
-                            const mutedUser = await this.roomService.muteUser(banExpiresAt, dto.mutedUserId , rtn.room.id , 'MUTEDFORLIMITEDTIME' );
-                            
+                            const mutedUser = await this.roomService.muteUser(muteExpiresAt, dto.mutedUserId , rtn.room.id , 'MUTEDFORLIMITEDTIME' );
+                             
                             await this.emmiteEventesToUsers(socket, rtn.room.id  ,"onMute", { roomId: rtn.room , mutedUser })
                             
                             console.log('muted succufly')
@@ -331,6 +332,40 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                     {
                         console.log('dont have the permission to set an admin.');
                     }
+                }
+                else
+                {
+                    console.log('invalid jwt.');
+                }
+            } 
+            catch (error) 
+            {
+    
+                console.log(error)
+            } 
+        }
+
+        @SubscribeMessage('unmute-user')  // test  if is banned for limmited time and want to banned for ever
+        @UsePipes(new ValidationPipe()) 
+        async unmute(@MessageBody() dto:Unmute , @ConnectedSocket() socket: Socket) 
+        {
+           
+            try 
+            {
+                const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+                
+                if (token) 
+                {
+                    const user  = await this.utils.verifyToken(token); // // if has error will catch it
+
+                    const rtn = await this.gatewayService.checkUnMuteUser( user['sub'] , dto.roomName , dto.unmutedUserId);
+                    
+                    if(rtn.error)
+                    {
+                        console.log(rtn.error)
+                        return ;
+                    }
+                    
                 }
                 else
                 {
@@ -863,17 +898,25 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
             this.soketsId.push({userId : existingUser.existingUser[0], socketIds:socket.id})
 
-            // const rooms = await this.utils.getRoomsForUser(existingUser.existingUser[0]); // all rooms who this user is member into it
+            const rooms = await this.utils.getRoomsForUser(existingUser.existingUser[0]); // all rooms who this user is member into it
 
             const userInfosInRoom =  await this.utils.getInfosOfuserInRoom(existingUser.existingUser[0]);
 
+            for(let i = 0; i < userInfosInRoom.length ; i++)
+            {
+                for(let j = 0; j < rooms.length ; j++)
+                {
+                    if(rooms[j].userId === userInfosInRoom[i].userId)
+                        rooms[j].isMuted = userInfosInRoom[i].isMuted;
+                }
+            }
              
             let messages:any[] = [];
 
 
-            for(let i = 0; i < userInfosInRoom.length; i++)
+            for(let i = 0; i < rooms.length; i++)
             {
-                messages.push({msg : await this.messagesService.getAllMessagesofRoom(userInfosInRoom[i]['room']['room_name']) , room : userInfosInRoom[i] , usersInRoom: await this.utils.getUserInfosInRoom(userInfosInRoom[i].roomId)})
+                messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i]['room']['room_name']) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
             }
             
             this.server.to(socket.id).emit("list-rooms",{messages});  //  evry client will connected will display the rooms who is member into 
