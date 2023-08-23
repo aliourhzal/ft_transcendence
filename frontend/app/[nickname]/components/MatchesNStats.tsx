@@ -42,7 +42,7 @@ function MatchResult(props) {
 export function MatchHistory() {
     const [historyState, setHistory] = useState<matchTemplate[]>([]);
     const his : matchTemplate[] = [];
-    const matchTemplate : matchTemplate = {
+    const matchTemplatee : matchTemplate = {
         player1: {
             avatar: "",
             nickname: "",
@@ -59,15 +59,29 @@ export function MatchHistory() {
             withCredentials: true
         })
         .then(res => {
-            res.data.forEach(x => {
-                const match: matchTemplate = { ...matchTemplate };
-                match.player1.avatar = x.player1.avatar;
-                match.player1.nickname = x.player1.nickname;
-                match.player1.score = x.player1.score;
-                match.player2.avatar = x.player2.avatar;
-                match.player2.nickname = x.player2.nickname;
-                match.player2.score = x.player2.score;
-                his.push(match);
+            res.data.map(x => {
+                // const m: matchTemplate = { ...matchTemplatee };
+                // console.log("m",m);
+                // m.player1.avatar = x.player1.avatar;
+                // m.player1.nickname = x.player1.nickname;
+                // m.player1.score = x.player1.score;
+                // m.player2.avatar = x.player2.avatar;
+                // m.player2.nickname = x.player2.nickname;
+                // m.player2.score = x.player2.score;
+                his.push(
+                   {
+                        player1: {
+                            avatar: x.player1.avatar,
+                            nickname: x.player1.nickname,
+                            score: x.player1.score
+                        },
+                        player2: {
+                            avatar: x.player2.avatar,
+                            nickname: x.player2.nickname,
+                            score: x.player2.score
+                        }
+                   }
+                );
             });
             setHistory(his);
         })
@@ -81,10 +95,9 @@ export function MatchHistory() {
             <h2 className='text-white'>Matches History</h2>
             <div className='matchHistoryBody flex flex-col gap-3 overflow-y-auto max-h-[420px]'>
                 {
-                    historyState.map(x => {
-                        let i = 0;
+                    historyState.map((x, i) => {
                         return (<MatchResult
-                            key={i++}
+                            key={i}
                             p1={x.player1.nickname}
                             av1={x.player1.avatar}
                             score1={x.player1.score}

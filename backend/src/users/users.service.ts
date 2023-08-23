@@ -253,27 +253,22 @@ export class UsersService {
 	async matchHistory(nickName: string)
 	{
 		let history : {}[] = []
-		let match = {
-			player1 :{
-				avatar: "",
-				nickname: "",
-				score: 0
-			},
-			player2 :{
-				avatar: "",
-				nickname: "",
-				score: 0
-			}
-		}
 		const matches = (await this.returnMatches(nickName)).matches;
+
 		matches.map(x => {
-			match.player1.avatar = x.players[0].profilePic;
-			match.player1.nickname = x.players[0].nickname;
-			match.player1.score = x.scores[0];
-			match.player2.avatar = x.players[1].profilePic;
-			match.player2.nickname = x.players[1].nickname;
-			match.player2.score = x.scores[1];
-			history.push(match);
+			let match = {
+				player1:{
+					avatar	: x.players[0].profilePic,
+					nickname : x.players[0].nickname,
+					score : x.scores[0],
+				},
+				player2:{
+					avatar : x.players[1].profilePic,
+					nickname : x.players[1].nickname,
+					score : x.scores[1]
+				}
+			}
+			history.push( match );
 		});
 		return history;
 	}
