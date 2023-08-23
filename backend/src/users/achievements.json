@@ -1,0 +1,155 @@
+{
+	"achievements" :
+	{
+		"hat-trick": {
+			"title": "Hat-trick",
+			"description": "score 3 times  sequentially"
+		},
+		"Welcome": {
+			"title": "Welcome",
+			"description": "Welcome to Pongy, go Play"
+		},
+		"theBreaker_1": {
+			"category": "breaker",
+			"level": 1,
+			"title": "the Breaker 1",
+			"description": "Win 3 matches sequentially"
+		},
+		"theBreaker_2": {
+			"category": "breaker",
+			"level": 2,
+			"title": "the Breaker 2",
+			"description": "Win 5 matches sequentially"
+		},
+		"theBreaker_3": {
+			"category": "breaker",
+			"level": 3,
+			"title": "the Breaker 3",
+			"description": "Win 7 matches sequentially"
+		},
+		"Mjollnir": {
+			"category": "breaker",
+			"level": 4,
+			"title": "Mjollnir",
+			"description": "Win 10 matches sequentially"
+		},
+		"Noob": {
+			"category": "seniority",
+			"level": 1,
+			"title": "Noob",
+			"description": "play 3 matches"
+		},
+		"Bob": {
+			"category": "seniority",
+			"level": 2,
+			"title": "Bob",
+			"description": "play 7 matches"
+		},
+		"Pro": {
+			"category": "seniority",
+			"level": 3,
+			"title": "Pro",
+			"description": "play 12 matches"
+		},
+		"Bad_ass": {
+			"category": "seniority",
+			"level": 4,
+			"title": "Bad-Ass",
+			"description": "play 20 matches"
+		},
+		"Humiliator": {
+			"category": "humiliator",
+			"level": 1,
+			"title": "Humiliator",
+			"description": "win 1 matches with clean sheet"
+		},
+		"Demon": {
+			"category": "humiliator",
+			"level": 2,
+			"title": "Demon",
+			"description": "win 3 matches with clean sheet"
+		},
+		"theDevilPet": {
+			"category": "humiliator",
+			"level": 3,
+			"title": "Devil Pet",
+			"description": "win 7 matches with clean sheet"
+		},
+		"666": {
+			"category": "humiliator",
+			"level": 4,
+			"title": "Satan",
+			"description": "win 10 matches with clean sheet"
+		},
+		"Tester": {
+			"category": "game",
+			"title": "Tester",
+			"description": "Test and try every mode in the game"
+		},
+		"Tester2": {
+			"category": "game",
+			"title": "Fashionate",
+			"description": "Be like a female and create new theme in custom"
+		},
+		"Hacker": {
+			"category": "Game_master",
+			"title": "Hack Us",
+			"description": "Find a vulnerability in the website and report it"
+		}
+	},
+	"missions" : 
+	{
+		"fashion1": {
+			"xp"	: 5,
+			"description": "test a new theme in custom"
+		},
+		"fashion2": {
+			"xp"	: 5,
+			"description": "test the dark theme"
+		},
+		"fashion3": {
+			"xp"	: 5,
+			"description": "test the bright theme"
+		},
+		"effect1": {
+			"xp"	: 10,
+			"description": "Active Special Effects in PVP mode"
+		},
+		"effect2": {
+			"xp"	: 5,
+			"description": "Active Ball Colorized Effect"
+		},
+		"effect3": {
+			"xp"	: 15,
+			"description": "Win a Game in Hell Of Flame Game"
+		},
+		"bot1": {
+			"xp"	: 5,
+			"description": "Win Vs bot level1"
+		},
+		"bot2": {
+			"xp"	: 10,
+			"description": "Win Vs bot level2"
+		},
+		"bot3": {
+			"xp"	: 35,
+			"description": "Win Vs bot level3"
+		},
+		"goal1": {
+			"xp"	: 5,
+			"description": "Score total of 10 points"
+		},
+		"goal2": {
+			"xp"	: 25,
+			"description": "Score total of 100 points"
+		},
+		"goal3": {
+			"xp"	: 25,
+			"description": "Score total of 1000 points"
+		},
+		"ultimate": {
+			"xp"	: 9999,
+			"description": "Hack The Game !"
+		}
+	}
+}
