@@ -127,13 +127,23 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
   }
 
   const muteUser = (res) => {
-    console.log(res.roomId, res.mutedUser)
+    console.log("mute")
     setRooms((_rooms: Room[]) => {
       _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.mutedUser.userId).isMuted = 'MUTED'
       setConvs([..._rooms])
       return _rooms
     })
     console.log (rooms)
+  }
+
+  const unMuteUser = (res) => {
+    console.log("unmute")
+    console.log(res)
+    setRooms((_rooms: Room[]) => {
+      _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.mutedUser.userId).isMuted = 'UNMUTED'
+      setConvs([..._rooms])
+      return _rooms
+    })
   }
 
   useEffect (() => {
@@ -143,6 +153,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
     socket.on('onBan', banUser)
     socket.on('onLeave', leaveUser)
     socket.on('onMute', muteUser)
+    socket.on('onUnMute', unMuteUser)
     socket.on('change-room-name', changeRoomName)
     socket.on('change-room-password', changeRoomPass)
 }, []) 

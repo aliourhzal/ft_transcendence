@@ -60,6 +60,10 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner 
         socket.emit('mute-user', {roomName:info.room.name, mutedUserId:id, duration: temp_duration * 1000})
     }
 
+    const unMuteUser = (id) => {
+        socket.emit('unmute-user', {roomName:info.room.name, mutedUserId:id})
+    }
+
   return (
     <div className='flex items-center gap-2'>
         {(isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) && user.nickName != info.userData.nickname) &&
@@ -72,7 +76,7 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner 
                 }
                 <BiUserMinus className='hover:text-whiteSmoke text-blueStrong' title='kick' strokeWidth={0} aria-label='kick' cursor="pointer" size={30} onClick={() => {kickUser(user.id)}}/>
                 <Ban banUser={banUser} user={user}/>
-                <Mute muteUser={muteUser} user={user}/>
+                <Mute muteUser={muteUser} unMuteUser={unMuteUser} user={user} _state={info.room.users.find(o => o.nickName === user.nickName).isMuted} />
             </>}
         { user.nickName != info.userData.nickname &&
         <BiConversation className='hover:text-whiteSmoke text-blueStrong' title='DM' aria-label='DM' cursor="pointer" size={25}/>}
