@@ -1,7 +1,7 @@
 'use client'
 
 
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Player from "../utils/Player.class";
 import {Ball, Special} from "../utils/Ball.class";
 import { Socket } from "socket.io-client";
@@ -60,6 +60,26 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			ctx.closePath();
 			ctx.fill();
 		}
+
+		function drawSpecial() {
+			const img = new Image();
+			if (special.type === 'dwarf')
+				img.src = '/images/shortSpecial.svg';
+			else if (special.type === 'big_foot')
+				img.src = '/images/bigSpecial.svg';
+			ctx.beginPath();
+			ctx.arc(special.x, special.y, special.radius, 0, 2 * Math.PI);
+			if(player.color !== '#FFF' && player.color !== '#fff' && player.color !== 'white') {
+				ctx.fillStyle = player.color;
+				ctx.fill();
+			}
+			else {
+				ctx.strokeStyle = '#fff';
+				ctx.stroke();
+			}
+			ctx.drawImage(img, special.x - special.radius / 2, special.y - special.radius / 2, special.radius, special.radius);
+		}
+
 		function drawText(text,x,y){
 			(n === 3 ? ctx.fillStyle = "#000" : ctx.fillStyle = "#FFF")
 			ctx.font = "75px fantasy";
@@ -129,8 +149,9 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
         props.ball === true && drawArc(ball.x, ball.y, ball.radius + 2, "white");
         drawArc(ball.x, ball.y, ball.radius, ball.color);
 		
-		if (props.specials && special.active)
-			drawArc(special.x, special.y, special.radius, '#9c3333');
+		if (props.specials && special.active) {
+			drawSpecial();
+		}
 		let collAngle = 0;
 		const coll = collision();
 		if (coll)
@@ -264,7 +285,6 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			}
 			player.setPos(0, canvas.height / 2 - player.height / 2);
 			com.setPos(canvas.width - com.width, canvas.height / 2 - player.height / 2);
-			special.type = '';
 		});
     }, [])
 
