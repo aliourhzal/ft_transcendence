@@ -863,24 +863,17 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
             this.soketsId.push({userId : existingUser.existingUser[0], socketIds:socket.id})
 
-            const rooms = await this.utils.getRoomsForUser(existingUser.existingUser[0]); // all rooms who this user is member into it
+            // const rooms = await this.utils.getRoomsForUser(existingUser.existingUser[0]); // all rooms who this user is member into it
 
             const userInfosInRoom =  await this.utils.getInfosOfuserInRoom(existingUser.existingUser[0]);
 
              
-            for(let i = 0; i < userInfosInRoom.length; i++)
-            {
-                if(userInfosInRoom[i].roomId === rooms[i].roomId)
-                    rooms[i].isMuted = userInfosInRoom[i].isMuted;
-            }
-             
             let messages:any[] = [];
 
-           
-            for(let i = 0; i < rooms.length; i++)
+
+            for(let i = 0; i < userInfosInRoom.length; i++)
             {
-                 
-                messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i]['room']['room_name']) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
+                messages.push({msg : await this.messagesService.getAllMessagesofRoom(userInfosInRoom[i]['room']['room_name']) , room : userInfosInRoom[i] , usersInRoom: await this.utils.getUserInfosInRoom(userInfosInRoom[i].roomId)})
             }
             
             this.server.to(socket.id).emit("list-rooms",{messages});  //  evry client will connected will display the rooms who is member into 
