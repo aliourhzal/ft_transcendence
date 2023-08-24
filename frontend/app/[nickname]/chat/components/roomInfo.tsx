@@ -7,7 +7,7 @@ import { FiEdit3 } from "react-icons/Fi";
 import { UniversalData, getCookie } from '../../layout';
 import { Avatar } from '@nextui-org/react';
 import NewRoomUsers from './NewRoomUsers';
-import { Context } from '../page';
+import { Context, gimmeRandom } from '../page';
 import SocketComponent from './SocketComponent';
 import EditRoom from './EditRoom';
 import RoomMumbers from './RoomMumbers';
@@ -108,7 +108,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
             {showRoomEditForm && <EditRoom _setNewName={setNewName} _setNewPass={setNewPass} roomType={info.room.type} changeRoomType={changeRoomType}/>}
             <div className='h-65 flex flex-col justify-start items-center overflow-y-scroll overflow-x-hidden'>
                 {info.room.users.map(user => (
-                    <RoomMumbers info={info} user={user} isOwner={isOwner} isAdmin={isAdmin}/>
+                    <RoomMumbers info={info} user={user} isOwner={isOwner} isAdmin={isAdmin} key={gimmeRandom()}/>
                 ))}
             </div>
             <div className='w-full flex items-center justify-center'>

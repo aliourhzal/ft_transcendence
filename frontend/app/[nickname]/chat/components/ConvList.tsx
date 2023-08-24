@@ -97,22 +97,19 @@ const ConvList = () => {
     useEffect(() => {
       socket.on('users-join', AddUserToRoom)
     }, [])
-      
-    const [tempSearchConv, setTempSearchConv] = useState<conversation[]>([...convs])
 
     const convsFilter = (needle = '') => {
       if (needle.trim() === '')
-        setTempSearchConv(convs)
+        setConvs([...rooms])
       else
-        setTempSearchConv(convs.filter((user:conversation) => (user.name.startsWith(needle))))
+        setConvs(rooms.filter((user:conversation) => (user.name.startsWith(needle))))
     }
-    console.log(tempSearchConv)
 
     return (
     <>
       <Search _Filter={convsFilter} />
       <div className='group left-[10%] flex-col bg-transparent w-full h-[80%] mt-8 overflow-hidden overflow-y-scroll'>
-          {tempSearchConv.map ((item:conversation) =>  (<ConvBox key={gimmeRandom()} data={item} />))}
+          {convs.map ((item:conversation) =>  (<ConvBox key={gimmeRandom()} data={item} />))}
       </div>
     </>
   )
