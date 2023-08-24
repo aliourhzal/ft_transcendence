@@ -117,3 +117,5 @@
 - when mute user and when join room join as banned
 
 - handle when user is muted and when kick from leave from room and when join it join muted
+
+- handle sending muted user when connected
