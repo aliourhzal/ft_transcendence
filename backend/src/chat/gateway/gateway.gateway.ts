@@ -28,6 +28,7 @@ import { ChangeRoomPassword } from 'src/dto/changeRoomPassword.dto';
 import { RenameRoom } from 'src/dto/renameRoom.dto';
 import { RemoveRoomPassword } from 'src/dto/removeRoomPassword.dto';
 import { Unmute } from 'src/dto/unmute.dto';
+import { DirectMessages } from 'src/dto/directMessages.dto';
  
 
 @WebSocketGateway(3004)
@@ -349,7 +350,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         @UsePipes(new ValidationPipe()) 
         async unmute(@MessageBody() dto:Unmute , @ConnectedSocket() socket: Socket) 
         {
-           
             try 
             {
                 const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
@@ -359,7 +359,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                     const user  = await this.utils.verifyToken(token); // // if has error will catch it
 
                     const rtn = await this.gatewayService.checkUnMuteUser( user['sub'] , dto.roomName , dto.unmutedUserId);
-                    
+        
                     if(rtn.error)
                     {
                         console.log(rtn.error)
@@ -885,6 +885,37 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         }
 
 
+        /* direct messages */
+
+        /*
+            - when search for user to send to it  msg:
+                if both user in same room , send message , else create room , and send message
+        */
+
+        @SubscribeMessage('start-dm') 
+        @UsePipes(new ValidationPipe()) // need room id ,   user id who want to send it.
+        async directMessages(@MessageBody() dto:any , @ConnectedSocket() socket: Socket) 
+        {
+            console.log(dto)
+            // try 
+            // {
+            //     const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+                
+            //     if (token) 
+            //     {
+            //         const user  = await this.utils.verifyToken(token); // // if has error will catch it
+
+
+
+            //     }
+            // }
+            // catch (error) 
+            // {
+            //     console.log(error)
+            // } 
+        }
+
+
         /*-------------------------------------------------on connect use this utils function--------------------------------------------------------- */
         
         async checkOnConnect(@ConnectedSocket() socket: Socket , currentUserId :string)
@@ -902,11 +933,11 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
             const userInfosInRoom =  await this.utils.getInfosOfuserInRoom(existingUser.existingUser[0]);
 
-            for(let i = 0; i < userInfosInRoom.length ; i++)
-            {
-                for(let j = 0; j < rooms.length ; j++)
+            for(let i = 0; i < userInfosInRoom.length ; i++) // current user is muted from one room
+            {   
+                for(let j = 0; j < rooms.length ; j++) // loop all rooms who is member into it
                 {
-                    if(rooms[j].userId === userInfosInRoom[i].userId)
+                    if(rooms[j].roomId === userInfosInRoom[i].roomId)
                         rooms[j].isMuted = userInfosInRoom[i].isMuted;
                 }
             }
@@ -965,14 +996,14 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         async handleDisconnect(socket: Socket) 
         {
             console.log("disconnected from chat");    
-            for (let i = 0; i < this.soketsId.length; i++) 
-            {
-                if(this.soketsId[i].socketIds === socket.id)
-                {
-                    this.soketsId = this.soketsId.splice(i, i + 1);
-                    break;
-                }
-            } 
+            // for (let i = 0; i < this.soketsId.length; i++) 
+            // {
+            //     if(this.soketsId[i].socketIds === socket.id)
+            //     {
+            //         this.soketsId = this.soketsId.splice(i, i + 1);
+            //         break;
+            //     }
+            // } 
             this.OnWebSocektError(socket);
         }
 

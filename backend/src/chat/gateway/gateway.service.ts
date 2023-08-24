@@ -137,9 +137,9 @@ export class GatewayService
 
 
 
-        async checkUnMuteUser(currentUserId :string , roomName  : string, bannedUserId : string)
+        async checkUnMuteUser(currentUserId :string , roomName  : string, unmutedUserId : string)
         {
-            const existingUser = await this.utils.getUserId([currentUserId , bannedUserId ]); // if current user in db
+            const existingUser = await this.utils.getUserId([currentUserId , unmutedUserId ]); // if current user in db
 
             if(existingUser.error)
             {
@@ -150,7 +150,7 @@ export class GatewayService
 
             if(roomInfos)  // if room exist
             {
-                const ifUserInroom = await this.utils.getUserType(roomInfos.id , [currentUserId , bannedUserId ]); // if both users in this room
+                const ifUserInroom = await this.utils.getUserType(roomInfos.id , [currentUserId , unmutedUserId ]); // if both users in this room
                 
                 if(ifUserInroom.error)
                 {
@@ -161,23 +161,22 @@ export class GatewayService
                  
                 if(ifUserInroom.usersType[0].userType !== 'USER')
                 {
-                    for(const userId of existingUser.existingUser)  
+                    const isMuted = await this.utils.isUserMuted(unmutedUserId , roomInfos.id);
+                     
+                    if(isMuted)
                     {
-                        const isMuted = await this.utils.isUserMuted(userId , roomInfos.id);
-                        
-                        if(isMuted)
+                        if(isMuted.isMuted !== 'UNMUTED') // if is muted make it not banned
                         {
-                            if(isMuted.isMuted !== 'UNMUTED') // if is muted make it not banned
-                            {
-                                await this.roomService.makeUserUnMuted(userId, roomInfos.id);
-                                console.log('user unmuted')
-                            }
+                            await this.roomService.makeUserUnMuted(unmutedUserId, roomInfos.id);
+                            console.log('user unmuted succsufuly')
+                            return {ok : 'user unmuted succsufuly'}
                         }
-                        else
-                        {
-                            return {error : "user not muted."};
-                        }
-                    } 
+                         
+                    }
+                    else
+                    {
+                        return {error : "user not muted."};
+                    }
                 }
                 else
                 {
@@ -494,6 +493,38 @@ export class GatewayService
                 return {error : 'room not found'}
             }
         }
+
+
+
+        async checkDirectMessages(currentUserId :string , roomName  : string, resiverId : string)
+        {
+            const existingUser = await this.utils.getUserId([currentUserId , resiverId ]); // if current user in db
+
+            if(existingUser.error)
+            {
+                return {error : 'user not found.'};
+            } 
+
+            // const roomInfos = await this.utils.getRoomByName(roomName); 
+
+            // if(roomInfos)  // if room exist
+            // {
+            //     const ifUserInroom = await this.utils.getUserType(roomInfos.id , [currentUserId , resiverId ]); // if both users in this room
+                
+            //     if(ifUserInroom.error)
+            //     {
+            //         return {error : ifUserInroom.error};
+            //     }
+
+            //     return {room : roomInfos , ifUserInroom , currentUserId };
+            // }
+            // else 
+            // {
+            //     return {error : 'room not found'}
+            // }
+
+        }
+        
 
     
 }
