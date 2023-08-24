@@ -940,6 +940,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             
             this.server.to(socket.id).emit("list-rooms",{messages});  //  evry client will connected will display the rooms who is member into 
 
+            this.server.to(socket.id).emit("all-users", {allUsers: await this.utils.getAllUsers()}); 
+            // emmit all users infos
             return {ok : 'connected from chat'}
 
         }

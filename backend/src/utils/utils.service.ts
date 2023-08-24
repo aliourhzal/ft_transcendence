@@ -327,6 +327,10 @@ export class UtilsService {
                 muteExpiresAt : true
             },
         });
+    }
 
+    async getAllUsers()
+    {
+        return await this.prisma.user.findMany();
     }
 }
