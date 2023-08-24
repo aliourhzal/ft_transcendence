@@ -914,6 +914,27 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         }
 
 
+        @SubscribeMessage('get-users') 
+        async getAllusers( @ConnectedSocket() socket: Socket) 
+        {
+            try 
+            {
+                const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+                
+                if (token) 
+                {
+                    await this.utils.verifyToken(token); // // if has error will catch it
+
+                    this.server.to(socket.id).emit("all-users", {allUsers: await this.utils.getAllUsers()}); 
+                }
+            }
+            catch (error) 
+            {
+                console.log(error)
+            } 
+        }
+
+
         /*-------------------------------------------------on connect use this utils function--------------------------------------------------------- */
         
         async checkOnConnect(@ConnectedSocket() socket: Socket , currentUserId :string)

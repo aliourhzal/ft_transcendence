@@ -21,7 +21,6 @@ import { BanUser } from 'src/dto/banUser.dto';
  * 
  * 
  */
-   
 @Controller('rooms')
 export class RoomController {
 
@@ -63,12 +62,6 @@ export class RoomController {
 
                         if(isUserInRoom.error)
                             return res.status(404).send(isUserInRoom.error);
-                    
-                        // if(isUserInRoom.usersType[1].isBanned)
-                        // {
-                        //     return res.status(404).send('you are banned.');
-                        // }
-                        
                         
                         const messageAndUserName = await this.messagesService.getAllMessagesofRoom(dto.roomName);
                         return res.status(200).send({ msg: messageAndUserName });
