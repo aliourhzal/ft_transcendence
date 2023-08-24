@@ -228,7 +228,6 @@ export class UtilsService {
 
     async  getUserInfosInRoom(roomId: string) 
     {
-        
         const rooms = await this.prisma.joinedTable.findMany({
             where: {
                 roomId,
@@ -318,7 +317,7 @@ export class UtilsService {
 
       async   isUserMuted(userId: string, roomId: string) {
         
-        return await this.prisma.blackList.findFirst({
+        return await this.prisma.joinedTable.findFirst({
             where: {
                 userId,
                 roomId,

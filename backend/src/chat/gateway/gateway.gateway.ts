@@ -588,9 +588,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                     const firstUser = await this.roomService.getFirstUserInRoom(rtn.room.id, 'USER')
 
                                     if(!firstUser) // if nor user
-                                    {
-                                         console.log('here')
-                                         
+                                    {                                         
                                         for(let i = 0; i < this.soketsId.length; i++) 
                                         {
                                             if(this.soketsId[i].userId === user['sub'])
@@ -931,17 +929,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
             const rooms = await this.utils.getRoomsForUser(existingUser.existingUser[0]); // all rooms who this user is member into it
 
-            const userInfosInRoom =  await this.utils.getInfosOfuserInRoom(existingUser.existingUser[0]);
-
-            for(let i = 0; i < userInfosInRoom.length ; i++) // current user is muted from one room
-            {   
-                for(let j = 0; j < rooms.length ; j++) // loop all rooms who is member into it
-                {
-                    if(rooms[j].roomId === userInfosInRoom[i].roomId)
-                        rooms[j].isMuted = userInfosInRoom[i].isMuted;
-                }
-            }
-             
+            
             let messages:any[] = [];
 
 
@@ -951,7 +939,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             }
             
             this.server.to(socket.id).emit("list-rooms",{messages});  //  evry client will connected will display the rooms who is member into 
- 
 
             return {ok : 'connected from chat'}
 

@@ -352,13 +352,13 @@ export class RoomsService
 
     async muteUser(muteExpiresAt : any , userId:string, roomId:string , muteType : UserMUTE )
     {
-        const existingmute = await this.prisma.blackList.findUnique({
+        const existingmute = await this.prisma.joinedTable.findUnique({
             where: { userId_roomId: { userId, roomId } },
           });
         
           if (existingmute) 
           {
-            return await this.prisma.blackList.update({
+            return await this.prisma.joinedTable.update({
               where: { userId_roomId: { userId, roomId } },
               data: {
                 isMuted: muteType,
@@ -369,7 +369,7 @@ export class RoomsService
           else 
           {
             // Create a new record
-            return await this.prisma.blackList.create({
+            return await this.prisma.joinedTable.create({
               data: {
                 user: { connect: { id: userId } },
                 room: { connect: { id: roomId } },
@@ -398,7 +398,7 @@ export class RoomsService
     
     async makeUserUnMuted( userId:string, roomId:string  )
     {
-        await this.prisma.blackList.update({
+        await this.prisma.joinedTable.update({
             where: 
             {
                 userId_roomId: 
