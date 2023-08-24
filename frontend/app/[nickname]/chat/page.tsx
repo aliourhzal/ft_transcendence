@@ -88,9 +88,9 @@ export interface _Notification {
 
 let currentUsers = ['tnamir', 'messalih', 'aourhzal', 'asalek']
 
-let allUsers;
+let allUsers: any;
 
-socket.on('all-users', (res) => {console.log(res); allUsers = res})
+socket.on('all-users', (res) => {console.log(res); allUsers = res.allUsers})
 
 export default function Chat() {
 	
@@ -185,7 +185,7 @@ export default function Chat() {
 				</div>
 				<RoomForm />
 				<JoinRoomForm />
-				<SearchDm currentUsers={currentUsers} />
+				<SearchDm currentUsers={allUsers} />
 			</Context.Provider>
 		</main>
 	)

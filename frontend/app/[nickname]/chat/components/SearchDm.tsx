@@ -8,30 +8,32 @@ const SearchDm = ( { currentUsers } ) => {
   const {showSearchUsersForm, setShowSearchUsersForm, socket} = useContext(Context)
 
   const [showList, setShowList] = useState(false)
-  const [users, setUsers] = useState(currentUsers)
+  const [users, setUsers] = useState([...currentUsers])
 
   const hide = () => {
       setShowSearchUsersForm(false)
       setShowList(false)
   }
 
+  console.log(users)
+
   const filerList = (needle = '') => {
     if (needle === '')
       setUsers(currentUsers)
     else
-      setUsers(currentUsers.filter((user:string) => (user.startsWith(needle))))
+      setUsers(currentUsers.filter((user) => (user.nickname.startsWith(needle))))
   }
 
   return (
     <Popup isOpen={showSearchUsersForm} modalAppearance={hide}>
-        {/* <h1 className='absolute top-[15%] text-center text-2xl mb-2 drop-shadow-[0px_0px_5px_rgba(150,150,150,0.7)]'>Search for users</h1> */}
+        <h1 className='absolute top-[15%] text-center text-2xl mb-2 drop-shadow-[0px_0px_5px_rgba(150,150,150,0.7)]'>Search for users</h1>
         <div onClick={() => {setShowList(true)}}><Search _Filter={filerList} /></div>
         {showList &&
         <div className='flex flex-col justify-start items-center h-30'>
           {users.map(user => (
             <span className='w-[70%] h-10 bg-whiteSmoke hover:bg-blueStrong' key={gimmeRandom()} onClick={
-              () => { console.log(user); socket.emit('start-dm', {reciverUserId: user}) }
-            }>{user}</span>
+              () => { console.log(user); socket.emit('start-dm', {reciverUserId: user.id}) }
+            }>{user.nickname}</span>
           ))}
         </div>}
     </Popup>
