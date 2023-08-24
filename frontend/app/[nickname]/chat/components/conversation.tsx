@@ -7,7 +7,7 @@ import AlertMsgDown from './AlertMsgDown'
 import { getCookie } from '../../layout'
 import SocketComponent from './SocketComponent'
 import { headers } from 'next/dist/client/components/headers'
-import axios from 'axios'
+import { FcInfo } from 'react-icons/Fc'
 
 const Conversation = () => {
 
@@ -66,7 +66,7 @@ const Conversation = () => {
 				{ showConv && <>
                     <div className=" flex justify-between text-white pl-10 pb-3 pt-4 w-[100%] border-blue-gray-200 text-blue-gray-700 outline border-b outline-0 placeholder-shown:border-blue-gray-200 focus:outline-0">
                         <div className=''>{activeUserConv.name}</div>
-                        <Image alt='info' className='cursor-pointer mr-5 w-7 h-7' src={'/images/info.svg'} width={30} height={30} onClick={ () => {
+                        <FcInfo className='cursor-pointer mr-5 w-7 h-7' width={30} height={30} onClick={ () => {
                             setShowInfo(true)
                         }}/>
                     </div>

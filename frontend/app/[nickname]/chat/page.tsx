@@ -1,15 +1,12 @@
 "use client";
 
-import { Socket,io } from "socket.io-client";
-import Image from 'next/image'
+import { io } from "socket.io-client";
 import { useEffect, useState, createContext, useContext, useRef } from 'react';
 import Conversation from './components/conversation';
 import RoomForm from './components/createRoom';
-import Search from './components/search';
 import { getCookie, userDataContext } from "../layout";
 import ConvList from "./components/ConvList";
 import JoinRoomForm from "./components/joinRoom";
-import { SocketAddress } from "net";
 import ButtomButtons from "./components/ButtomButtons";
 import SearchDm from "./components/SearchDm";
 import Notification from "./components/Notification";
@@ -90,6 +87,10 @@ export interface _Notification {
 }
 
 let currentUsers = ['tnamir', 'messalih', 'aourhzal', 'asalek']
+
+let allUsers;
+
+socket.on('all-users', (res) => {console.log(res); allUsers = res})
 
 export default function Chat() {
 	

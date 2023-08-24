@@ -6,7 +6,7 @@ import { TbMessage2Search } from 'react-icons/Tb';
 
 const ButtomButtons = () => {
 
-    const {setShowForm, setShowJoinForm, setShowSearchUsersForm} = useContext(Context)
+    const {setShowForm, setShowJoinForm, setShowSearchUsersForm, socket} = useContext(Context)
 
     const [create, setcreate] = useState(false)
     const [join, setJoin] = useState(false)
@@ -34,6 +34,7 @@ const ButtomButtons = () => {
         </div>
         <div className='relative cursor-pointer border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center' onClick={ () => {
             setShowSearchUsersForm(true)
+            socket.emit('get-users', null)
         }}
             onMouseOver={() => {setDm(true)}}
             onMouseLeave={() => {setDm(false)}}

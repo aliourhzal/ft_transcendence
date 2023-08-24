@@ -12,7 +12,7 @@ interface RoomMumbersProps {
     isAdmin: any,
 }
 
-const RoomMumbers = ( { info, user, isOwner, isAdmin } ) => {
+const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin } ) => {
 
     const [showOptions, setShowOptions] = useState(false)
 
@@ -28,7 +28,7 @@ const RoomMumbers = ( { info, user, isOwner, isAdmin } ) => {
             <div className='w-10 font-extrabold flex items-center justify-center'>
                 {user.nickName != info.userData.nickname ?
                      <IoIosArrowDown size={20} fontWeight={'bold'} className={'font-extrabold transition duration-300 delay-130 ' +
-                    (showOptions ? 'rotate-180' : '')}/> : ''}
+                    (showOptions ? 'rotate-180' : 'rotate-260')}/> : ''}
             </div>
         </div>
         {showOptions && <RoomOptions info={info} user={user} isAdmin={isAdmin} isOwner={isOwner} />}
