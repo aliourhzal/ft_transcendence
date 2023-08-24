@@ -89,6 +89,8 @@ export interface _Notification {
 	type: string
 }
 
+let currentUsers = ['tnamir', 'messalih', 'aourhzal', 'asalek']
+
 export default function Chat() {
 	
 	const [cookies, setCookie, removeCookie] = useCookies();
@@ -182,7 +184,7 @@ export default function Chat() {
 				</div>
 				<RoomForm />
 				<JoinRoomForm />
-				<SearchDm />
+				<SearchDm currentUsers={currentUsers} />
 			</Context.Provider>
 		</main>
 	)

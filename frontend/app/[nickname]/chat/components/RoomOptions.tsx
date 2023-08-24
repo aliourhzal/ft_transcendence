@@ -61,7 +61,7 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner 
     }
 
     const unMuteUser = (id) => {
-        socket.emit('unmute-user', {roomName:info.room.name, mutedUserId:id})
+        socket.emit('unmute-user', {roomName:info.room.name, unmutedUserId:id})
     }
 
   return (
