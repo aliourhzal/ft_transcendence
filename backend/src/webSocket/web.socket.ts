@@ -218,12 +218,12 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			this.server.to(room.roomId).emit("score", {soc:room.player1.socket.id, p1:room.player1.score, p2:room.player2.score})
 		}
 
-		if (room.player1.score === 1 || room.player2.score === 1)//
+		if (room.player1.score === 7 || room.player2.score === 7)//
 		{
 			await this.usersService.createMatch(room.player1.nickName, room.player2.nickName, room.player1.score, room.player2.score);
 			clearInterval(room.loop);
 			this.server.to(room.roomId).emit("gameOver", 
-				room[room.player1.score === 1 ? 'player1' : 'player2'].socket.id
+				room[room.player1.score === 7 ? 'player1' : 'player2'].socket.id
 			);
 			return ;
 		}
@@ -381,7 +381,10 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		if (this.gameQueue.length < 2 || this.connectedUsers.length < 2)
 			return ;
 		if (this.gameQueue[0].user.nickName === this.gameQueue[1].user.nickName)
+		{
 			this.gameQueue.pop();
+			return ;
+		}
 		// if (this.connectedUsers[0].nickname === this.connectedUsers[1].nickname)
 		// {
 		// 	this.connectedUsers.splice(0, 1);
