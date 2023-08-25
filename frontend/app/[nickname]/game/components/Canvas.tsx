@@ -199,7 +199,6 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		});
 	}
 
-	const [state, setWin] = useState(false);
     useEffect(() => {
 		const canvas = document.getElementById('pongy') as HTMLCanvasElement;
 		const ctx = canvas.getContext('2d');
@@ -218,8 +217,25 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			{
 				ctx.fillStyle = bgColor;
 				ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+				if (n === 3)
+					ctx.fillStyle = "#000";
+				else
+					ctx.fillStyle = "#FFF";
+				// ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+				ctx.font = "75px fantasy";
+				ctx.fillText("You Win !!", (canvas.width / 2 - (canvas.width / 6)), canvas.height / 2);
 			}
-			setWin(true);
+			else
+			{
+				ctx.fillStyle = bgColor;
+				ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+				if (n === 3)
+					ctx.fillStyle = "#000";
+				else
+					ctx.fillStyle = "#FFF";
+				ctx.font = "75px fantasy";
+				ctx.fillText("You Lose !!", (canvas.width / 2 - (canvas.width / 6)), canvas.height / 2);
+			}
 		});
 		// listening to the window resize event
 		window.addEventListener("resize", () => {
@@ -316,23 +332,11 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		//  md:w-[800px] md:h-[450px]
 		//  xl:w-[1000px] xl:h-[562px]
 		//  "/>
-		<div className="w-full h-full items-center justify-center">
-			<div className=" relative z-10 top-1/2 left-1/2 w-full h-full">
-				{
-					state && <Lottie 
-						options={startbuttonGame}
-						width={400}
-						height={400}
-					/>
-				}
-			</div>
-
 	        <canvas id="pongy" className="bg-darken-300 rounded-md
 				w-[90%] aspect-[16/9]
 				max-sm:rotate-90 max-sm:w-[600px] max-sm:h-[337px]
 				xl:w-[1000px] xl:h-[562px]
 			"/>
-		</div>
     );
 }
 
