@@ -7,18 +7,37 @@ const ConvList = () => {
   const {socket, set_room_created, rooms, userData, convs, setConvs, _notification, setChatBoxMessages } = useContext(Context)
   const [updateList, setUpdateList] = useState(false)
   
-  const fillUserList = (listOfRoomsOfUser) => {
+  const fillUserList = (res) => {
     setConvs([])
-    console.log(listOfRoomsOfUser)
-    listOfRoomsOfUser.messages.map( (room: any) => {
-      rooms.unshift({
-        name: room.room.room.room_name,
-        lastmsg:'welcome to group chat',
-        msgs: room.msg,
-        id: room.room.room.id,
-        users: getUsersInfo(room.usersInRoom),
-        type: room.room.room.roomType
-      })
+    console.log("**", res)
+    res.messages.map( (room: any) => {
+      if (room.room.room.roomType === 'DM') {
+        var _name = room.usersInRoom[0].user.nickname
+        var _photo = room.usersInRoom[0].user.profilePic
+        if (_name === userData.nickname) {
+            _name = room.usersInRoom[1].user.nickname
+            _photo = room.usersInRoom[1].user.profilePic
+        }
+        rooms.unshift({
+          name: _name,
+          lastmsg:'',
+          msgs: room.msg,
+          id: room.room.room.id,
+          users: getUsersInfo(room.usersInRoom),
+          type: 'DM',
+          photo: _photo
+        })
+      }
+      else {
+        rooms.unshift({
+          name: room.room.room.room_name,
+          lastmsg:'welcome to group chat',
+          msgs: room.msg,
+          id: room.room.room.id,
+          users: getUsersInfo(room.usersInRoom),
+          type: room.room.room.roomType
+        })
+      }
     })
     setConvs(rooms)
   }

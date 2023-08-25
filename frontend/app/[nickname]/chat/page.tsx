@@ -34,6 +34,7 @@ export interface Room {
 	name: string,
 	type: string,
 	lastmsg: string,
+	photo?: string,
 	users: {
 		id: string,
 		nickName: string,
@@ -66,6 +67,34 @@ export const getUsersInfo = (users) => {
 			photo: user.user.profilePic,
 			type: user.userType,
 			isMuted: user.isMuted,
+			}
+		)
+	  } 
+	)
+	return (_users)
+}
+
+export const setDmUsers = (users) => {
+	let _users: {
+		  id: string,
+		  nickName: string,
+		  firstName: string,
+		  lastName: string,
+		  photo: string | undefined,
+		  type: "OWNER"| "ADMIN" | "USER",
+		  isMuted: string
+	  }[] = []
+	// console.log(users)
+	users.map( (user) => {
+		_users.push(
+			{
+			id: user.id,
+			nickName: user.nickname,
+			firstName: user.firstName,
+			lastName: user.lastName,
+			photo: user.profilePic,
+			type: 'USER',
+			isMuted: 'UNMUTED',
 			}
 		)
 	  } 

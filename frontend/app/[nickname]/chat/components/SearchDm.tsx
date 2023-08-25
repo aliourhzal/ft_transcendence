@@ -19,8 +19,6 @@ const SearchDm:React.FC<SearchDmProps> = ( { currentUsers } ) => {
       setShowList(false)
   }
 
-  console.log(typeof currentUsers)
-
   const filerList = (needle = '') => {
     if (needle === '')
       setUsers(currentUsers)

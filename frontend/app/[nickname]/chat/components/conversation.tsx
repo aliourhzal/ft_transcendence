@@ -67,9 +67,9 @@ const Conversation = () => {
 				{ showConv && <>
                     <div className=" flex justify-between text-white pl-10 pb-3 pt-4 w-[100%] border-blue-gray-200 text-blue-gray-700 outline border-b outline-0 placeholder-shown:border-blue-gray-200 focus:outline-0">
                         <div className=''>{activeUserConv.name}</div>
-                        <FcInfo className='cursor-pointer mr-5 w-7 h-7' width={30} height={30} onClick={ () => {
+                        {rooms.find(o => o.name === activeUserConv.name).type != 'DM' &&  <FcInfo className='cursor-pointer mr-5 w-7 h-7' width={30} height={30} onClick={ () => {
                             setShowInfo(true)
-                        }}/>
+                        }}/>}
                     </div>
 
                     <div id='chatbox' className='relative flex flex-col w-full mt-8 overflow-y-scroll basis-[80%]'>

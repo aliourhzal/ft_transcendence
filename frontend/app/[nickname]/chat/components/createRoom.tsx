@@ -1,16 +1,11 @@
 import { useContext, useEffect, useState } from "react"
-import { Context, getUsersInfo } from '../page'
-import axios from "axios"
+import { Context, getUsersInfo, setDmUsers } from '../page'
 import AddedUsersForm from "./addedUsersForm"
-import { METHODS } from "http"
-import { Socket } from "socket.io-client"
 import Popup from "./Popup"
-import { getCookie } from "../../layout"
-import { StyledInput } from "@nextui-org/react"
 
 const RoomForm = () => {
      
-    const {showForm, setShowForm, socket, setConvs, set_room_created, rooms} = useContext(Context)
+    const {showForm, setShowForm, socket, setConvs, set_room_created, rooms, userData} = useContext(Context)
 
     const [roomName, setName] = useState('')
     const [users, setUsers] = useState<string[]>([])
@@ -38,14 +33,33 @@ const RoomForm = () => {
     useEffect(() => {
         socket.on('new-room', (res) => {
             console.log(res)
-            rooms.unshift({
-                name: res.room.room.room_name,
-                lastmsg:'welcome to group chat',
-                msgs: [],
-                id: res.room.room.id,
-                users: getUsersInfo(res.userInfos),
-                type: res.room.room.roomType
-            })
+            if (res.room.roomType === 'DM') {
+                var _name = res.usersInfos.existingUser[0].nickname
+                var _photo = res.usersInfos.existingUser[0].profilePic
+                if (_name === userData.nickname) {
+                    _name = res.usersInfos.existingUser[1].nickname
+                    _photo = res.usersInfos.existingUser[1].profilePic
+                }
+                rooms.unshift({
+                    name: _name,
+                    lastmsg:'',
+                    msgs: [],
+                    id: res.room.id,
+                    users: setDmUsers(res.usersInfos.existingUser),
+                    type: 'DM',
+                    photo: _photo,
+                })
+            }
+            else {
+                rooms.unshift({
+                    name: res.room.room.room_name,
+                    lastmsg:'welcome to group chat',
+                    msgs: [],
+                    id: res.room.room.id,
+                    users: getUsersInfo(res.userInfos),
+                    type: res.room.room.roomType
+                })
+            }
             set_room_created(old => !old)
             setConvs([...rooms])
         })

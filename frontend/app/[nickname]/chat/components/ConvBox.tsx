@@ -50,7 +50,7 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
     }
   }
 
-  
+  console.log(data.data.photo)
 
   return (
     <div className="convGroup z-0 bg-zinc-800 hover:bg-zinc-700 w-[70%] left-[15%] h-[100px] relative my-3 rounded-md active:bg-blue-500" onClick={(e) => {
