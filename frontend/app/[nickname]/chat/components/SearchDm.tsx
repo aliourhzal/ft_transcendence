@@ -3,7 +3,11 @@ import Popup from './Popup'
 import { Context, gimmeRandom } from '../page'
 import Search from './search'
 
-const SearchDm = ( { currentUsers } ) => {
+interface SearchDmProps {
+  currentUsers: any
+}
+
+const SearchDm:React.FC<SearchDmProps> = ( { currentUsers } ) => {
 
   const {showSearchUsersForm, setShowSearchUsersForm, socket} = useContext(Context)
 
@@ -15,7 +19,7 @@ const SearchDm = ( { currentUsers } ) => {
       setShowList(false)
   }
 
-  console.log(users)
+  console.log(typeof currentUsers)
 
   const filerList = (needle = '') => {
     if (needle === '')
