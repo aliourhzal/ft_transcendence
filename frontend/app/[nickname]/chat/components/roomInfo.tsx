@@ -70,15 +70,13 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
             console.log(pass)
             socket.emit('edit-room-password', { roomName:info.room.name, newPassword: pass })
         }
-        else
-            socket.emit('set-room-public', { roomName:info.room.name, newPassword: pass })
-        
     }
 
     const changeRoomType = async (newType:string) => {
         console.log(newType)
-        newType === 'public' ? socket.emit('make-public', {roomName:info.room.name}) :
-        socket.emit('make-protected', {roomName:info.room.name, newPassword: newType})
+        newType === 'public' ? socket.emit('delete-room-password', {roomName:info.room.name}) :
+        socket.emit('add-room-password', {roomName:info.room.name, newPassword: newType})
+        setshowRoomEditForm(false)
     }
 
     const [showUsersForm, setShowUsersForm] = useState(false)

@@ -759,18 +759,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         const oldRoomName = dto.roomName;
                         const newRoomName = await this.roomService.updateRoomName(rtn.room.id, dto.newName);
 
-                        const usersInroom = await this.utils.getUsersInRooms(rtn.room.id);
-
-                        for(const userInRoom of usersInroom)
-                        {
-                            for (let i = 0; i < this.soketsId.length; i++) 
-                            {
-                                if(this.soketsId[i].userId === userInRoom.userId)
-                                {
-                                    this.server.to(this.soketsId[i].socketIds).emit("change-room-name",{ oldRoomName, newRoomName : newRoomName.room_name});
-                                } 
-                            }
-                        }
+                        await this.emmiteEventesToUsers(socket, rtn.room.id,"change-room-name",{ oldRoomName, newRoomName : newRoomName.room_name});
 
                     }
                     else
@@ -817,6 +806,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                     if(rtn.room.roomType === 'PROTECTED')
                     {
                         await this.roomService.changePasswordOfProtectedRoom(rtn.room.id, encodePasswd(dto.newPassword));
+                        await this.emmiteEventesToUsers(socket, rtn.room.id,"change-room-password",{ roomName : rtn.room.room_name , password : "exist"});
+
                     }
                     else
                     {
@@ -863,6 +854,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                     if(rtn.room.roomType === 'PROTECTED')
                     {
                         await this.roomService.deleteRoomPassword(rtn.room.id);
+                        await this.emmiteEventesToUsers(socket, rtn.room.id,"change-room-password",{ roomName : rtn.room.room_name , password : null});
+
                     }
                     else
                     {

@@ -22,6 +22,7 @@ const RoomForm = () => {
 
     const hideForm = () => {
         setShowForm(false)
+        setShowPassInput(true)
         setName(''); setUser(''); setUsers([]); setPass(''); setRoomType('PUBLIC'); setPrivate(false)
     }
 
