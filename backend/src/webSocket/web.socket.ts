@@ -13,9 +13,10 @@ class Player {
 	score: number;
 	nickName: string;
 	avatar: string;
-	height: number
+	height: number;
+	gameGoing: boolean;
 
-	constructor(socket: Socket, height = 0, width = 0, score = 0) {
+	constructor(socket: Socket, height = 0, width = 0, score = 0, gameGoing = false) {
 		this.canvas = {height, width};
 		this.socket = socket;
 		this.ball = {x: 0, y: 0};
@@ -183,9 +184,20 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
         socket.disconnect();
     }
 
-	handleDisconnect(socket: Socket) {///delete room when someone disconnected
+	async handleDisconnect(socket: Socket) {///delete room when someone disconnected
 		console.log(this.connectedUsers.find(x => x.socket === socket ).nickname ,' : has disconnected from game socket')//
 		try {
+			const room = this.rooms.find(x => x.player1.socket === socket || x.player2.socket === socket);
+			if (room.player1.gameGoing === true || room.player2.gameGoing === true)
+			{
+				room.player1.gameGoing = room.player2.gameGoing = false;
+				if (room.player1.score !== room.player2.score)
+				{
+					await this.usersService.createMatch(room.player1.nickName, room.player2.nickName, room.player1.score, room.player2.score);
+					this.server.to(room.roomId).emit("gameOver", 
+						room[room.player1.score > room.player2.score ? 'player1' : 'player2'].socket.id);
+				}
+			}
 			clearInterval(this.rooms.find(x => 
 				x.player1.socket === socket || x.player2.socket === socket
 			).loop);
@@ -220,6 +232,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 
 		if (room.player1.score === 7 || room.player2.score === 7)//
 		{
+			room.player1.gameGoing = room.player2.gameGoing = false;
 			await this.usersService.createMatch(room.player1.nickName, room.player2.nickName, room.player1.score, room.player2.score);
 			clearInterval(room.loop);
 			this.server.to(room.roomId).emit("gameOver", 
@@ -346,7 +359,8 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 								avatar:newRoom.player2.avatar});
 		this.server.to(newRoom.player2.socket.id).emit("playersInfo", {nickname:newRoom.player1.nickName,
 								avatar:newRoom.player1.avatar});
-
+		
+		newRoom.player1.gameGoing = newRoom.player2.gameGoing = true; //set the game as started
 		this.rooms.push(newRoom);
 		this.gameQueue.splice(0, 2);
 		setTimeout(()=>{
