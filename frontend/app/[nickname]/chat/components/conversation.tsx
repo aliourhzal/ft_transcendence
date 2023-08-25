@@ -39,7 +39,8 @@ const Conversation = () => {
         if (msg != '') {
             var _user = rooms.find(o => o.name === activeUserConv.name).users.find(o => o.nickName === userData.nickname)
             if (_user.isMuted === 'UNMUTED') {
-                socket.emit('send-message', {message:msg, roomName:activeUserConv.name})
+                console.log(rooms.find(o => o.name === activeUserConv.name).id)
+                socket.emit('send-message', {message:msg, roomId:rooms.find(o => o.name === activeUserConv.name).id})
                 msg_sent == undefined ? set_msg_sent(1) : set_msg_sent(old => old == 1 ? 2 : 1)
                 e.target[0].value = ''
                 set_msg_sender(userData.nickname)

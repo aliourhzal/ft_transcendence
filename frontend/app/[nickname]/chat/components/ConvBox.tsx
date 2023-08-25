@@ -14,14 +14,15 @@ interface ConvBoxProps {
 
 const ConvBox: React.FC<ConvBoxProps> = (data) => {
 
-  const {setShowConv, activeUserConv, setActiveUserConv, setChatBoxMessages} = useContext(Context)
+  const {setShowConv, rooms, setActiveUserConv, setChatBoxMessages} = useContext(Context)
   const handleClick = async () => {
     setShowConv(true)
     setActiveUserConv(data.data)
     // if (new_msg_notif.name == activeUserConv.name)
     //   notify_conv_msg(false, '')
     try {
-      await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomName:data.data.name}, {
+      console.log(rooms.find(o => o.name === data.data.name).id)
+      await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomId:rooms.find(o => o.name === data.data.name).id}, {
         withCredentials: true,
         headers: {
             'Authorization': `Bearer ${getCookie('access_token')}`,
