@@ -95,7 +95,7 @@ export function MatchHistory() {
             <h2 className='text-white'>Matches History</h2>
             <div className='matchHistoryBody flex flex-col gap-3 overflow-y-auto max-h-[420px]'>
                 {
-                    historyState.map((x, i) => {
+                    historyState.reverse().map((x, i) => {
                         return (<MatchResult
                             key={i}
                             p1={x.player1.nickname}
