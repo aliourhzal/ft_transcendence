@@ -8,7 +8,7 @@ export class SendMessage {
 
     @IsNotEmpty()
     @IsString()
-    roomName: string;
+    roomId: string;
 
     @IsNotEmpty()
     @IsString()

@@ -39,7 +39,7 @@ model Room{
     room_name       String?      @unique    
     password        String?
 
-	roomType    RoomType     	@default(PUBLIC)
+	roomType    RoomType  ?   	@default(PUBLIC)
 
 	messages                    Messages[]
 
@@ -70,11 +70,9 @@ model JoinedTable{
     room                Room        @relation(fields: [roomId], references: [id]) // not compile in the query
     roomId              String 
 
-    isBanned            UserBnned     	@default(UNBANNED)
-
+ 
     isMuted              UserMUTE    	@default(UNMUTED)
 
-    banExpiresAt        DateTime?
     muteExpiresAt        DateTime?
 
     createdAt  DateTime   @default(now())  // Add this field to track creation date

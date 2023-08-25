@@ -13,12 +13,12 @@ export class MessagesService
     // constructor(private prisma:PrismaService){}
     private readonly prisma = new PrismaClient();
     
-    async getAllMessagesofRoom(room_name : string)
+    async getAllMessagesofRoom(roomId : string)
     {
         const allMessages: AllMessages[] = [];
         
         const messages = await this.prisma.room.findUnique({
-            where: { room_name },
+            where: { id : roomId },
             include: {
               messages: true,
               users: true,

@@ -22,24 +22,66 @@ export class RoomsService
 
     // create dual room
 
-    async createDualRoom(roomName : string, user1Id : string , user2Id  : string)
+    async   createPrivateRoom(currentUserId: string, user2Id: string)  
     {
-        const room = await this.prisma.room.create({
-            data: 
-            {
-                roomType: 'DM', 
+        const dmRooms = await this.prisma.room.findMany({
+            where: {
+              roomType: 'DM',
+              users: {
+                some: {
+                  userId: currentUserId,
+                },
+              },
             },
-        });
+          });
+
+
+        const dmRooms_2 = await this.prisma.room.findMany({
+            where: {
+              roomType: 'DM',
+              users: {
+                some: {
+                  userId: user2Id,
+                },
+              },
+            },
+          });
+          
+
+          const haveSharedRooms = dmRooms.some((dmRoom) =>
+        dmRooms_2.some((room) => room.id === dmRoom.id)
+        );
+
+        if (haveSharedRooms) {
+            console.log('The users have shared rooms in DM-type rooms.');
+            return {error: 'The users have shared rooms in DM-type rooms.'}
+        } 
+        
+
+            const newDmRoom = await this.prisma.room.create({
+            data: {
+              roomType: 'DM',
+            },
+          }); 
+          await this.prisma.joinedTable.create({
+            data: {
+            userId : currentUserId,
+            roomId : newDmRoom.id,
+            },
+        })
+            await this.prisma.joinedTable.create({
+            data: {
+            userId : user2Id,
+            roomId : newDmRoom.id,
+            },
+        })
+
+        console.log('create DM-type rooms.');
+        
     
-        // Create links between users and the room
-        await this.prisma.joinedTable.createMany({
-            data: [
-                { userId: user1Id, roomId: room.id },
-                { userId: user2Id, roomId: room.id },
-            ],
-        });
-    
-        return room;
+    return {newDmRoom};
+
+
     }
 
     async linkBetweenUsersAndRooms(roomId: string, usersIds:string[])  
@@ -407,7 +449,7 @@ export class RoomsService
                         roomId
                     } 
             },
-            data: { isMuted: 'UNMUTED', banExpiresAt: null },
+            data: { isMuted: 'UNMUTED'},
         });
     }
     

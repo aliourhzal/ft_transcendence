@@ -112,10 +112,6 @@
 
 -----
 
-- on connect rooms dont displayed
+- handle when mute user , clik on unmute it dont unmuted
 
-- when mute user and when join room join as banned
-
-- handle when user is muted and when kick from leave from room and when join it join muted
-
-- handle sending muted user when connected
+- when user is muted  and leave the room , when join it it join muted

@@ -52,6 +52,26 @@ export class UtilsService {
         return {existingUser};
     }
 
+    async getUserinfos(ids : string[])
+    {
+        let  existingUser: any[] = [];       
+
+        for(const id of ids)
+        {
+            const userId = await this.prisma.user.findUnique({
+                where: {
+                    id,
+                },
+            });
+
+            if(!userId)
+                return {error : 'user not found'};
+            
+            existingUser.push(userId);
+        }
+        return {existingUser};
+    }
+
  
     async getUsersIdByNickname(adminId: string, users?: string[], flag?: number)
     {
@@ -112,6 +132,18 @@ export class UtilsService {
     };
     
     async getRoomById (id: string) {
+        const room = await this.prisma.room.findUnique({
+          where: { id },
+        });
+      
+        if (room) {
+          return room.id;
+        } else {
+          // Handle case when room is not found
+          return null;
+        }
+    };
+    async getRoominfosById (id: string) {
         const room = await this.prisma.room.findUnique({
           where: { id },
         });
@@ -185,20 +217,7 @@ export class UtilsService {
     }
 
 
-    async getInfosOfuserInRoom(userId: string)
-    {
-        return await this.prisma.blackList.findMany({
-            where: {
-                userId,
-                isMuted: {
-                    not: UserMUTE.UNMUTED, // Exclude rooms where the user is muted
-                },
-            },
-            include: {
-                room: true,
-            },
-        })
-    }
+    
 
     async  getUsersInRooms(roomId: string) 
     {
@@ -263,7 +282,7 @@ export class UtilsService {
           
         await this.prisma.joinedTable.update({ // make the user banned from the room
             where: { userId_roomId: { userId: userId, roomId: roomId } },
-            data: { isBanned: "BANNEDUNLIMMITED_TIME" },
+            data: null,
         });
           
           

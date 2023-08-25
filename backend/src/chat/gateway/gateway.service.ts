@@ -305,7 +305,7 @@ export class GatewayService
 
         /*-------------------------------------------------when send message use this utils function--------------------------------------------------------- */
         
-        async checkSendMessage(currentUserId :string , roomName  :string)
+        async checkSendMessage(currentUserId :string , roomId  :string)
         {
             const existingUser = await this.utils.getUserId([currentUserId]); // if current user in db
 
@@ -314,7 +314,7 @@ export class GatewayService
                 return {error : 'user not found.'};
             } 
 
-            const roomInfos = await this.utils.getRoomByName(roomName); 
+            const roomInfos = await this.utils.getRoominfosById(roomId); 
 
             if(roomInfos)  // if room exist
             {
@@ -496,33 +496,29 @@ export class GatewayService
 
 
 
-        async checkDirectMessages(currentUserId :string , roomName  : string, resiverId : string)
+        async checkDirectMessages(currentUserId :string  , reciverUserId : string)
         {
-            const existingUser = await this.utils.getUserId([currentUserId , resiverId ]); // if current user in db
+            const existingUser = await this.utils.getUserinfos([currentUserId , reciverUserId ]); // if current user in db
 
             if(existingUser.error)
             {
                 return {error : 'user not found.'};
             } 
 
-            // const roomInfos = await this.utils.getRoomByName(roomName); 
+            if(currentUserId === reciverUserId)
+                return {error : 'same user'}
+            
+            const rtn = await this.roomService.createPrivateRoom(currentUserId ,reciverUserId)
 
-            // if(roomInfos)  // if room exist
-            // {
-            //     const ifUserInroom = await this.utils.getUserType(roomInfos.id , [currentUserId , resiverId ]); // if both users in this room
-                
-            //     if(ifUserInroom.error)
-            //     {
-            //         return {error : ifUserInroom.error};
-            //     }
+            if(rtn.error)
+            {
+                return {error : rtn.error}
+            }
 
-            //     return {room : roomInfos , ifUserInroom , currentUserId };
-            // }
-            // else 
-            // {
-            //     return {error : 'room not found'}
-            // }
-
+            return {newDmRoom : rtn.newDmRoom ,existingUser };
+             
+            
+            
         }
         
 

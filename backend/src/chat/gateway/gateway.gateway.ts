@@ -171,7 +171,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             {
                 const user  = await this.utils.verifyToken(token); // // if has error will catch it
                 
-                const rtn = await this.gatewayService.checkSendMessage( user['sub'] , dto.roomName);
+                const rtn = await this.gatewayService.checkSendMessage( user['sub'] , dto.roomId);
 
                 if(rtn.error)
                 {
@@ -868,7 +868,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                     console.log('invalid jwt.');
                 }
             }   
-            catch (error) 
+            catch (error)   
             {
                
                 console.log(error)
@@ -885,25 +885,34 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
         @SubscribeMessage('start-dm') 
         @UsePipes(new ValidationPipe()) // need room id ,   user id who want to send it.
-        async directMessages(@MessageBody() dto:any , @ConnectedSocket() socket: Socket) 
+        async directMessages(@MessageBody() dto:DirectMessages , @ConnectedSocket() socket: Socket) 
         {
-            console.log(dto)
-            // try 
-            // {
-            //     const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+            try 
+            {
+                const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
                 
-            //     if (token) 
-            //     {
-            //         const user  = await this.utils.verifyToken(token); // // if has error will catch it
+                if (token) 
+                {
+                    const user  = await this.utils.verifyToken(token); // // if has error will catch it
+                    // createDualRoom
 
+                    const rtn = await this.gatewayService.checkDirectMessages(user['sub'] , dto.reciverUserId);
 
-
-            //     }
-            // }
-            // catch (error) 
-            // {
-            //     console.log(error)
-            // } 
+                    if(rtn.error)
+                    {
+                        console.log(rtn.error)
+                        // return {error : rtn.error}
+                    }
+                    
+                    console.log(rtn.existingUser)
+                    await this.emmiteEventesToUsers(socket, rtn.newDmRoom.id,"new-room" , {room : rtn.newDmRoom   , usersInfos: rtn.existingUser} );
+        
+                }
+            }
+            catch (error) 
+            {
+                console.log(error)
+            } 
         }
 
 
@@ -941,15 +950,16 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
             this.soketsId.push({userId : existingUser.existingUser[0], socketIds:socket.id})
 
+           
             const rooms = await this.utils.getRoomsForUser(existingUser.existingUser[0]); // all rooms who this user is member into it
 
-            
+             
             let messages:any[] = [];
 
 
             for(let i = 0; i < rooms.length; i++)
             {
-                messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i]['room']['room_name']) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
+                messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i].room.id) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
             }
             
             this.server.to(socket.id).emit("list-rooms",{messages});  //  evry client will connected will display the rooms who is member into 

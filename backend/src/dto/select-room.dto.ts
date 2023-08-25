@@ -7,7 +7,7 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class SelectRoom {
      @IsNotEmpty()
     @IsString()
-    roomName: string;
+    roomId: string;
 
 }
  
