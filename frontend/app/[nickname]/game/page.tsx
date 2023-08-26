@@ -123,9 +123,9 @@ function Themes(props: any)
                 props.T3.current.style.border = 'none';
             }}
             onMouseEnter={()=>{props.def3.current.style.visibility = 'hidden'}} onMouseOut={()=>{props.def3.current.style.visibility = 'visible'}}>
-                <h1 style={{fontFamily: "Comic Sans MS"}} ref={props.def3} className="outlineT absolute top-[40%] z-10 left-[36%] font-semibold font-mono">Switcher</h1>
+                <h1 style={{fontFamily: "Comic Sans MS"}} ref={props.def3} className="outlineT absolute top-[40%] z-10 left-[36%] font-semibold font-mono">Custom</h1>
                 {/* <input id="theme1" type="radio" className="hidden" /> */}
-                <img ref={props.T4} className="rounded-md w-[200px] h-28 blur-[2px] hover:blur-none" src="/images/42.jpg" alt="" />
+                <img ref={props.T4} className="rounded-md w-[200px] h-28 blur-[2px] hover:blur-none" src="/images/custom.png" alt="" />
             </label>
         </div>
         <CustomPopUp colors={props.colors} setC={props.setC} isOpen={props.isOpen} setIsOpen={props.setIsOpen}/>

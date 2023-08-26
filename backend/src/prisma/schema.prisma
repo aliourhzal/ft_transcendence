@@ -69,6 +69,8 @@ model Match {
 	id			String @id @default(uuid())
 	players		User[]
 	scores		Int[]
+	score1		Json[]
+	score2		Json[]
 	playerAt	DateTime @default(now())
 }
 

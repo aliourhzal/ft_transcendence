@@ -199,7 +199,6 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		});
 	}
 
-	const [state, setWin] = useState(false);
     useEffect(() => {
 		const canvas = document.getElementById('pongy') as HTMLCanvasElement;
 		const ctx = canvas.getContext('2d');
@@ -218,8 +217,25 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			{
 				ctx.fillStyle = bgColor;
 				ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+				if (n === 3)
+					ctx.fillStyle = "#000";
+				else
+					ctx.fillStyle = "#FFF";
+				// ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+				ctx.font = "75px fantasy";
+				ctx.fillText("You Win !!", (canvas.width / 2 - (canvas.width / 6)), canvas.height / 2);
 			}
-			setWin(true);
+			else
+			{
+				ctx.fillStyle = bgColor;
+				ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+				if (n === 3)
+					ctx.fillStyle = "#000";
+				else
+					ctx.fillStyle = "#FFF";
+				ctx.font = "75px fantasy";
+				ctx.fillText("You Lose !!", (canvas.width / 2 - (canvas.width / 6)), canvas.height / 2);
+			}
 		});
 		// listening to the window resize event
 		window.addEventListener("resize", () => {

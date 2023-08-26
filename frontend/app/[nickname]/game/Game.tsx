@@ -51,8 +51,8 @@ export default function Game(props: any)
 						<h2 className=" text-whiteSmoke">{userData.nickname}</h2>
 					</div>
 					<div className="flex items-center gap-x-5">
-						<img className="w-16 h-16 rounded-full" src={opData.avatar} alt="man_hhhh" />
 						<h2 className=" text-whiteSmoke">{opData.nickname}</h2>
+						<img className="w-16 h-16 rounded-full" src={opData.avatar} alt="man_hhhh" />
 					</div>
 				</div>
 				<Canvas colors={props.colors} socket={socket} specials={props.specials} themeN={props.themeN} ball={props.ball}  hell={props.hell} opData={setOpData}/>

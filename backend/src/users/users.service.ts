@@ -199,7 +199,8 @@ export class UsersService {
 						user2
 					]
 				},
-				scores: [score1, score2]
+				score1: [user1.id, score1],
+				score2: [user2.id, score2]
 			}
 		});
 	}
@@ -260,12 +261,13 @@ export class UsersService {
 				player1:{
 					avatar	: x.players[0].profilePic,
 					nickname : x.players[0].nickname,
-					score : x.scores[0],
+					score: (x.players[0].id === x.score1[0] ? x.score1[1] : x.score2[1])
+					// score : x.scores[0],
 				},
 				player2:{
 					avatar : x.players[1].profilePic,
 					nickname : x.players[1].nickname,
-					score : x.scores[1]
+					score: (x.players[1].id === x.score1[0] ? x.score1[1] : x.score2[1])
 				}
 			}
 			history.push( match );
