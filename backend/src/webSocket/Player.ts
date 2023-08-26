@@ -41,7 +41,8 @@ export class Player {
 	score: number;
 	nickName: string;
 	avatar: string;
-	height: number
+	height: number;
+	gameGoing: boolean;
 
 	constructor(socket: Socket, height = 0, width = 0, score = 0) {
 		this.canvas = {height, width};
