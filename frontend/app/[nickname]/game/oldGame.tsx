@@ -303,8 +303,16 @@ export function StartGame(props)
                 bgColor = "#000";
                 user.color = "#FFF";
             }
-            if (com.score === 5 || user.score === 5)
+            if (com.score === 1 || user.score === 1)
+            {
+                drawRect(0, 0, canvas.width, canvas.height, bgColor);
+                (n === 3 ? ctx.fillStyle = "#000" : ctx.fillStyle = user.color)
+                ctx.font = "65px fantasy";
+                ctx.fillText((com.score > user.score ? "You Lost !!" : "You Win !!"),
+                (canvas.width/2 - (canvas.width/4)),canvas.height/2);
                 clearInterval(loop);
+                return ;
+            }
             update();
             render();
         }
