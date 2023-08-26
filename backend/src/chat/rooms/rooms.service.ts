@@ -53,7 +53,6 @@ export class RoomsService
         );
 
         if (haveSharedRooms) {
-            console.log('The users have shared rooms in DM-type rooms.');
             return {error: 'The users have shared rooms in DM-type rooms.'}
         } 
         
@@ -440,7 +439,7 @@ export class RoomsService
     
     async makeUserUnMuted( userId:string, roomId:string  )
     {
-        await this.prisma.joinedTable.update({
+        return await this.prisma.joinedTable.update({
             where: 
             {
                 userId_roomId: 

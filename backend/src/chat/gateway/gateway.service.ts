@@ -97,8 +97,7 @@ export class GatewayService
             if(roomInfos)  // if room exist
             {
                 const isBanned = await this.utils.ifUserIsBanned(currentUserId , roomInfos.id);
-                    
-
+                
                 if(!isBanned) // if first time want to join tfhe room
                 {
                     return {room : roomInfos  , currentUserId };
@@ -167,9 +166,9 @@ export class GatewayService
                     {
                         if(isMuted.isMuted !== 'UNMUTED') // if is muted make it not banned
                         {
-                            await this.roomService.makeUserUnMuted(unmutedUserId, roomInfos.id);
+                            const unMutedUser = await this.roomService.makeUserUnMuted(unmutedUserId, roomInfos.id);
                             console.log('user unmuted succsufuly')
-                            return {ok : 'user unmuted succsufuly'}
+                            return {room : roomInfos , unMutedUser}
                         }
                          
                     }
@@ -335,7 +334,9 @@ export class GatewayService
                     return {room : roomInfos , ifUserInroom , currentUserId };
                 }
                 else if(isMuted.isMuted === 'UNMUTED')
+                {
                     return {room : roomInfos , ifUserInroom , currentUserId };
+                }
                 
                 else if(isMuted.isMuted === 'MUTEDFORLIMITEDTIME')
                     return {error : 'user is muted for limmited time, cannot send message.'};                     

@@ -180,9 +180,9 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 }
                 else
                 {
-                    
                     const createdMsg = await this.messagesService.createMessages(dto.message ,user['sub'], rtn.room.id);
-                    
+                     
+                    // console.log(rtn.room.room_name)
                     await this.emmiteEventesToUsers(socket, rtn.room.id  ,"add-message", {user: createdMsg.username, msg: createdMsg.msg , roomName: rtn.room.room_name , idOfmsg : createdMsg.idOfMsg})
                           
                 }
@@ -367,6 +367,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         console.log(rtn.error)
                         return ;
                     }
+
+                    await this.emmiteEventesToUsers(socket, rtn.room.id ,"onUnMute", { roomId: rtn.room , unMutedUser : rtn.unMutedUser })
                     
                 }
                 else
@@ -903,10 +905,9 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                     if(rtn.error)
                     {
                         console.log(rtn.error)
-                        // return {error : rtn.error}
+                        return ;
                     }
                     
-                    console.log(rtn.existingUser)
                     await this.emmiteEventesToUsers(socket, rtn.newDmRoom.id,"new-room" , {room : rtn.newDmRoom   , usersInfos: rtn.existingUser} );
         
                 }
@@ -981,7 +982,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 // console.log(removedUser)
                 usersInroom.push(removedUser)
             }
-         
+            
+             
             
             for(const userInRoom of usersInroom)
             {
