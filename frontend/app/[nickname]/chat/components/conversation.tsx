@@ -8,6 +8,7 @@ import { getCookie } from '../../layout'
 import SocketComponent from './SocketComponent'
 import { headers } from 'next/dist/client/components/headers'
 import { FcInfo } from 'react-icons/Fc'
+import {Avatar} from '@nextui-org/react'
 
 const Conversation = () => {
 
@@ -61,13 +62,22 @@ const Conversation = () => {
 
     // if (showConv) {
     return (
-        deviceType == 'normal' ?
+        deviceType === 'normal' ?
         <div className='flex flex-col h-[90vh] w-[calc(120%/2)] items-center justify-center '>
                 {activeUserConv.name && <RoomInfo room={rooms.find(o => o.name === activeUserConv.name)} setShow={setShowInfo} show={showInfo} userData={userData} />}
 				{ showConv && <>
-                    <div className=" flex justify-between text-white pl-10 pb-3 pt-4 w-[100%] border-blue-gray-200 text-blue-gray-700 outline border-b outline-0 placeholder-shown:border-blue-gray-200 focus:outline-0">
-                        <div className=''>{activeUserConv.name}</div>
-                        {rooms.find(o => o.name === activeUserConv.name).type != 'DM' &&  <FcInfo className='cursor-pointer mr-5 w-7 h-7' width={30} height={30} onClick={ () => {
+                    <div className="z-0 flex justify-between text-white pl-10 pb-3 pt-4 w-[100%] border-blue-gray-200 text-blue-gray-700 outline border-b outline-0 placeholder-shown:border-blue-gray-200 focus:outline-0">
+                        <div className=' min-w-[150px] bg-darken-100 rounded-l-3xl pr-2 rounded-r-xl flex items-center gap-3 justify-start w-auto h-auto cursor-pointer hover:underline' onClick={() => {
+                            if (rooms.find(o => o.name === activeUserConv.name).type != 'DM')
+                                setShowInfo(true)
+                            // else
+                                //visit profile
+                        }}>
+                            <Avatar zoomed text={activeUserConv.name} bordered color={'gradient'} alt={activeUserConv.name} src={rooms.find(o => o.name === activeUserConv.name).photo} pointer/>
+                            <div className='w-full flex items-center justify-center'>{activeUserConv.name}</div>
+                            </div>
+                        {rooms.find(o => o.name === activeUserConv.name).type != 'DM' &&
+                        <FcInfo className='cursor-pointer mr-5 w-7 h-7' width={30} height={30} onClick={ () => {
                             setShowInfo(true)
                         }}/>}
                     </div>
