@@ -28,6 +28,7 @@ model User {
     rooms                   JoinedTable[]
     connectedUsers          ConnectedUsers[]
 	matches			Match[]
+	achievements	Achievements[]
 }
 
 model Room{
@@ -76,3 +77,11 @@ model FriendRequest {
 	
 }
 
+model Achievements {
+	id			String @id @default(uuid())
+	category	String
+	level		Int
+	title		String @unique
+	description	String
+	users		User[]
+}
