@@ -52,12 +52,10 @@ export class RoomsService
         dmRooms_2.some((room) => room.id === dmRoom.id)
         );
 
-        if (haveSharedRooms) {
+        if (haveSharedRooms) 
             return {error: 'The users have shared rooms in DM-type rooms.'}
-        } 
-        
 
-            const newDmRoom = await this.prisma.room.create({
+        const newDmRoom = await this.prisma.room.create({
             data: {
               roomType: 'DM',
             },

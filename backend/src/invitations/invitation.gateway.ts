@@ -5,6 +5,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { request } from "http";
 import { Socket, Server } from "socket.io"
+import { GatewayService } from "src/chat/gateway/gateway.service";
 import { UsersService } from "src/users/users.service";
 
 type userNode = {
@@ -21,9 +22,9 @@ export default class InvitationsGateway implements OnGatewayConnection, OnGatewa
 
 	constructor(
 		private readonly jwtService: JwtService,
-		private readonly usersService: UsersService    
+		private readonly usersService: UsersService,
+        private readonly gatewayService: GatewayService  
 	) {}
-
 	@WebSocketServer()
 	private server: Server;
 
@@ -136,6 +137,18 @@ export default class InvitationsGateway implements OnGatewayConnection, OnGatewa
 		senderSockets.map(instant => {
 			this.server.to(instant.socket.id).emit('receive-friends', senderNewFriend);
 		})
+        
+        //  receiverNewFriend => sender
+        //  senderNewFriend => resever
+
+        const rtn = await this.gatewayService.checkDirectMessages(receiverNewFriend.id , senderNewFriend.id , 1);
+
+        if(rtn.error)
+        {
+            return ;
+        }
+        // event name ("new-room") , send this object   ({room : rtn.newDmRoom   , usersInfos: rtn.existingUser})
+        // socket of taha
 	}
 
 	@SubscribeMessage('refuse-request')

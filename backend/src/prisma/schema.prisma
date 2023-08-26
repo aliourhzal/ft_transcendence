@@ -25,7 +25,6 @@ model User {
 	
 	userFriends                 User[]              @relation("friends")
     friendOfUser                User[]              @relation("friends")
-
  
 	messages                    Messages[]
     rooms                   JoinedTable[]

@@ -497,18 +497,22 @@ export class GatewayService
 
 
 
-        async checkDirectMessages(currentUserId :string  , reciverUserId : string)
+        async checkDirectMessages(currentUserId :string  , reciverUserId : string , flag?:number)
         {
-            const existingUser = await this.utils.getUserinfos([currentUserId , reciverUserId ]); // if current user in db
+            let existingUser:any;
 
-            if(existingUser.error)
+            if(!flag)
             {
-                return {error : 'user not found.'};
-            } 
-
-            if(currentUserId === reciverUserId)
-                return {error : 'same user'}
-            
+                existingUser = await this.utils.getUserinfos([currentUserId , reciverUserId ]); // if current user in db
+    
+                if(existingUser.error)
+                {
+                    return {error : 'user not found.'};
+                } 
+    
+                if(currentUserId === reciverUserId)
+                    return {error : 'same user'}
+            }
             const rtn = await this.roomService.createPrivateRoom(currentUserId ,reciverUserId)
 
             if(rtn.error)
@@ -517,6 +521,7 @@ export class GatewayService
             }
 
             return {newDmRoom : rtn.newDmRoom ,existingUser };
+
              
             
             

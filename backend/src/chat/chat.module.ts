@@ -12,7 +12,8 @@ import { GatewayService } from './gateway/gateway.service';
 @Module({
     imports: [JwtModule,UsersModule],
     providers: [GatewayGateway,RoomsService,UtilsService,MessagesService , GatewayService],
-    controllers: [RoomController]
+    controllers: [RoomController],
+    exports : [GatewayService]
 
 })
 export class ChatModule {}
