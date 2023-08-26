@@ -36,7 +36,6 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner 
         else
             return
 
-        console.log(id, temp_duration)
         socket.emit('ban-user', {roomName:info.room.name, bannedUserId:id, duration: temp_duration * 1000})
     }
 
@@ -56,7 +55,7 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner 
 
         if (temp_duration > 3 * 60 * 60 * 24)
             temp_duration = -1
-        console.log(id, temp_duration)
+
         socket.emit('mute-user', {roomName:info.room.name, mutedUserId:id, duration: temp_duration * 1000})
     }
 

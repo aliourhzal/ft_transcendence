@@ -150,7 +150,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
     console.log("unmute")
     console.log(res)
     setRooms((_rooms: Room[]) => {
-      _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.mutedUser.userId).isMuted = 'UNMUTED'
+      _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.unMutedUser.userId).isMuted = 'UNMUTED'
       setConvs([..._rooms])
       return _rooms
     })

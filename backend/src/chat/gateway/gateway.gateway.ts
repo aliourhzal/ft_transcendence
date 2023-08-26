@@ -360,6 +360,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
                     const rtn = await this.gatewayService.checkUnMuteUser( user['sub'] , dto.roomName , dto.unmutedUserId);
         
+                    // emit "onUnMute" roominfo + unMutedUser
+
                     if(rtn.error)
                     {
                         console.log(rtn.error)
