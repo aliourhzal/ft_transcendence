@@ -1,165 +1,13 @@
 import { UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { randomUUID } from "crypto";
 import { Server, Socket } from 'socket.io'
 import { UsersService } from "src/users/users.service";
+import { AcheivementsService } from "src/users/achievements.service";
+import { Player, userNode, roomT, Ball, Specials } from "./Player";
 
 
-class Player {
-	canvas: canvasDim;
-	readonly socket: Socket;
-	ball: coords;
-	score: number;
-	nickName: string;
-	avatar: string;
-	height: number
-
-	constructor(socket: Socket, height = 0, width = 0, score = 0) {
-		this.canvas = {height, width};
-		this.socket = socket;
-		this.ball = {x: 0, y: 0};
-	}
-
-	moveBall(velocityX: number, velocityY: number) {
-		this.ball.x += velocityX;
-		this.ball.y += velocityY;
-	}
-
-	resetBall(x: number, y: number) {
-		this.ball = {x, y };
-	}
-
-	correctHorizantalColl(y: number) {
-		this.ball.y = y;
-	}
-
-	setCanvasDim(height: number, width: number) {
-		this.canvas = {height, width};
-		this.height = height / 4;
-	}
-
-	initBallPos(x: number, y: number, radius: number) {
-		this.ball = {x, y};
-	}
-
-	setData(nickName: string, avatar: string) {
-		this.nickName = nickName;
-		this.avatar = avatar;
-	}
-
-	resetHeight() {
-		this.height = this.canvas.height / 4;
-	}
-}
-
-type userNode = {
-	socket: Socket,
-	user: Player
-}
-
-type paddleInfo = {
-	x: number,
-	y: number,
-	collision: boolean,
-	collAngle: number
-}
-
-type coords = {
-	x: number,
-	y: number
-}
-
-type canvasDim = {
-	height: number,
-	width: number,
-}
-
-type playerInfo = {
-	canvas: canvasDim,
-	socket: Socket,
-	ball: coords
-}
-
-type roomT = {
-	loop: NodeJS.Timer,
-	player1: Player,
-	player2: Player,
-	roomId: string,
-	ballDynamics: Ball,
-	hell: boolean,
-	specialsMode: boolean,
-	specials: Specials,
-}
-
-class Ball {
-	radius = 10;
-	velocityX = 5; //ball direction
-	velocityY = 5;
-	speed = 7;
-	color = "WHITE";
-
-	resetForNewGame() {
-		this.speed = 7;
-		this.velocityX = 5;
-		this.velocityY = 5;
-	}
-
-}
-
-class Specials {
-	dwarf: boolean;
-	big_foot: boolean;
-	position: coords;
-	sent: boolean
-	activated: boolean;
-
-	constructor() {
-		this.big_foot = false;
-		this.dwarf = false;
-		this.activated = false;
-		this.position = {
-			x: 0,
-			y: 0
-		}
-	}
-
-	randomIntFromInterval(min: number, max: number) { // min and max included 
-		return Math.floor(Math.random() * (max - min + 1) + min)
-	}
-
-	activateSpecial(canvasH: number, canvasW: number) {
-		const specials = ['dwarf', 'big_foot'];
-		let randomX = this.randomIntFromInterval(2 / 10 * canvasW, 8 / 10 * canvasW);
-		let randomY = this.randomIntFromInterval(2 / 10 * canvasH, 8 / 10 * canvasH);
-		const randomSpecial = this.randomIntFromInterval(0, 1);
-		console.log('test: ', specials[randomSpecial]);
-		specials.forEach((s) => {
-			this[s] = false;
-		})
-		this[specials[randomSpecial]] = true;
-		this.position = {
-			x: randomX,
-			y: randomY
-		}
-		this.activated = true;
-		this.sent = false;
-	}
-
-	desactivateSpecial() {
-		this.activated = false;
-	}
-
-	isSpecialActivated() {
-		return (this.activated);
-	}
-
-	getSpecial() {
-		const specials = ['dwarf', 'big_foot'];
-		const selected = specials.find(s => this[s]);
-		return (selected);
-	}
-}
 
 @WebSocketGateway(3003, { cors: true } ) //tell's the class that it using socket not http and use the port 3003 instead of default one 3000
 export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
@@ -174,7 +22,8 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 
 	constructor(
 		private readonly jwtService: JwtService,
-		private readonly usersService: UsersService	
+		private readonly usersService: UsersService,
+		private readonly achievementsService: AcheivementsService
 	) {}
 
 	OnWebSocektError(socket:Socket)
@@ -207,21 +56,24 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			room.player2.score += 1;
 			room.player2.height = room.player2.canvas.height / 4;
 			room.player1.height = room.player1.canvas.height / 4;
+			await this.achievementsService.checkHatTrick(room.player2, room.player1);
 			this.server.to(room.roomId).emit("score", {soc:room.player2.socket.id, p1:room.player2.score, p2:room.player1.score});
 		}
 		
-		if (room.player1.ball.x + room.ballDynamics.radius > room.player1.canvas.width + 20)
+		else if (room.player1.ball.x + room.ballDynamics.radius > room.player1.canvas.width + 20)
 		{
 			room.player1.score += 1;
 			room.player2.height = room.player2.canvas.height / 4;
 			room.player1.height = room.player1.canvas.height / 4;
+			await this.achievementsService.checkHatTrick(room.player1, room.player2);
 			this.server.to(room.roomId).emit("score", {soc:room.player1.socket.id, p1:room.player1.score, p2:room.player2.score})
 		}
 
-		if (room.player1.score === 1 || room.player2.score === 1)//
+		if (room.player1.score === 4 || room.player2.score === 4)//
 		{
 			await this.usersService.createMatch(room.player1.nickName, room.player2.nickName, room.player1.score, room.player2.score);
 			clearInterval(room.loop);
+			await this.achievementsService.checkForAchievement(room.player1, room.player2);
 			this.server.to(room.roomId).emit("gameOver", 
 				room[room.player1.score === 1 ? 'player1' : 'player2'].socket.id
 			);
