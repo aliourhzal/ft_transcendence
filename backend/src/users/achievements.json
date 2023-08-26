@@ -1,11 +1,15 @@
 {
 	"achievements" :
 	{
-		"hat-trick": {
+		"hat_trick": {
+			"category": "hat-trick",
+			"level": 1,
 			"title": "Hat-trick",
 			"description": "score 3 times  sequentially"
 		},
 		"Welcome": {
+			"category": "Welcome",
+			"level": 1,
 			"title": "Welcome",
 			"description": "Welcome to Pongy, go Play"
 		},
@@ -37,25 +41,25 @@
 			"category": "seniority",
 			"level": 1,
 			"title": "Noob",
-			"description": "play 3 matches"
+			"description": "play 5 matches"
 		},
 		"Bob": {
 			"category": "seniority",
 			"level": 2,
 			"title": "Bob",
-			"description": "play 7 matches"
+			"description": "play 10 matches"
 		},
 		"Pro": {
 			"category": "seniority",
 			"level": 3,
 			"title": "Pro",
-			"description": "play 12 matches"
+			"description": "play 20 matches"
 		},
 		"Bad_ass": {
 			"category": "seniority",
 			"level": 4,
 			"title": "Bad-Ass",
-			"description": "play 20 matches"
+			"description": "play 50 matches"
 		},
 		"Humiliator": {
 			"category": "humiliator",
@@ -75,7 +79,7 @@
 			"title": "Devil Pet",
 			"description": "win 7 matches with clean sheet"
 		},
-		"666": {
+		"Satan": {
 			"category": "humiliator",
 			"level": 4,
 			"title": "Satan",
@@ -83,16 +87,19 @@
 		},
 		"Tester": {
 			"category": "game",
+			"level": 1,
 			"title": "Tester",
 			"description": "Test and try every mode in the game"
 		},
 		"Tester2": {
 			"category": "game",
+			"level": 2,
 			"title": "Fashionate",
 			"description": "Be like a female and create new theme in custom"
 		},
 		"Hacker": {
 			"category": "Game_master",
+			"level": 1,
 			"title": "Hack Us",
 			"description": "Find a vulnerability in the website and report it"
 		}
