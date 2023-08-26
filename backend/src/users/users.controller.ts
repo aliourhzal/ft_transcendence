@@ -121,4 +121,11 @@ export class UsersController{
 		return await this.usersService.getAchievements(req.user.nickname);
 	}
 
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/profile/missions')
+	async getMissions(@Req() req: any)
+	{
+		return await this.usersService.getMissions(req.user.nickname);
+	}
+
 }
