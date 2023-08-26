@@ -114,4 +114,11 @@ export class UsersController{
 		return await this.usersService.matchHistory(req.user.nickname);
 	}
 
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/profile/achievements')
+	async getAchievements(@Req() req: any)
+	{
+		return await this.usersService.getAchievements(req.user.nickname);
+	}
+
 }
