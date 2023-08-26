@@ -41,10 +41,14 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 				room.player1.gameGoing = room.player2.gameGoing = false;
 				if (room.player1.score !== room.player2.score)
 				{
-					await this.usersService.createMatch(room.player1.nickName, room.player2.nickName, room.player1.score, room.player2.score);
+					await this.usersService.createMatch(room.player1.nickName, room.player2.nickName, (room.player1.socket.connected ? 8 : 0), (room.player2.socket.connected ? 8 : 0));
+					// await this.usersService.createMatch(room.player1.nickName, room.player2.nickName, room.player1.score, room.player2.score);
 					this.server.to(room.roomId).emit("gameOver", 
-						room[room.player1.score > room.player2.score ? 'player1' : 'player2'].socket.id);
+						room[room.player1.socket.connected ? 'player1' : 'player2'].socket.id);
+						// room[room.player1.score > room.player2.score ? 'player1' : 'player2'].socket.id);
 				}
+				else
+					this.server.to(room.roomId).emit("gameOver", "draw");
 			}
 			clearInterval(this.rooms.find(x => 
 				x.player1.socket === socket || x.player2.socket === socket

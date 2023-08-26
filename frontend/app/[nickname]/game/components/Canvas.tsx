@@ -220,7 +220,9 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			else
 				ctx.fillStyle = "#FFF";
 			ctx.font = "75px fantasy";
-			if (data === props.socket.id)
+			if (data === "draw")
+				ctx.fillText("Draw !!", (canvas.width / 2 - (canvas.width / 6)), canvas.height / 2);
+			else if (data === props.socket.id)
 				ctx.fillText("You Win !!", (canvas.width / 2 - (canvas.width / 6)), canvas.height / 2);
 			else
 				ctx.fillText("You Lose !!", (canvas.width / 2 - (canvas.width / 6)), canvas.height / 2);
