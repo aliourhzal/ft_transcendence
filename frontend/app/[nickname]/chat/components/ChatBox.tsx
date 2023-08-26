@@ -20,7 +20,7 @@ const ChatBox = () => {
     // rooms.find(o => o.name === activeUserConv.name)
     // ((old:any) => [...old, {user:msg.user, msg:msg.message}] )
     console.log("______", msg, "________")
-    if (activeUserConv.name == msg.roomName) {
+    if (rooms.find(o => o.name === activeUserConv.name).id == msg.roomId) {
       setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.msg, id:msg.idOfmsg}])
     }
   }
