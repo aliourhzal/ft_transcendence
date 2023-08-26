@@ -7,6 +7,7 @@ import { parse } from 'path';
 import { createReadStream} from 'fs';
 import { readdir } from 'fs/promises';
 import { UserData } from 'src/utils/userData.interface';
+import * as achievements from './achievements.json'
 
 @Injectable()
 export class UsersService {
@@ -287,5 +288,38 @@ export class UsersService {
 		if (!achievements)
 			return [];
 		return (achievements);
+	}
+
+	async getMissions(nickname: string) {
+		const acs = await this.getAchievements(nickname);
+		const missions = [];
+		let breakerLvl = 0;
+		let seniorityLvl = 0;
+		let humiliatorLvl = 0;
+		let hat_trick = true;
+
+		acs.forEach(a => {
+			if (a.category === 'breaker' && a.level > breakerLvl) {
+				breakerLvl = a.level
+			}
+			else if (a.category === 'seniority' && a.level > seniorityLvl) {
+				seniorityLvl = a.level
+			}
+			else if (a.category === 'humiliator' && a.level > humiliatorLvl) {
+				humiliatorLvl = a.level
+			}
+			else if (a.category === 'hat-trick')
+				hat_trick = false
+		});
+		if (hat_trick)
+			missions.push(achievements.missions.hat_trick);
+		if (breakerLvl < achievements.missions.theBreaker.length)
+			missions.push(achievements.missions.theBreaker[breakerLvl]);
+		if (seniorityLvl < achievements.missions.Seniority.length)
+			missions.push(achievements.missions.Seniority[seniorityLvl]);
+		if (humiliatorLvl < achievements.missions.Humiliator.length)
+			missions.push(achievements.missions.Humiliator[humiliatorLvl]);
+
+		return (missions);
 	}
 }
