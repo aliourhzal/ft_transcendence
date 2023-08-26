@@ -4,11 +4,15 @@ import { Body, Controller, Get, Post, Request, Res, UnauthorizedException, UseGu
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
+import { AcheivementsService } from 'src/users/achievements.service';
 
 @Controller('auth')
 export class AuthController {
 
-	constructor(private readonly authService: AuthService) {}
+	constructor(
+		private readonly authService: AuthService,
+		private readonly achievementsService: AcheivementsService,
+	) {}
 
 	// this function is to be call in the frontend to authenticate the user with login and password,
 	// the object passed with the request in the frontend should have the "username" and "password" properties
@@ -41,6 +45,7 @@ export class AuthController {
 	async intra42AuthRedirect(@Request() request: any, @Res() response: Response)
 	{//request contains user_data, response used to bake cookies
 		// pass the user data to the function that signs the jwt token
+		await this.achievementsService.giveWelcome(request.user.nickname);
 		const { access_token: jwt_access_token } = await this.authService.login(request.user);
 		//create the cookie
        
