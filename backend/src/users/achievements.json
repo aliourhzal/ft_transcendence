@@ -106,57 +106,81 @@
 	},
 	"missions" : 
 	{
-		"fashion1": {
-			"xp"	: 5,
-			"description": "test a new theme in custom"
+		"hat_trick": {
+			"xp":  9,
+			"description": "score 3 times  sequentially"
 		},
-		"fashion2": {
-			"xp"	: 5,
-			"description": "test the dark theme"
-		},
-		"fashion3": {
-			"xp"	: 5,
-			"description": "test the bright theme"
-		},
-		"effect1": {
-			"xp"	: 10,
-			"description": "Active Special Effects in PVP mode"
-		},
-		"effect2": {
-			"xp"	: 5,
-			"description": "Active Ball Colorized Effect"
-		},
-		"effect3": {
-			"xp"	: 15,
-			"description": "Win a Game in Hell Of Flame Game"
-		},
-		"bot1": {
-			"xp"	: 5,
-			"description": "Win Vs bot level1"
-		},
-		"bot2": {
-			"xp"	: 10,
-			"description": "Win Vs bot level2"
-		},
-		"bot3": {
-			"xp"	: 35,
-			"description": "Win Vs bot level3"
-		},
-		"goal1": {
-			"xp"	: 5,
-			"description": "Score total of 10 points"
-		},
-		"goal2": {
-			"xp"	: 25,
-			"description": "Score total of 100 points"
-		},
-		"goal3": {
-			"xp"	: 25,
-			"description": "Score total of 1000 points"
-		},
-		"ultimate": {
-			"xp"	: 9999,
-			"description": "Hack The Game !"
+		"theBreaker": [
+			{
+				"xp": 11,
+				"description": "Win 3 matches sequentially"
+			},
+			{
+				"xp": 25,
+				"description": "Win 5 matches sequentially"
+			},
+			{
+				"xp": 56,
+				"description": "Win 7 matches sequentially"
+			},
+			{
+				"xp": 94,
+				"description": "Win 10 matches sequentially"
+			}
+		],
+		"Seniority": [
+			{
+				"xp": 5,
+				"description": "play 5 matches"
+			},
+			{
+				"xp": 12,
+				"description": "play 10 matches"
+			},
+			{
+				"xp": 21,
+				"description": "play 20 matches"
+			},
+			{
+				"xp": 37,
+				"description": "play 50 matches"
+			}
+		],
+		"Humiliator": [
+			{
+				"xp": 17,
+				"description": "win 1 matches with clean sheet"
+			},
+			{
+				"xp": 36,
+				"description": "win 3 matches with clean sheet"
+			},
+			{
+				"xp": 77,
+				"description": "win 7 matches with clean sheet"
+			},
+			{
+				"xp": 123,
+				"description": "win 10 matches with clean sheet"
+			}
+		],
+		"Tester": [
+			{
+				"level": 1,
+				"xp": 1,
+				"description": "Test and try every mode in the game"
+			},
+			{
+				"level": 2,
+				"xp": 2,
+				"description": "Be like a female and create new theme in custom"
+			}
+		],
+		"Hacker": {
+			"level": 1,
+			"xp": 1,
+			"description": "Find a vulnerability in the website and report it"
 		}
+		
 	}
 }

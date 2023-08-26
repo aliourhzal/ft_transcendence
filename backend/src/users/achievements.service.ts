@@ -74,9 +74,10 @@ export class AcheivementsService {
 	}
 
 	async checkBreaker(p1: Player, p2: Player) {
-		const user = p1.score > p2.score ? p1 : p2;
-		const {achievements: userAc} = await this.getUserWithAchievements(user.nickName);
-		const {matches} = await this.usersService.returnMatches(user.nickName);
+		const winner = p1.score > p2.score ? p1 : p2;
+		const user = await this.usersService.findOneByNickname(winner.nickName)
+		const {achievements: userAc} = await this.getUserWithAchievements(winner.nickName);
+		const {matches} = await this.usersService.returnMatches(winner.nickName);
 		const breakers = userAc.filter(a => a.category === 'breaker');
 		let wonMatches = 0;
 		let matchRequirement = 0;
@@ -109,19 +110,20 @@ export class AcheivementsService {
 			return b.playerAt.getTime() - a.playerAt.getTime();
 		});
 		for(let i = 0; i < matchRequirement; i++) {
-			const playerIndex = matches[i].players[0].nickname === user.nickName ? 0 : 1;
-			const oppIndex = playerIndex === 0 ? 1 : 0;
-			if (matches[i].scores[playerIndex] > matches[i].scores[oppIndex])
+			const playerScore = matches[i].score1[0] === user.id ? matches[i].score1[1] : matches[i].score2[1];
+			const oppScore = matches[i].score1[0] === user.id ? matches[i].score2[1] : matches[i].score1[1];
+			if (playerScore > oppScore)
 				wonMatches++;
 		}
 		if (wonMatches === matchRequirement)
-			await this.giveAcToUser(user.nickName, newBreaker);
+			await this.giveAcToUser(winner.nickName, newBreaker);
 	}
 
 	async checkHumiliator(p1: Player, p2: Player) {
-		const user = p1.score > p2.score ? p1 : p2;
-		const {achievements: userAc} = await this.getUserWithAchievements(user.nickName);
-		const {matches} = await this.usersService.returnMatches(user.nickName);
+		const winner = p1.score > p2.score ? p1 : p2;
+		const user = await this.usersService.findOneByNickname(winner.nickName)
+		const {achievements: userAc} = await this.getUserWithAchievements(winner.nickName);
+		const {matches} = await this.usersService.returnMatches(winner.nickName);
 		const humiliates = userAc.filter(a => a.category === 'humiliator');
 		let newHumilite: Achievement;
 		let matchRequirement = 0;
@@ -151,13 +153,12 @@ export class AcheivementsService {
 		if (matches.length < matchRequirement)
 			return ;
 		for(let i = 0; i < matchRequirement; i++) {
-			const playerIndex = matches[i].players[0].nickname === user.nickName ? 0 : 1;
-			const oppIndex = playerIndex === 0 ? 1 : 0;
-			if (matches[i].scores[oppIndex] === 0)
+			const oppScore = matches[i].score1[0] === user.id ? matches[i].score2[1] : matches[i].score1[1];
+			if (oppScore === 0)
 				wonMatches++;
 		}
 		if (wonMatches === matchRequirement)
-			await this.giveAcToUser(user.nickName, newHumilite);
+			await this.giveAcToUser(user.nickname, newHumilite);
 	}
 
 	async checkSeniority(player: Player) {
