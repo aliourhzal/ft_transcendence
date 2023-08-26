@@ -21,6 +21,7 @@ model User {
 	coverPic		            String
 	level			            Float
 	grade			            String
+	status						String
 	
 	userFriends                 User[]              @relation("friends")
     friendOfUser                User[]              @relation("friends")
@@ -30,7 +31,9 @@ model User {
     rooms                   JoinedTable[]
     bannedUsers                   BlackList[]
 
-	matches			Match[]
+	matches					Match[]
+	sentRequests			FriendRequest[] @relation("sender")
+	receivedRequest			FriendRequest[] @relation("target")
 }
 
 model Room{
@@ -110,7 +113,10 @@ model Match {
 model FriendRequest {
     
 	id			String @id @default(uuid())
-	
+	target		User @relation("target", fields: [targetId], references: [id])
+	sender		User @relation("sender", fields: [senderId], references: [id])
+	targetId	String
+	senderId	String
 }
 
 enum RoomType {
@@ -131,7 +137,6 @@ enum UserBnned {
     BANNEDUNLIMMITED_TIME
     UNBANNED
 }
-
 
 enum UserMUTE {
     MUTEDFORLIMITEDTIME

@@ -22,12 +22,12 @@ export interface UniversalData {
 	lastName?: string,
 	email?: string,
 	nickname?: string,
-	progress?: number,
 	wins?: number,
 	losses?: number,
 	password?: boolean,
 	profilePic?: string,
 	coverPic?: string,
+	status: string,
 	chatSocket: Socket
 }
 
@@ -60,7 +60,6 @@ function reducer(state, action) {
 		return ({...update});
 	}
 	else if (action.type === ACTIONS.UPDATE_COVER) {
-		console.log(action.payload);
 		const update = {...state};
 		update.coverPic = action.payload;
 		return ({...update});

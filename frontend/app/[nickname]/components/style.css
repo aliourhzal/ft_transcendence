@@ -39,3 +39,35 @@
         grid-template-columns: repeat(4, 1fr);
     }
 }
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100%{
+        transform: translateX(calc(-80px * 14)); /*90: size of img, 14 nuber of img's*/
+    }
+}
+
+.animate{
+    animation: scroll 20s linear infinite;
+}
+
+/* .animate:hover{
+    animation-play-state: paused;
+} */
+
+.btn-scroll {
+    border: solid 1px #2978F2;
+    box-shadow: 0 0 10px #353D49;
+    z-index: 1;
+    cursor: pointer;
+    transition: 1s; /* hide effect */
+}
+
+.storys-container{
+    position: absolute;
+    left: 13%;
+    
+    transition: 0.5s all ease-out;
+}

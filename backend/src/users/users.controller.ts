@@ -1,10 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { BadRequestException, Body, Controller, Get, Param, Post, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, Post, Put, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { saveAvatarStorage, saveCoverStorage } from './fileTypeValidators';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { comparePasswd, encodePasswd } from 'src/utils/bcrypt';
 
@@ -17,9 +17,10 @@ export class UsersController{
 
 	@UseGuards(AuthGuard('jwt'))
 	@Get('profile')
-	async getProfile(@Req() request: any) {
-        
-		return await this.usersService.fetchUserByNickname(request.user.nickname);
+	async getProfile(@Query('nickname') nickname: string, @Req() request: any) {
+		if (!nickname)
+			return await this.usersService.fetchUserByNickname(request.user.nickname);
+		return await this.usersService.fetchUserByNickname(nickname);
 	}
 
 	// this endpoint is to be called when want to change the user avatar
@@ -71,7 +72,7 @@ export class UsersController{
 	@Post('/profile/password')
 	async passwordSetting(@Body('confirmPass') newPassword: string, @Req() req: any, @Res() response: Response)
 	{
-		const re: RegExp = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
+		const re = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
 		if (!re.test(newPassword))
 			throw new BadRequestException('this password is weak choose another')
 		try{
@@ -96,11 +97,25 @@ export class UsersController{
 	}
 
 	@UseGuards(AuthGuard('jwt'))
-	@Get('/friend/:nickname')
-	async addFriend(@Param('nickname') friendName:string, @Req() request: any)
+	@Get('/friend/requests')
+	async getRequest(@Body('nickname') friendName:string, @Req() request: any)
 	{
-		return await this.usersService.addFriend(friendName, request.user.nickname);
+		return await this.usersService.getFriendsRequests(request.user.nickname);
+	}
+
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/friend/checkFriend')
+	async checkIsFriend(@Query('nickname') friendName: string, @Req() request: any)
+	{
+		return await this.usersService.isPossibleToSendRequest(friendName, request.user.nickname);
+	}
+
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/friends')
+	async getFriends(@Req() request: any) {
+		return await this.usersService.getFriends(request.user.nickname);
 	}
  
     
+
 }

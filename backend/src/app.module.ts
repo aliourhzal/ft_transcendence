@@ -7,6 +7,7 @@ import { gateAwayModule } from './webSocket/web.module';
 import { ChatModule } from './chat/chat.module';
 import { UtilsService } from './utils/utils.service';
 import { JwtService } from '@nestjs/jwt';
+import { InvitationsModule } from './invitations/invitations.module';
 
 
 @Module({
@@ -16,6 +17,7 @@ import { JwtService } from '@nestjs/jwt';
     UsersModule,
     ConfigModule.forRoot(),
     ChatModule,
+    InvitationsModule,
   ],
   controllers: [],
   providers: [UtilsService , JwtService],
