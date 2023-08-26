@@ -22,7 +22,7 @@ interface SideBarProps {
 export function NavOption(props: any) {
 
 	const emitRoomsRequest = () => {
-		props.socket.emit('chat', {jwt: getCookie('access_token'), socketID: props.socket.id});
+		// props.socket.emit('chat', {jwt: getCookie('access_token'), socketID: props.socket.id});
 	}
 
 	return (

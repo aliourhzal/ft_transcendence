@@ -122,3 +122,8 @@
     border: solid rgb(27 31 40) 10px;
     border-radius: 50%;
 }
+
+
+#h1conv {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}

@@ -57,7 +57,8 @@ const RoomForm = () => {
                     msgs: [],
                     id: res.room.room.id,
                     users: getUsersInfo(res.userInfos),
-                    type: res.room.room.roomType
+                    type: res.room.room.roomType,
+                    photo: "/images/defaultRoomIcon.png"
                 })
             }
             set_room_created(old => !old)

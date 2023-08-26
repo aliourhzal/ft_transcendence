@@ -2,9 +2,12 @@ import { useContext, useEffect, useState } from "react"
 import { Context, conversation, getUsersInfo, gimmeRandom } from "../page"
 import ConvBox from "./ConvBox"
 import Search from "./search"
+import { AiOutlineUsergroupAdd } from "react-icons/Ai"
+import { LiaUsersSolid } from "react-icons/Lia"
+import { TbMessage2Search } from "react-icons/Tb"
 
 const ConvList = () => {
-  const {socket, set_room_created, rooms, userData, convs, setConvs, _notification, setChatBoxMessages } = useContext(Context)
+  const {socket, set_room_created, rooms, userData, convs, setConvs, _notification, setChatBoxMessages, setShowForm, setShowJoinForm, setShowSearchUsersForm } = useContext(Context)
   const [updateList, setUpdateList] = useState(false)
   
   const fillUserList = (res) => {
@@ -35,7 +38,8 @@ const ConvList = () => {
           msgs: room.msg,
           id: room.room.room.id,
           users: getUsersInfo(room.usersInRoom),
-          type: room.room.room.roomType
+          type: room.room.room.roomType,
+          photo: "/images/defaultRoomIcon.png",
         })
       }
     })
@@ -66,6 +70,7 @@ const ConvList = () => {
                 type: res.roomId.roomType,
                 lastmsg:'welcome to group chat',
                 users: getUsersInfo(res.userInfos),
+                photo: "/images/defaultRoomIcon.png"
               })
             }
           } else {
@@ -128,10 +133,22 @@ const ConvList = () => {
     <>
       <Search _Filter={convsFilter} />
       <div className='group left-[10%] flex-col bg-transparent w-full h-[80%] mt-8 overflow-hidden overflow-y-scroll'>
-          {convs.map ((item:conversation) =>  (<ConvBox key={gimmeRandom()} data={item} />))}
+          {
+            convs.length ? convs.map ((item:conversation) =>  (<ConvBox key={gimmeRandom()} data={item} />)) :
+            
+            <div className="text-whiteSmoke font-bold h-[100%] w-[100%] flex flex-col items-center justify-center flex-wrap gap-3">
+              <h1 id="h1conv" className="text-xl font-extrabold font"> to start a conversation </h1>
+              <AiOutlineUsergroupAdd onClick={() => {setShowForm(true)}} size={30} className="cursor-pointer hover:text-blueStrong hover:scale-110"/>
+              create a room
+              <LiaUsersSolid onClick={() => {setShowJoinForm(true)}} size={30} className="cursor-pointer hover:text-blueStrong hover:scale-110"/>
+              join one
+              <TbMessage2Search onClick={() => {setShowSearchUsersForm(true)}} size={30} className="cursor-pointer hover:text-blueStrong hover:scale-110"/>
+              or find a user
+            </div>
+          }
       </div>
     </>
   )
 }
 
-  export default ConvList
+export default ConvList
