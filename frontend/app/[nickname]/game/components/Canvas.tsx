@@ -316,23 +316,11 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		//  md:w-[800px] md:h-[450px]
 		//  xl:w-[1000px] xl:h-[562px]
 		//  "/>
-		<div className="w-full h-full items-center justify-center">
-			<div className=" relative z-10 top-1/2 left-1/2 w-full h-full">
-				{
-					state && <Lottie 
-						options={startbuttonGame}
-						width={400}
-						height={400}
-					/>
-				}
-			</div>
-
 	        <canvas id="pongy" className="bg-darken-300 rounded-md
 				w-[90%] aspect-[16/9]
 				max-sm:rotate-90 max-sm:w-[600px] max-sm:h-[337px]
 				xl:w-[1000px] xl:h-[562px]
 			"/>
-		</div>
     );
 }
 
