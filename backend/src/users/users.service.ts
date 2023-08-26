@@ -232,21 +232,26 @@ export class UsersService {
 			wins : 0,
 			loss : 0
 		}
+		let s1: number, s2 : number;
+
 		const matches = (await this.returnMatches(nickname)).matches;
 		matches.map(x => {
 			matchesStats.total++;
-			matchesStats.totalP += (x.scores[0] + x.scores[1]);
+			s1 = (x.players[0].id === x.score1[0] ? parseInt(x.score1[1].toString()) : parseInt(x.score2[1].toString()));
+			s2 = (x.players[1].id === x.score1[0] ? parseInt(x.score1[1].toString()) : parseInt(x.score2[1].toString()));
+			matchesStats.totalP += (s1 + s2);
 			if (x.players[0].nickname === nickname)
 			{
-				matchesStats.scoreW += x.scores[0];
-				matchesStats.scoreL += x.scores[1];
-				(x.scores[0] > x.scores[1] ? matchesStats.wins++ : matchesStats.loss++);
+				matchesStats.scoreW += s1;//(x.score1[0] === x.players[0].id ? s1 : s2);
+				matchesStats.scoreL += s2;//(x.score1[0] === x.players[0].id ? s2 : s1);
+				(s1 > s2 ? matchesStats.wins++ : matchesStats.loss++);
+				
 			}
 			else
 			{
-				matchesStats.scoreW += x.scores[1];
-				matchesStats.scoreL += x.scores[0];
-				(x.scores[1] > x.scores[0] ? matchesStats.wins++ : matchesStats.loss++);
+				matchesStats.scoreW += s2;
+				matchesStats.scoreL += s1;
+				(s2 > s1 ? matchesStats.wins++ : matchesStats.loss++);
 			}
 		});
 		return matchesStats;
