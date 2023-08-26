@@ -213,29 +213,17 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		canvas.addEventListener("mousemove", getMousePos);
 		
 		socket.on("gameOver", data => {
-			if (data === props.socket.id)
-			{
-				ctx.fillStyle = bgColor;
-				ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-				if (n === 3)
-					ctx.fillStyle = "#000";
-				else
-					ctx.fillStyle = "#FFF";
-				// ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-				ctx.font = "75px fantasy";
-				ctx.fillText("You Win !!", (canvas.width / 2 - (canvas.width / 6)), canvas.height / 2);
-			}
+			ctx.fillStyle = bgColor;
+			ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+			if (n === 3)
+				ctx.fillStyle = "#000";
 			else
-			{
-				ctx.fillStyle = bgColor;
-				ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-				if (n === 3)
-					ctx.fillStyle = "#000";
-				else
-					ctx.fillStyle = "#FFF";
-				ctx.font = "75px fantasy";
+				ctx.fillStyle = "#FFF";
+			ctx.font = "75px fantasy";
+			if (data === props.socket.id)
+				ctx.fillText("You Win !!", (canvas.width / 2 - (canvas.width / 6)), canvas.height / 2);
+			else
 				ctx.fillText("You Lose !!", (canvas.width / 2 - (canvas.width / 6)), canvas.height / 2);
-			}
 		});
 		// listening to the window resize event
 		window.addEventListener("resize", () => {

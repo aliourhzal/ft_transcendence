@@ -45,7 +45,7 @@ export default function Game(props: any)
 				/>
 			}	
 			<div style={{visibility: `${opData.loading ? 'hidden' : 'visible'}`, zIndex:'10', position: 'absolute'}} className="flex relative flex-col justify-center items-center w-full gap-5 h-full">
-				<div className="w-[80%] aspec flex justify-between max-sm:">
+				<div className="w-[80%] aspec flex justify-between max-sm:absolute max-sm:top-36">
 					<div className="flex items-center gap-x-5">
 						<img className="w-16 h-16 rounded-full" src={userData.profilePic} alt="man_hhhh" />
 						<h2 className=" text-whiteSmoke">{userData.nickname}</h2>
