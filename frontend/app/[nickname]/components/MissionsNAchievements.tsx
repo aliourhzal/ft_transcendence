@@ -7,7 +7,7 @@ import { CgHello } from "react-icons/cg"
 
 
 interface MissionProps {
-	mission: string,
+	description: string,
 	xp: number
 }
 interface Achievement{
@@ -23,7 +23,7 @@ interface Achievement{
 function Mission(props: MissionProps) {
 	return (
 		<div className='w-full rounded-xl flex items-center justify-between bg-darken-300 p-3 gap-2'>
-			<span className="text-white">{props.mission}</span>
+			<span className="text-white">{props.description}</span>
 			<span className="text-blue-600 tracking-[1px]">{`+${props.xp}xp`}</span>
 		</div>
 	);
@@ -119,13 +119,25 @@ function Achieve({achievement}: {achievement: Achievement}) {
 }
 
 export function Missions() {
+	const [missions, setMissions] = useState<MissionProps[]>([])
+	useEffect(() => {
+		axios.get('http://127.0.0.1:3000/users/profile/missions', {
+			withCredentials: true,
+		})
+		.then(res => setMissions(res.data))
+		.catch(err => console.log(err));
+	}, [])
 	return (
 		<Container className='p-5 bg-darken-100 rounded-xl flex flex-col gap-5'>
 			<h2 className='text-white'>Missions</h2>
 			<div className='matchHistoryBody flex flex-col gap-3 overflow-y-auto max-h-[266px]'>
-				<Mission mission="Win 5 matches in a row" xp={5}/>
-				<Mission mission="Win 5 matches in a row" xp={5}/>
-				<Mission mission="Win 5 matches in a row" xp={5}/>
+				{
+					missions.map(m => {
+						return (
+							<Mission description={m.description} xp={m.xp}/>
+						);
+					})
+				}
 			</div>
 		</Container>
 	);
