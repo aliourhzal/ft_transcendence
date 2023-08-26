@@ -169,7 +169,7 @@ export class UsersService {
             where: { id: user.id },
             data: {
                 userFriends: {
-                connect: [{ id: friend.id }],
+                	connect: [{ id: friend.id }],
               },
             },
         })
@@ -178,7 +178,7 @@ export class UsersService {
             where: { id: friend.id },
             data: {
                 userFriends: {
-                connect: [{ id: user.id }],
+                	connect: [{ id: user.id }],
               },
             },
         });
@@ -271,5 +271,19 @@ export class UsersService {
 			history.push( match );
 		});
 		return history;
+	}
+
+	async getAchievements(nickname: string) {
+		const {achievements} = await this.prisma.user.findUnique({
+			where: {
+				nickname
+			},
+			include: {
+				achievements: true
+			}
+		});
+		if (!achievements)
+			return [];
+		return (achievements);
 	}
 }
