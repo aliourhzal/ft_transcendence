@@ -126,11 +126,17 @@ function StatsTemplate(props) {
                 <span>{props.total}</span>
             </div>
             <div className='flex flex-col gap-2'>
-                <span>{props.type1}</span>
+                <div className='flex justify-between'>
+                    <span>{props.type1}</span>
+                    <span className='text-xs'>{props.wins}</span>
+                </div>
                 <progress className="w-auto h-2 [&::-webkit-progress-bar]:rounded-lg [&::-webkit-progress-value]:rounded-lg   [&::-webkit-progress-bar]:bg-darken-300 [&::-webkit-progress-value]:bg-blueStrong [&::-moz-progress-bar]:bg-blueStrong" value={winsPercent} max='100'></progress>
             </div>
             <div className='flex flex-col gap-2'>
-                <span>{props.type2}</span>
+                <div className='flex justify-between'>
+                    <span>{props.type2}</span>
+                    <span className='text-xs'>{props.losses}</span>
+                </div>
                 <progress className="w-auto h-2 [&::-webkit-progress-bar]:rounded-lg [&::-webkit-progress-value]:rounded-lg   [&::-webkit-progress-bar]:bg-darken-300 [&::-webkit-progress-value]:bg-blueStrong [&::-moz-progress-bar]:bg-blueStrong" value={lossesPercent} max='100'></progress>
             </div>
         </div>
