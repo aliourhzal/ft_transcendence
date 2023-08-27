@@ -78,7 +78,7 @@ function reducer(state, action) {
 		return state;
 }
 
-export const getCookie = (cookieLable: string) => {
+export function getCookie(cookieLable: string) {
     const cookies = document.cookie.split('; ');
     for (const cookie of cookies) {
         const [label, content] = cookie.split('=');
