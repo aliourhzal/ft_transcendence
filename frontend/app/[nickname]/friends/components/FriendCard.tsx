@@ -32,7 +32,7 @@ export default function FriendCard({user}: {
 					</div>
 				</div>
 				<div className="w-full h-[30px] bg-darken-300 rounded-full">
-					<div className={`w-[${progess}%] bg-blueStrong h-full rounded-full flex items-center justify-end p-1`}>
+					<div style={{width: `${progess}%`}} className={` bg-blueStrong h-full rounded-full flex items-center justify-end p-1`}>
 						<span className="text-[12px] font-medium text-white">{`${progess}%`}</span>
 					</div>
 				</div>
