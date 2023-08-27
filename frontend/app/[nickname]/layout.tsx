@@ -85,6 +85,7 @@ export function getCookie(cookieLable: string) {
         if (label === cookieLable)
             return (content);
     }
+	return (undefined)
 }
 
 export default function ProfileLayout({
@@ -96,16 +97,16 @@ export default function ProfileLayout({
 	const [userDataState, dispatch] = useReducer(reducer, {});
 	const [completed, setCompleted] = useState(false);
 	useEffect(() => {
-		const socket = io('ws://127.0.0.1:3000',{
-			auth: {
-				token: getCookie('access_token'),
-			},
-		});
+		// const socket = io('ws://127.0.0.1:3002',{
+		// 	auth: {
+		// 		token: getCookie('access_token'),
+		// 	},
+		// });
 		fetchUserData('http://127.0.0.1:3000/users/profile')
 		.then(res => {
 			dispatch({type: ACTIONS.INIT, payload: {
 				data: res,
-				socket
+				// socket
 			}});
 			setCompleted(true);
 		})

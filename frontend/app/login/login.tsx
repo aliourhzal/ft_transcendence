@@ -41,7 +41,7 @@ export default function Login()
             await axios.post('http://127.0.0.1:3000/auth/login ', {login, passwd}, {
                 withCredentials: true
             });
-            router.push('http://127.0.0.1:3001/profile');
+            router.push(`http://127.0.0.1:3001/${login}`);
         }
         catch(err)
         {

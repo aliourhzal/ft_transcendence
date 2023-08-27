@@ -7,11 +7,12 @@ import { parse } from 'path';
 import { createReadStream} from 'fs';
 import { readdir } from 'fs/promises';
 import { UserData } from 'src/utils/userData.interface';
-
+ 
 @Injectable()
 export class UsersService {
 	private readonly prisma = new PrismaClient()
 
+    
 	// update a user NickName
 	async updateUserNickName(id : string , newNick: string)
 	{
@@ -251,6 +252,10 @@ export class UsersService {
 				id: request.id
 			}
 		});
+        //here
+
+       
+
 		return (request.sender.nickname);
 	}
 

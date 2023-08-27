@@ -1,0 +1,129 @@
+#notification_button {
+    width: 50px;
+    height: 50px;
+    right: 4%;
+    top: 2%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(44, 44, 44);
+    border-radius: 50%;
+    cursor: pointer;
+    transition-duration: .3s;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.13);
+    border: none;
+  }
+  
+  #bell {
+    width: 18px;
+  }
+  
+  #bell path {
+    fill: white;
+  }
+  
+  #notification_button:hover {
+    background-color: rgb(56, 56, 56);
+  }
+  
+  #notification_button:hover #bell {
+    animation: bellRing 0.9s both;
+  }
+  
+  /* bell ringing animation keyframes*/
+  @keyframes bellRing {
+    0%,
+    100% {
+      transform-origin: top;
+    }
+  
+    15% {
+      transform: rotateZ(10deg);
+    }
+  
+    30% {
+      transform: rotateZ(-10deg);
+    }
+  
+    45% {
+      transform: rotateZ(5deg);
+    }
+  
+    60% {
+      transform: rotateZ(-5deg);
+    }
+  
+    75% {
+      transform: rotateZ(2deg);
+    }
+  }
+  
+  #notification_button:active {
+    transform: scale(0.8);
+  }
+
+
+
+
+
+
+
+
+  .loader {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(rgb(59 130 246), #84cdfa, #5ad1cd);
+    animation: animate 1.2s linear infinite;
+}
+
+@keyframes animate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loader span {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(rgb(59 130 246), #b584fa, #5a86d1);
+}
+
+.loader span:nth-child(1) {
+    filter: blur(5px);
+}
+
+.loader span:nth-child(2) {
+    filter: blur(10px);
+}
+
+.loader span:nth-child(3) {
+    filter: blur(25px);
+}
+
+.loader span:nth-child(4) {
+    filter: blur(50px);
+}
+
+.loader:after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    background: rgb(27 31 40);
+    border: solid rgb(27 31 40) 10px;
+    border-radius: 50%;
+}
+
+
+#h1conv {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { BadRequestException, Body, Controller, Get, Param, Post, Put, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -71,7 +72,7 @@ export class UsersController{
 	@Post('/profile/password')
 	async passwordSetting(@Body('confirmPass') newPassword: string, @Req() req: any, @Res() response: Response)
 	{
-		const re: RegExp = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
+		const re = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
 		if (!re.test(newPassword))
 			throw new BadRequestException('this password is weak choose another')
 		try{
@@ -79,7 +80,7 @@ export class UsersController{
 			response.end('ok');
 		}
 		catch(err)
-		{throw new Error("this error from users.controller.ts/passwordSetting()");}
+		{throw new BadRequestException("this error from users.controller.ts/passwordSetting()");}
 	}
 
 	@UseGuards(AuthGuard('jwt'))
@@ -87,9 +88,9 @@ export class UsersController{
 	async checkPassword(@Body('oldPass') oldPassword: string, @Req() req: any, @Res() response: Response)
 	{
 		const user = await this.usersService.findOneByNickname(req.user.nickname);
-		if (!comparePasswd(oldPassword, user.password))
+		if (user && !comparePasswd(oldPassword, user.password))
 		{
-			throw new Error("wrong old password");
+			throw new BadRequestException("wrong old password");
 		}
 		else
 			response.end('ok');
@@ -114,5 +115,7 @@ export class UsersController{
 	async getFriends(@Req() request: any) {
 		return await this.usersService.getFriends(request.user.nickname);
 	}
+ 
+    
 
 }

@@ -25,9 +25,11 @@ model User {
 	
 	userFriends                 User[]              @relation("friends")
     friendOfUser                User[]              @relation("friends")
-
+ 
+	messages                    Messages[]
     rooms                   JoinedTable[]
-    connectedUsers          ConnectedUsers[]
+    bannedUsers                   BlackList[]
+
 	matches					Match[]
 	sentRequests			FriendRequest[] @relation("sender")
 	receivedRequest			FriendRequest[] @relation("target")
@@ -36,33 +38,66 @@ model User {
 model Room{
 
     id              String      @id @default(uuid())
-    room_name       String      @unique    
+    room_name       String?      @unique    
     password        String?
-    
+
+	roomType    RoomType  ?   	@default(PUBLIC)
+
+	messages                    Messages[]
 
     users                       JoinedTable[]
+    bannedusers                       BlackList[]
 }
  
-model ConnectedUsers {
-    
-    id              String     @id @default(uuid())
-    socketId        String   
-    
-    user            User @relation(fields: [userId], references: [id])
-    userId          String
- 
-}
 
+model Messages {
+
+    id                  String          @id @default(uuid())
+    text                String
+
+    user                User	 @relation(fields: [userId], references: [id])
+    userId              String  
+    
+    room                Room @relation(fields: [roomId], references: [id])
+    roomId              String  
+
+}
 
 model JoinedTable{  
 
     user                User       @relation(fields: [userId], references: [id])
     userId              String  
+	userType    UserType     	@default(USER)
 
     room                Room        @relation(fields: [roomId], references: [id]) // not compile in the query
     roomId              String 
+
  
-    socketId           String?
+    isMuted              UserMUTE    	@default(UNMUTED)
+
+    muteExpiresAt        DateTime?
+
+    createdAt  DateTime   @default(now())  // Add this field to track creation date
+
+    @@id([userId, roomId])
+}
+
+model BlackList{
+    
+    user                User       @relation(fields: [userId], references: [id])
+    userId              String  
+	userType    UserType     	@default(USER)
+
+    room                Room        @relation(fields: [roomId], references: [id]) // not compile in the query
+    roomId              String 
+
+    isBanned            UserBnned     	@default(UNBANNED)
+    isMuted              UserMUTE    	@default(UNMUTED)
+
+    banExpiresAt        DateTime?
+    muteExpiresAt        DateTime?
+
+    createdAt  DateTime   @default(now())  // Add this field to track creation date
 
     @@id([userId, roomId])
 }
@@ -75,6 +110,7 @@ model Match {
 }
 
 model FriendRequest {
+    
 	id			String @id @default(uuid())
 	target		User @relation("target", fields: [targetId], references: [id])
 	sender		User @relation("sender", fields: [senderId], references: [id])
@@ -82,4 +118,27 @@ model FriendRequest {
 	senderId	String
 }
 
+enum RoomType {
+    PUBLIC 
+    PROTECTED 
+    PRIVATE 
+    DM
+}
 
+enum UserType {
+    USER
+    ADMIN
+    OWNER
+}
+
+enum UserBnned {
+    BANNEDFORLIMMITED_TIME
+    BANNEDUNLIMMITED_TIME
+    UNBANNED
+}
+
+enum UserMUTE {
+    MUTEDFORLIMITEDTIME
+    MUTEDFOREVER
+    UNMUTED
+}
