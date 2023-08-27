@@ -84,10 +84,10 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
 
   return (
     <>
-    <SocketComponent rooms={rooms} socket={socket} setRooms={setRooms} setInfoUpdate={setInfoUpdate} setConvs={setConvs} _notification={_notification}/>
+    <SocketComponent setRooms={setRooms} setInfoUpdate={setInfoUpdate} setConvs={setConvs} _notification={_notification}/>
     {(info.room && info.show) &&
         <Popup isOpen={info.show} modalAppearance={hide}>
-            <div className='flex items-end justify-center m-4'>
+            <div className='flex items-end justify-center -mt-8'>
                 {isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) &&
                     <AiOutlineUsergroupAdd color={showUsersForm ? 'rgb(41 120 242)' : ''} cursor={'pointer'} className='hover:text-whiteSmoke' onClick={ () => {
                         setShowUsersForm(old => !old)
@@ -104,9 +104,9 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
             </div>
             {showUsersForm && <NewRoomUsers addUsers={addUsersToRoom} />}
             {showRoomEditForm && <EditRoom _setNewName={setNewName} _setNewPass={setNewPass} roomType={info.room.type} changeRoomType={changeRoomType}/>}
-            <div className='h-65 flex flex-col justify-start items-center overflow-y-scroll overflow-x-hidden'>
+            <div className='my-4 h-65 flex flex-col justify-start items-center overflow-y-scroll overflow-x-hidden'>
                 {info.room.users.map(user => (
-                    <RoomMumbers info={info} user={user} isOwner={isOwner} isAdmin={isAdmin} key={gimmeRandom()}/>
+                    <RoomMumbers info={info} user={user} isOwner={isOwner} isAdmin={isAdmin} key={gimmeRandom()} />
                 ))}
             </div>
             <div className='w-full flex items-center justify-center'>

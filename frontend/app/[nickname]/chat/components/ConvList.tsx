@@ -136,7 +136,7 @@ const ConvList = () => {
           {
             rooms.length ? convs.length ? convs.map ((item:conversation) =>  (<ConvBox key={gimmeRandom()} data={item} />)) 
             : 
-            <div className="text-white p-8">No conversations found !</div>
+            <div className="text-white">No conversations found !</div>
             :
             <div className="text-whiteSmoke font-bold h-[100%] w-[100%] flex flex-col items-center justify-center flex-wrap gap-3">
               <h1 id="h1conv" className="text-xl font-extrabold font"> to start a conversation </h1>

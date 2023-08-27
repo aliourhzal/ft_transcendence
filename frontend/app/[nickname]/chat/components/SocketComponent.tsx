@@ -3,17 +3,15 @@ import { Socket } from 'socket.io-client'
 import { Context, Room } from '../page'
 
 interface SocketComponentProps {
-  rooms: Room[],
-  socket: Socket
   setRooms: any
   setInfoUpdate: any
   setConvs?: any
   _notification: any
 }
 
-const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRooms, setInfoUpdate, _notification, setConvs } ) => {
+const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpdate, _notification, setConvs } ) => {
   
-  const { userData, setShowConv, setChatBoxMessages } = useContext(Context)
+  const { userData, setShowConv, setChatBoxMessages, socket, rooms } = useContext(Context)
 
   const promoteUser = (res) => {
     console.log('promote')
@@ -47,7 +45,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
     console.log('kick')
     setRooms((_rooms: Room[]) => {
       var current_room = _rooms.find(o => o.name === res.roomId.room_name)
-      var userToBeKicked = current_room.users.find(o => o.id === res.kickedUser.userId)
+      var userToBeKicked = current_room?.users.find(o => o.id === res.kickedUser.userId)
       if (res.kickedUser.userId != userData.id)
         _notification(`"${userToBeKicked.nickName}" has been kicked from '${res.roomId.room_name}'`, "good")
       var currentRoomUsers = _rooms.find(o => o.name === res.roomId.room_name).users

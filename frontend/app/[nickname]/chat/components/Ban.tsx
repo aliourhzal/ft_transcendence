@@ -13,7 +13,7 @@ const Ban:React.FC<BanProps> = ( { banUser, user } ) => {
 
   return (
     <>
-    <BiUserX className='hover:text-whiteSmoke text-blueStrong' title='ban' aria-label='ban' cursor="pointer" size={30} onClick={() => {setShowDuration(old => !old)}}/>
+    <BiUserX aria-label='ban' cursor="pointer" size={30} onClick={() => {setShowDuration(old => !old)}}/>
     {showDuration && 
         <div>
             <select name="banDuration" id="banDuration" onChange={(e) => { setBanDuration(e.target.value) }}>
