@@ -1,0 +1,117 @@
+- The channel owner is a channel administrator. They can set other users as administrators.
+
+
+- before add users who want to be administrators:
+
+=>  chcek if current user is admin or owner
+        - if it is can set 
+    else
+        dont have permission
+
+
+=> if the room is dual room dont change anything
+
+
+- create function change status of room , if is protected should create password , remove the password , change the password
+
+=> return in first the staus of room
+    - if wawnt to be protected should set a password
+
+
+- create function return boolean value if leave the room or not
+
+
+- when owner who create room if leave it
+    - make the first admin added the owner
+    - if this room dont have admin make first user the owner
+ 
+- A user who is an administrator of a channel can kick, ban or mute (for a limited time) other users, but not the channel owners.
+
+
+=> use try and catch here && search by id of user in db if found or not
+
+- implement the leaveRoom
+
+
+
+======================================================================================================================
+
+- when admin or owner mute user this user cannot send message to the room who is muted rom it.
+
+- implemt controller mute user .
+
+- add boolean fild isMuted
+
+- if is muted cannot send message , should wait after finish time of muted
+
+
+
+
+
+- test ban normal user for limmited time and forever.
+
+- test when send message in room banned user not recsive it.
+
+- test (postman) send message by banned user in room.
+
+- test join to room first time.  *
+
+- test if this user is banned from the room and want to join another time (in banned and unbanned). *
+
+- test ban refresh time of banned.
+
+- test try ban owner.
+
+- test ban admin.
+
+- test admin ban user.
+
+
+=> when first time join room some time dont displayed on the page of new joined member.
+
+=> hen banned user not removed from her page.
+
+=> after user finish banned time,  send message other user not recsive the messages (should select to room name). (in this case owner cannot send the message)
+
+=> emmit banned for ever
+
+
+-----------
+
+-  after user join after ban error in front
+
+- if room is protected not entered to it (not have access to parameteres of the room). (some time)
+
+- - password length should be big then 8 cahrateres
+
+- when join to protected room error in frontend
+-------
+
+
+
+
+
+
+=> before send message check if user in the room and  is not muted.
+
+- in send message need curent user 
+
+=> before join the room  if banned dont joined to room , if user is muted still muted,
+
+
+=> before promete user check user in the room and if user is not muted
+
+
+=> before kick user check if user in the room , and if is muted still muted
+
+
+=> when add user to room remove the ban and the mute
+
+
+
+
+-----
+
+- handle when mute user , clik on unmute it dont unmuted
+
+- when user is muted  and leave the room , when join it it join muted

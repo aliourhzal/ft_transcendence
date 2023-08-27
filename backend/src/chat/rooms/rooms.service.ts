@@ -1,204 +1,499 @@
+/* eslint-disable @typescript-eslint/adjacent-overload-signatures */
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, RoomType, UserBnned, UserMUTE, UserType } from '@prisma/client';
 import { AuthService } from 'src/auth/auth.service';
-import { roomAndUsers } from 'src/utils/userData.interface';
+import { encodePasswd } from 'src/utils/bcrypt';
+import { roomAndUsers, roomShape } from 'src/utils/userData.interface';
+import { UtilsService } from 'src/utils/utils.service';
 
 @Injectable()
 export class RoomsService 
 {
     private readonly prisma = new PrismaClient();
 
-    constructor(){}
+    constructor(private readonly utils:UtilsService){}
 
     
+    
+    // ----------------------------------------------Create Room---------------------------------------------- //
+
+    // create dual room
+
+    async   createPrivateRoom(currentUserId: string, user2Id: string)  
+    {
+        const dmRooms = await this.prisma.room.findMany({
+            where: {
+              roomType: 'DM',
+              users: {
+                some: {
+                  userId: currentUserId,
+                },
+              },
+            },
+          });
+
+
+        const dmRooms_2 = await this.prisma.room.findMany({
+            where: {
+              roomType: 'DM',
+              users: {
+                some: {
+                  userId: user2Id,
+                },
+              },
+            },
+          });
+          
+
+          const haveSharedRooms = dmRooms.some((dmRoom) =>
+        dmRooms_2.some((room) => room.id === dmRoom.id)
+        );
+
+        if (haveSharedRooms) 
+            return {error: 'The users have shared rooms in DM-type rooms.'}
+
+        const newDmRoom = await this.prisma.room.create({
+            data: {
+              roomType: 'DM',
+            },
+          }); 
+          await this.prisma.joinedTable.create({
+            data: {
+            userId : currentUserId,
+            roomId : newDmRoom.id,
+            },
+        })
+            await this.prisma.joinedTable.create({
+            data: {
+            userId : user2Id,
+            roomId : newDmRoom.id,
+            },
+        })
+
+        console.log('create DM-type rooms.');
+        
+    
+    return {newDmRoom};
+
+
+    }
 
     async linkBetweenUsersAndRooms(roomId: string, usersIds:string[])  
     {
+        let users:any = [];
+
         for(let i = 0; i < usersIds.length; i++)
         {
-            const existingLink = await this.prisma.joinedTable.findFirst({
+            const existingUsers = await this.prisma.joinedTable.findFirst({
                 where: {
-                  userId:usersIds[i],
-                  roomId,
+                    userId: usersIds[i],
+                    roomId,
                 },
             });
             
-            if (!existingLink) 
+            if (!existingUsers) 
             {
-                
-                await this.prisma.joinedTable.create({
-                  data: {
+                users.push(await this.prisma.joinedTable.create({
+                    data: {
                     userId : usersIds[i],
                     roomId,
-                  },
-                });
+                    },
+                }));
                 
-            }
-            else
-            {
-                return 4
-                // here will entered if user is aleredy exist in the chat room 
-                //  emit error when the same user is entered
             }
         }
 
-        return 1;
+        
+         
+        return {users};
     }
 
-    async adminCreateRoom(room_name: string, adminOfRoom:string)
+    async OWNERCreateRoom(room_name: string, adminOfRoom:string, roomType_: RoomType , password?: string)  
     {
+        const existingRoom = await this.utils.getRoomIdByName(room_name)
         
-        const existingRoom = await this.getRoomIdByName(room_name)
-       
+        
         if(!existingRoom)
         {   
-            const room = await this.prisma.room.create({data: {room_name}}) // create the room
+            if(roomType_ === "PROTECTED")
+            {
+                 
+                if(!password)
+                {
+                    return {error : 'should set password for this protected room.'}
+                }
+                
+                const room = await this.prisma.room.create({data: {room_name , roomType : roomType_ , password: encodePasswd(password)}});
+                 
+
+                await this.prisma.joinedTable.create({ // set OWNER for the room
+                    data: {
+                      userId : adminOfRoom,
+                      roomId: room.id,
+                      userType: "OWNER"
+                    },
+                });
+
+                return {room};
+            }
+            const room = await this.prisma.room.create({data: {room_name , roomType : roomType_  }}) // create the room
+      
              
-            await this.prisma.joinedTable.create({ // set admin for the room
+            await this.prisma.joinedTable.create({ // set OWNER for the room
                 data: {
                   userId : adminOfRoom,
                   roomId: room.id,
+                  userType: "OWNER"
                 },
             });
-
             
-            return room;
+            return {room};
         }
-        else
-            return 1;
+        
+        return {error : " room aleredy exist"};
     }
 
-    async createRoom(roomandUsers:roomAndUsers, adminOfRoom:string)
+    async createRoom(roomandUsers:roomAndUsers, adminOfRoom:string, roomType_:RoomType, password? : string) 
     {
-
-        const room = await this.adminCreateRoom(roomandUsers.roomName,adminOfRoom);// crete room and assign to it the admin
         
-        if(room === 1)
-            return 1;
+        const room = await this.OWNERCreateRoom(roomandUsers.roomName, adminOfRoom, roomType_, password);// crete room and assign to it the admin
+        
 
-        const usersIds = await this.getUsersId(adminOfRoom,roomandUsers.users);
-    
-         
-        if(usersIds === null) // can be emit the error message here, pass the server obj to this function for use it for make it real time
-            return 2;
+        if(room.error)
+            return room;
+       
+        await this.linkBetweenUsersAndRooms(room.room.id, roomandUsers.users)
 
-        if(usersIds === "you try to enter the admin")
-            return 3;
-
-        if(await this.linkBetweenUsersAndRooms(room['id'],usersIds) === 4) // add users to the room
-            return 4;
         return room;
     }
 
 
-    // utils function
+    // ---------------------------------------------------------Set Roles Of Rooms ---------------------------------------------- //
 
-    async   getUserIdByEmail(email: string)
-    {
-        const user = await this.prisma.user.findFirst({
-          where: {
-            email,
-          },
-          select: {
-            id: true,
-          },
+     
+
+    
+
+    async removeRoom(roomId: string) 
+    { 
+        await this.prisma.joinedTable.deleteMany({
+            where: {
+                roomId: roomId,
+            },
         });
-      
-        return user.id || null;
+
+         await this.prisma.blackList.deleteMany({
+            where: {
+                roomId: roomId,
+            },
+        });
+ 
+        await this.prisma.room.delete({
+            where: {
+                id: roomId,
+            },
+        });
+        
     }
-   
 
-    async getUsersId(adminId: string, users: string[])
+    async setNewOwner(roomId: string, newOwnerId:string)
     {
-        let usersFounding: string[] = [];
+        return await this.prisma.joinedTable.update({
+            where: {
+                userId_roomId: {
+                    userId: newOwnerId,
+                    roomId,
+                },
+            },
+            data: {
+                userType: "OWNER",
+            },
+        });
+    
+    }   
 
-         
-        for (let i = 0; i < users.length; i++) 
+    async changeToUser(roomId: string, demoteUserId: string)
+    {
+        
+        const updatesUserType = await this.prisma.joinedTable.update({
+            where: {
+                userId_roomId: {
+                    userId: demoteUserId,
+                    roomId,
+                },
+            },
+            data: {
+                userType: "USER",
+            },
+        });
+        return {updatesUserType}
+    }                                                                                                                            
+
+    async updateRoom(roomType_: RoomType, roomId:string, password?: string )
+    {
+        if(roomType_ === "PROTECTED")
         {
-            const existingUser = await this.prisma.user.findUnique({
+            if(!password)
+            {
+                return 0;
+            }
+
+            await this.prisma.room.update({
                 where: {
-                    nickname : users[i],
+                  id: roomId,
+                },
+                data: {
+                  roomType : roomType_ ,
+                  password : password
                 },
             });
-            
-            if(existingUser)
-            {
-               
-                if(existingUser.id === adminId)
-                {
-                    return "you try to enter the admin"
-                    // emit message to frontend you try to insert the admin
-                }
-                else
-                { 
-                    // here check if enter the user multi time
-                    
-                    // const unique = this.checkIfArrayIsUnique(usersFounding);
-                    // if(!unique)
-                        usersFounding.push(existingUser.id);
-                    // else
-                    //     console.log(unique)
-                }
-            }   
-            else
-            {
-                return null;
-            } 
-             
         }
-        return usersFounding; // return users id
+        else
+        {
+            await this.prisma.room.update({
+                where: {
+                  id: roomId,
+                },
+                data: {
+                  roomType : roomType_,
+                },
+            });
+        }
+
     }
 
-    async getRoomIdByName (room_name: string) {
-        const room = await this.prisma.room.findUnique({
-          where: { room_name },
-        });
-      
-        if (room) {
-          return room.id;
-        } else {
-          // Handle case when room is not found
-          return null;
-        }
-      };
-
-    async getRoomsForUser(userId: string)
+    async updateRoomName(roomId:string, newRoomName: string )
     {
-        return await this.prisma.joinedTable.findMany({
+        return await this.prisma.room.update({
             where: {
-                userId,
+                id: roomId,
             },
-            include: {
-                room:true,
+            data: {
+                room_name : newRoomName ,
             },
-        }); 
+        });
     }
 
-    async  getUsersInRooms(roomId: string) 
+    async changePasswordOfProtectedRoom(roomId:string, hash: string )
     {
-        let usersInRooms;
+        return await this.prisma.room.update({
+            where: {
+                id: roomId,
+            },
+            data: {
+                password : hash ,
+            },
+        });
+    }
+    
+    async   removeUserFromRoom(roomId: string, kickedUserId: string ) {
         
-        const rooms = await this.prisma.joinedTable.findMany({
+        
+        const kickedUser = await this.prisma.joinedTable.delete({
+            where: {
+                userId_roomId: {
+                    roomId: roomId,
+                    userId: kickedUserId,
+                },
+            },
+        });
+   
+        return {kickedUser}
+    } 
+      
+    async getFirstUserInRoom(roomId: string, userType_: UserType) {
+        return await this.prisma.joinedTable.findFirst({
             where: {
                 roomId,
-              },
-              include: {
-                user: true,
-              },
+                userType: userType_,
+            },
+            orderBy: {
+                createdAt: 'asc'
+            }
+        });
+    }
+      
+    async   doesRoomHaveUsers(roomId: string): Promise<boolean> {
+        const usersInRoom = await this.prisma.joinedTable.findMany({
+            where: {
+            roomId
+            }
         });
         
-        for (const room of rooms) {
-            usersInRooms = await this.prisma.room.findUnique({
-            where: { id: roomId },
-            include: {
-              users: true,
-            },
-          });
-      
-        }
-        return usersInRooms.users;
+        return usersInRoom.length > 0;
     }
+     
+    async   isUserInRoom(userId: string, roomId: string): Promise<boolean> {
+        const userInRoom = await this.prisma.joinedTable.findFirst({
+          where: {
+            userId,
+            roomId
+          }
+        });
+      
+        return !userInRoom;  
+      }
+      
+      async setNewAdmins(roomId: string, user:any)
+      {
+          if(user.userType === 'ADMIN' || user.userType === 'OWNER')
+              return {error : `you are aleredy seted to ${user.userType}.`}
+          
+          const updatesUserType = await this.prisma.joinedTable.update({
+              where: {
+                  userId_roomId: {
+                      userId: user.userId,
+                      roomId,
+                  },
+              },
+              data: {
+                  userType: "ADMIN",
+              },
+          });
+          return {updatesUserType};
+    }
+    
+
+    async bannUser(banExpiresAt : any , userId:string,roomId:string , banType : UserBnned  )
+    {
+        const existingBan = await this.prisma.blackList.findUnique({
+            where: { userId_roomId: { userId, roomId } },
+          });
+        
+          if (existingBan) 
+          {
+            return await this.prisma.blackList.update({
+              where: { userId_roomId: { userId, roomId } },
+              data: {
+                isBanned: banType,
+                banExpiresAt,
+              },
+            });
+          } 
+          else 
+          {
+            // Create a new record
+            return await this.prisma.blackList.create({
+              data: {
+                user: { connect: { id: userId } },
+                room: { connect: { id: roomId } },
+                isBanned: banType,
+                banExpiresAt,
+              },
+            });
+          }
+        
+    }
+
+
+    async muteUser(muteExpiresAt : any , userId:string, roomId:string , muteType : UserMUTE )
+    {
+        const existingmute = await this.prisma.joinedTable.findUnique({
+            where: { userId_roomId: { userId, roomId } },
+          });
+        
+          if (existingmute) 
+          {
+            return await this.prisma.joinedTable.update({
+              where: { userId_roomId: { userId, roomId } },
+              data: {
+                isMuted: muteType,
+                muteExpiresAt,
+              },
+            });
+          } 
+          else 
+          {
+            // Create a new record
+            return await this.prisma.joinedTable.create({
+              data: {
+                user: { connect: { id: userId } },
+                room: { connect: { id: roomId } },
+                isMuted: muteType,
+                muteExpiresAt,
+              },
+            });
+          }
+        
+    }
+    
+    async makeUserUnbanned( userId:string, roomId:string  )
+    {
+        await this.prisma.blackList.update({
+            where: 
+            {
+                userId_roomId: 
+                    {
+                        userId , 
+                        roomId
+                    } 
+            },
+            data: { isBanned: 'UNBANNED', banExpiresAt: null },
+        });
+    }
+    
+    async makeUserUnMuted( userId:string, roomId:string  )
+    {
+        return await this.prisma.joinedTable.update({
+            where: 
+            {
+                userId_roomId: 
+                    {
+                        userId , 
+                        roomId
+                    } 
+            },
+            data: { isMuted: 'UNMUTED'},
+        });
+    }
+    
+    async banUserForEver( userId:string , roomId:string  )
+    {
+       
+        // for if is banned for limmited time and want to banned for ever
+        const existingBan = await this.prisma.blackList.findUnique({
+            where: { userId_roomId: { userId, roomId } },
+          });
+        
+          if (existingBan) 
+          {
+            await this.prisma.blackList.update({
+              where: { userId_roomId: { userId, roomId } },
+              data: {
+                isBanned: 'BANNEDUNLIMMITED_TIME',
+                banExpiresAt: null,
+              },
+            });
+          } 
+          else 
+          {
+            // Create a new record
+            await this.prisma.blackList.create({
+              data: {
+                user: { connect: { id: userId } },
+                room: { connect: { id: roomId } },
+                isBanned: 'BANNEDUNLIMMITED_TIME',
+                banExpiresAt: null,
+              },
+            });
+          }
+    }
+
+    async deleteRoomPassword(roomId: string) {
+        const updatedRoom = await this.prisma.room.update({
+            where: {
+                id: roomId,
+            },
+            data: {
+                password: null,
+                roomType : 'PUBLIC',
+            },
+        });
+    
+        return updatedRoom;
+    }
+
 }

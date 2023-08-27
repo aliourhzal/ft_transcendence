@@ -16,7 +16,6 @@ export class AuthController {
 	@Post('login')
 	async logIn(@Body() signDto: Record<string, string>, @Res() response: Response) {
 		
-		
 		const user = await this.authService.validateUser(signDto.login, signDto.passwd);
 		if (!user)
 			throw new UnauthorizedException('username or password not correct!');

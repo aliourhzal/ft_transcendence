@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { BadRequestException, Body, Controller, Get, Param, Post, Put, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -71,7 +72,7 @@ export class UsersController{
 	@Post('/profile/password')
 	async passwordSetting(@Body('confirmPass') newPassword: string, @Req() req: any, @Res() response: Response)
 	{
-		const re: RegExp = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
+		const re = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
 		if (!re.test(newPassword))
 			throw new BadRequestException('this password is weak choose another')
 		try{
@@ -114,5 +115,7 @@ export class UsersController{
 	async getFriends(@Req() request: any) {
 		return await this.usersService.getFriends(request.user.nickname);
 	}
+ 
+    
 
 }
