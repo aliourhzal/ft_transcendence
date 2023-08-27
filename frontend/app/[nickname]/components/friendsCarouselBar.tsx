@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { UniversalData } from "../layout";
 import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export function FriendBarColumns(props: any)
 {
@@ -35,6 +36,7 @@ export default function FriendCarouselBar()
 	const imgCircle = useRef<HTMLDivElement>();
 	const imgL = useRef<HTMLImageElement>();
 	const imgR = useRef<HTMLImageElement>();
+	const router = useRouter();
 	let scrollPos = 0;
 	let scrollAmount = 100;
 	
@@ -80,7 +82,7 @@ export default function FriendCarouselBar()
 					return friend;
 				})
 			})
-		})
+		});
 		socket.on('friend-deleted', data => {
 			console.log(data);
 			const friendIndex = friends.findIndex((friend => friend.nickname === data.friend));
@@ -90,6 +92,9 @@ export default function FriendCarouselBar()
 				old.splice(friendIndex, 1);
 				return old;
 			});
+		});
+		socket.on('logout', () => {
+			router.push('/');
 		})
 	}, [])
 
