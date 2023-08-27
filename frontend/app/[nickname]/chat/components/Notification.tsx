@@ -14,7 +14,7 @@ interface NotificationProps {
 const Notification:React.FC<NotificationProps> = ( { notifications, notify, setNotify, newNotif, setNewNotif } ) => {
 
   return (
-    <div className='absolute flex flex-col justify-center items-end right-[1%] top-[2%] h-auto' onBlur={ () => {
+    <div className='absolute flex flex-col justify-center items-end right-[1%] top-[5%] h-auto' onBlur={ () => {
       setNotify(false)
     }}>
       <button id="notification_button" onClick={() => { setNotify(old => !old); setNewNotif(false) }}>

@@ -134,8 +134,10 @@ const ConvList = () => {
       <Search _Filter={convsFilter} />
       <div className='scrollbar-none group left-[10%] flex-col bg-transparent w-full h-[80%] mt-8 overflow-hidden overflow-y-scroll'>
           {
-            convs.length ? convs.map ((item:conversation) =>  (<ConvBox key={gimmeRandom()} data={item} />)) :
-            
+            rooms.length ? convs.length ? convs.map ((item:conversation) =>  (<ConvBox key={gimmeRandom()} data={item} />)) 
+            : 
+            <div className="text-white p-8">No conversations found !</div>
+            :
             <div className="text-whiteSmoke font-bold h-[100%] w-[100%] flex flex-col items-center justify-center flex-wrap gap-3">
               <h1 id="h1conv" className="text-xl font-extrabold font"> to start a conversation </h1>
               <AiOutlineUsergroupAdd onClick={() => {setShowForm(true)}} size={30} className="cursor-pointer hover:text-blueStrong hover:scale-110"/>
