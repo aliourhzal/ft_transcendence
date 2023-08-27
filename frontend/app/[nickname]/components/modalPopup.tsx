@@ -67,7 +67,7 @@ export default function MyModal(props: any) {
         const newNickname = e.target[2].value;
 		if (userData.password)
 		{
-			oldPass = e.target[2].value;
+			oldPass = e.target[3].value;
 			p = 5;
 		}
         const newPass = e.target[p].value;
@@ -81,10 +81,12 @@ export default function MyModal(props: any) {
 						await axios.post('http://127.0.0.1:3000/users/profile/checkPassword ', {oldPass}, {
 							withCredentials: true
 						});
+						oldPassRef.current.textContent = "";
 					}catch(err)
 					{
 						oldPassRef.current.textContent = "Password Incorrect";
 						oldPassRef.current.style.color = "E76161";
+						return ;
 					}
 				}
 				if (newPass === confirmPass)
@@ -93,7 +95,7 @@ export default function MyModal(props: any) {
 						withCredentials: true
 					});
 					passwordRef.current.textContent = "Password Updated";
-					oldPassRef.current.textContent = "";
+					// oldPassRef.current.textContent = "";
 					confirmPassRef.current.textContent = "";
 					passwordRef.current.style.color = "#98D8AA";
 					props.dispatch({type: ACTIONS.UPDATE_PASSWD, payload: true})
