@@ -29,7 +29,7 @@ export class UsersService {
 	// set a password to the user
 	async setHashedPassword(id: string ,password: string)
 	{
-		await this.prisma.room.update({
+		await this.prisma.user.update({
 			where:{
 				id: id,
 			},
