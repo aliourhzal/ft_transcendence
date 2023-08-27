@@ -102,7 +102,7 @@ export default function FriendCarouselBar()
 				{
 					friends.length > 7 && <img ref={imgL} className=" p-2 m-2 rounded-full btn-scroll max-sm:hidden w-[35px] aspect-square" src="../images/L_arrow.png"  alt="" onClick={()=>scrollHorizontal(-1)}/>
 				}
-				<div ref={imgContainer} className="bg-red-500 storys-container flex items-center justify-center px-4 gap-6">
+				<div ref={imgContainer} className=" storys-container flex items-center justify-center px-4 gap-6">
 						{
 							friends.map((friend) => {
 								return (
