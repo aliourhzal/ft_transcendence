@@ -13,7 +13,7 @@ interface ConvBoxProps {
 
 const ConvBox: React.FC<ConvBoxProps> = (data) => {
 
-  const {setShowConv, rooms, setActiveUserConv, setChatBoxMessages} = useContext(Context)
+  const {rooms, setActiveUserConv, setShowConv, setChatBoxMessages} = useContext(Context)
   const handleClick = async () => {
     setShowConv(true)
     setActiveUserConv(data.data)
@@ -35,10 +35,10 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
         console.log(error)
     }
     // const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
-}
+  }
 
   const activeDiv = (div:HTMLDivElement) => {
-    var divs = document.getElementsByClassName('convGroup z-0 bg-zinc-800 w-[70%] left-[15%] h-[100px] relative my-3 rounded-md active:bg-blue-500') as HTMLCollectionOf<HTMLElement>
+    var divs = document.getElementsByClassName('convGroup') as HTMLCollectionOf<HTMLElement>
     if (divs) {
       for (var i = 0; i < divs.length; i++) {
         if (divs[i] == div)
@@ -50,16 +50,16 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
   }
 
   return (
-    <div className="convGroup z-0 bg-zinc-800 hover:bg-zinc-700 w-[70%] left-[15%] h-[100px] relative my-3 rounded-md active:bg-blue-500" onClick={(e) => {
+    <div tabIndex={0} className="convGroup z-0 bg-zinc-800 focus:bg-blueStrong hover:bg-zinc-700 w-[70%] left-[15%] h-[100px] relative my-3 rounded-md active:bg-blue-500" onClick={(e) => {
         handleClick();
-        // activeDiv(e.currentTarget);
+        activeDiv(e.currentTarget);
         // scrollToBottom()
       }}>
         {/* {data && <div className='absolute z-0 h-[100px] w-full flex flex-col items-end justify-center bg-transparent'>
           <span className='mx-5 animate-ping inline-flex w-2 h-2 rounded-full bg-blueStrong z-10 opacity-90'></span>
         </div>} */}
         <div className="left-[30%] top-[25%] absolute text-gray-200 font-medium">{data.data.name}</div>
-        <Avatar pointer zoomed text={data.data.name} bordered color={"gradient"} alt={data.data.name} className="w-auto h-auto left-[6%] top-[30%] absolute"
+        <Avatar bordered borderWeight={"light"} text={data.data.name} color={"gradient"} alt={data.data.name} className="w-auto h-auto left-[6%] top-[30%] absolute"
           src={data.data.photo} />
         <div className="left-[30%] top-[50%] absolute text-gray-200 text-opacity-70 font-normal">{
             data.data.lastmsg ? data.data.lastmsg.length > 15 ? data.data.lastmsg.substring(0, 15)+'...' : data.data.lastmsg : ''}</div>
