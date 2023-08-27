@@ -173,4 +173,18 @@ export default class InvitationsGateway implements OnGatewayConnection, OnGatewa
 		}
 	}
 
+	@SubscribeMessage('logout')
+	async userLoggedOut(socket: Socket) {
+		const {nickname} = this.connectedUsers.find(c => c.socket.id === socket.id);
+		if (!nickname)
+			return ;
+		const userSockets = this.connectedUsers.filter(c => c.nickname === nickname);
+		if (userSockets.length === 0)
+			return ;
+		userSockets.forEach(s => {
+			this.server.to(s.socket.id).emit('logout');
+			s.socket.disconnect();
+		})
+	}
+
 }
