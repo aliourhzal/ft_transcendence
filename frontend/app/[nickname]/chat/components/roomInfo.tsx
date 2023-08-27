@@ -94,7 +94,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
                         showRoomEditForm ? setshowRoomEditForm(false) : ''
                     }}/>
                 }
-                <Avatar zoomed text={info.room.name} bordered color={"primary"} alt={info.room.name} className="w-auto h-auto"></Avatar>
+                <Avatar pointer src={info.room.photo} size={"xl"} zoomed text={info.room.name} bordered color={"gradient"} alt={info.room.name} className="w-auto h-auto"></Avatar>
                 {isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) &&
                     <FiEdit3  color={showRoomEditForm ? 'rgb(41 120 242)' : ''} cursor={'pointer'} className='hover:text-whiteSmoke' onClick={ () => {
                         setshowRoomEditForm(old => !old)

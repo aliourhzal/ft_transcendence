@@ -91,7 +91,7 @@ const ConvList = () => {
         setConvs([...rooms])
         console.log(rooms)
         set_room_created(old => !old)
-        setUpdateList(old => !old)
+        // setUpdateList(old => !old)
         if (userData.nickname === _newUser) {
           _notification(`You have joined '${res.roomId.room_name}'`, "good")
         }
@@ -132,7 +132,7 @@ const ConvList = () => {
     return (
     <>
       <Search _Filter={convsFilter} />
-      <div className='group left-[10%] flex-col bg-transparent w-full h-[80%] mt-8 overflow-hidden overflow-y-scroll'>
+      <div className='scrollbar-none group left-[10%] flex-col bg-transparent w-full h-[80%] mt-8 overflow-hidden overflow-y-scroll'>
           {
             convs.length ? convs.map ((item:conversation) =>  (<ConvBox key={gimmeRandom()} data={item} />)) :
             

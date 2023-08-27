@@ -114,7 +114,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
     console.log('change name')
     setRooms( (_rooms: Room[]) => {
       _rooms.find(o => o.name === res.oldRoomName).name = res.newRoomName
-      setConvs([...rooms])
+      setConvs([..._rooms])
       return _rooms
     })
     setInfoUpdate(old => !old)
@@ -129,7 +129,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
       _notification(`'${res.roomName}' is set to public`, "good")
       setRooms( (_rooms: Room[]) => {
         _rooms.find(o => o.name === res.roomName).type = 'PUBLIC'
-        setConvs([...rooms])
+        setConvs([..._rooms])
         return _rooms
       })
     }
@@ -143,12 +143,10 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { socket, rooms, setRoo
       setConvs([..._rooms])
       return _rooms
     })
-    console.log (rooms)
   }
 
   const unMuteUser = (res) => {
     console.log("unmute")
-    console.log(res)
     setRooms((_rooms: Room[]) => {
       _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.unMutedUser.userId).isMuted = 'UNMUTED'
       setConvs([..._rooms])

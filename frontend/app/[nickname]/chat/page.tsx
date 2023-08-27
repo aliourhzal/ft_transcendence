@@ -197,7 +197,7 @@ export default function Chat() {
     };
 
 	return (
-		<main className='select-none h-full w-full'>
+		<main className='scrollbar-none select-none h-full w-full'>
 			<Notification newNotif={newNotif} setNewNotif={setNewNotif} notifications={notifications} notify={notify} setNotify={setNotify}/>
 			<Context.Provider value={{alertNewMessage, setAlertNewMessage, ref, showConv, setShowConv, activeUserConv, setActiveUserConv, socket,
 				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm, msg_sent, set_msg_sent,
