@@ -79,7 +79,7 @@ export class UsersController{
 			response.end('ok');
 		}
 		catch(err)
-		{throw new Error("this error from users.controller.ts/passwordSetting()");}
+		{throw new BadRequestException("this error from users.controller.ts/passwordSetting()");}
 	}
 
 	@UseGuards(AuthGuard('jwt'))
@@ -87,9 +87,9 @@ export class UsersController{
 	async checkPassword(@Body('oldPass') oldPassword: string, @Req() req: any, @Res() response: Response)
 	{
 		const user = await this.usersService.findOneByNickname(req.user.nickname);
-		if (!comparePasswd(oldPassword, user.password))
+		if (user && !comparePasswd(oldPassword, user.password))
 		{
-			throw new Error("wrong old password");
+			throw new BadRequestException("wrong old password");
 		}
 		else
 			response.end('ok');
