@@ -172,6 +172,11 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		return (socket === room.player1.socket ? room.player1.socket : room.player2.socket)
 	}
 
+	findPlayerByRoom_SockerId(room : roomT, id: string)
+	{
+		return (room.player1.socket.id === id ? room.player1 : room.player1.socket.id === id ? room.player2 : null)
+	}
+
 	checkPlayerOrder(socket: Socket, room: roomT) {
 		if(socket.id === room.player1.socket.id)
 			return (1);
@@ -299,7 +304,10 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			room.hell = data.hell;
 			room.specialsMode = data.specials;
 			if (room.specialsMode)
+			{
+				this.findPlayerByRoom_SockerId(room, socket.id).special = true;
 				room.specials.activateSpecial(data.h, data.w);
+			}
 			room.player1.initBallPos(data.w / 2, data.h / 2, data.w * 10 / 800);
 			room.player2.initBallPos(data.w / 2, data.h / 2, data.w * 10 / 800);
 			room.player1.setCanvasDim(data.h, data.w);
@@ -323,6 +331,8 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	@SubscribeMessage('consume-special')
 	consumeSpecial(socket: Socket) {
 		const room = this.findRoomBySocket(socket);
+		if (room.player1.special === false || room.player2.special === false)
+			return ;
 		if (room) {
 			room.specials.desactivateSpecial();
 			setTimeout(() => {
