@@ -90,7 +90,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
     console.log(newOwnerId)
     console.log(room)
     setRooms((_rooms:Room[]) => {
-      if (userData.nickname === room.users.find(o => o.id === userToRemoveId).nickName) {
+      if (userData.nickname === room?.users?.find(o => o.id === userToRemoveId).nickName) {
         if (newOwnerId)
           _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === newOwnerId.userId).type = 'OWNER'
         _rooms.splice(_rooms.indexOf(room), 1)
