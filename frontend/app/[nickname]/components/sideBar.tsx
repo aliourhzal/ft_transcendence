@@ -7,11 +7,10 @@ import {FaUserFriends} from "react-icons/fa";
 import { RiLogoutBoxFill } from "react-icons/ri"
 import MyModal from "./modalPopup";
 import { useContext } from "react";
-import { userDataContext } from "../layout";
+import { userDataContext } from "../../contexts/UniversalData";
 import { useRouter } from "next/navigation";
 import { useCookies } from "react-cookie"
-import Link from "next/link";
-import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
+import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 
 interface SideBarProps {
 	nickname: string,
