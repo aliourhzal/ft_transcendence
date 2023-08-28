@@ -35,4 +35,6 @@ change dm user id to user nickname
 
 fix user photo disappear after muting or kicking and coming back
 
-add notifications for every action 
+add notifications for every action
+
+add ? in every room.find
