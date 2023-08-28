@@ -5,85 +5,99 @@
 			"category": "hat-trick",
 			"level": 1,
 			"title": "Hat-trick",
-			"description": "score 3 times  sequentially"
+			"description": "score 3 times  sequentially",
+			"xp": 7
 		},
 		"Welcome": {
 			"category": "Welcome",
 			"level": 1,
 			"title": "Welcome",
-			"description": "Welcome to Pongy, go Play"
+			"description": "Welcome to Pongy, go Play",
+			"xp": 0
 		},
 		"theBreaker_1": {
 			"category": "breaker",
 			"level": 1,
 			"title": "the Breaker 1",
-			"description": "Win 3 matches sequentially"
+			"description": "Win 3 matches sequentially",
+			"xp": 11
 		},
 		"theBreaker_2": {
 			"category": "breaker",
 			"level": 2,
 			"title": "the Breaker 2",
-			"description": "Win 5 matches sequentially"
+			"description": "Win 5 matches sequentially",
+			"xp": 25
 		},
 		"theBreaker_3": {
 			"category": "breaker",
 			"level": 3,
 			"title": "the Breaker 3",
-			"description": "Win 7 matches sequentially"
+			"description": "Win 7 matches sequentially",
+			"xp": 56
 		},
 		"Mjollnir": {
 			"category": "breaker",
 			"level": 4,
 			"title": "Mjollnir",
-			"description": "Win 10 matches sequentially"
+			"description": "Win 10 matches sequentially",
+			"xp": 94
 		},
 		"Noob": {
 			"category": "seniority",
 			"level": 1,
 			"title": "Noob",
-			"description": "play 5 matches"
+			"description": "play 5 matches",
+			"xp": 5
 		},
 		"Bob": {
 			"category": "seniority",
 			"level": 2,
 			"title": "Bob",
-			"description": "play 10 matches"
+			"description": "play 10 matches",
+			"xp": 12
 		},
 		"Pro": {
 			"category": "seniority",
 			"level": 3,
 			"title": "Pro",
-			"description": "play 20 matches"
+			"description": "play 20 matches",
+			"xp": 21
 		},
 		"Bad_ass": {
 			"category": "seniority",
 			"level": 4,
 			"title": "Bad-Ass",
-			"description": "play 50 matches"
+			"description": "play 50 matches",
+			"xp": 37
 		},
 		"Humiliator": {
 			"category": "humiliator",
 			"level": 1,
 			"title": "Humiliator",
-			"description": "win 1 matches with clean sheet"
+			"description": "win 1 matches with clean sheet",
+			"xp": 17
 		},
 		"Demon": {
 			"category": "humiliator",
 			"level": 2,
 			"title": "Demon",
-			"description": "win 3 matches with clean sheet"
+			"description": "win 3 matches with clean sheet",
+			"xp": 36
 		},
 		"theDevilPet": {
 			"category": "humiliator",
 			"level": 3,
 			"title": "Devil Pet",
-			"description": "win 7 matches with clean sheet"
+			"description": "win 7 matches with clean sheet",
+			"xp": 77
 		},
 		"Satan": {
 			"category": "humiliator",
 			"level": 4,
 			"title": "Satan",
-			"description": "win 10 matches with clean sheet"
+			"description": "win 10 matches with clean sheet",
+			"xp": 123
 		},
 		"Tester": {
 			"category": "game",
