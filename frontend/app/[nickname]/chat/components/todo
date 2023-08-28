@@ -1,20 +1,25 @@
+fix notification icon (DONE)
+emit dm and close popup on dm usermember (DONE)
+user pop ups (DONE)
 link to profile through popup (DONE)
 
-style users search
+
+
+
+
+style users search + dont show current user
 
 phone div slide
 
-user pop ups (DONE)
 
 open dm conv if already exist
 
 check cookies after msg sent 
 
-emit dm and close popup on dm usermember
+
+open dm room if already exist after clicking on dm in profile popup
 
 userinfo popup after clicking on icon in roommembers (contain dm and profile url)
-
-fix notification icon
 
 change grp image to fit with blueStrong and darken
 
@@ -27,3 +32,7 @@ ask drari to remove prevent default from settings form so changes apply
 change edit room icons design
 
 change dm user id to user nickname
+
+fix user photo disappear after muting or kicking and coming back
+
+add notifications for every action 
