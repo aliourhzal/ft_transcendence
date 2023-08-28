@@ -22,20 +22,16 @@ interface SideBarProps {
 }
 
 export function NavOption(props: any) {
-	const [cookies, setCookie] = useCookies(["access_token", "login"]);
+	const [cookies, setCookie, removeCookie] = useCookies(["access_token", "login"]);
 	const socket = useContext(InvitationSocketContext);
 	const emitRoomsRequest = () => {
 		props.socket.emit('chat', {jwt: cookies.access_token, socketID: props.socket.id});
 	}
 
 	const logout = () => {
-		setCookie("access_token", '', {
-			expires: new Date("Thu, 01 Jan 1970 00:00:00 GMT")
-		});
+		removeCookie('access_token')
 		socket.emit('logout');
-		setCookie("login", '', {
-			expires: new Date("Thu, 01 Jan 1970 00:00:00 GMT")
-		});
+		removeCookie('login');
 		props.router.push("http://127.0.0.1:3001/");
 	}
 
