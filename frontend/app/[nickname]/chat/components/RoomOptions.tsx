@@ -73,8 +73,6 @@ const OptionsIcon = ( { icon } ) => {
             {icon === 'kick' && <BiUserMinus strokeWidth={0} aria-label='kick' cursor="pointer" size={30} onClick={() => {kickUser(user.id)}}/>}
             {icon === 'ban' && <Ban banUser={banUser} user={user}/>}
             {icon === 'mute' && <Mute muteUser={muteUser} unMuteUser={unMuteUser} user={user} _state={info.room.users.find(o => o.nickName === user.nickName).isMuted} />}
-            {icon === 'dm' && <BiConversation title='DM' aria-label='DM' cursor="pointer" size={25}/>}
-            {icon === 'profile' && <FaRegUser title='profile' aria-label='profile' cursor="pointer" size={20}/>}
         </div>
     )
 }

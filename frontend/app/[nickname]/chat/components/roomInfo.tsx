@@ -106,7 +106,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
             {showRoomEditForm && <EditRoom _setNewName={setNewName} _setNewPass={setNewPass} roomType={info.room.type} changeRoomType={changeRoomType}/>}
             <div className='my-4 h-65 flex flex-col justify-start items-center overflow-y-scroll overflow-x-hidden'>
                 {info.room.users.map(user => (
-                    <RoomMumbers info={info} user={user} isOwner={isOwner} isAdmin={isAdmin} key={gimmeRandom()} />
+                    <RoomMumbers info={info} user={user} isOwner={isOwner} isAdmin={isAdmin} key={gimmeRandom()} hide={hide} />
                 ))}
             </div>
             <div className='w-full flex items-center justify-center'>

@@ -1,10 +1,10 @@
-link to profile through popup
+link to profile through popup (DONE)
 
 style users search
 
 phone div slide
 
-user pop ups
+user pop ups (DONE)
 
 open dm conv if already exist
 
@@ -15,3 +15,15 @@ emit dm and close popup on dm usermember
 userinfo popup after clicking on icon in roommembers (contain dm and profile url)
 
 fix notification icon
+
+change grp image to fit with blueStrong and darken
+
+fix messages from room with the same name as user
+
+remove absolute from convbox
+
+ask drari to remove prevent default from settings form so changes apply
+
+change edit room icons design
+
+change dm user id to user nickname

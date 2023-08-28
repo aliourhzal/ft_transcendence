@@ -50,7 +50,7 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
   }
 
   return (
-    <div tabIndex={0} className="cursor-pointer convGroup z-0 bg-zinc-800 focus:bg-blueStrong hover:bg-zinc-700 w-[70%] left-[15%] h-[100px] relative my-3 rounded-md active:bg-blue-500" onClick={(e) => {
+    <div tabIndex={0} className="cursor-pointer convGroup z-0 bg-zinc-800 focus:bg-blueStrong hover:bg-zinc-700 w-[70%] left-[15%] h-[100px] relative my-3 rounded-md active:bg-blue-500 flex items-center justify-start" onClick={(e) => {
         handleClick();
         activeDiv(e.currentTarget);
         // scrollToBottom()
@@ -59,7 +59,7 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
           <span className='mx-5 animate-ping inline-flex w-2 h-2 rounded-full bg-blueStrong z-10 opacity-90'></span>
         </div>} */}
         <div className="left-[30%] top-[25%] absolute text-gray-200 font-medium">{data.data.name}</div>
-        <img alt={data.data.name} width={45} height={45} className="rounded-full border-2 border-slate-300 w-30 h-30 left-[6%] top-[30%] absolute" src={data.data.photo} />
+        <img alt={data.data.name} width={45} height={45} className="rounded-full border-2 border-slate-300 w-30 h-30 ml-4" src={data.data.photo} />
         <div className="left-[30%] top-[50%] absolute text-gray-200 text-opacity-70 font-normal">{
             data.data.lastmsg ? data.data.lastmsg.length > 15 ? data.data.lastmsg.substring(0, 15)+'...' : data.data.lastmsg : ''}</div>
         {/* <div className="left-[85%] top-[70%] lg:top-[50%] absolute text-gray-200 text-opacity-70 font-normal">10:30</div> */}

@@ -1,13 +1,7 @@
- import React, { useContext, useEffect, useRef, useState } from 'react'
-import Image from 'next/image'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Context } from '../page'
 import ChatBox from './ChatBox'
 import RoomInfo from './roomInfo'
-import AlertMsgDown from './AlertMsgDown'
-import { getCookie } from '../../layout'
-import SocketComponent from './SocketComponent'
-import { headers } from 'next/dist/client/components/headers'
-import { FcInfo } from 'react-icons/Fc'
 import {Avatar} from '@nextui-org/react'
 
 const Conversation = () => {
@@ -18,7 +12,8 @@ const Conversation = () => {
 
     const [msg_sender, set_msg_sender] = useState('')
 
-    const {setAlertNewMessage, scrollToBottom, showConv, activeUserConv, chatBoxMessages, rooms, socket, userData, msg_sent, set_msg_sent, setChatBoxMessages} = useContext(Context)
+    const {setAlertNewMessage, scrollToBottom, showConv, activeUserConv, chatBoxMessages, rooms, socket,
+        userData, msg_sent, set_msg_sent, setChatBoxMessages, setShowUserInfos, setUserInfoNick} = useContext(Context)
 
     // useEffect( () => {
     //   typeof window != 'undefined' ? (window.innerWidth <= 768 ? setDeviceType('small') : setDeviceType('normal')) : setDeviceType('normal')
@@ -70,8 +65,11 @@ const Conversation = () => {
                         <div className=' min-w-[150px] bg-zinc-800 rounded-l-3xl pr-2 rounded-r-xl flex items-center gap-3 justify-start w-auto h-auto cursor-pointer hover:underline' onClick={() => {
                             if (rooms.find(o => o.name === activeUserConv.name).type != 'DM')
                                 setShowInfo(true)
-                            // else
-                                //visit profile
+                            else {
+                                console.log(activeUserConv.name)
+                                setUserInfoNick(activeUserConv.name)
+                                setShowUserInfos(true)
+                            }
                             }}>
                             <Avatar zoomed text={activeUserConv.name} bordered color={'gradient'} alt={activeUserConv.name} src={rooms.find(o => o.name === activeUserConv.name)?.photo} pointer/>
                             <div className='w-full flex items-center justify-center'>{activeUserConv.name}</div>
