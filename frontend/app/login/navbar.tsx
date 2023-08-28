@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './style.css'
 
 export default function Navbar()
@@ -9,6 +9,15 @@ export default function Navbar()
     const collapse = () => {
         setDisplay(isDisplay => !isDisplay)
     }
+    useEffect(()=>{
+        window.addEventListener("resize", checkCollapse);
+        function checkCollapse ()
+        {
+            if (window.innerWidth > 767)
+                setDisplay(true);
+        }
+        return () => window.removeEventListener("resize", checkCollapse);
+    }, []);
 
     return(
         <nav className="absolute top-0 left-0 w-full">
