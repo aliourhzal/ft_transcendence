@@ -8,13 +8,17 @@ import { IoMdSend } from 'react-icons/io'
 import FriendsRequests from "./components/FriendsRequest";
 import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 import FriendCard from "./components/FriendCard";
-import { UniversalData } from "../layout";
+import { UniversalData, userDataContext } from "../../contexts/UniversalData";
+import { useRouter } from 'next/navigation';
 
-export default function Friends() {
+
+export default function Friends(props: any) {
 	const [requestErr, setRequestErr] = useState<{display: boolean, response: {err: boolean, msg: string}}>({display: false, response: {err: false, msg: ''}});
 	const [isLoading, setIsLoading] = useState(false);
 	const [friends, setFriends] = useState<UniversalData[]>([]);
 	const socket = useContext(InvitationSocketContext);
+	// const loggedUser = useContext(userDataContext);
+	// const router = useRouter();
 
 	async function onSubmitHandler(e) {
 		e.preventDefault();
@@ -30,6 +34,8 @@ export default function Friends() {
 	}
 
 	useEffect(() => {
+		// if (props.params.nickname !== loggedUser.nickname)
+		// 	router.replace(`http://127.0.0.1:3001/${loggedUser.nickname}/friends`);
 		axios.get('http://127.0.0.1:3000/users/friends', {
 			withCredentials: true
 		})
