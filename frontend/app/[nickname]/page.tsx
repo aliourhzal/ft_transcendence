@@ -14,13 +14,13 @@ export default function Profile(props) {
 	const [completed, setCompleted] = useState(false);
 	const [err, setErr] = useState(false);
 	const loggedUser = useContext(userDataContext)
-	const [userData, setUserData] = useState<UniversalData>(loggedUser);
+	const [userData, setUserData] = useState<UniversalData>();
 
 	async function fetchUserData(nickname: string) {
 		try {
 			const {data} = await axios.get('http://127.0.0.1:3000/users/profile', {
 				params: {
-					nickname: props.params.nickname
+					nickname
 				},
 				withCredentials: true
 			})
@@ -44,7 +44,7 @@ export default function Profile(props) {
 				{
 					completed && !err ?
 					<>
-						<ProfileInfo data={userData} currentUser={loggedUser.nickname === props.params.nickname}/>
+						<ProfileInfo data={loggedUser.nickname !== props.params.nickname ? userData : loggedUser} currentUser={loggedUser.nickname === props.params.nickname}/>
 						{
 							loggedUser.nickname === props.params.nickname && <FriendsCarouselBar />
 						}
