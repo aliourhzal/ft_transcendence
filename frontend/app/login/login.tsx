@@ -52,7 +52,7 @@ export default function Login()
     useKey("NumpadEnter", hundleEnter);
     return (
         <main style={{backgroundImage: "url('/images/pongTable.jpeg')"}}  className='h-full w-full flex flex-col items-center justify-center bg-slate-900 bg-center bg-cover'>
-            {/* <canvas id="canvas" className="bg-transparent h-1/2 w-full absolute left-0 top-0"></canvas> */}
+            <canvas id="canvas" className="bg-transparent h-1/2 w-full absolute left-0 top-0"></canvas>
             <Navbar />
             <div className='container relative flex items-center justify-center flex-col bg-slate-700/30 p-10 lg:w-1/4 rounded-xl backdrop-blur-[3px] hover:backdrop-blur-[9px]  md:w-2/4'>
                 <input ref={loginRef} className=' mb-6 pt-2 pb-2 w-4/5 rounded text-center bg-transparent border-white border text-white outline-none placeholder-white' type="text" placeholder='login'/>
@@ -65,6 +65,7 @@ export default function Login()
                     <AuthButton src="images/facebook.png" alt="facebook" link=""/>
                 </div>
             </div>
+            <script src="../script.js" />
         </main>
     );
 }
