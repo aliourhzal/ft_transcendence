@@ -89,6 +89,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			room.player1.gameGoing = room.player2.gameGoing = false;
 			await this.usersService.createMatch(room.player1.nickName, room.player2.nickName, room.player1.score, room.player2.score);
 			clearInterval(room.loop);
+			await this.usersService.incrementLvl(room.player1.score === 7 ? room.player1.nickName : room.player2.nickName, 10);
 			await this.achievementsService.checkForAchievement(room.player1, room.player2);
 			this.server.to(room.roomId).emit("gameOver", 
 				room[room.player1.score === 7 ? 'player1' : 'player2'].socket.id
