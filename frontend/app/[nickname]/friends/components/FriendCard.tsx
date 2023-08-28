@@ -2,7 +2,7 @@ import Container from "@/components/UI/ProfileBoxs";
 import { UniversalData } from "../../layout";
 import Link from "next/link"
 import { useContext, useEffect } from "react";
-import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
+import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 
 
 export default function FriendCard({user}: {

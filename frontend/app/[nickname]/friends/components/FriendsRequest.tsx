@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { useEffect, useState, useContext } from "react";
-import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
+import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 import { RiUserReceivedFill } from 'react-icons/ri'
 import RequestCard from "./RequestCard";
 import Popup from "@/components/UI/Popup";
