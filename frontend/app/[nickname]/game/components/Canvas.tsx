@@ -73,14 +73,18 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 
 		function drawSpecial() {
 			const img = new Image();
-			if (special.type === 'dwarf')
+			if (special.type === 'dwarf') {
 				img.src = '/images/shortSpecial.svg';
-			else if (special.type === 'big_foot')
+				special.color = '#f22f0d';
+			}
+			else if (special.type === 'big_foot') {
 				img.src = '/images/bigSpecial.svg';
+				special.color = '#0df265';
+			}
 			ctx.beginPath();
 			ctx.arc(special.x, special.y, special.radius, 0, 2 * Math.PI);
 			if(player.color !== '#FFF' && player.color !== '#fff' && player.color !== 'white') {
-				ctx.fillStyle = player.color;
+				ctx.fillStyle = special.color;
 				ctx.fill();
 			}
 			else {

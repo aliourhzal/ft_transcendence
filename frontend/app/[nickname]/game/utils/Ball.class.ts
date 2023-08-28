@@ -21,6 +21,7 @@ export class Ball {
 export class Special extends Ball {
 	type: string;
 	active: boolean;
+	color: string;
 
 	setType(type: string) {
 		this.type = type;
