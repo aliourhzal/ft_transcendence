@@ -1,4 +1,4 @@
-import { WebsocketContext } from "@/app/context_sockets/gameWebSocket";
+import { WebsocketContext } from "@/app/contexts/gameWebSocket";
 import { useContext, useEffect, useRef } from "react"
 
 class Player {

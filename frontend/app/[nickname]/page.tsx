@@ -1,6 +1,6 @@
 'use client'
 
-import { UniversalData, userDataContext } from "./layout";
+import { UniversalData, userDataContext } from "../contexts/UniversalData";
 import { useContext, useEffect, useState } from "react";
 
 import { MatchHistory, GameStats } from "./components/MatchesNStats";

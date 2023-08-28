@@ -6,7 +6,7 @@ import axios from "axios";
 import { useState, useContext, useEffect } from "react";
 import { IoMdSend } from 'react-icons/io'
 import FriendsRequests from "./components/FriendsRequest";
-import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
+import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 import FriendCard from "./components/FriendCard";
 import { UniversalData } from "../layout";
 
