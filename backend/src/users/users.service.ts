@@ -327,4 +327,19 @@ export class UsersService {
 
 		return (missions);
 	}
+
+	async incrementLvl(nickname:string, xp: number) {
+		const user = await this.findOneByNickname(nickname);
+		const newLvl = +(user.level + (xp / 100)).toFixed(2);
+		console.log(newLvl);
+		await this.prisma.user.update({
+			where: {
+				nickname
+			},
+			data: {
+				level: newLvl
+			}
+		});
+
+	}
 }
