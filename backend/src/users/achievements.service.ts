@@ -8,7 +8,8 @@ type Achievement = {
 	category: string,
 	level: number,
 	title: string,
-	description: string
+	description: string,
+	xp: number
 }
 
 @Injectable()
@@ -66,10 +67,11 @@ export class AcheivementsService {
 	async createAchievement(achievement: any) {
 		const ac = await this.prisma.achievements.findMany();
 		const acMap = ac.filter(a => a.title === achievement.title);
+		const {xp, ...rest} = achievement;
 		if (acMap.length !== 0)
 			return ;
 		await this.prisma.achievements.create({
-			data: { ...achievement}
+			data: { ...rest}
 		});
 	}
 
@@ -115,8 +117,10 @@ export class AcheivementsService {
 			if (playerScore > oppScore)
 				wonMatches++;
 		}
-		if (wonMatches === matchRequirement)
+		if (wonMatches === matchRequirement) {
 			await this.giveAcToUser(winner.nickName, newBreaker);
+			await this.usersService.incrementLvl(winner.nickName, newBreaker.xp)
+		}
 	}
 
 	async checkHumiliator(p1: Player, p2: Player) {
