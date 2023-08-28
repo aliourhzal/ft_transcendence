@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { UniversalData } from "../layout";
-import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
+import { UniversalData } from "../../contexts/UniversalData";
+import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 

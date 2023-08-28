@@ -3,7 +3,7 @@
 import { useContext, useEffect, useState } from "react";
 
 import { UniversalData } from "../layout";
-import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
+import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 import axios from "axios";
 
 

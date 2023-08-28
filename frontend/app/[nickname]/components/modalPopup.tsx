@@ -5,7 +5,8 @@ import { useContext, useRef } from "react";
 import { Fragment, useState } from 'react';
 import { IoIosAddCircle, IoIosSettings } from "react-icons/io";
 import axios from "axios";
-import { ACTIONS, userDataContext } from '../layout';
+import { ACTIONS } from '../layout';
+import { userDataContext } from '@/app/contexts/UniversalData';
 
 function InputTemplate(props: any) {
 	return (
