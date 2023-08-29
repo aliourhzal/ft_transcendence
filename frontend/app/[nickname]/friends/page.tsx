@@ -43,7 +43,11 @@ export default function Friends(props: any) {
 			setFriends(res.data);
 		})
 		socket.on('receive-friends', data => {
-			setFriends(oldFriends => [...oldFriends, data]);
+			console.log('new friend: ', data.nickname);
+			setFriends(oldFriends => {
+				console.log('old Friends: ', oldFriends.length);
+				return ([...oldFriends, data]);
+			});
 		});
 		socket.on('request-response', response => {
 			setRequestErr({display: true, response});
@@ -55,18 +59,18 @@ export default function Friends(props: any) {
 			console.log('friends page: ', data);
 			setFriends(friends => {
 				return friends.map(friend => {
-					if (friend.nickname === data.user)
+					if (friend.id === data.user)
 						friend.status = data.status		
 					return friend;
 				})
 			})
 		});
 		socket.on('friend-deleted', data => {
-			console.log(data);
-			const friendIndex = friends.findIndex((friend => friend.nickname === data.friend));
+			const friendIndex = friends.findIndex((friend => friend.id === data.friend));
 			setFriends(friends => {
 				const old = [...friends];
 				old.splice(friendIndex, 1);
+				console.log('friends length: ', old.length);
 				return old;
 			});
 		})

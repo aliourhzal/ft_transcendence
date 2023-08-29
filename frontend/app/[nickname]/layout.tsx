@@ -79,18 +79,11 @@ export default function ProfileLayout({
 	const [userDataState, dispatch] = useReducer(reducer, {});
 	const [completed, setCompleted] = useState(false);
 
-	if (completed) {
-		const page = window.location.href.split('/')[4];
-		const nickname = window.location.href.split('/')[3];
-		if (page && nickname !== userDataState.nickname)
-			router.replace(`http://127.0.0.1:3001/${userDataState.nickname}/${page}`);
-	}
 	useEffect(() => {
 		fetchUserData('http://127.0.0.1:3000/users/profile')
 		.then(res => {
 			dispatch({type: ACTIONS.INIT, payload: {
 				data: res,
-				// socket
 			}});
 			setCompleted(true);
 		})

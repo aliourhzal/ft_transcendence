@@ -100,7 +100,7 @@ export class UsersController{
 	@Get('/friend/requests')
 	async getRequest(@Body('nickname') friendName:string, @Req() request: any)
 	{
-		return await this.usersService.getFriendsRequests(request.user.nickname);
+		return await this.usersService.getFriendsRequestsWithNickname(request.user.nickname);
 	}
 
 	@UseGuards(AuthGuard('jwt'))
@@ -113,7 +113,7 @@ export class UsersController{
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/friends')
 	async getFriends(@Req() request: any) {
-		return await this.usersService.getFriends(request.user.nickname);
+		return await this.usersService.getFriendsWithNickname(request.user.nickname);
 	}
  
     

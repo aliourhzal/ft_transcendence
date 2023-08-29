@@ -1,5 +1,5 @@
 import Container from "@/components/UI/ProfileBoxs";
-import { UniversalData } from "../../layout";
+import { UniversalData } from "../../../contexts/UniversalData";
 import Link from "next/link"
 import { useContext, useEffect } from "react";
 import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
@@ -12,7 +12,7 @@ export default function FriendCard({user}: {
 	const socket = useContext(InvitationSocketContext);
 	
 	function removeFriend() {
-		socket.emit('delete-friend', user.nickname);
+		socket.emit('delete-friend', user.id);
 	}
 
 	return (
