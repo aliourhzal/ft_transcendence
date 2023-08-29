@@ -2,6 +2,7 @@ import { createContext } from "react";
 import { Socket } from "socket.io-client";
 
 export interface UniversalData {
+	id: string,
 	intra_Id?: number,
 	wallet?: number,
 	grade?: string,

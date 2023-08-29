@@ -7,6 +7,7 @@ import { IoIosAddCircle, IoIosSettings } from "react-icons/io";
 import axios from "axios";
 import { ACTIONS } from '../layout';
 import { userDataContext } from '@/app/contexts/UniversalData';
+import { useRouter } from 'next/navigation';
 
 function InputTemplate(props: any) {
 	return (
@@ -19,6 +20,7 @@ function InputTemplate(props: any) {
 
 export default function MyModal(props: any) {
 	let [isOpen, setIsOpen] = useState(false);
+	const router = useRouter();
 	const avatarElement : any = useRef();
 	const coverElement : any = useRef();
 	const nickNameRef : any = useRef();
@@ -121,7 +123,8 @@ export default function MyModal(props: any) {
 				});
 				nickNameRef.current.textContent = "Updated";
 				nickNameRef.current.style.color = "#98D8AA";
-				props.dispatch({type: ACTIONS.UPDATE_NICKNAME, payload: newNickname})
+				props.dispatch({type: ACTIONS.UPDATE_NICKNAME, payload: newNickname});
+				router.replace(window.location.href.replace(userData.nickname, newNickname));
 			}
 			catch(error)
 			{
