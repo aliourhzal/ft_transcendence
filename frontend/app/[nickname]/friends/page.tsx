@@ -23,7 +23,6 @@ export default function Friends(props: any) {
 	async function onSubmitHandler(e) {
 		e.preventDefault();
 		const nickname = e.target[0].value;
-		console.log(nickname);
 		setIsLoading(true);
 		socket.emit('send-request', {
 			friend: nickname
