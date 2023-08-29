@@ -16,7 +16,7 @@ import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 
 export default function Profile(props) {
 	const [completed, setCompleted] = useState(false);
-	const [notif, setNotify] = useState(false);
+	const [notif, setNotify] = useState("");
 	const [err, setErr] = useState(false);
 	const loggedUser = useContext(userDataContext)
 	const [userData, setUserData] = useState<UniversalData>();
@@ -37,12 +37,13 @@ export default function Profile(props) {
 		}
 	}
 	const notify = () => {
-		setNotify(false);
-		return toast("New friend request !!")
+		setNotify("");
+		return toast(notif + " Sent you a friend request !!")
 	};
 	useEffect(() => {
 		socket.on('receive-request', data => {
-			setNotify(true);
+			if (data.length > 0)
+				setNotify(data[data.length - 1]?.sender.nickname);
 		});
 		if (loggedUser.nickname !== props.params.nickname)
 			fetchUserData(props.params.nickname);
