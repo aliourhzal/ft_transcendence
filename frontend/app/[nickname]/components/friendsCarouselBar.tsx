@@ -10,8 +10,8 @@ export function FriendBarColumns(props: any)
 {
 	return (
 		<div /*style={ {animation: "scroll 40s linear infinite",}} className="animate flex flex-row gap-1 h-full items-center cursor-pointer  rounded-md"*/
-			className="w-full flex flex-col items-center"
-			onClick={()=>{alert("clicked");}}>
+			className="w-full flex flex-col items-center cursor-pointer"
+			onClick={()=>{props.router.push('/' + props.nickname)}}>
 				<div className="relative w-[60px] aspect-square ">
 					<img className="w-[full] h-full rounded-full" src={props.src} alt="f_img" />
 					{
@@ -111,7 +111,7 @@ export default function FriendCarouselBar()
 						{
 							friends.map((friend) => {
 								return (
-									<FriendBarColumns key={friend.nickname} src={friend.profilePic} nickname={friend.nickname} status={friend.status}/>
+									<FriendBarColumns router={router} key={friend.nickname} src={friend.profilePic} nickname={friend.nickname} status={friend.status}/>
 								);
 							}) 
 						}
