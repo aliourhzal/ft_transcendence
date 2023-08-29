@@ -33,8 +33,10 @@ const SearchDm:React.FC<SearchDmProps> = ( { currentUsers } ) => {
         {showList &&
         <div className='flex flex-col justify-start items-center h-30'>
           {users.map(user => (
-            <span className='w-[70%] h-10 bg-whiteSmoke hover:bg-blueStrong' key={gimmeRandom()} onClick={
-              () => { console.log(user); socket.emit('start-dm', {reciverUserId: user.id}) }
+            <span className='w-[70%] h-10 bg-whiteSmoke hover:bg-blueStrong' key={gimmeRandom()} onClick={ () => {
+              console.log(user)
+              socket.emit('start-dm', {reciverUserId: user.id})
+          }
             }>{user.nickname}</span>
           ))}
         </div>}

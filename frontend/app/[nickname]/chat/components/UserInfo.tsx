@@ -44,7 +44,6 @@ const UserInfo = ( {showUserInfos, setShowUserInfos, nickname, currentUsers} ) =
                 <BiConversation className='hover:scale-110' title='DM' aria-label='DM' cursor="pointer" size={25} onClick={ () => {
                     setShowUserInfos(false)
                     socket.emit('start-dm', {reciverUserId: currentUsers.find(o => o.nickname === nickname).id})
-                    
                 }}/>
                 <FaRegUser className='hover:scale-110' title='profile' aria-label='profile' cursor="pointer" size={20} onClick={() => {
                     _router.push(`/${nickname}`)
