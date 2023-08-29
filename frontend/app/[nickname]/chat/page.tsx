@@ -57,7 +57,6 @@ export const getUsersInfo = (users) => {
 		  type: "OWNER"| "ADMIN" | "USER",
 		  isMuted: string
 	  }[] = []
-	// console.log(users)
 	users.map( (user) => {
 		_users.push(
 			{
@@ -85,7 +84,6 @@ export const setDmUsers = (users) => {
 		  type: "OWNER"| "ADMIN" | "USER",
 		  isMuted: string
 	  }[] = []
-	// console.log(users)
 	users.map( (user) => {
 		_users.push(
 			{
@@ -118,7 +116,7 @@ export interface _Notification {
 
 let allUsers: any[] = []
 
-socket.on('all-users', (res) => {allUsers = res.allUsers; console.log(allUsers)})
+socket.on('all-users', (res) => {allUsers = res.allUsers})
 
 export default function Chat() {
 	

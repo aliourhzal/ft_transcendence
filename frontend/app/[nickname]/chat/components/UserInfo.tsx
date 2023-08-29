@@ -43,7 +43,7 @@ const UserInfo = ( {showUserInfos, setShowUserInfos, nickname, currentUsers} ) =
             <div className='flex gap-4 scale-110 text-whiteSmoke w-20 h-8 rounded-2xl items-center justify-center bg-darken-200'>
                 <BiConversation className='hover:scale-110' title='DM' aria-label='DM' cursor="pointer" size={25} onClick={ () => {
                     setShowUserInfos(false)
-                    socket.emit('start-dm', {reciverUserId: currentUsers.find(o => o.nickname === nickname).intra_Id})
+                    socket.emit('start-dm', {reciverUserId: currentUsers.find(o => o.nickname === nickname).id})
                     
                 }}/>
                 <FaRegUser className='hover:scale-110' title='profile' aria-label='profile' cursor="pointer" size={20} onClick={() => {
