@@ -1,6 +1,6 @@
 'use client'
 
-import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
+import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 import { useContext } from "react";
 import {BsCheck2} from "react-icons/bs"
 import {RxCross1} from "react-icons/rx"

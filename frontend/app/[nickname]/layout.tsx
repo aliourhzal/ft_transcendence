@@ -2,8 +2,8 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import SideBar from "./components/sideBar";
-import React, { useEffect, useState, useReducer, createContext } from "react";
-import { Socket, io } from "socket.io-client";
+import React, { useEffect, useState, useReducer } from "react";
+import { UniversalData, userDataContext } from "../contexts/UniversalData";
 
 export const ACTIONS = {
 	INIT: 'init',
@@ -12,26 +12,6 @@ export const ACTIONS = {
 	UPDATE_NICKNAME: 'nickname',
 	UPDATE_PASSWD: 'passwd'
 }
-
-export interface UniversalData {
-	intra_Id?: number,
-	wallet?: number,
-	grade?: string,
-	level?: number,
-	firstName?: string,
-	lastName?: string,
-	email?: string,
-	nickname?: string,
-	wins?: number,
-	losses?: number,
-	password?: boolean,
-	profilePic?: string,
-	coverPic?: string,
-	status: string,
-	chatSocket: Socket
-}
-
-export const userDataContext = createContext<UniversalData>(null);
 
 export async function fetchUserData(url: string) {
 	//prevent /profile route from getting accessed if user doesn't have access token
@@ -78,7 +58,9 @@ function reducer(state, action) {
 		return state;
 }
 
-export const getCookie = (cookieLable: string) => {
+export function getCookie(cookieLable: string) {
+	if (typeof document === 'undefined')
+		return ;
     const cookies = document.cookie.split('; ');
     for (const cookie of cookies) {
         const [label, content] = cookie.split('=');
@@ -96,22 +78,16 @@ export default function ProfileLayout({
 	const router = useRouter();
 	const [userDataState, dispatch] = useReducer(reducer, {});
 	const [completed, setCompleted] = useState(false);
+
 	useEffect(() => {
-		// const socket = io('ws://127.0.0.1:3002',{
-		// 	auth: {
-		// 		token: getCookie('access_token'),
-		// 	},
-		// });
 		fetchUserData('http://127.0.0.1:3000/users/profile')
 		.then(res => {
 			dispatch({type: ACTIONS.INIT, payload: {
 				data: res,
-				// socket
 			}});
 			setCompleted(true);
 		})
 		.catch(err => {
-			console.log(err);
 			router.push('/')
 		})
 

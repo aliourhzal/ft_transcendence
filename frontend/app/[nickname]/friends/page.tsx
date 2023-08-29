@@ -6,15 +6,19 @@ import axios from "axios";
 import { useState, useContext, useEffect } from "react";
 import { IoMdSend } from 'react-icons/io'
 import FriendsRequests from "./components/FriendsRequest";
-import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
+import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 import FriendCard from "./components/FriendCard";
-import { UniversalData } from "../layout";
+import { UniversalData, userDataContext } from "../../contexts/UniversalData";
+import { useRouter } from 'next/navigation';
 
-export default function Friends() {
+
+export default function Friends(props: any) {
 	const [requestErr, setRequestErr] = useState<{display: boolean, response: {err: boolean, msg: string}}>({display: false, response: {err: false, msg: ''}});
 	const [isLoading, setIsLoading] = useState(false);
 	const [friends, setFriends] = useState<UniversalData[]>([]);
 	const socket = useContext(InvitationSocketContext);
+	// const loggedUser = useContext(userDataContext);
+	// const router = useRouter();
 
 	async function onSubmitHandler(e) {
 		e.preventDefault();
@@ -30,6 +34,8 @@ export default function Friends() {
 	}
 
 	useEffect(() => {
+		// if (props.params.nickname !== loggedUser.nickname)
+		// 	router.replace(`http://127.0.0.1:3001/${loggedUser.nickname}/friends`);
 		axios.get('http://127.0.0.1:3000/users/friends', {
 			withCredentials: true
 		})
@@ -37,7 +43,11 @@ export default function Friends() {
 			setFriends(res.data);
 		})
 		socket.on('receive-friends', data => {
-			setFriends(oldFriends => [...oldFriends, data]);
+			console.log('new friend: ', data.nickname);
+			setFriends(oldFriends => {
+				console.log('old Friends: ', oldFriends.length);
+				return ([...oldFriends, data]);
+			});
 		});
 		socket.on('request-response', response => {
 			setRequestErr({display: true, response});
@@ -49,18 +59,18 @@ export default function Friends() {
 			console.log('friends page: ', data);
 			setFriends(friends => {
 				return friends.map(friend => {
-					if (friend.nickname === data.user)
+					if (friend.id === data.user)
 						friend.status = data.status		
 					return friend;
 				})
 			})
 		});
 		socket.on('friend-deleted', data => {
-			console.log(data);
-			const friendIndex = friends.findIndex((friend => friend.nickname === data.friend));
+			const friendIndex = friends.findIndex((friend => friend.id === data.friend));
 			setFriends(friends => {
 				const old = [...friends];
 				old.splice(friendIndex, 1);
+				console.log('friends length: ', old.length);
 				return old;
 			});
 		})

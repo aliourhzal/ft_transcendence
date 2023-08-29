@@ -2,8 +2,8 @@
 
 import { useContext, useEffect, useState } from "react";
 
-import { UniversalData } from "../layout";
-import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
+import { UniversalData } from "../../contexts/UniversalData";
+import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 import axios from "axios";
 
 
@@ -28,7 +28,6 @@ export default function ProfileInfo(props: {data: UniversalData, currentUser: bo
 				withCredentials: true
 			})
 			.then(res => {
-				console.log(res.data);
 				setShowSendRequest(res.data);
 			})
 		}

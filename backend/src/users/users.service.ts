@@ -29,7 +29,7 @@ export class UsersService {
 	// set a password to the user
 	async setHashedPassword(id: string ,password: string)
 	{
-		await this.prisma.room.update({
+		await this.prisma.user.update({
 			where:{
 				id: id,
 			},
@@ -44,6 +44,14 @@ export class UsersService {
 		return await this.prisma.user.findUnique({
 			where: {
 				nickname
+			}
+		})
+	}
+
+	async findOneById(id: string) {
+		return await this.prisma.user.findUnique({
+			where: {
+				id
 			}
 		})
 	}
@@ -156,6 +164,18 @@ export class UsersService {
 		}
 	}
 
+	async findOneByIdWithRequests(id: string) {
+		return await this.prisma.user.findUnique({
+			where: {
+				id
+			},
+			include: {
+				sentRequests: true,
+				userFriends: true
+			}
+		})
+	}
+
 	async findOneByNicknameWithRequests(nickname: string) {
 		return await this.prisma.user.findUnique({
 			where: {
@@ -168,10 +188,10 @@ export class UsersService {
 		})
 	}
 
-	async findOneByNicknameWithReceived(nickname: string) {
+	async findOneByIdWithReceived(id: string) {
 		return await this.prisma.user.findUnique({
 			where: {
-				nickname
+				id
 			},
 			include: {
 				receivedRequest: {
@@ -184,7 +204,23 @@ export class UsersService {
 		})
 	}
 
-	async getFriends(nickname: string) {
+	async getFriendsWithId(id: string) {
+		try {
+			const {userFriends} = await this.prisma.user.findUnique({
+				where: {
+					id
+				},
+				include: {
+					userFriends: true
+				}
+			})
+			return (userFriends);
+		} catch(err) {
+			console.log(id + ' user not found');
+		}
+	}
+
+	async getFriendsWithNickname(nickname: string) {
 		try {
 			const {userFriends} = await this.prisma.user.findUnique({
 				where: {
@@ -214,7 +250,7 @@ export class UsersService {
 		return (true);
 	}
 
-	async acceptRequest(requestId: string, nickname: string) {
+	async acceptRequest(requestId: string, id: string) {
 		const request = await this.prisma.friendRequest.findUnique({
 			where: {
 				id: requestId
@@ -224,12 +260,12 @@ export class UsersService {
 				target: true
 			}
 		})
-		const user = await this.findOneByNickname(nickname);
+		const user = await this.findOneById(id);
 		if (user.id !== request.target.id)
 			throw new HttpException('no such request', HttpStatus.BAD_REQUEST);
 		await this.prisma.user.update({
 			where: {
-				nickname
+				id
 			},
 			data: {
 				userFriends: {
@@ -252,18 +288,15 @@ export class UsersService {
 				id: request.id
 			}
 		});
-        //here
-
-       
-
-		return (request.sender.nickname);
+		return (request.sender.id);
 	}
 
-	async sendRequest(friendNickname: string, nickname: string) {
+	async sendRequest(friendNickname: string, id: string) {
+		const sender = await this.findOneById(id);
+		if (!sender)
+			return ('');
 		const newFriend = await this.findOneByNickname(friendNickname);
-		const user = await this.findOneByNicknameWithRequests(nickname);
-		if (!newFriend) 
-			return ('user not found');
+		const user = await this.findOneByNicknameWithRequests(sender.nickname);
 
 		// to prevent sending the request to your self
 		if (newFriend.nickname === user.nickname)
@@ -288,7 +321,7 @@ export class UsersService {
 		return ('');
 	}
 
-	async refuseRequest(requestId: string, nickname: string) {
+	async refuseRequest(requestId: string, id: string) {
 		const request = await this.prisma.friendRequest.findUnique({
 			where: {
 				id: requestId
@@ -297,7 +330,7 @@ export class UsersService {
 				target: true
 			}
 		});
-		const user = await this.findOneByNickname(nickname);
+		const user = await this.findOneById(id);
 		if (user.id !== request.target.id)
 			throw new HttpException('no such request', HttpStatus.BAD_REQUEST);
 		await this.prisma.friendRequest.delete({
@@ -307,15 +340,15 @@ export class UsersService {
 		})
 	}
 
-	async removeFriend(friendNickname: string, nickname: string) {
-		const user = await this.findOneByNicknameWithRequests(nickname);
-		const friend = await this.findOneByNicknameWithRequests(friendNickname);
+	async removeFriend(friendId: string, id: string) {
+		const user = await this.findOneByIdWithRequests(id);
+		const friend = await this.findOneByIdWithRequests(friendId);
 
 		if (!user || !friend)
 			throw new NotFoundException('user not found!!');
 		await this.prisma.user.update({
 			where: {
-				nickname
+				id
 			},
 			data: {
 				userFriends: {
@@ -325,7 +358,7 @@ export class UsersService {
 		})
 		await this.prisma.user.update({
 			where: {
-				nickname: friend.nickname
+				id: friendId
 			},
 			data: {
 				userFriends: {
@@ -335,23 +368,29 @@ export class UsersService {
 		})
 	}
 
-	async getFriendsRequests(nickname: string) {
-		const user = await this.findOneByNicknameWithReceived(nickname);
-		return (user.receivedRequest);
+	async getFriendsRequestsWithNickname(nickName: string) {
+		const user = await this.findOneByNickname(nickName);
+		const received = await this.findOneByIdWithReceived(user.id);
+		return (received.receivedRequest);
 	}
 
-	async updateUserStatus(nickname: string, status: string) {
+	async getFriendsRequestsWithId(id: string) {
+		const received = await this.findOneByIdWithReceived(id);
+		return (received.receivedRequest);
+	}
+
+	async updateUserStatus(id: string, status: string) {
 		try {
 			await this.prisma.user.update({
 				where: {
-					nickname
+					id
 				},
 				data: {
 					status
 				}
 			})
 		} catch(err) {
-			console.log(`${nickname} not found!!`);
+			console.log(`${id} not found!!`);
 		}
 	}
 }

@@ -80,7 +80,7 @@ export class UsersController{
 			response.end('ok');
 		}
 		catch(err)
-		{throw new Error("this error from users.controller.ts/passwordSetting()");}
+		{throw new BadRequestException("this error from users.controller.ts/passwordSetting()");}
 	}
 
 	@UseGuards(AuthGuard('jwt'))
@@ -88,9 +88,9 @@ export class UsersController{
 	async checkPassword(@Body('oldPass') oldPassword: string, @Req() req: any, @Res() response: Response)
 	{
 		const user = await this.usersService.findOneByNickname(req.user.nickname);
-		if (!comparePasswd(oldPassword, user.password))
+		if (user && !comparePasswd(oldPassword, user.password))
 		{
-			throw new Error("wrong old password");
+			throw new BadRequestException("wrong old password");
 		}
 		else
 			response.end('ok');
@@ -100,7 +100,7 @@ export class UsersController{
 	@Get('/friend/requests')
 	async getRequest(@Body('nickname') friendName:string, @Req() request: any)
 	{
-		return await this.usersService.getFriendsRequests(request.user.nickname);
+		return await this.usersService.getFriendsRequestsWithNickname(request.user.nickname);
 	}
 
 	@UseGuards(AuthGuard('jwt'))
@@ -113,7 +113,7 @@ export class UsersController{
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/friends')
 	async getFriends(@Req() request: any) {
-		return await this.usersService.getFriends(request.user.nickname);
+		return await this.usersService.getFriendsWithNickname(request.user.nickname);
 	}
  
     

@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { useEffect, useState, useContext } from "react";
-import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
+import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 import { RiUserReceivedFill } from 'react-icons/ri'
 import RequestCard from "./RequestCard";
 import Popup from "@/components/UI/Popup";
@@ -42,7 +42,7 @@ export default function FriendsRequests() {
 					requestCounter !== 0 && <span className="absolute bottom-[-10px] right-[-10px] bg-red-500 rounded-full h-[30px] aspect-square flex items-center justify-center">{requestCounter}</span>
 				}
 			</button>
-			<Popup isOpen={displayRequests} modalAppearance={setDisplayRequests}>
+			<Popup additionalClass="flex flex-col gap-4" isOpen={displayRequests} modalAppearance={setDisplayRequests}>
 				{
 					requestArray.length > 0 ? requestArray.map((request) => {
 						return (

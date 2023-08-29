@@ -1,8 +1,8 @@
 import Container from "@/components/UI/ProfileBoxs";
-import { UniversalData } from "../../layout";
+import { UniversalData } from "../../../contexts/UniversalData";
 import Link from "next/link"
 import { useContext, useEffect } from "react";
-import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
+import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 
 
 export default function FriendCard({user}: {
@@ -12,7 +12,7 @@ export default function FriendCard({user}: {
 	const socket = useContext(InvitationSocketContext);
 	
 	function removeFriend() {
-		socket.emit('delete-friend', user.nickname);
+		socket.emit('delete-friend', user.id);
 	}
 
 	return (
@@ -32,7 +32,7 @@ export default function FriendCard({user}: {
 					</div>
 				</div>
 				<div className="w-full h-[30px] bg-darken-300 rounded-full">
-					<div className={`w-[${progess}%] bg-blueStrong h-full rounded-full flex items-center justify-end p-1`}>
+					<div style={{width: `${progess}%`}} className={` bg-blueStrong h-full rounded-full flex items-center justify-end p-1`}>
 						<span className="text-[12px] font-medium text-white">{`${progess}%`}</span>
 					</div>
 				</div>

@@ -5,7 +5,9 @@ import { useContext, useRef } from "react";
 import { Fragment, useState } from 'react';
 import { IoIosAddCircle, IoIosSettings } from "react-icons/io";
 import axios from "axios";
-import { ACTIONS, userDataContext } from '../layout';
+import { ACTIONS } from '../layout';
+import { userDataContext } from '@/app/contexts/UniversalData';
+import { useRouter } from 'next/navigation';
 
 function InputTemplate(props: any) {
 	return (
@@ -18,6 +20,7 @@ function InputTemplate(props: any) {
 
 export default function MyModal(props: any) {
 	let [isOpen, setIsOpen] = useState(false);
+	const router = useRouter();
 	const avatarElement : any = useRef();
 	const coverElement : any = useRef();
 	const nickNameRef : any = useRef();
@@ -67,7 +70,7 @@ export default function MyModal(props: any) {
         const newNickname = e.target[2].value;
 		if (userData.password)
 		{
-			oldPass = e.target[2].value;
+			oldPass = e.target[3].value;
 			p = 5;
 		}
         const newPass = e.target[p].value;
@@ -81,10 +84,12 @@ export default function MyModal(props: any) {
 						await axios.post('http://127.0.0.1:3000/users/profile/checkPassword ', {oldPass}, {
 							withCredentials: true
 						});
+						oldPassRef.current.textContent = "";
 					}catch(err)
 					{
 						oldPassRef.current.textContent = "Password Incorrect";
 						oldPassRef.current.style.color = "E76161";
+						return ;
 					}
 				}
 				if (newPass === confirmPass)
@@ -93,7 +98,7 @@ export default function MyModal(props: any) {
 						withCredentials: true
 					});
 					passwordRef.current.textContent = "Password Updated";
-					oldPassRef.current.textContent = "";
+					// oldPassRef.current.textContent = "";
 					confirmPassRef.current.textContent = "";
 					passwordRef.current.style.color = "#98D8AA";
 					props.dispatch({type: ACTIONS.UPDATE_PASSWD, payload: true})
@@ -118,7 +123,8 @@ export default function MyModal(props: any) {
 				});
 				nickNameRef.current.textContent = "Updated";
 				nickNameRef.current.style.color = "#98D8AA";
-				props.dispatch({type: ACTIONS.UPDATE_NICKNAME, payload: newNickname})
+				props.dispatch({type: ACTIONS.UPDATE_NICKNAME, payload: newNickname});
+				router.replace(window.location.href.replace(userData.nickname, newNickname));
 			}
 			catch(error)
 			{

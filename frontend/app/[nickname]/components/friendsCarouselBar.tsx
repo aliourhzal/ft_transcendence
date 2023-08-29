@@ -1,16 +1,17 @@
 'use client'
 
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { UniversalData } from "../layout";
-import { InvitationSocketContext } from "@/app/context_sockets/InvitationWebSocket";
+import { UniversalData } from "../../contexts/UniversalData";
+import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export function FriendBarColumns(props: any)
 {
 	return (
 		<div /*style={ {animation: "scroll 40s linear infinite",}} className="animate flex flex-row gap-1 h-full items-center cursor-pointer  rounded-md"*/
-			className="w-full flex flex-col items-center"
-			onClick={()=>{alert("clicked");}}>
+			className="w-full flex flex-col items-center cursor-pointer"
+			onClick={()=>{props.router.push('/' + props.nickname)}}>
 				<div className="relative w-[60px] aspect-square ">
 					<img className="w-[full] h-full rounded-full" src={props.src} alt="f_img" />
 					{
@@ -35,6 +36,7 @@ export default function FriendCarouselBar()
 	const imgCircle = useRef<HTMLDivElement>();
 	const imgL = useRef<HTMLImageElement>();
 	const imgR = useRef<HTMLImageElement>();
+	const router = useRouter();
 	let scrollPos = 0;
 	let scrollAmount = 100;
 	
@@ -80,7 +82,7 @@ export default function FriendCarouselBar()
 					return friend;
 				})
 			})
-		})
+		});
 		socket.on('friend-deleted', data => {
 			console.log(data);
 			const friendIndex = friends.findIndex((friend => friend.nickname === data.friend));
@@ -90,6 +92,9 @@ export default function FriendCarouselBar()
 				old.splice(friendIndex, 1);
 				return old;
 			});
+		});
+		socket.on('logout', () => {
+			router.push('/');
 		})
 	}, [])
 
@@ -102,11 +107,11 @@ export default function FriendCarouselBar()
 				{
 					friends.length > 7 && <img ref={imgL} className=" p-2 m-2 rounded-full btn-scroll max-sm:hidden w-[35px] aspect-square" src="../images/L_arrow.png"  alt="" onClick={()=>scrollHorizontal(-1)}/>
 				}
-				<div ref={imgContainer} className="bg-red-500 storys-container flex items-center justify-center px-4 gap-6">
+				<div ref={imgContainer} className=" storys-container flex items-center justify-center px-4 gap-6">
 						{
 							friends.map((friend) => {
 								return (
-									<FriendBarColumns key={friend.nickname} src={friend.profilePic} nickname={friend.nickname} status={friend.status}/>
+									<FriendBarColumns router={router} key={friend.nickname} src={friend.profilePic} nickname={friend.nickname} status={friend.status}/>
 								);
 							}) 
 						}

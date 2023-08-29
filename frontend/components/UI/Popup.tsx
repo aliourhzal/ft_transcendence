@@ -28,7 +28,7 @@ export default function Popup(props) {
 				leaveTo="opacity-0 scale-95"
 				>
 				{/* inside pop Up */}
-				<Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-whiteSmoke p-6 text-left align-middle shadow-xl transition-all">
+				<Dialog.Panel className={`${props.additionalClass} w-full max-w-md transform overflow-hidden rounded-2xl bg-whiteSmoke p-6 text-left align-middle shadow-xl transition-all`}>
                     {props.children}
 				</Dialog.Panel>
 				{/* outside pop Up */}
