@@ -8,6 +8,7 @@ interface SelfChatBoxProps {
   }
 
   const OthersChatBox:React.FC<SelfChatBoxProps> = (msg) => {
+    console.log(msg)
     return (
         <div className={'z-0 flex items-start justify-start gap-3 m-2 my-4'} key={gimmeRandom()}>
             <img className="bg-white rounded-full w-30 h-30 border-2 border-slate-300" width={40} height={40} src={msg.user ? msg.user.photo : '/images/unknownUser.png'}/>

@@ -9,7 +9,7 @@ interface SearchDmProps {
 
 const SearchDm:React.FC<SearchDmProps> = ( { currentUsers } ) => {
 
-  const {showSearchUsersForm, setShowSearchUsersForm, socket} = useContext(Context)
+  const {showSearchUsersForm, setShowSearchUsersForm, socket, rooms} = useContext(Context)
 
   const [showList, setShowList] = useState(false)
   const [users, setUsers] = useState([...currentUsers])
@@ -34,8 +34,11 @@ const SearchDm:React.FC<SearchDmProps> = ( { currentUsers } ) => {
         <div className='flex flex-col justify-start items-center h-30'>
           {users.map(user => (
             <span className='w-[70%] h-10 bg-whiteSmoke hover:bg-blueStrong' key={gimmeRandom()} onClick={ () => {
-              console.log(user)
-              socket.emit('start-dm', {reciverUserId: user.id})
+              if (!rooms.find(o => o.name === user.nickname))
+                socket.emit('start-dm', {reciverUserId: user.id})
+              else {
+                console.log("lmao")
+              }
           }
             }>{user.nickname}</span>
           ))}

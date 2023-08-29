@@ -120,12 +120,15 @@ let allUsers: any[] = []
 socket.on('all-users', (res) => {allUsers = res.allUsers})
 
 export default function Chat() {
-	
+
 	const [cookies, setCookie, removeCookie] = useCookies();
+
 	const searchParams = useSearchParams();
-	const dmId = searchParams.get('id');
-	if (dmId)
-		socket.emit('start-dm', {reciverUserId: dmId})
+	useEffect( () => {
+		const dmId = searchParams.get('id');
+		if (dmId)
+			socket.emit('start-dm', {reciverUserId: dmId})
+	}, [])
 	// const [new] = useState()
 
 	useEffect ( () => {

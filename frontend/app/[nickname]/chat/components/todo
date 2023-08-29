@@ -7,6 +7,11 @@ ERROR when creating room and adding users and accessing their data not found (DO
 
 
 
+fix user photo disappear after muting or kicking and coming back (DONE not sure !)
+
+
+
+
 
 
 style users search + dont show current user
@@ -34,7 +39,6 @@ change edit room icons design
 
 change dm user id to user nickname
 
-fix user photo disappear after muting or kicking and coming back
 
 add notifications for every action
 
