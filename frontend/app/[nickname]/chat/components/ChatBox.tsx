@@ -36,9 +36,11 @@ const ChatBox = () => {
     scrollToBottom();
   }, [])
 
+  
+  console.log(chatBoxMessages)
   return (
     chatBoxMessages.length != 0 &&
-      <div className='z-0' ref={ref}>
+    <div className='z-0' ref={ref}>
         {chatBoxMessages.map ((BoxMessage) =>
           BoxMessage.user != 'bot' ?
               (BoxMessage.user == userData.nickname ? <SelfChatBox msg={BoxMessage.msg} user={rooms.find(o => o.name === activeUserConv.name)?.users.find(o => o.nickName === BoxMessage.user)} key={gimmeRandom()}/>

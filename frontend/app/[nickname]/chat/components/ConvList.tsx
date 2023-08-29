@@ -7,7 +7,7 @@ import { LiaUsersSolid } from "react-icons/Lia"
 import { TbMessage2Search } from "react-icons/Tb"
 
 const ConvList = () => {
-  const {socket, set_room_created, rooms, userData, convs, setConvs, _notification, setChatBoxMessages, setShowForm, setShowJoinForm, setShowSearchUsersForm } = useContext(Context)
+  const {socket, set_room_created, rooms, userData, convs, setConvs, _notification, setChatBoxMessages, setShowForm, setShowJoinForm, setShowSearchUsersForm, activeUserConv } = useContext(Context)
   const [updateList, setUpdateList] = useState(false)
   
   const fillUserList = (res) => {
@@ -98,7 +98,8 @@ const ConvList = () => {
         else {
           newusers.map(_new => {
             _notification(`"${_new.user.nickname}" joined '${res.roomId.room_name}'`, "good")
-            setChatBoxMessages(old => [...old, {user: 'bot', msg : `"${_new.user.nickname}" joined`}])
+            if (activeUserConv.name === res.roomId.room_name)
+              setChatBoxMessages(old => [...old, {user: 'bot', msg : `"${_new.user.nickname}" joined`}])
           })
         }
       }
@@ -139,13 +140,15 @@ const ConvList = () => {
             <div className="text-white">No conversations found !</div>
             :
             <div className="text-whiteSmoke font-bold h-[100%] w-[100%] flex flex-col items-center justify-center flex-wrap gap-3">
-              <h1 id="h1conv" className="text-xl font-extrabold font"> to start a conversation </h1>
-              <AiOutlineUsergroupAdd onClick={() => {setShowForm(true)}} size={30} className="cursor-pointer hover:text-blueStrong hover:scale-110"/>
-              create a room
-              <LiaUsersSolid onClick={() => {setShowJoinForm(true)}} size={30} className="cursor-pointer hover:text-blueStrong hover:scale-110"/>
-              join one
-              <TbMessage2Search onClick={() => {setShowSearchUsersForm(true)}} size={30} className="cursor-pointer hover:text-blueStrong hover:scale-110"/>
-              or find a user
+              <div className="gap-2 bg-darken-300 w-[80%] h-[40%] flex flex-col rounded-xl items-center justify-center text-whiteSmoke">
+                <h1 id="h1conv" className="text-xl font-extrabold font"> to start a conversation </h1>
+                <AiOutlineUsergroupAdd onClick={() => {setShowForm(true)}} size={30} className="cursor-pointer hover:text-blueStrong hover:scale-110"/>
+                create a room
+                <LiaUsersSolid onClick={() => {setShowJoinForm(true)}} size={30} className="cursor-pointer hover:text-blueStrong hover:scale-110"/>
+                join one
+                <TbMessage2Search onClick={() => {setShowSearchUsersForm(true)}} size={30} className="cursor-pointer hover:text-blueStrong hover:scale-110"/>
+                or find a user
+              </div>
             </div>
           }
       </div>
