@@ -13,7 +13,7 @@ interface ConvBoxProps {
 
 const ConvBox: React.FC<ConvBoxProps> = (data) => {
 
-  const {rooms, setActiveUserConv, setShowConv, setChatBoxMessages} = useContext(Context)
+  const {rooms, setActiveUserConv, activeUserConv, setShowConv, setChatBoxMessages} = useContext(Context)
 
   const handleClick = async () => {
     setShowConv(true)
@@ -50,7 +50,7 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
   }
 
   return (
-    <div tabIndex={0} className="cursor-pointer convGroup z-0 bg-zinc-800 focus:bg-blueStrong hover:bg-zinc-700 w-[70%] left-[15%] h-[100px] relative my-3 rounded-md active:bg-blue-500 flex items-center justify-start" onClick={(e) => {
+    <div tabIndex={0} className={(activeUserConv.name === data.data.name ? 'bg-blueStrong' : 'bg-zinc-800 hover:bg-zinc-700') + " cursor-pointer convGroup z-0 focus:bg-blueStrong w-[70%] left-[15%] h-[100px] relative my-3 rounded-md active:bg-blue-500 flex items-center justify-start"} onClick={(e) => {
         handleClick();
         activeDiv(e.currentTarget);
         // scrollToBottom()
