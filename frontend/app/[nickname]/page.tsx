@@ -10,12 +10,17 @@ import FriendsCarouselBar from "./components/friendsCarouselBar";
 import axios from "axios";
 import NotFound from "./components/not-found";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
+
 export default function Profile(props) {
 	const [completed, setCompleted] = useState(false);
+	const [notif, setNotify] = useState(false);
 	const [err, setErr] = useState(false);
 	const loggedUser = useContext(userDataContext)
 	const [userData, setUserData] = useState<UniversalData>();
-
+	const socket = useContext(InvitationSocketContext);
 	async function fetchUserData(nickname: string) {
 		try {
 			const {data} = await axios.get('http://127.0.0.1:3000/users/profile', {
@@ -31,8 +36,14 @@ export default function Profile(props) {
 			setCompleted(true);
 		}
 	}
-
+	const notify = () => {
+		setNotify(false);
+		return toast("New friend request !!")
+	};
 	useEffect(() => {
+		socket.on('receive-request', data => {
+			setNotify(true);
+		});
 		if (loggedUser.nickname !== props.params.nickname)
 			fetchUserData(props.params.nickname);
 		else 
@@ -41,6 +52,9 @@ export default function Profile(props) {
 	return (
 		<main className='h-full w-full bg-darken-200 overflow-y-auto'>
 			<div className="flex flex-col items-center gap-[2vh] flex-grow h-full overflow-y-auto relative">
+				{
+					notif && notify()
+				}
 				{
 					completed && !err ?
 					<>
@@ -56,6 +70,9 @@ export default function Profile(props) {
 						</div>
 					</> : <NotFound nickname={loggedUser.nickname}/>
 				}
+				<ToastContainer 
+					// theme="dark"
+				/>
 			</div>
 		</main>
 	);
