@@ -4,13 +4,14 @@ import { io } from "socket.io-client";
 import { useEffect, useState, createContext, useContext, useRef } from 'react';
 import Conversation from './components/conversation';
 import RoomForm from './components/createRoom';
-import { getCookie, userDataContext } from "../layout";
+import { getCookie } from "../layout";
+import { userDataContext } from "../../contexts/UniversalData"
 import ConvList from "./components/ConvList";
 import JoinRoomForm from "./components/joinRoom";
 import ButtomButtons from "./components/ButtomButtons";
 import SearchDm from "./components/SearchDm";
 import Notification from "./components/Notification";
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useCookies } from "react-cookie";
 import "./style.css"
 import UserInfo from "./components/UserInfo";
@@ -121,6 +122,10 @@ socket.on('all-users', (res) => {allUsers = res.allUsers})
 export default function Chat() {
 	
 	const [cookies, setCookie, removeCookie] = useCookies();
+	const searchParams = useSearchParams();
+	const dmId = searchParams.get('id');
+	if (dmId)
+		socket.emit('start-dm', {reciverUserId: dmId})
 	// const [new] = useState()
 
 	useEffect ( () => {

@@ -2,12 +2,12 @@ fix notification icon (DONE)
 emit dm and close popup on dm usermember (DONE)
 user pop ups (DONE)
 link to profile through popup (DONE)
+ERROR when creating room and adding users and accessing their data not found (DONE)
 
 
 
 
 
-ERROR when creating room and adding users and accessing their data not found
 
 style users search + dont show current user
 
