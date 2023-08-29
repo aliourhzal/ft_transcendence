@@ -24,10 +24,6 @@ interface SideBarProps {
 export function NavOption(props: any) {
 	const [cookies, setCookie, removeCookie] = useCookies(["access_token", "login"]);
 	const socket = useContext(InvitationSocketContext);
-	const emitRoomsRequest = () => {
-		props.socket.emit('chat', {jwt: cookies.access_token, socketID: props.socket.id});
-	}
-
 	const logout = () => {
 		removeCookie('access_token')
 		socket.emit('logout');
@@ -37,9 +33,7 @@ export function NavOption(props: any) {
 
 	return (
 		<a className="cursor-pointer flex flex-col md:flex-row items-center gap-5" onClick={()=>{
-			if (props.location === 'chat')
-				emitRoomsRequest()
-			else if (props.location === 'logout') {
+			if (props.location === 'logout') {
 				logout();
 				return ;
 			}
