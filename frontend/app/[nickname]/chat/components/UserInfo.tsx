@@ -22,6 +22,8 @@ const UserInfo = ( {showUserInfos, setShowUserInfos, nickname, currentUsers} ) =
 
     const _router = useRouter()
 
+    socket.emit('get-users', null)
+
   return (
     nickname &&
     <>
