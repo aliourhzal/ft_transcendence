@@ -17,7 +17,7 @@ const Conversation = ( { allUsers } ) => {
     const [msg_sender, set_msg_sender] = useState('')
 
     const {setAlertNewMessage, scrollToBottom, showConv, activeUserConv, chatBoxMessages, rooms, socket,
-        userData, msg_sent, set_msg_sent, setChatBoxMessages, setShowUserInfos, setUserInfoNick} = useContext(Context)
+        userData, msg_sent, set_msg_sent, setChatBoxMessages, setShowUserInfos, setUserInfoNick, msgInputRef} = useContext(Context)
 
     // useEffect( () => {
     //   typeof window != 'undefined' ? (window.innerWidth <= 768 ? setDeviceType('small') : setDeviceType('normal')) : setDeviceType('normal')
@@ -91,7 +91,7 @@ const Conversation = ( { allUsers } ) => {
                     <div className='h-[8%] w-[90%] flex items-center justify-center'>
                         <div className='w-full h-[70%] rounded-[100px] bg-zinc-800 flex items-center justify-between'>
                             <form onSubmit={sendMessage} id='form' className='w-[98%]'>
-                                <input onFocus={e => e.target.placeholder = ''} onBlur={e => e.target.placeholder = 'Type a message...'} autoComplete="off" placeholder='Type a message...' type="text" id="message" className="transition-all delay-100 duration-100 outline outline-0 bg-transparent  p-5 text-gray-100 text-xs sm:text-base focus:ring-blue-500 focus:border-blue-500 w-[100%]"/>
+                                <input ref={msgInputRef} onFocus={e => e.target.placeholder = ''} onBlur={e => e.target.placeholder = 'Type a message...'} autoComplete="off" placeholder='Type a message...' type="text" id="message" className="transition-all delay-100 duration-100 outline outline-0 bg-transparent  p-5 text-gray-100 text-xs sm:text-base focus:ring-blue-500 focus:border-blue-500 w-[100%]"/>
                             </form>
                             <div className='w-13 h-8 flex items-center justify-center'>
                                 <button type='submit' form='form' className=' border-blue-500 border-[6px] bg-blue-500 rounded-full w-[100%] h-[100%] mr-3 flex items-center justify-end cursor-pointer'>

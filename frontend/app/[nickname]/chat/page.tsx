@@ -146,6 +146,7 @@ export default function Chat() {
 	}, [cookies.access_token])
 
 	const ref = useRef(null);
+	const msgInputRef = useRef(null);
 
 	const userData = useContext(userDataContext);
 
@@ -212,7 +213,7 @@ export default function Chat() {
 			<Context.Provider value={{alertNewMessage, setAlertNewMessage, ref, showConv, setShowConv, activeUserConv, setActiveUserConv, socket,
 				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm, msg_sent, set_msg_sent,
 				set_room_created, room_created, rooms, setRooms, showSearchUsersForm, setShowSearchUsersForm, scrollToBottom, _notification,
-				convs, setConvs, setShowUserInfos, setUserInfoNick}}>
+				convs, setConvs, setShowUserInfos, setUserInfoNick, msgInputRef}}>
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200">
 					<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">
 						<ConvList allUsers={allUsers} />
