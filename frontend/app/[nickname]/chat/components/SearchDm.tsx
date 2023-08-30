@@ -42,9 +42,9 @@ const SearchDm:React.FC<SearchDmProps> = ( { currentUsers, setActiveUserConv } )
               }
               else {
                 console.log(rooms.find(o => o.name === user.nickname))
-                // setActiveUserConv(rooms.find(o => o.name === user.nickname))
-                // setShowConv(true)
-                // setChatBoxMessages(rooms.find(o => o.name === user.nickname).msgs)
+                setActiveUserConv(rooms.find(o => o.name === user.nickname))
+                setShowConv(true)
+                setChatBoxMessages(rooms.find(o => o.name === user.nickname).msgs)
               }
               hide()
             }}>{user.nickname}</span>
