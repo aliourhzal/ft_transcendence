@@ -22,7 +22,7 @@ export class QrController {
     }
 
     @UseGuards(AuthGuard('jwt'))
-    @Get('code')
+    @Get('codeCheck')
     checkQr(@Req() req: any, @Body('token') tok: string)
     {
         return this.twoFactorAuth.verefyCode(req.user.sub, tok); // return true if tokn valid false otherwise
