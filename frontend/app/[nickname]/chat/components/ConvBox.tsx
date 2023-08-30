@@ -16,6 +16,7 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers}) => {
 
   const {rooms, setActiveUserConv, activeUserConv, setShowConv, setChatBoxMessages} = useContext(Context)
 
+
   const handleClick = async () => {
     setShowConv(true)
     setActiveUserConv(data)
@@ -35,11 +36,12 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers}) => {
         // alert(error)
         console.log(error)
     }
+
     // const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
   }
 
   return (
-    <div tabIndex={0} className={(activeUserConv.name === data.name ? 'bg-blueStrong' : 'bg-zinc-800 hover:bg-zinc-700') + " cursor-pointer convGroup z-0 focus:bg-blueStrong w-[70%] left-[15%] h-[100px] gap-4 relative my-3 rounded-md active:bg-blue-500 flex items-center justify-start"} onClick={handleClick} onFocus={handleClick}>
+    <div className={(activeUserConv.name === data.name ? 'bg-blueStrong' : 'bg-zinc-800 hover:bg-zinc-700') + " cursor-pointer convGroup z-0 focus:bg-blueStrong w-[70%] left-[15%] h-[100px] gap-4 relative my-3 rounded-md active:bg-blue-500 flex items-center justify-start"} onClick={handleClick} onFocus={handleClick}>
         {/* {data && <div className='absolute z-0 h-[100px] w-full flex flex-col items-end justify-center bg-transparent'>
           <span className='mx-5 animate-ping inline-flex w-2 h-2 rounded-full bg-blueStrong z-10 opacity-90'></span>
         </div>} */}

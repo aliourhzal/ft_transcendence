@@ -17,7 +17,6 @@ const ChatBox = () => {
     // console.log(rooms.find(o => o.name === activeUserConv.name).msgs)
     // rooms.find(o => o.name === activeUserConv.name)
     // ((old:any) => [...old, {user:msg.user, msg:msg.message}] )
-    console.log("______", msg, "________")
     if (rooms.find(o => o.name === activeUserConv.name).id == msg.roomId) {
       setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.msg, id:msg.idOfmsg}])
     }
@@ -36,8 +35,6 @@ const ChatBox = () => {
     scrollToBottom();
   }, [])
 
-  
-  console.log(chatBoxMessages)
   return (
     chatBoxMessages.length != 0 &&
     <div className='z-0' ref={ref}>

@@ -9,7 +9,7 @@ interface SearchDmProps {
 
 const SearchDm:React.FC<SearchDmProps> = ( { currentUsers } ) => {
 
-  const {showSearchUsersForm, setShowSearchUsersForm, socket, rooms} = useContext(Context)
+  const {showSearchUsersForm, setShowSearchUsersForm, socket, rooms, setActiveUserConv, setChatBoxMessages, setShowConv} = useContext(Context)
 
   const [showList, setShowList] = useState(false)
   const [users, setUsers] = useState([...currentUsers])
@@ -37,12 +37,15 @@ const SearchDm:React.FC<SearchDmProps> = ( { currentUsers } ) => {
               console.log(user)
               if (!rooms.find(o => o.name === user.nickname)) {
                 socket.emit('start-dm', {reciverUserId: user.id})
+                // setActiveUserConv(rooms.find(o => o.name === user.nickname))
               }
               else {
-                console.log("lmao")
+                setShowConv(true)
+                setActiveUserConv(rooms.find(o => o.name === user.nickname))
+                setChatBoxMessages(rooms.find(o => o.name === user.nickname).msgs)
               }
-          }
-            }>{user.nickname}</span>
+              hide()
+            }}>{user.nickname}</span>
           ))}
         </div>}
     </Popup>

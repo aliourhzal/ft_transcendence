@@ -4,26 +4,25 @@ user pop ups (DONE)
 link to profile through popup (DONE)
 ERROR when creating room and adding users and accessing their data not found (DONE)
 remove absolute from convbox (DONE)
-
-
-
-
+add status green point on avatar (DONE)
 fix user photo disappear after muting or kicking and coming back (DONE not sure !)
+open dm conv if already exist (DONE)
 
 
+
+
+
+fix msg sent twice after opening dm from search
 
 add last msg to convbox
 
-add status green point on avatar
+focus input after selecting room
 
 style users search + dont show current user
 
 phone div slide
 
-open dm conv if already exist
-
 check cookies after msg sent 
-
 
 open dm room if already exist after clicking on dm in profile popup
 
@@ -33,13 +32,11 @@ change grp image to fit with blueStrong and darken
 
 fix messages from room with the same name as user
 
-
 ask drari to remove prevent default from settings form so changes apply
 
 change edit room icons design
 
 change dm user id to user nickname
-
 
 add notifications for every action
 
