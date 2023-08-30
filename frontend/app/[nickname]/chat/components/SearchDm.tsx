@@ -5,11 +5,12 @@ import Search from './search'
 
 interface SearchDmProps {
   currentUsers: any
+  setActiveUserConv: any
 }
 
-const SearchDm:React.FC<SearchDmProps> = ( { currentUsers } ) => {
+const SearchDm:React.FC<SearchDmProps> = ( { currentUsers, setActiveUserConv } ) => {
 
-  const {showSearchUsersForm, setShowSearchUsersForm, socket, rooms, setActiveUserConv, setChatBoxMessages, setShowConv} = useContext(Context)
+  const {showSearchUsersForm, setShowSearchUsersForm, socket, rooms, setChatBoxMessages, setShowConv} = useContext(Context)
 
   const [showList, setShowList] = useState(false)
   const [users, setUsers] = useState([...currentUsers])
@@ -40,9 +41,10 @@ const SearchDm:React.FC<SearchDmProps> = ( { currentUsers } ) => {
                 // setActiveUserConv(rooms.find(o => o.name === user.nickname))
               }
               else {
-                setShowConv(true)
-                setActiveUserConv(rooms.find(o => o.name === user.nickname))
-                setChatBoxMessages(rooms.find(o => o.name === user.nickname).msgs)
+                console.log(rooms.find(o => o.name === user.nickname))
+                // setActiveUserConv(rooms.find(o => o.name === user.nickname))
+                // setShowConv(true)
+                // setChatBoxMessages(rooms.find(o => o.name === user.nickname).msgs)
               }
               hide()
             }}>{user.nickname}</span>

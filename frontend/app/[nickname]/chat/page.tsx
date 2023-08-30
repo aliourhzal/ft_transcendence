@@ -150,7 +150,6 @@ export default function Chat() {
 
 	const userData = useContext(userDataContext);
 
-	const [msg_sent, set_msg_sent] = useState<1 | 2 | undefined>(undefined)
 	const [room_created, set_room_created] = useState(false)
 
 	const [rooms, setRooms] = useState<Room[]>([])
@@ -210,20 +209,20 @@ export default function Chat() {
 	return (
 		<main className='scrollbar-none select-none h-full w-full'>
 			<Notification newNotif={newNotif} setNewNotif={setNewNotif} notifications={notifications} notify={notify} setNotify={setNotify}/>
-			<Context.Provider value={{alertNewMessage, setAlertNewMessage, ref, showConv, setShowConv, activeUserConv, setActiveUserConv, socket,
-				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm, msg_sent, set_msg_sent,
+			<Context.Provider value={{alertNewMessage, setAlertNewMessage, ref, showConv, setShowConv, socket,
+				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm,
 				set_room_created, room_created, rooms, setRooms, showSearchUsersForm, setShowSearchUsersForm, scrollToBottom, _notification,
 				convs, setConvs, setShowUserInfos, setUserInfoNick, msgInputRef}}>
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200">
 					<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">
-						<ConvList allUsers={allUsers} />
+						<ConvList allUsers={allUsers} activeUserConv={activeUserConv} setActiveUserConv={setActiveUserConv} />
 						<ButtomButtons />
 					</div>
-					<Conversation allUsers={allUsers} />
+					<Conversation allUsers={allUsers} activeUserConv={activeUserConv} />
 				</div>
 				<RoomForm />
 				<JoinRoomForm />
-				<SearchDm currentUsers={ allUsers } />
+				<SearchDm currentUsers={ allUsers } setActiveUserConv={ setActiveUserConv } />
 				<UserInfo showUserInfos={showUserInfos} setShowUserInfos={setShowUserInfos} nickname={userInfoNick} currentUsers={ allUsers }/>
 			</Context.Provider>
 		</main>

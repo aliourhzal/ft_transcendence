@@ -10,16 +10,19 @@ import { getCookie } from '../../layout'
 interface ConvBoxProps {
     data : conversation
     allUsers: any[]
+    setActiveUserConv: any,
+    activeUserConv: any
 }
 
-const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers}) => {
+const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, activeUserConv}) => {
 
-  const {rooms, setActiveUserConv, activeUserConv, setShowConv, setChatBoxMessages, msgInputRef} = useContext(Context)
+  const {rooms, setShowConv, setChatBoxMessages, msgInputRef} = useContext(Context)
 
 
   const handleClick = async () => {
     setShowConv(true)
     setActiveUserConv(data)
+    console.log(activeUserConv)
     // if (new_msg_notif.name == activeUserConv.name)
     //   notify_conv_msg(false, '')
     try {

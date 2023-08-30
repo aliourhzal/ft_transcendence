@@ -6,9 +6,10 @@ import {Avatar} from '@nextui-org/react'
 
 interface ConversationProps {
     allUsers: any[]
+    activeUserConv: any
 }
 
-const Conversation = ( { allUsers } ) => {
+const Conversation = ( { allUsers, activeUserConv } ) => {
 
     const [deviceType, setDeviceType] = useState('normal')
 
@@ -16,7 +17,7 @@ const Conversation = ( { allUsers } ) => {
 
     const [msg_sender, set_msg_sender] = useState('')
 
-    const {setAlertNewMessage, scrollToBottom, showConv, activeUserConv, chatBoxMessages, rooms, socket,
+    const {setAlertNewMessage, scrollToBottom, showConv, chatBoxMessages, rooms, socket,
         userData, msg_sent, set_msg_sent, setChatBoxMessages, setShowUserInfos, setUserInfoNick, msgInputRef} = useContext(Context)
 
     // useEffect( () => {
@@ -33,21 +34,22 @@ const Conversation = ( { allUsers } ) => {
     //     if (e.key === 'Enter')
     //         sendMessage()
     // }
-    const sendMessage = async (e) => {
+    const sendMessage = (e) => {
         e.preventDefault()
         const msg = e.target[0].value.trim()
         if (msg != '') {
-            var _user = rooms.find(o => o.name === activeUserConv.name).users.find(o => o.nickName === userData.nickname)
-            if (_user.isMuted === 'UNMUTED') {
-                console.log(rooms.find(o => o.name === activeUserConv.name).id)
-                socket.emit('send-message', {message:msg, roomId:rooms.find(o => o.name === activeUserConv.name).id})
-                msg_sent == undefined ? set_msg_sent(1) : set_msg_sent(old => old == 1 ? 2 : 1)
-                e.target[0].value = ''
-                set_msg_sender(userData.nickname)
-            }
-            else {
-                setChatBoxMessages(old => [...old, {user: 'bot', msg : "You are muted"}])
-                e.target[0].value = ''
+            var _user = rooms.find(o => o.name === activeUserConv.name)?.users.find(o => o.nickName === userData.nickname)
+            if (_user) {
+                if (_user.isMuted === 'UNMUTED') {
+                    console.log(rooms.find(o => o.name === activeUserConv.name).id)
+                    socket.emit('send-message', {message:msg, roomId:rooms.find(o => o.name === activeUserConv.name).id})
+                    e.target[0].value = ''
+                    set_msg_sender(userData.nickname)
+                }
+                else {
+                    setChatBoxMessages(old => [...old, {user: 'bot', msg : "You are muted"}])
+                    e.target[0].value = ''
+                }
             }
         }
     }
@@ -85,7 +87,7 @@ const Conversation = ( { allUsers } ) => {
                     </div>
 
                     <div id='chatbox' className='relative flex flex-col w-full mt-8 overflow-y-scroll basis-[80%]'>
-                        <ChatBox/>
+                        <ChatBox activeUserConv={activeUserConv}/>
                     </div>
 
                     <div className='h-[8%] w-[90%] flex items-center justify-center'>
