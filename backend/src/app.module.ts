@@ -8,6 +8,7 @@ import { ChatModule } from './chat/chat.module';
 import { UtilsService } from './utils/utils.service';
 import { JwtService } from '@nestjs/jwt';
 import { InvitationsModule } from './invitations/invitations.module';
+import { twoFactorAuths } from './QrCode/qr.module';
 
 
 @Module({
@@ -18,6 +19,7 @@ import { InvitationsModule } from './invitations/invitations.module';
     ConfigModule.forRoot(),
     ChatModule,
     InvitationsModule,
+    twoFactorAuths
   ],
   controllers: [],
   providers: [UtilsService , JwtService],
