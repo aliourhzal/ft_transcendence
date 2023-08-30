@@ -14,11 +14,21 @@ const _picture = ( { src } ) => {
     )
 }
 
-const UserInfo = ( {showUserInfos, setShowUserInfos, nickname, currentUsers} ) => {
+interface UserInfoProps {
+    showUserInfos: any,
+    setShowUserInfos: any,
+    nickname: any,
+    currentUsers: any
+    setChatBoxMessages: any,
+    setActiveUserConv: any,
+    setShowConv: any
+}
+
+const UserInfo:React.FC<UserInfoProps> = ( {showUserInfos, setShowUserInfos, nickname, currentUsers, setChatBoxMessages, setActiveUserConv, setShowConv} ) => {
 
     const [showPic, setShowPic] = useState(false)
 
-    const {socket} = useContext(Context)
+    const {socket, rooms} = useContext(Context)
 
     const _router = useRouter()
 
@@ -43,7 +53,16 @@ const UserInfo = ( {showUserInfos, setShowUserInfos, nickname, currentUsers} ) =
             <div className='flex gap-4 scale-110 text-whiteSmoke w-20 h-8 rounded-2xl items-center justify-center bg-darken-200'>
                 <BiConversation className='hover:scale-110' title='DM' aria-label='DM' cursor="pointer" size={25} onClick={ () => {
                     setShowUserInfos(false)
-                    socket.emit('start-dm', {reciverUserId: currentUsers.find(o => o.nickname === nickname).id})
+                    if (!rooms.find(o => o.name === nickname)) {
+                        socket.emit('start-dm', {reciverUserId: currentUsers.find(o => o.nickname === nickname).id})
+                        // setActiveUserConv(rooms.find(o => o.name === user.nickname))
+                      }
+                      else {
+                        console.log(rooms.find(o => o.name === nickname))
+                        setActiveUserConv(rooms.find(o => o.name === nickname))
+                        setShowConv(true)
+                        setChatBoxMessages(rooms.find(o => o.name === nickname).msgs)
+                      }
                 }}/>
                 <FaRegUser className='hover:scale-110' title='profile' aria-label='profile' cursor="pointer" size={20} onClick={() => {
                     _router.push(`/${nickname}`)

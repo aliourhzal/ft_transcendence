@@ -17,7 +17,7 @@ empty input after switching rooms (DONE)
 fix msg not displayed because of activeUserConv value not changing after selecting a room from dm (DONE BUT WIERD SOLUTION)
 
 
-
+open dm conv if already exist from room and from profile as well
 
 style users search + dont show current user
 
