@@ -3,6 +3,7 @@ emit dm and close popup on dm usermember (DONE)
 user pop ups (DONE)
 link to profile through popup (DONE)
 ERROR when creating room and adding users and accessing their data not found (DONE)
+remove absolute from convbox (DONE)
 
 
 
@@ -11,9 +12,9 @@ fix user photo disappear after muting or kicking and coming back (DONE not sure 
 
 
 
+add last msg to convbox
 
-remove absolute from convbox
-
+add status green point on avatar
 
 style users search + dont show current user
 

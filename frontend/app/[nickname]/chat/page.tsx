@@ -215,10 +215,10 @@ export default function Chat() {
 				convs, setConvs, setShowUserInfos, setUserInfoNick}}>
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200">
 					<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">
-						<ConvList />
+						<ConvList allUsers={allUsers} />
 						<ButtomButtons />
 					</div>
-					<Conversation />
+					<Conversation allUsers={allUsers} />
 				</div>
 				<RoomForm />
 				<JoinRoomForm />

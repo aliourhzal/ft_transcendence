@@ -4,7 +4,11 @@ import ChatBox from './ChatBox'
 import RoomInfo from './roomInfo'
 import {Avatar} from '@nextui-org/react'
 
-const Conversation = () => {
+interface ConversationProps {
+    allUsers: any[]
+}
+
+const Conversation = ( { allUsers } ) => {
 
     const [deviceType, setDeviceType] = useState('normal')
 
@@ -59,7 +63,7 @@ const Conversation = () => {
     return (
         deviceType === 'normal' ?
         <div className='flex flex-col h-[90vh] w-[calc(120%/2)] items-center justify-center '>
-                {activeUserConv.name && <RoomInfo room={rooms.find(o => o.name === activeUserConv.name)} setShow={setShowInfo} show={showInfo} userData={userData} />}
+                {activeUserConv.name && <RoomInfo allUsers={allUsers} room={rooms.find(o => o.name === activeUserConv.name)} setShow={setShowInfo} show={showInfo} userData={userData} />}
 				{ showConv && <>
                     <div className="h-[80px] z-0 flex justify-between text-white pl-10 py-4 w-[100%] border-blue-gray-200 text-blue-gray-700 outline border-b outline-0 placeholder-shown:border-blue-gray-200 focus:outline-0">
                         <div className=' min-w-[150px] bg-zinc-800 rounded-l-3xl pr-2 rounded-r-xl flex items-center gap-3 justify-start w-auto h-auto cursor-pointer hover:underline' onClick={() => {

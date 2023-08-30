@@ -13,15 +13,16 @@ interface RoomMumbersProps {
     isOwner: any,
     isAdmin: any,
     hide: any,
+    allUsers: any
 }
 
-const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin, hide } ) => {
+const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin, hide, allUsers } ) => {
 
     const _router = useRouter()
 
     const [showOptions, setShowOptions] = useState(false)
 
-    const {setShowUserInfos, setUserInfoNick, userData} = useContext(Context)
+    const {setShowUserInfos, setUserInfoNick, userData, rooms} = useContext(Context)
 
   return (
     <div className='m-2 border-2 p-2 rounded-lg bg-slate-600 border-slate-500 w-full flex flex-col items-center justify-center' key={user.id}>
@@ -35,13 +36,18 @@ const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin,
                         setShowUserInfos(true)
                     }
                 }}>
-                <Avatar bordered color={"primary"} pointer zoomed src={info.room.users.find(o => o.nickName === user.nickName).photo} />
+                <div className='flex items-center gap-2 justify-center'>
+                    { rooms.find(o => o.name === user.nickName)?.type === 'DM' && allUsers.find(o => o.nickname === user.nickName).status === 'online' ?
+                    <span className='rounded-full bg-green-400 opacity-90 border-2 border-green-500 w-2 h-2 -ml-1'></span>
+                    : <span className='w-2 h-2 -ml-1'></span>}
+                    <Avatar bordered color={"primary"} pointer zoomed src={info.room.users.find(o => o.nickName === user.nickName).photo} />
+                </div>
                 <div>{user.nickName === info.userData.nickname ? 'you' : user.nickName}</div>
                 {isOwner(info.room.users.find(o => o.nickName === user.nickName)) ? <FaCrown/> : ''}
                 {isAdmin(info.room.users.find(o => o.nickName === user.nickName)) && !isOwner(info.room.users.find(o => o.nickName === user.nickName)) ? <AiFillStar/> : ''}
             </div>
             <div className='w-10 font-extrabold flex items-center justify-center'>
-                {user.nickName != info.userData.nickname ?
+                {user.nickName != info.userData.nickname && isAdmin(info.room.users.find(o => o.nickName === userData.nickname)) ?
                      <IoIosArrowDown size={20} fontWeight={'bold'} className={'font-extrabold transition duration-300 delay-130 ' +
                     (showOptions ? 'rotate-180' : '')}/> : ''}
             </div>

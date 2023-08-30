@@ -6,7 +6,11 @@ import { AiOutlineUsergroupAdd } from "react-icons/Ai"
 import { LiaUsersSolid } from "react-icons/Lia"
 import { TbMessage2Search } from "react-icons/Tb"
 
-const ConvList = () => {
+interface ConvListProps {
+  allUsers: any[]
+}
+
+const ConvList:React.FC<ConvListProps> = ({allUsers}) => {
   const {socket, set_room_created, rooms, userData, convs, setConvs, _notification, setChatBoxMessages, setShowForm, setShowJoinForm, setShowSearchUsersForm, activeUserConv } = useContext(Context)
   const [updateList, setUpdateList] = useState(false)
   
@@ -135,7 +139,7 @@ const ConvList = () => {
       <Search _Filter={convsFilter} />
       <div className='scrollbar-none group left-[10%] flex-col bg-transparent w-full h-[80%] mt-8 overflow-hidden overflow-y-scroll'>
           {
-            rooms.length ? convs.length ? convs.map ((item:conversation) =>  (<ConvBox key={gimmeRandom()} data={item} />)) 
+            rooms.length ? convs.length ? convs.map ((item:conversation) =>  (<ConvBox key={gimmeRandom()} allUsers={allUsers} data={item} />)) 
             : 
             <div className="text-white">No conversations found !</div>
             :
