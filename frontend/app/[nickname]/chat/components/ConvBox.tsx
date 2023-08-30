@@ -38,6 +38,8 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
       // alert(error)
       console.log(error)
     }
+    if (data.name != activeUserConv.name)
+      msgInputRef.current.value = ''
     msgInputRef.current?.focus()
     // const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
   }

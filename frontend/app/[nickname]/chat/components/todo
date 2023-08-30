@@ -9,11 +9,15 @@ fix user photo disappear after muting or kicking and coming back (DONE not sure 
 open dm conv if already exist (DONE)
 focus input after selecting room (DONE)
 userinfo popup after clicking on icon in roommembers (contain dm and profile url) (DONE)
+empty input after switching rooms (DONE)
 
 
-empty input after switching rooms
 
-fix msg not displayed because of activeUserConv value not changing after selecting a room from dm
+
+fix msg not displayed because of activeUserConv value not changing after selecting a room from dm (DONE BUT WIERD SOLUTION)
+
+
+
 
 style users search + dont show current user
 
