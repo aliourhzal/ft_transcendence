@@ -19,7 +19,7 @@ export default function Profile(props) {
 	const [notif, setNotify] = useState("");
 	const [err, setErr] = useState(false);
 	const loggedUser = useContext(userDataContext)
-	const [userData, setUserData] = useState<UniversalData>();
+	const [userData, setUserData] = useState<UniversalData>(loggedUser);
 	const socket = useContext(InvitationSocketContext);
 	async function fetchUserData(nickname: string) {
 		try {
