@@ -7,26 +7,21 @@ remove absolute from convbox (DONE)
 add status green point on avatar (DONE)
 fix user photo disappear after muting or kicking and coming back (DONE not sure !)
 open dm conv if already exist (DONE)
+focus input after selecting room (DONE)
+userinfo popup after clicking on icon in roommembers (contain dm and profile url) (DONE)
 
 
 
 
+style users search + dont show current user
 
 fix msg sent twice after opening dm from search
 
 add last msg to convbox
 
-focus input after selecting room
-
-style users search + dont show current user
-
 phone div slide
 
-check cookies after msg sent 
-
-open dm room if already exist after clicking on dm in profile popup
-
-userinfo popup after clicking on icon in roommembers (contain dm and profile url)
+check cookies after msg sent
 
 change grp image to fit with blueStrong and darken
 
@@ -36,8 +31,8 @@ ask drari to remove prevent default from settings form so changes apply
 
 change edit room icons design
 
-change dm user id to user nickname
-
 add notifications for every action
 
 add ? in every room.find
+
+display muted once ( or in worst case disable input )
