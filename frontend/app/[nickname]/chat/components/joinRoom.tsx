@@ -6,7 +6,7 @@ import { getCookie } from '../../layout'
 
 const JoinRoomForm = () => {
 
-    const {showJoinForm, setShowJoinForm, convs, socket, rooms, set_room_created , userData} = useContext(Context)
+    const {showJoinForm, setShowJoinForm, socket} = useContext(Context)
 
     const [name, setName] = useState('')
     const [pass, setPass] = useState('')

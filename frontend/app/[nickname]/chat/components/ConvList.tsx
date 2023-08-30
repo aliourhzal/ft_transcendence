@@ -135,12 +135,14 @@ const ConvList:React.FC<ConvListProps> = ({allUsers, activeUserConv, setActiveUs
         setConvs(rooms.filter((user:conversation) => (user.name.startsWith(needle))))
     }
 
+    // convs.map ((item:conversation) => {console.log(item, "&&&&")})
+
     return (
     <>
       <Search _Filter={convsFilter} />
       <div className='scrollbar-none group left-[10%] flex-col bg-transparent w-full h-[80%] mt-8 overflow-hidden overflow-y-scroll'>
           {
-            rooms.length ? convs.length ? convs.map ((item:conversation) =>  (<ConvBox activeUserConv={activeUserConv} setActiveUserConv={setActiveUserConv} key={gimmeRandom()} allUsers={allUsers} data={item} />)) 
+            rooms.length ? convs.length ? convs.map ((item:conversation) =>  (<ConvBox key={gimmeRandom()} allUsers={allUsers} data={item} activeUserConv={activeUserConv} setActiveUserConv={setActiveUserConv} />)) 
             : 
             <div className="text-white">No conversations found !</div>
             :

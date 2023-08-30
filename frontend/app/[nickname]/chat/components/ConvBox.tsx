@@ -1,8 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-// import Image from 'next/image'
 import { conversation } from '../page'
-import {Avatar} from '@nextui-org/react'
-import { useRouter } from 'next/navigation'
 import { Context } from '../page'
 import axios from 'axios'
 import { getCookie } from '../../layout'
@@ -18,28 +15,30 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
 
   const {rooms, setShowConv, setChatBoxMessages, msgInputRef} = useContext(Context)
 
-
   const handleClick = async () => {
+    setActiveUserConv(_obj => {
+      _obj = data;
+      return _obj
+    })
     setShowConv(true)
-    setActiveUserConv(data)
-    console.log(activeUserConv)
+    console.log(data)
     // if (new_msg_notif.name == activeUserConv.name)
     //   notify_conv_msg(false, '')
     try {
       await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomId:rooms.find(o => o.name === data.name).id}, {
         withCredentials: true,
         headers: {
-            'Authorization': `Bearer ${getCookie('access_token')}`,
-                'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
-    })
+          'Authorization': `Bearer ${getCookie('access_token')}`,
+          'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
+        })
       .then((res) => {
-          setChatBoxMessages(res.data.msg)
+        setChatBoxMessages(res.data.msg)
       })
     } catch(error) {
-        // alert(error)
-        console.log(error)
+      // alert(error)
+      console.log(error)
     }
-    msgInputRef.current.focus()
+    msgInputRef.current?.focus()
     // const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
   }
 
@@ -50,7 +49,7 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
         </div>} */}
         <div className='w-20 h-20 flex items-center justify-center relative'>
           <img alt={data.name} width={45} height={45} className="rounded-full border-2 border-slate-300 w-30 h-30" src={data.photo} />
-          { rooms.find(o => o.name === data.name).type === 'DM' && allUsers.find(o => o.nickname === data.name).status === 'online' ?
+          { rooms.find(o => o.name === data.name)?.type === 'DM' && allUsers.find(o => o.nickname === data.name).status === 'online' ?
           <span className='rounded-full bg-green-400 opacity-90 border-2 border-green-500 w-2 h-2 absolute top-[65%] right-[15%]'></span>
           : ''}
         </div>

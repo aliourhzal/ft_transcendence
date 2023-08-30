@@ -23,7 +23,7 @@ interface RoomInfoProps {
 
 const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     
-    const {setConvs, socket, rooms, setRooms, set_room_created, _notification} = useContext(Context)
+    const {setConvs, socket, setRooms, _notification} = useContext(Context)
 
     const [infoUpdate, setInfoUpdate] = useState(false)
 

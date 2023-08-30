@@ -27,9 +27,9 @@ const ChatBox:React.FC<ChatBoxProps> = ( { activeUserConv } ) => {
   useEffect( () => {
     // if (msg_sent) {
         socket.on('add-message', addmsg)
-        // return () => socket.off('add-message', addmsg)
+        return () => socket.off('add-message', addmsg)
     // }
-	},[])
+	},[chatBoxMessages])
 
   // let temp = document.getElementById('chatbox')
 
