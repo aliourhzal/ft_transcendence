@@ -50,7 +50,7 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
   }
 
   return (
-    <div tabIndex={0} className={(activeUserConv.name === data.data.name ? 'bg-blueStrong' : 'bg-zinc-800 hover:bg-zinc-700') + " cursor-pointer convGroup z-0 focus:bg-blueStrong w-[70%] left-[15%] h-[100px] relative my-3 rounded-md active:bg-blue-500 flex items-center justify-start"} onClick={(e) => {
+    <div tabIndex={0} className={(activeUserConv.name === data.data.name ? 'bg-blueStrong' : 'bg-zinc-800 hover:bg-zinc-700') + " cursor-pointer convGroup z-0 focus:bg-blueStrong w-[70%] left-[15%] h-[100px] gap-4 relative my-3 rounded-md active:bg-blue-500 flex items-center justify-start"} onClick={(e) => {
         handleClick();
         activeDiv(e.currentTarget);
         // scrollToBottom()
@@ -58,10 +58,12 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
         {/* {data && <div className='absolute z-0 h-[100px] w-full flex flex-col items-end justify-center bg-transparent'>
           <span className='mx-5 animate-ping inline-flex w-2 h-2 rounded-full bg-blueStrong z-10 opacity-90'></span>
         </div>} */}
-        <div className="left-[30%] top-[25%] absolute text-gray-200 font-medium">{data.data.name}</div>
         <img alt={data.data.name} width={45} height={45} className="rounded-full border-2 border-slate-300 w-30 h-30 ml-4" src={data.data.photo} />
-        <div className="left-[30%] top-[50%] absolute text-gray-200 text-opacity-70 font-normal">{
-            data.data.lastmsg ? data.data.lastmsg.length > 15 ? data.data.lastmsg.substring(0, 15)+'...' : data.data.lastmsg : ''}</div>
+        <div className='flex flex-col justify-between w-[100%] h-[50%] items-start'>
+          <div className="left-[30%] top-[25%] text-gray-200 font-medium">{data.data.name}</div>
+          <div className="left-[30%] top-[50%] text-gray-200 text-opacity-70 font-normal">{
+          data.data.lastmsg ? data.data.lastmsg.length > 15 ? data.data.lastmsg.substring(0, 15)+'...' : data.data.lastmsg : ''}</div>
+        </div>
         {/* <div className="left-[85%] top-[70%] lg:top-[50%] absolute text-gray-200 text-opacity-70 font-normal">10:30</div> */}
     </div>
   )

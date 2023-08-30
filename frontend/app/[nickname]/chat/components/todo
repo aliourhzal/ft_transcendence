@@ -12,6 +12,7 @@ fix user photo disappear after muting or kicking and coming back (DONE not sure 
 
 
 
+remove absolute from convbox
 
 
 style users search + dont show current user
@@ -31,7 +32,6 @@ change grp image to fit with blueStrong and darken
 
 fix messages from room with the same name as user
 
-remove absolute from convbox
 
 ask drari to remove prevent default from settings form so changes apply
 
