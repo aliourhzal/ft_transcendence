@@ -246,7 +246,7 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		function getMousePos(evt: { clientY: number, clientX: number }){
 			let rect = canvas.getBoundingClientRect();
 			if (canvas.width === 600 && canvas.height === 337 && player.y !== -1) {
-				const posY = canvas.height - (evt.clientX - rect.left + 2); 
+				const posY = evt.clientX - rect.left + 2; 
 				if (posY < canvas.height - player.height)
 					player.y = posY
 			}
@@ -328,7 +328,7 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		//  "/>
 	        <canvas id="pongy" className="bg-darken-300 rounded-md
 				w-[90%] aspect-[16/9]
-				max-sm:rotate-90 max-sm:w-[600px] max-sm:h-[337px]
+				max-sm:rotate-[-90deg] max-sm:w-[600px] max-sm:h-[337px]
 				xl:w-[1000px] xl:h-[562px]
 			"/>
     );
