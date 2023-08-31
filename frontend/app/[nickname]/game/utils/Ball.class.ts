@@ -25,14 +25,20 @@ export class Ball {
 
 export class Special extends Ball {
 	type: string;
-	active: boolean;
+	ready: boolean;
 	color: string;
+	active: boolean;
+
+	constructor(active: boolean) {
+		super();
+		this.active = active;
+	}
 
 	setType(type: string) {
 		this.type = type;
 	}
 
-	setActive(active: boolean) {
-		this.active = active;
+	setActive(ready: boolean) {
+		this.ready = ready;
 	}
 }
