@@ -16,6 +16,11 @@ export class Ball {
 	setRadius(r: number) {
 		this.radius = r;
 	}
+
+	setPos(x: number, y: number) {
+		this.x = x;
+		this.y = y;
+	}
 }
 
 export class Special extends Ball {

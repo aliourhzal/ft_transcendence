@@ -32,10 +32,19 @@ export type roomT = {
 	hell: boolean,
 	specialsMode: boolean,
 	specials: Specials,
+	canvas: canvasDim;
+}
+
+export type msgFromPlayer = {
+	x: number,
+	y: number,
+	collision: boolean,
+	collAngle: number,
+	h: number,
+	canvasH: number
 }
 
 export class Player {
-	canvas: canvasDim;
 	readonly socket: Socket;
 	ball: coords;
 	score: number;
@@ -46,10 +55,9 @@ export class Player {
 	special: boolean;
 	hell: boolean;
 
-	constructor(socket: Socket, height = 0, width = 0, score = 0, gameGoing = false, special = false, hell = false) {
-		this.canvas = {height, width};
+	constructor(socket: Socket, score = 0, gameGoing = false, special = false, hell = false) {
 		this.socket = socket;
-		this.ball = {x: 0, y: 0};
+		this.ball = {x: 400, y: 450 / 2};
 	}
 
 	moveBall(velocityX: number, velocityY: number) {
@@ -65,11 +73,6 @@ export class Player {
 		this.ball.y = y;
 	}
 
-	setCanvasDim(height: number, width: number) {
-		this.canvas = {height, width};
-		this.height = height / 4;
-	}
-
 	initBallPos(x: number, y: number, radius: number) {
 		this.ball = {x, y};
 	}
@@ -80,19 +83,20 @@ export class Player {
 	}
 
 	resetHeight() {
-		this.height = this.canvas.height / 4;
+		this.height = 450 / 4;
 	}
+
 }
 
 export class Ball {
 	radius = 10;
 	velocityX = 5; //ball direction
 	velocityY = 5;
-	speed = 7;
+	speed = 3;
 	color = "WHITE";
 
 	resetForNewGame() {
-		this.speed = 7;
+		this.speed = 3;
 		this.velocityX = 5;
 		this.velocityY = 5;
 	}

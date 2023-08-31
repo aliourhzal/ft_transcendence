@@ -199,7 +199,8 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			y: player.y,
 			collision: coll,
 			collAngle,
-			h: player.height
+			h: player.height,
+			canvasH: canvas.height
 		});
 	}
 
@@ -209,12 +210,14 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		canvas.width = canvas.offsetWidth;
 		canvas.height = canvas.offsetHeight;
 		player.setDims(canvas.height / 4, canvas.width * 10 / 800);
+		player.setPos(0, canvas.height / 2 - player.height / 2);
 		com.setDims(canvas.height / 4, canvas.width * 10 / 800);
-		com.x = canvas.width - com.width;
+		com.setPos(canvas.width - com.width, player.y);
 		ball.setRadius(canvas.width * 10 / 800);
 		special.radius = canvas.width * 20 / 800;
 		// listening to the mouse
 		canvas.addEventListener("mousemove", getMousePos);
+		StartGame(canvas, ctx);
 		
 		socket.on("gameOver", data => {
 			ctx.fillStyle = bgColor;
@@ -238,9 +241,11 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			canvas.height = canvas.offsetHeight;
 			player.setDims(canvas.height / 4, canvas.width * 10 / 800);
 			com.setDims(canvas.height / 4, canvas.width * 10 / 800);
+			com.x = canvas.width - com.width;
+			console.log('com.x: ', com.x);
+			console.log('canvas.width: ', canvas.width);
 			ball.setRadius(canvas.width * 10 / 800);
 			special.radius = canvas.width * 20 / 800;
-			props.socket.emit("resize", {w:canvas.width, h:canvas.height});
 		});
 		//change player Paddle According to Mouse Position
 		function getMousePos(evt: { clientY: number, clientX: number }){
@@ -266,24 +271,26 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		});
 
         props.socket.on('game_Data', data => {
-            ball.x = data.x;
-			ball.y = data.y;
-			player.height = data.ph;
-			com.height = data.ch;
+            ball.x = canvas.height * data.x / 450;
+			ball.y = canvas.width * data.y / 800;
+			player.height = data.ph * canvas.height / 450;
+			com.height = data.ch * canvas.height / 450;
             StartGame(canvas, ctx);
         });
+
 		props.socket.on('special_effect', data => {
 			player.x = 0;
 			com.x = canvas.width - com.width;
 			if (special.type === 'big_foot')
 				player.y = canvas.height / 2 - player.height / 2;
 			setTimeout(() => {
-				special.x = data.x;
-				special.y = data.y;
+				special.x = canvas.height * data.x / 450;
+				special.y = canvas.width * data.y / 800;
 				special.type = data.type;
 				special.active = true;
 			}, 2000)
 		});
+
 		props.socket.on('activate-special', data => {
 			special.type = data.type;
 			special.active = false;
@@ -298,9 +305,11 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 				}
 			}
 		});
+
 		props.socket.on("playerMov", data => {
-			com.y = data.y;
+			com.y = data.y * canvas.height / 450;
 		});
+
 		props.socket.on("score", data => {
 			if (props.socket.id === data.soc)
 			{

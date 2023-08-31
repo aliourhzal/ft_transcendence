@@ -5,7 +5,7 @@ import { randomUUID } from "crypto";
 import { Server, Socket } from 'socket.io'
 import { UsersService } from "src/users/users.service";
 import { AcheivementsService } from "src/users/achievements.service";
-import { Player, userNode, roomT, Ball, Specials } from "./Player";
+import { Player, userNode, roomT, Ball, Specials, msgFromPlayer } from "./Player";
 
 
 
@@ -67,19 +67,20 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 
 	async update(room: roomT) {
 		if (room.player1.ball.x - room.ballDynamics.radius < -20)//
-		{	
+		{
+			console.log('score1');
 			room.player2.score += 1;
-			room.player2.height = room.player2.canvas.height / 4;
-			room.player1.height = room.player1.canvas.height / 4;
+			room.player2.height = room.canvas.height / 4;
+			room.player1.height = room.canvas.height / 4;
 			await this.achievementsService.checkHatTrick(room.player2, room.player1);
 			this.server.to(room.roomId).emit("score", {soc:room.player2.socket.id, p1:room.player2.score, p2:room.player1.score});
 		}
 		
-		else if (room.player1.ball.x + room.ballDynamics.radius > room.player1.canvas.width + 20)
+		else if (room.player1.ball.x + room.ballDynamics.radius > room.canvas.width + 20)
 		{
 			room.player1.score += 1;
-			room.player2.height = room.player2.canvas.height / 4;
-			room.player1.height = room.player1.canvas.height / 4;
+			room.player2.height = room.canvas.height / 4;
+			room.player1.height = room.canvas.height / 4;
 			await this.achievementsService.checkHatTrick(room.player1, room.player2);
 			this.server.to(room.roomId).emit("score", {soc:room.player1.socket.id, p1:room.player1.score, p2:room.player2.score})
 		}
@@ -97,27 +98,27 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			return ;
 		}
 		
-		if (room.player1.ball.x - room.ballDynamics.radius < -20 || room.player1.ball.x + room.ballDynamics.radius > room.player1.canvas.width + 20) {
+		if (room.player1.ball.x - room.ballDynamics.radius < -20 || room.player1.ball.x + room.ballDynamics.radius > room.canvas.width + 20) {
 			room.ballDynamics.resetForNewGame();
-			room.player1.resetBall(room.player1.canvas.width / 2, room.player1.canvas.height / 2);
-			room.player2.resetBall(room.player1.canvas.width / 2, room.player1.canvas.height / 2);
+			room.player1.resetBall(room.canvas.width / 2, room.canvas.height / 2);
+			room.player2.resetBall(room.canvas.width / 2, room.canvas.height / 2);
 		}
 		room.player1.moveBall(room.ballDynamics.velocityX, room.ballDynamics.velocityY);
 		room.player2.moveBall(-room.ballDynamics.velocityX, -room.ballDynamics.velocityY)
-		if(room.player1.ball.y - room.ballDynamics.radius < 0 || room.player1.ball.y + room.ballDynamics.radius > room.player1.canvas.height) {
+		if(room.player1.ball.y - room.ballDynamics.radius < 0 || room.player1.ball.y + room.ballDynamics.radius > room.canvas.height) {
 			if (room.player1.ball.y - room.ballDynamics.radius < 0) {
 				room.player1.correctHorizantalColl(room.ballDynamics.radius + 1);
-				room.player2.correctHorizantalColl(room.player1.canvas.height - room.ballDynamics.radius + 1);
+				room.player2.correctHorizantalColl(room.canvas.height - room.ballDynamics.radius + 1);
 			}
 			else {
-				room.player1.correctHorizantalColl(room.player1.canvas.height - room.ballDynamics.radius + 1);
+				room.player1.correctHorizantalColl(room.canvas.height - room.ballDynamics.radius + 1);
 				room.player2.correctHorizantalColl(room.ballDynamics.radius + 1);
 			}
 			room.ballDynamics.velocityY = -room.ballDynamics.velocityY;
 		}
-		if (room.hell && room.player1.height >= room.player1.canvas.height / 10 ) {
-			room.player1.height -= room.player1.canvas.height * 0.01 / 450;
-			room.player2.height -= room.player2.canvas.height * 0.01 / 450;
+		if (room.hell && room.player1.height >= room.canvas.height / 10 ) {
+			room.player1.height -= room.canvas.height * 0.01 / 450;
+			room.player2.height -= room.canvas.height * 0.01 / 450;
 		}
 
 		if (room.specialsMode && room.specials.isSpecialActivated() && !room.specials.sent) {
@@ -128,8 +129,8 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 				type: room.specials.getSpecial()
 			})
 			this.server.to(room.player2.socket.id).emit('special_effect', {
-				x: (room.player1.canvas.width - room.specials.position.x) * (room.player2.canvas.width / room.player1.canvas.width),
-				y: (room.player1.canvas.height - room.specials.position.y) * (room.player2.canvas.height / room.player1.canvas.height),
+				x: room.canvas.width - room.specials.position.x,
+				y: room.canvas.height - room.specials.position.y,
 				type: room.specials.getSpecial()
 			})
 		}
@@ -138,13 +139,13 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			x: room.player1.ball.x,
 			y: room.player1.ball.y,
 			ph: room.player1.height,
-			ch: room.player2.height * room.player1.canvas.height / room.player2.canvas.height
+			ch: room.player2.height * room.canvas.height / room.canvas.height
 		})
 		this.server.to(room.player2.socket.id).emit('game_Data', {
-			x: room.player2.ball.x * room.player2.canvas.width / room.player1.canvas.width,
-			y: room.player2.ball.y * room.player2.canvas.height / room.player1.canvas.height,
+			x: room.player2.ball.x,
+			y: room.player2.ball.y,
 			ph: room.player2.height,
-			ch: room.player1.height * room.player2.canvas.height / room.player1.canvas.height
+			ch: room.player1.height * room.canvas.height / room.canvas.height
 		})
 	}
 
@@ -179,6 +180,10 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	}
 
 	checkPlayerOrder(socket: Socket, room: roomT) {
+		if (!room) {
+			console.log('hello');
+			return 1;
+		}
 		if(socket.id === room.player1.socket.id)
 			return (1);
 		return (2);
@@ -189,7 +194,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		room.player2.score = 0;
 		let framePerSecond = 50;
 		if (room.specialsMode)
-			room.specials.activateSpecial(room.player1.canvas.height, room.player1.canvas.width);
+			room.specials.activateSpecial(room.canvas.height, room.canvas.width);
 		room.loop = setInterval(() => {
 			this.update(room);
 		},1000/framePerSecond);
@@ -209,6 +214,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			player2: new Player(player2Socket),
 			roomId,
 			ballDynamics,
+			canvas: {height: 450, width: 800},
 			loop: null,
 			hell: false,
 			specialsMode: false,
@@ -269,7 +275,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	}
 
 	@SubscribeMessage('player')
-	handleEvent(socket: Socket, data: {x: number;y: number;collision: boolean;collAngle: number;h:number}) {
+	handleEvent(socket: Socket, data: msgFromPlayer) {
 		const room = this.findRoomBySocket(socket);
 		let emiter: Player;
 		let receiver: Player;
@@ -292,9 +298,9 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			room.ballDynamics.velocityY = room.ballDynamics.speed * Math.sin(data.collAngle);
 			room.ballDynamics.speed += 0.2;
 		}
-		const newY = emiter.canvas.height - data.y - data.h;//hna
+		const newY = data.canvasH - data.y - data.h;//hna
 		// const newY = emiter.canvas.height - data.y - miter.height;//hna
-		this.server.to(receiver.socket.id).emit("playerMov", {x: data.x, y: newY * receiver.canvas.height / emiter.canvas.height});
+		this.server.to(receiver.socket.id).emit("playerMov", {x: data.x, y: newY * room.canvas.height / data.canvasH});
 	}
 
 	@SubscribeMessage('startGame')
@@ -309,23 +315,8 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 				this.findPlayerByRoom_SockerId(room, socket.id).special = true;
 				room.specials.activateSpecial(data.h, data.w);
 			}
-			room.player1.initBallPos(data.w / 2, data.h / 2, data.w * 10 / 800);
-			room.player2.initBallPos(data.w / 2, data.h / 2, data.w * 10 / 800);
-			room.player1.setCanvasDim(data.h, data.w);
-		}
-		else if (room && this.checkPlayerOrder(socket, room) === 2) {
-			room.player2.setCanvasDim(data.h, data.w);
-		}
-	}
-	@SubscribeMessage('resize')
-	resize(socket: Socket, data: {w:number, h:number})
-	{
-		const room = this.findRoomBySocket(socket);
-		if (room && this.checkPlayerOrder(socket, room) === 1) {
-			room.player1.setCanvasDim(data.h, data.w);
-		}
-		else if (room && this.checkPlayerOrder(socket, room) === 2) {
-			room.player2.setCanvasDim(data.h, data.w);
+			room.player1.initBallPos(room.canvas.width / 2, room.canvas.height / 2, room.canvas.width * 10 / 800);
+			room.player2.initBallPos(room.canvas.width / 2, room.canvas.height / 2, room.canvas.width * 10 / 800);
 		}
 	}
 
@@ -339,14 +330,14 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			setTimeout(() => {
 				room.player1.resetHeight();
 				room.player2.resetHeight();
-				room.specials.activateSpecial(room.player1.canvas.height, room.player1.canvas.width);
+				room.specials.activateSpecial(room.canvas.height, room.canvas.width);
 			}, 6000);
 		}
 		if (room && room.ballDynamics.velocityX > 0) {
 			const special = room.specials.getSpecial();
 			console.log(special);
 			if (special === 'big_foot') {
-				room.player1.height = room.player1.canvas.height;
+				room.player1.height = room.canvas.height;
 				this.server.to(room.player1.socket.id).emit('activate-special', {
 					type: room.specials.getSpecial(),
 					role: 'me'
@@ -358,7 +349,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			}
 			else if (special === 'dwarf') {
 				console.log('apply for player1');
-				room.player2.height = room.player2.canvas.height / 10;
+				room.player2.height = room.canvas.height / 10;
 				this.server.to(room.roomId).emit('activate-special', {
 					type: room.specials.getSpecial()
 				})
@@ -367,7 +358,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		else if (room && room.ballDynamics.velocityX < 0) {
 			const special = room.specials.getSpecial();
 			if (special === 'big_foot') {
-				room.player2.height = room.player2.canvas.height;
+				room.player2.height = room.canvas.height;
 				this.server.to(room.player2.socket.id).emit('activate-special', {
 					type: room.specials.getSpecial(),
 					role: 'me'
@@ -379,7 +370,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			}
 			else if (special === 'dwarf') {
 				console.log('apply for player2');
-				room.player1.height = room.player1.canvas.height / 10;
+				room.player1.height = room.canvas.height / 10;
 				this.server.to(room.roomId).emit('activate-special', {
 					type: room.specials.getSpecial()
 				})
