@@ -139,13 +139,15 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			x: room.player1.ball.x,
 			y: room.player1.ball.y,
 			ph: room.player1.height,
-			ch: room.player2.height * room.canvas.height / room.canvas.height
+			ch: room.player2.height,
+			specials: room.specialsMode ? 'effects' : room.hell ? 'hell' : 'none'
 		})
 		this.server.to(room.player2.socket.id).emit('game_Data', {
 			x: room.player2.ball.x,
 			y: room.player2.ball.y,
 			ph: room.player2.height,
-			ch: room.player1.height * room.canvas.height / room.canvas.height
+			ch: room.player1.height,
+			specials: room.specialsMode ? 'effects' : room.hell ? 'hell' : 'none'
 		})
 	}
 
@@ -180,10 +182,6 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	}
 
 	checkPlayerOrder(socket: Socket, room: roomT) {
-		if (!room) {
-			console.log('hello');
-			return 1;
-		}
 		if(socket.id === room.player1.socket.id)
 			return (1);
 		return (2);
@@ -194,7 +192,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		room.player2.score = 0;
 		let framePerSecond = 50;
 		if (room.specialsMode)
-			room.specials.activateSpecial(room.canvas.height, room.canvas.width);
+			room.specials.activateSpecial();
 		room.loop = setInterval(() => {
 			this.update(room);
 		},1000/framePerSecond);
@@ -279,6 +277,8 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		const room = this.findRoomBySocket(socket);
 		let emiter: Player;
 		let receiver: Player;
+		if (!room)
+			return ;
 		if (this.checkPlayerOrder(socket, room) === 1) {
 			emiter = room.player1;
 			receiver = room.player2;
@@ -308,12 +308,13 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	{
 		const room = this.findRoomBySocket(socket);
 		if (room && this.checkPlayerOrder(socket, room) === 1) {
-			room.hell = data.hell;
 			room.specialsMode = data.specials;
-			if (room.specialsMode)
+			if (!room.specialsMode)
+				room.hell = data.hell;
+			else
 			{
 				this.findPlayerByRoom_SockerId(room, socket.id).special = true;
-				room.specials.activateSpecial(data.h, data.w);
+				room.specials.activateSpecial();
 			}
 			room.player1.initBallPos(room.canvas.width / 2, room.canvas.height / 2, room.canvas.width * 10 / 800);
 			room.player2.initBallPos(room.canvas.width / 2, room.canvas.height / 2, room.canvas.width * 10 / 800);
@@ -330,7 +331,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			setTimeout(() => {
 				room.player1.resetHeight();
 				room.player2.resetHeight();
-				room.specials.activateSpecial(room.canvas.height, room.canvas.width);
+				room.specials.activateSpecial();
 			}, 6000);
 		}
 		if (room && room.ballDynamics.velocityX > 0) {
