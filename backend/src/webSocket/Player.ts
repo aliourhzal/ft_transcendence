@@ -58,6 +58,7 @@ export class Player {
 	constructor(socket: Socket, score = 0, gameGoing = false, special = false, hell = false) {
 		this.socket = socket;
 		this.ball = {x: 400, y: 450 / 2};
+		this.height = 450 / 4;
 	}
 
 	moveBall(velocityX: number, velocityY: number) {
@@ -124,10 +125,10 @@ export class Specials {
 		return Math.floor(Math.random() * (max - min + 1) + min)
 	}
 
-	activateSpecial(canvasH: number, canvasW: number) {
+	activateSpecial() {
 		const specials = ['dwarf', 'big_foot'];
-		let randomX = this.randomIntFromInterval(2 / 10 * canvasW, 8 / 10 * canvasW);
-		let randomY = this.randomIntFromInterval(2 / 10 * canvasH, 8 / 10 * canvasH);
+		let randomX = this.randomIntFromInterval(2 / 10 * 800, 8 / 10 * 800);
+		let randomY = this.randomIntFromInterval(2 / 10 * 450, 8 / 10 * 450);
 		const randomSpecial = this.randomIntFromInterval(0, 1);
 		console.log('test: ', specials[randomSpecial]);
 		specials.forEach((s) => {
