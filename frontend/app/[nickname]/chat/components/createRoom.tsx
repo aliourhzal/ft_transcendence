@@ -5,7 +5,7 @@ import Popup from "./Popup"
 
 const RoomForm = () => {
      
-    const {showForm, setShowForm, socket, setConvs, set_room_created, rooms, userData} = useContext(Context)
+    const {showForm, setShowForm, socket, setConvs, set_room_created, rooms, setRooms, userData} = useContext(Context)
 
     const [roomName, setName] = useState('')
     const [users, setUsers] = useState<string[]>([])
@@ -40,7 +40,7 @@ const RoomForm = () => {
                     _name = res.usersInfos.existingUser[1].nickname
                     _photo = res.usersInfos.existingUser[1].profilePic
                 }
-                rooms.unshift({
+                setRooms(_rooms => {_rooms.unshift({
                     name: _name,
                     lastmsg:'',
                     msgs: [],
@@ -48,10 +48,10 @@ const RoomForm = () => {
                     users: setDmUsers(res.usersInfos.existingUser),
                     type: 'DM',
                     photo: _photo,
-                })
+                }); setConvs([..._rooms]); return _rooms})
             }
             else {
-                rooms.unshift({
+                setRooms(_rooms => {_rooms.unshift({
                     name: res.room.room.room_name,
                     lastmsg:'welcome to group chat',
                     msgs: [],
@@ -59,11 +59,12 @@ const RoomForm = () => {
                     users: getUsersInfo(res.userInfos),
                     type: res.room.room.roomType,
                     photo: "/images/defaultRoomIcon.png"
-                })
+                }); setConvs([..._rooms]); return _rooms})
             }
             set_room_created(old => !old)
-            setConvs([...rooms])
+            // setConvs([...rooms])
         })
+        console.log(rooms)
     }, [])
     
     const confirmForm = async (e) => {

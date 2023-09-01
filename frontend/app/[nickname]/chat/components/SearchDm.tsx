@@ -32,9 +32,9 @@ const SearchDm:React.FC<SearchDmProps> = ( { currentUsers, setActiveUserConv } )
         <h1 className='absolute top-[15%] text-center text-2xl mb-2 drop-shadow-[0px_0px_5px_rgba(150,150,150,0.7)]'>Search for users</h1>
         <div onClick={() => {setShowList(true)}}><Search _Filter={filerList} /></div>
         {showList &&
-        <div className='flex flex-col justify-start items-center h-30'>
+        <div className='flex flex-col justify-start items-center h-30 bg-darken-100'>
           {users.map(user => (
-            <span className='w-[70%] h-10 bg-whiteSmoke hover:bg-blueStrong' key={gimmeRandom()} onClick={ () => {
+            <span className='w-[80%] h-10 bg-darken-100 hover:bg-darken-300' key={gimmeRandom()} onClick={ () => {
               console.log(user)
               if (!rooms.find(o => o.name === user.nickname)) {
                 socket.emit('start-dm', {reciverUserId: user.id})

@@ -99,6 +99,7 @@ export const setDmUsers = (users) => {
 		)
 	  } 
 	)
+	console.log(_users)
 	return (_users)
 }
 
@@ -223,7 +224,7 @@ export default function Chat() {
 				<RoomForm />
 				<JoinRoomForm />
 				<SearchDm currentUsers={ allUsers } setActiveUserConv={ setActiveUserConv } />
-				<UserInfo showUserInfos={showUserInfos} setShowUserInfos={setShowUserInfos} nickname={userInfoNick} currentUsers={ allUsers }/>
+				<UserInfo showUserInfos={showUserInfos} setShowUserInfos={setShowUserInfos} nickname={userInfoNick} currentUsers={ allUsers } setActiveUserConv={setActiveUserConv} setChatBoxMessages={setChatBoxMessages} setShowConv={setShowConv}/>
 			</Context.Provider>
 		</main>
 	)

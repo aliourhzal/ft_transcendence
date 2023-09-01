@@ -11,17 +11,25 @@ focus input after selecting room (DONE)
 userinfo popup after clicking on icon in roommembers (contain dm and profile url) (DONE)
 empty input after switching rooms (DONE)
 
-
-
-
 fix msg not displayed because of activeUserConv value not changing after selecting a room from dm (DONE BUT WIERD SOLUTION)
 
 
-open dm conv if already exist from room and from profile as well
+open dm conv if already exist from room and from profile as well (DONE)
+
+
+
+
+mark room with new message
+
+add block user to search dm
+
+room from public to protected
+
+request room data once page loads
 
 style users search + dont show current user
 
-fix msg sent twice after opening dm from search
+fix bug msg sent twice after opening dm from search
 
 add last msg to convbox
 
@@ -33,7 +41,7 @@ change grp image to fit with blueStrong and darken
 
 fix messages from room with the same name as user
 
-ask drari to remove prevent default from settings form so changes apply
+use id instead of nickname in every backend communication
 
 change edit room icons design
 

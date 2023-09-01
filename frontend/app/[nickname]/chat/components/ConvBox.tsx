@@ -16,12 +16,9 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
   const {rooms, setShowConv, setChatBoxMessages, msgInputRef} = useContext(Context)
 
   const handleClick = async () => {
-    setActiveUserConv(_obj => {
-      _obj = data;
-      return _obj
-    })
+    setActiveUserConv(data)
     setShowConv(true)
-    console.log(data)
+    console.log(rooms, "eowigbpqeubhp")
     // if (new_msg_notif.name == activeUserConv.name)
     //   notify_conv_msg(false, '')
     try {
