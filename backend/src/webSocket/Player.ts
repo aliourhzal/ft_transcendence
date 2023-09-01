@@ -93,11 +93,11 @@ export class Ball {
 	radius = 10;
 	velocityX = 5; //ball direction
 	velocityY = 5;
-	speed = 3;
+	speed = 7;
 	color = "WHITE";
 
 	resetForNewGame() {
-		this.speed = 3;
+		this.speed = 7;
 		this.velocityX = 5;
 		this.velocityY = 5;
 	}

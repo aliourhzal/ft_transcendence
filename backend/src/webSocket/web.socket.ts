@@ -104,7 +104,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			room.player2.resetBall(room.canvas.width / 2, room.canvas.height / 2);
 		}
 		room.player1.moveBall(room.ballDynamics.velocityX, room.ballDynamics.velocityY);
-		room.player2.moveBall(-room.ballDynamics.velocityX, -room.ballDynamics.velocityY)
+		room.player2.moveBall(-room.ballDynamics.velocityX, -room.ballDynamics.velocityY);
 		if(room.player1.ball.y - room.ballDynamics.radius < 0 || room.player1.ball.y + room.ballDynamics.radius > room.canvas.height) {
 			if (room.player1.ball.y - room.ballDynamics.radius < 0) {
 				room.player1.correctHorizantalColl(room.ballDynamics.radius + 1);

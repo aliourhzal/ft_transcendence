@@ -94,17 +94,20 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			ctx.drawImage(img, special.x - special.radius / 2, special.y - special.radius / 2, special.radius, special.radius);
 		}
 
-		function drawText(text: string, x: number, y: number){
+		function drawText(text: number, x: number, y: number){
 			(n === 3 ? ctx.fillStyle = "#000" : ctx.fillStyle = "#FFF")
 			ctx.font = "75px fantasy";
-			ctx.save();
 			if (canvas.height === 337) {
-				ctx.rotate(-90);
-				x = canvas.width - 100;
+				ctx.save();
+				ctx.textAlign = 'center';
+				ctx.rotate(Math.PI / 2);
+				ctx.fillText(text + '', x, y);
+				ctx.restore();
 			}
-			ctx.fillText(text, x, y);
-			ctx.restore();
+			else
+				ctx.fillText(text + '', x, y);
 		}
+
 		function drawRect(x, y, w, h, color){
 			ctx.fillStyle = color;
 			ctx.fillRect(x, y, w, h);
@@ -141,10 +144,10 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		//clear canvas
 		drawRect(0, 0, canvas.offsetWidth, canvas.offsetHeight, bgColor);
 		// draw the user score to the left
-		drawText(player.score, canvas.width / 4, canvas.height / 5);
+		drawText(player.score, canvas.height !== 337 ? canvas.width / 4 : canvas.height / 2, canvas.height !== 337 ? canvas.height / 5 : - canvas.width / 2 + 90);
 		drawNet();
 		// draw the COM score to the right
-		drawText(com.score,3 * canvas.width / 4,canvas.height / 5);
+		drawText(com.score, canvas.height !== 337 ? 3 * canvas.width / 4 : canvas.height / 2, canvas.height !== 337 ? canvas.height / 5 : - canvas.width / 2 - 50);
 		//draw player Paddle
 
 		drawRect(player.x, player.y, player.width, player.height, player.color);
@@ -220,19 +223,29 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		canvas.addEventListener("mousemove", getMousePos);
 		
 		socket.on("gameOver", data => {
+
+			function drawText(text: string, x: number, y: number){
+				(n === 3 ? ctx.fillStyle = "#000" : ctx.fillStyle = "#FFF");
+				ctx.font = "75px fantasy";
+				if (canvas.height === 337) {
+					ctx.font = "45px fantasy";
+					ctx.save();
+					ctx.textAlign = 'center';
+					ctx.rotate(Math.PI / 2);
+					ctx.fillText(text + '', x, y);
+					ctx.restore();
+				}
+				else
+					ctx.fillText(text + '', x, y);
+			}
 			ctx.fillStyle = bgColor;
-			ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-			if (n === 3)
-				ctx.fillStyle = "#000";
-			else
-				ctx.fillStyle = "#FFF";
-			ctx.font = "75px fantasy";
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
 			if (data === "draw")
-				ctx.fillText("Draw !!", (canvas.width / 2 - (canvas.width / 6)), canvas.height / 2);
+				drawText("Draw !!", canvas.height !== 337 ? canvas.width / 2 : canvas.height / 2, canvas.height !== 337 ? canvas.height / 2 : -canvas.width / 2);
 			else if (data === props.socket.id)
-				ctx.fillText("You Win !!", (canvas.width / 2 - (canvas.width / 6)), canvas.height / 2);
+				drawText("You Win !!", canvas.height !== 337 ? canvas.width / 2 : canvas.height / 2, canvas.height !== 337 ? canvas.height / 2 : -canvas.width / 2);
 			else
-				ctx.fillText("You Lose !!", (canvas.width / 2 - (canvas.width / 6)), canvas.height / 2);
+				drawText("You Lose !!", canvas.height !== 337 ? canvas.width / 2 : canvas.height / 2, canvas.height !== 337 ? canvas.height / 2 : -canvas.width / 2);
 		});
 		// listening to the window resize event
 		window.addEventListener("resize", () => {

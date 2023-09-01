@@ -131,7 +131,6 @@ export class UsersService {
 
 	async serveUploads(fileTarget: string) {
 		const category = fileTarget.split('.')[1];
-		console.log(fileTarget);
 		let userFile: any = undefined;
 		const assets = await readdir(`./uploads/${category}`);
 		
