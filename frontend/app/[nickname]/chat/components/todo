@@ -19,6 +19,10 @@ open dm conv if already exist from room and from profile as well (DONE)
 
 
 
+get blocked users on load to compare when looking dor dms
+
+style users search + dont show current user
+
 mark room with new message
 
 add block user to search dm
@@ -26,8 +30,6 @@ add block user to search dm
 room from public to protected
 
 request room data once page loads
-
-style users search + dont show current user
 
 fix bug msg sent twice after opening dm from search
 

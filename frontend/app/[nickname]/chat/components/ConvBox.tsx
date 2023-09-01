@@ -8,16 +8,18 @@ interface ConvBoxProps {
     data : conversation
     allUsers: any[]
     setActiveUserConv: any,
-    activeUserConv: any
+    activeUserConv: any,
+    convsFilter: any
 }
 
-const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, activeUserConv}) => {
+const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, activeUserConv, convsFilter}) => {
 
   const {rooms, setShowConv, setChatBoxMessages, msgInputRef} = useContext(Context)
 
   const handleClick = async () => {
     setActiveUserConv(data)
     setShowConv(true)
+    convsFilter('')
     console.log(rooms, "eowigbpqeubhp")
     // if (new_msg_notif.name == activeUserConv.name)
     //   notify_conv_msg(false, '')
@@ -48,7 +50,7 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
         </div>} */}
         <div className='w-20 h-20 flex items-center justify-center relative'>
           <img alt={data.name} width={45} height={45} className="rounded-full border-2 border-slate-300 w-30 h-30" src={data.photo} />
-          { rooms.find(o => o.name === data.name)?.type === 'DM' && allUsers.find(o => o.nickname === data.name).status === 'online' ?
+          { rooms.find(o => o.name === data.name)?.type === 'DM' && allUsers.find(o => o.nickname === data.name)?.status === 'online' ?
           <span className='rounded-full bg-green-400 opacity-90 border-2 border-green-500 w-2 h-2 absolute top-[65%] right-[15%]'></span>
           : ''}
         </div>
