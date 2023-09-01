@@ -94,10 +94,16 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			ctx.drawImage(img, special.x - special.radius / 2, special.y - special.radius / 2, special.radius, special.radius);
 		}
 
-		function drawText(text,x,y){
+		function drawText(text: string, x: number, y: number){
 			(n === 3 ? ctx.fillStyle = "#000" : ctx.fillStyle = "#FFF")
 			ctx.font = "75px fantasy";
+			ctx.save();
+			if (canvas.height === 337) {
+				ctx.rotate(-90);
+				x = canvas.width - 100;
+			}
 			ctx.fillText(text, x, y);
+			ctx.restore();
 		}
 		function drawRect(x, y, w, h, color){
 			ctx.fillStyle = color;
