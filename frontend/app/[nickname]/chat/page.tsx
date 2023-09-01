@@ -155,7 +155,7 @@ export default function Chat() {
 
 	const [rooms, setRooms] = useState<Room[]>([])
 
-	const [chatBoxMessages, setChatBoxMessages] = useState<{user:string, msg:string, roomName?: string, id?:string}[]>([])
+	const [chatBoxMessages, setChatBoxMessages] = useState<{user:string, msg:string, roomId?: string, id?:string}[]>([])
 
 	const [showForm, setShowForm] = useState(false)
 	const [showJoinForm, setShowJoinForm] = useState(false)
@@ -169,7 +169,7 @@ export default function Chat() {
 		name: '.',
 		photo: '',
 		lastmsg: '', 
-		id: gimmeRandom(),
+		id: 0,
 	})
 
 	const [showSearchUsersForm, setShowSearchUsersForm] = useState(false)

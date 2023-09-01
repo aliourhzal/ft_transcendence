@@ -24,7 +24,7 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
     // if (new_msg_notif.name == activeUserConv.name)
     //   notify_conv_msg(false, '')
     try {
-      await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomId:rooms.find(o => o.name === data.name).id}, {
+      await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomId:rooms.find(o => o.id === data.id).id}, {
         withCredentials: true,
         headers: {
           'Authorization': `Bearer ${getCookie('access_token')}`,
@@ -37,20 +37,20 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
       // alert(error)
       console.log(error)
     }
-    if (data.name != activeUserConv.name)
+    if (data.id != activeUserConv.id)
       msgInputRef.current.value = ''
     msgInputRef.current?.focus()
     // const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
   }
 
   return (
-    <div className={(activeUserConv.name === data.name ? 'bg-blueStrong' : 'bg-zinc-800 hover:bg-zinc-700') + " cursor-pointer convGroup z-0 focus:bg-blueStrong w-[70%] left-[15%] h-[100px] gap-4 relative my-3 rounded-md active:bg-blue-500 flex items-center justify-start"} onClick={handleClick} onFocus={handleClick}>
+    <div className={(activeUserConv.id === data.id ? 'bg-blueStrong' : 'bg-zinc-800 hover:bg-zinc-700') + " cursor-pointer convGroup z-0 focus:bg-blueStrong w-[70%] left-[15%] h-[100px] gap-4 relative my-3 rounded-md active:bg-blue-500 flex items-center justify-start"} onClick={handleClick} onFocus={handleClick}>
         {/* {data && <div className='absolute z-0 h-[100px] w-full flex flex-col items-end justify-center bg-transparent'>
           <span className='mx-5 animate-ping inline-flex w-2 h-2 rounded-full bg-blueStrong z-10 opacity-90'></span>
         </div>} */}
         <div className='w-20 h-20 flex items-center justify-center relative'>
           <img alt={data.name} width={45} height={45} className="rounded-full border-2 border-slate-300 w-30 h-30" src={data.photo} />
-          { rooms.find(o => o.name === data.name)?.type === 'DM' && allUsers.find(o => o.nickname === data.name)?.status === 'online' ?
+          { rooms.find(o => o.id === data.id)?.type === 'DM' && allUsers.find(o => o.nickname === data.name)?.status === 'online' ?
           <span className='rounded-full bg-green-400 opacity-90 border-2 border-green-500 w-2 h-2 absolute top-[65%] right-[15%]'></span>
           : ''}
         </div>

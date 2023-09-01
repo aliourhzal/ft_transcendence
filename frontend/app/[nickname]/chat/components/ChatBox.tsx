@@ -18,7 +18,7 @@ const ChatBox:React.FC<ChatBoxProps> = ( { activeUserConv } ) => {
     temp_rooms.find(o => o.name === activeUserConv.name)?.msgs.push({user:msg.user, msg:msg.msg})
     setRooms(temp_rooms)
     console.log(activeUserConv)
-    if (rooms.find(o => o.name === activeUserConv.name).id == msg.roomId) {
+    if (rooms.find(o => o.id === activeUserConv.id).id == msg.roomId) {
       console.log("lmfaoing")
       setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.msg, id:msg.idOfmsg}])
     }
@@ -42,8 +42,8 @@ const ChatBox:React.FC<ChatBoxProps> = ( { activeUserConv } ) => {
     <div className='z-0' ref={ref}>
         {chatBoxMessages.map ((BoxMessage) =>
           BoxMessage.user != 'bot' ?
-              (BoxMessage.user == userData.nickname ? <SelfChatBox msg={BoxMessage.msg} user={rooms.find(o => o.name === activeUserConv.name)?.users.find(o => o.nickName === BoxMessage.user)} key={gimmeRandom()}/>
-              : <OthersChatBox msg={BoxMessage.msg} user={rooms.find(o => o.name === activeUserConv.name)?.users.find(o => o.nickName === BoxMessage.user)} key={gimmeRandom()}/>)
+              (BoxMessage.user == userData.nickname ? <SelfChatBox msg={BoxMessage.msg} user={rooms.find(o => o.id === activeUserConv.id)?.users.find(o => o.nickName === BoxMessage.user)} key={gimmeRandom()}/>
+              : <OthersChatBox msg={BoxMessage.msg} user={rooms.find(o => o.id === activeUserConv.id)?.users.find(o => o.nickName === BoxMessage.user)} key={gimmeRandom()}/>)
           : <BotChatBox msg={BoxMessage.msg} key={gimmeRandom()} />
         )}
       </div>
