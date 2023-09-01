@@ -22,7 +22,9 @@ const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin,
 
     const [showOptions, setShowOptions] = useState(false)
 
-    const {setShowUserInfos, setUserInfoNick, userData, rooms} = useContext(Context)
+    const {setShowUserInfos, setUserInfoNick, userData, rooms, socket} = useContext(Context)
+
+    socket.emit('get-users', null)
 
   return (
     <div className='m-2 border-2 p-2 rounded-lg bg-slate-600 border-slate-500 w-full flex flex-col items-center justify-center' key={user.id}>
@@ -47,7 +49,8 @@ const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin,
                 {isAdmin(info.room.users.find(o => o.nickName === user.nickName)) && !isOwner(info.room.users.find(o => o.nickName === user.nickName)) ? <AiFillStar/> : ''}
             </div>
             <div className='w-10 font-extrabold flex items-center justify-center'>
-                {user.nickName != info.userData.nickname && isAdmin(info.room.users.find(o => o.nickName === userData.nickname)) ?
+                {user.nickName != info.userData.nickname && isAdmin(info.room.users.find(o => o.nickName === userData.nickname))
+                    && !isOwner(info.room.users.find(o => o.nickName === user.nickName)) ?
                      <IoIosArrowDown size={20} fontWeight={'bold'} className={'font-extrabold transition duration-300 delay-130 ' +
                     (showOptions ? 'rotate-180' : '')}/> : ''}
             </div>

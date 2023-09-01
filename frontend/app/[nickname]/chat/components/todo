@@ -22,6 +22,8 @@ fix messages from room with the same name as user (DONE)
 
 
 
+change edit room icons design
+
 get blocked users on load to compare when looking for dms
 
 mark room with new message
@@ -40,13 +42,14 @@ check cookies after msg sent
 
 change grp image to fit with blueStrong and darken
 
-
 use id instead of nickname in every backend communication
-
-change edit room icons design
 
 add notifications for every action
 
 add ? in every room.find
 
 display muted once ( or in worst case disable input )
+
+ask ali for the popup in top for errors
+
+update online status realtime

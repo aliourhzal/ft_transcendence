@@ -3,9 +3,19 @@ import { Context, getUsersInfo, setDmUsers } from '../page'
 import AddedUsersForm from "./addedUsersForm"
 import Popup from "./Popup"
 
-const RoomForm = () => {
+interface RoomFormProps {
+    allUsers: any[],
+    showForm: boolean,
+    setShowForm: any,
+    setConvs: any,
+    set_room_created: any,
+    setShowAlert: any,
+    setAlertText: any,
+}
+
+const RoomForm:React.FC<RoomFormProps> = ( { allUsers, showForm, setShowForm, setConvs, set_room_created, setShowAlert, setAlertText } ) => {
      
-    const {showForm, setShowForm, socket, setConvs, set_room_created, rooms, setRooms, userData} = useContext(Context)
+    const {socket, rooms, setRooms, userData} = useContext(Context)
 
     const [roomName, setName] = useState('')
     const [users, setUsers] = useState<string[]>([])
@@ -67,9 +77,28 @@ const RoomForm = () => {
         console.log(rooms)
     }, [])
     
+    socket.emit('get-users', null)
+
+    const unvalidUsers = () => {
+        var _unvalidUsers: string[] = []
+        users.map(user => {
+            if (!allUsers.find(o => o.nickname === user))
+                _unvalidUsers.push(user)
+        })
+        return _unvalidUsers
+    }
+
     const confirmForm = async (e) => {
         e.preventDefault()
-        if (roomName != '' && users.length) {
+        
+        const _unvalidUsers = unvalidUsers()
+
+        if (_unvalidUsers.length) {
+            setAlertText('unvalid users : ' + _unvalidUsers)
+            setShowAlert(true)
+        }
+
+        else if (roomName != '' && users.length) {
             hideForm()
             socket.emit('create-room', {roomName:roomName, users:users, type:roomType, password:pass})
         }
@@ -130,7 +159,7 @@ const RoomForm = () => {
                 </div>}
 
                 <button type="submit" form="roomform" className="w-auto text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" onClick={confirmForm} disabled={roomName != '' && users.length ? false : true} >Submit</button>
-                    </form>
+            </form>
         </Popup>
     )
 }

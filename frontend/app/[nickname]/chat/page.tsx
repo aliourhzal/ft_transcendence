@@ -15,6 +15,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useCookies } from "react-cookie";
 import "./style.css"
 import UserInfo from "./components/UserInfo";
+import MyAlert from "./components/MyAlert";
 
 export interface conversation {
 	readonly name: string,
@@ -207,8 +208,12 @@ export default function Chat() {
         lastChildElement?.scrollIntoView({ behavior: 'smooth', block: 'end' });
     };
 
+	const [showAlert, setShowAlert] = useState(false)
+	const [alertText, setAlertText] = useState('')
+
 	return (
-		<main className='scrollbar-none select-none h-full w-full'>
+		<main className='scrollbar-none select-none h-full w-full relative'>
+			{showAlert && <MyAlert setShowAlert={setShowAlert} text={alertText}/>}
 			<Notification newNotif={newNotif} setNewNotif={setNewNotif} notifications={notifications} notify={notify} setNotify={setNotify}/>
 			<Context.Provider value={{alertNewMessage, setAlertNewMessage, ref, showConv, setShowConv, socket,
 				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm,
@@ -221,7 +226,7 @@ export default function Chat() {
 					</div>
 					<Conversation allUsers={allUsers} activeUserConv={activeUserConv} />
 				</div>
-				<RoomForm />
+				<RoomForm setShowAlert={setShowAlert} setAlertText={setAlertText} allUsers={allUsers} setConvs={setConvs} set_room_created={set_room_created} showForm={showForm} setShowForm={setShowForm} />
 				<JoinRoomForm />
 				<SearchDm currentUsers={ allUsers } setActiveUserConv={ setActiveUserConv } />
 				<UserInfo showUserInfos={showUserInfos} setShowUserInfos={setShowUserInfos} nickname={userInfoNick} currentUsers={ allUsers } setActiveUserConv={setActiveUserConv} setChatBoxMessages={setChatBoxMessages} setShowConv={setShowConv}/>

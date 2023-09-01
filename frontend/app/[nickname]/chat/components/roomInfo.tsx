@@ -88,19 +88,24 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     <SocketComponent setRooms={setRooms} setInfoUpdate={setInfoUpdate} setConvs={setConvs} _notification={_notification}/>
     {(info.room && info.show) &&
         <Popup isOpen={info.show} modalAppearance={hide}>
-            <div className='flex items-end justify-center -mt-8'>
+            <div className='flex items-center justify-center gap-4 -mt-8'>
+                <h1 className='bg-blueStrong py-1 px-3 absolute top-0 font-extrabold text-sm rounded-t-lg rounded-b-full'>{info.room.name.substring(0, 10)}</h1>
                 {isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) &&
-                    <AiOutlineUsergroupAdd color={showUsersForm ? 'rgb(41 120 242)' : ''} cursor={'pointer'} className='hover:text-whiteSmoke' onClick={ () => {
-                        setShowUsersForm(old => !old)
-                        showRoomEditForm ? setshowRoomEditForm(false) : ''
-                    }}/>
+                    <div className='flex items-center p-3 bg-slate-500 rounded-full hover:scale-110 hover:text-whiteSmoke cursor-pointer'>
+                        <AiOutlineUsergroupAdd size={19} color={showUsersForm ? 'rgb(41 120 242)' : ''} cursor={'pointer'} className='hover:text-whiteSmoke' onClick={ () => {
+                            setShowUsersForm(old => !old)
+                            showRoomEditForm ? setshowRoomEditForm(false) : ''
+                        }}/>
+                    </div>
                 }
                 <Avatar pointer src={info.room.photo} size={"xl"} zoomed text={info.room.name} bordered color={"gradient"} alt={info.room.name} className="w-auto h-auto"></Avatar>
                 {isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) &&
-                    <FiEdit3  color={showRoomEditForm ? 'rgb(41 120 242)' : ''} cursor={'pointer'} className='hover:text-whiteSmoke' onClick={ () => {
+                    <div className='flex items-center p-3 bg-slate-500 rounded-full hover:scale-110 hover:text-whiteSmoke cursor-pointer' onClick={ () => {
                         setshowRoomEditForm(old => !old)
                         showUsersForm ? setShowUsersForm(false) : ''
-                    }}/>
+                    }}>
+                        <FiEdit3 size={19} color={showRoomEditForm ? 'rgb(41 120 242)' : ''} cursor={'pointer'} className='hover:text-whiteSmoke'/>
+                    </div>
                 }
             </div>
             {showUsersForm && <NewRoomUsers addUsers={addUsersToRoom} />}

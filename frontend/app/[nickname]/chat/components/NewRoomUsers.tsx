@@ -23,7 +23,7 @@ const NewRoomUsers:React.FC<NewRoomUsersProps> = ( {addUsers} ) => {
 
   return (
     <>
-        <div className="flex relative z-0 w-full mb-6 group">
+        <div className="flex relative z-0 w-full my-4 group">
             <form noValidate onSubmit={(e) => { addUsers(e, newUsers) }} className='w-full flex justify-between'>
                 <input autoComplete='off' value={newUser} type="text" name="user" id="user" className="text-gray-300 text-xs lg:text-base block py-2.5 px-0 w-full bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required 
                 onChange={
