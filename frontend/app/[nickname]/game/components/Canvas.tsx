@@ -27,7 +27,7 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 	const player = new Player(0, 0, "#2978F2");
 	const com = new Player(0, 0, "#fff");
 	let special = new Special(props.specials);
-	let getSmaller = 0;
+	let phoneSize = false;
 
 	const net = {
 		x : 0,
@@ -94,10 +94,13 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			ctx.drawImage(img, special.x - special.radius / 2, special.y - special.radius / 2, special.radius, special.radius);
 		}
 
-		function drawText(text: number, x: number, y: number){
+		function drawScore(text: number, x: number, y: number, player: boolean){
 			(n === 3 ? ctx.fillStyle = "#000" : ctx.fillStyle = "#FFF")
 			ctx.font = "75px fantasy";
-			if (canvas.height === 337) {
+			phoneSize && (x = canvas.height / 2);
+			phoneSize && player && (y = - canvas.width / 2 + 90); player
+			phoneSize && !player && (y = - canvas.width / 2 - 50); com
+			if (phoneSize) {
 				ctx.save();
 				ctx.textAlign = 'center';
 				ctx.rotate(Math.PI / 2);
@@ -144,10 +147,10 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		//clear canvas
 		drawRect(0, 0, canvas.offsetWidth, canvas.offsetHeight, bgColor);
 		// draw the user score to the left
-		drawText(player.score, canvas.height !== 337 ? canvas.width / 4 : canvas.height / 2, canvas.height !== 337 ? canvas.height / 5 : - canvas.width / 2 + 90);
+		drawScore(player.score, canvas.width / 4, canvas.height / 5, true);
 		drawNet();
 		// draw the COM score to the right
-		drawText(com.score, canvas.height !== 337 ? 3 * canvas.width / 4 : canvas.height / 2, canvas.height !== 337 ? canvas.height / 5 : - canvas.width / 2 - 50);
+		drawScore(com.score, 3 * canvas.width / 4, canvas.height / 5, false);
 		//draw player Paddle
 
 		drawRect(player.x, player.y, player.width, player.height, player.color);
@@ -219,6 +222,8 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		ball.setRadius(canvas.width * 10 / 800);
 		special.radius = canvas.width * 20 / 800;
 		StartGame(canvas, ctx);
+		if (canvas.height === 337)
+			phoneSize = true;
 		// listening to the mouse
 		canvas.addEventListener("mousemove", getMousePos);
 		
@@ -227,10 +232,12 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			function drawText(text: string, x: number, y: number){
 				(n === 3 ? ctx.fillStyle = "#000" : ctx.fillStyle = "#FFF");
 				ctx.font = "75px fantasy";
+				phoneSize && (x = canvas.height / 2);
+				phoneSize && (y = -canvas.width / 2);
+				ctx.textAlign = 'center';
 				if (canvas.height === 337) {
 					ctx.font = "45px fantasy";
 					ctx.save();
-					ctx.textAlign = 'center';
 					ctx.rotate(Math.PI / 2);
 					ctx.fillText(text + '', x, y);
 					ctx.restore();
@@ -241,11 +248,11 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			ctx.fillStyle = bgColor;
 			ctx.fillRect(0, 0, canvas.width, canvas.height);
 			if (data === "draw")
-				drawText("Draw !!", canvas.height !== 337 ? canvas.width / 2 : canvas.height / 2, canvas.height !== 337 ? canvas.height / 2 : -canvas.width / 2);
+				drawText("Draw !!", canvas.width / 2, canvas.height / 2);
 			else if (data === props.socket.id)
-				drawText("You Win !!", canvas.height !== 337 ? canvas.width / 2 : canvas.height / 2, canvas.height !== 337 ? canvas.height / 2 : -canvas.width / 2);
+				drawText("You Win !!", canvas.width / 2, canvas.height / 2);
 			else
-				drawText("You Lose !!", canvas.height !== 337 ? canvas.width / 2 : canvas.height / 2, canvas.height !== 337 ? canvas.height / 2 : -canvas.width / 2);
+				drawText("You Lose !!", canvas.width / 2, canvas.height / 2);
 		});
 		// listening to the window resize event
 		window.addEventListener("resize", () => {
@@ -257,6 +264,10 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			com.x = canvas.width - com.width;
 			ball.setRadius(canvas.width * 10 / 800);
 			special.radius = canvas.width * 20 / 800;
+			if (canvas.height === 337)
+				phoneSize = true;
+			else
+				phoneSize = false;
 		});
 		//change player Paddle According to Mouse Position
 		function getMousePos(evt: { clientY: number, clientX: number }){
