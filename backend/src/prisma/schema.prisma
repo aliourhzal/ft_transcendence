@@ -22,6 +22,8 @@ model User {
 	level			            Float
 	grade			            String
 	status						String
+    twoFactorAuth               Boolean     @default(false)
+    AsciiSecretQr               String?
 	
 	userFriends                 User[]              @relation("friends")
     friendOfUser                User[]              @relation("friends")

@@ -5,26 +5,29 @@ import { UniversalData } from "../../contexts/UniversalData";
 import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export function FriendBarColumns(props: any)
 {
 	return (
-		<div /*style={ {animation: "scroll 40s linear infinite",}} className="animate flex flex-row gap-1 h-full items-center cursor-pointer  rounded-md"*/
-			className="w-full flex flex-col items-center cursor-pointer"
-			onClick={()=>{props.router.push('/' + props.nickname)}}>
-				<div className="relative w-[60px] aspect-square ">
-					<img className="w-[full] h-full rounded-full" src={props.src} alt="f_img" />
-					{
-						props.status === 'online' &&
-						<>
-							<span className="animate-ping h-[15px] w-[15px] rounded-full bg-green-500 absolute bottom-0 right-0"></span>
-							<span className="h-[15px] w-[15px] rounded-full bg-green-500 absolute bottom-0 right-0"></span>
-						</>
+		<Link href={`http://127.0.0.1:3001/${props.nickname}`}>
+			<div /*style={ {animation: "scroll 40s linear infinite",}} className="animate flex flex-row gap-1 h-full items-center cursor-pointer  rounded-md"*/
+				className="w-full flex flex-col items-center cursor-pointer"
+				>
+					<div className="relative w-[60px] aspect-square ">
+						<img className="w-[full] h-full rounded-full" src={props.src} alt="f_img" />
+						{
+							props.status === 'online' &&
+							<>
+								<span className="animate-ping h-[15px] w-[15px] rounded-full bg-green-500 absolute bottom-0 right-0"></span>
+								<span className="h-[15px] w-[15px] rounded-full bg-green-500 absolute bottom-0 right-0"></span>
+							</>
 
-					}
-				</div>
-				<h3 className="w-lg text-white font-medium mt-1">{props.nickname}</h3>
-		</div>
+						}
+					</div>
+					<h3 className="w-lg text-white font-medium mt-1">{props.nickname}</h3>
+			</div>
+		</Link>
 	);
 }
 

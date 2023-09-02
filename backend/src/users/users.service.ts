@@ -7,6 +7,7 @@ import { parse } from 'path';
 import { createReadStream} from 'fs';
 import { readdir } from 'fs/promises';
 import { UserData } from 'src/utils/userData.interface';
+import { twoFactorAuth } from 'src/QrCode/qr.services';
  
 @Injectable()
 export class UsersService {
@@ -391,6 +392,39 @@ export class UsersService {
 			})
 		} catch(err) {
 			console.log(`${id} not found!!`);
+		}
+	}
+
+	async	updateUserQr(id: string, secret: string)
+	{
+		try{
+			await this.prisma.user.update({
+				where: {
+					id
+				},
+				data: {
+					twoFactorAuth: true,
+					AsciiSecretQr: secret
+				}
+			});
+		}catch(err){
+			console.log("failed to set Qr true !!!")
+		}
+	}
+
+	async	twoFactorOff(id: string)
+	{
+		try{
+			await this.prisma.user.update({
+				where: {
+					id
+				},
+				data: {
+					twoFactorAuth: false
+				}
+			});
+		}catch(err){
+			console.log("failed to turn Off Qr validation !")
 		}
 	}
 }
