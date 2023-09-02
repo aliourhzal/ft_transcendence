@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react'
 import Popup from './Popup'
 
-import { AiOutlineUsergroupAdd } from "react-icons/ai";
-import { FiEdit3 } from "react-icons/fi";
+import { AiOutlineUsergroupAdd } from "react-icons/Ai";
+import { FiEdit3 } from "react-icons/Fi";
 
 import { UniversalData } from '../../../contexts/UniversalData';
 import { Avatar } from '@nextui-org/react';
