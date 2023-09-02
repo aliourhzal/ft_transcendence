@@ -18,7 +18,7 @@ const SearchDm:React.FC<SearchDmProps> = ( { currentUsers, setActiveUserConv, sh
   const [showList, setShowList] = useState(false)
   const [users, setUsers] = useState([...currentUsers])
 
-  console.log(users)
+  // console.log(users)
   
   const filerList = (needle = '') => {
     if (needle === '')

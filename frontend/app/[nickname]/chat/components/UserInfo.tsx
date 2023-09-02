@@ -55,6 +55,14 @@ const UserInfo:React.FC<UserInfoProps> = ( {showUserInfos, setShowUserInfos, nic
                     setShowUserInfos(false)
                     if (!rooms.find(o => o.name === nickname)) {
                         socket.emit('start-dm', {reciverUserId: currentUsers.find(o => o.nickname === nickname).id})
+                        setActiveUserConv({
+                            name: '.',
+                            photo: '',
+                            lastmsg: '', 
+                            id: 0,
+                        })
+                        setChatBoxMessages([])
+                        setShowConv(false)
                         // setActiveUserConv(rooms.find(o => o.name === user.nickname))
                       }
                       else {

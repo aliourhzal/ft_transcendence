@@ -19,30 +19,31 @@ style users search + dont show current user (DONE)
 add block user to search dm (DONE)
 fix messages from room with the same name as user (DONE)
 change edit room icons design (DONE)
+phone responsiveness (DONE)
 
 
+
+send new message to all users in room (backend)
+
+room from public to protected (backend)
+
+request room data once page loads (backend)
+
+get blocked users on load to compare when looking for dms (back and front)
+
+use id instead of nickname in every backend communication
 
 fix search dm bug
 
-get blocked users on load to compare when looking for dms
-
 mark room with new message
-
-room from public to protected
-
-request room data once page loads
 
 fix bug msg sent twice after opening dm from search
 
-add last msg to convbox
-
-phone div slide
+add last msg to convbox (in progress)
 
 check cookies after msg sent
 
 change grp image to fit with blueStrong and darken
-
-use id instead of nickname in every backend communication
 
 add notifications for every action
 

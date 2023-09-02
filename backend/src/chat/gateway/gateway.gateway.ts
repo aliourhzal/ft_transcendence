@@ -29,6 +29,7 @@ import { RenameRoom } from 'src/dto/renameRoom.dto';
 import { RemoveRoomPassword } from 'src/dto/removeRoomPassword.dto';
 import { Unmute } from 'src/dto/unmute.dto';
 import { DirectMessages } from 'src/dto/directMessages.dto';
+import { getRooms } from 'src/dto/getRooms';
  
 
 @WebSocketGateway(3004)
@@ -918,7 +919,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             } 
         }
 
-
+        
+        
         @SubscribeMessage('get-users') 
         async getAllusers( @ConnectedSocket() socket: Socket) 
         {
@@ -929,7 +931,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 if (token) 
                 {
                     await this.utils.verifyToken(token); // // if has error will catch it
-
+                    
                     this.server.to(socket.id).emit("all-users", {allUsers: await this.utils.getAllUsers()}); 
                 }
             }
@@ -938,39 +940,67 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 console.log(error)
             } 
         }
-
-
+        
+        
+        
+        //this.server.to(socket.id).emit("list-rooms",{messages});
         /*-------------------------------------------------on connect use this utils function--------------------------------------------------------- */
         
         async checkOnConnect(@ConnectedSocket() socket: Socket , currentUserId :string)
         {
             const existingUser = await this.utils.getUserId([currentUserId]); // if current user in db
-
+            
             if(existingUser.error)
             {
                 return {error : 'user not found.'};
             } 
-
+            
             this.soketsId.push({userId : existingUser.existingUser[0], socketIds:socket.id})
-
-           
+            
+            
             const rooms = await this.utils.getRoomsForUser(existingUser.existingUser[0]); // all rooms who this user is member into it
-
-             
+            
+            
             let messages:any[] = [];
-
-
+            
+            
             for(let i = 0; i < rooms.length; i++)
             {
                 messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i].room.id) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
             }
             
             this.server.to(socket.id).emit("list-rooms",{messages});  //  evry client will connected will display the rooms who is member into 
-
+            
             this.server.to(socket.id).emit("all-users", {allUsers: await this.utils.getAllUsers()}); 
             // emmit all users infos
             return {ok : 'connected from chat'}
+            
+        }
+        
+        @SubscribeMessage('get-rooms')
+        async getAllRooms(@MessageBody() dto:getRooms , @ConnectedSocket() socket: Socket) 
+        {
+            console.log(dto)
+            // await this.utils.getUserId([dto.userId]); // if current user in db
 
+            // if(existingUser.error)
+            // {
+            //     return {error : 'user not found.'};
+            // }
+
+           
+            // const rooms = await this.utils.getRoomsForUser(existingUser.existingUser[0]); // all rooms who this user is member into it
+
+             
+            // let messages:any[] = [];
+
+
+            // for(let i = 0; i < rooms.length; i++)
+            // {
+            //     messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i].room.id) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
+            // }
+            
+            // this.server.to(socket.id).emit("list-rooms",{messages}); 
         }
 
         async emmiteEventesToUsers(@ConnectedSocket() socket: Socket , roomId : string , event : string , data : object , removedUser ?: any)

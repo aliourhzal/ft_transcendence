@@ -39,7 +39,7 @@ const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin,
                     }
                 }}>
                 <div className='flex items-center gap-2 justify-center'>
-                    { rooms.find(o => o.name === user.nickName)?.type === 'DM' && allUsers.find(o => o.nickname === user.nickName).status === 'online' ?
+                    { allUsers.find(o => o.nickname === user.nickName).status === 'online' && userData.nickname != user.nickName ?
                     <span className='rounded-full bg-green-400 opacity-90 border-2 border-green-500 w-2 h-2 -ml-1'></span>
                     : <span className='w-2 h-2 -ml-1'></span>}
                     <Avatar bordered color={"primary"} pointer zoomed src={info.room.users.find(o => o.nickName === user.nickName).photo} />

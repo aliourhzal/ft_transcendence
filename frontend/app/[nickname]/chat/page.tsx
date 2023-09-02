@@ -133,7 +133,7 @@ export default function Chat() {
 		const dmId = searchParams.get('id');
 		if (dmId)
 			socket.emit('start-dm', {reciverUserId: dmId})
-		// socket.on('all-users', (res) => {setAllUsers(res.allUsers)})
+		socket.emit('get-rooms', userData.id)
 	}, [])
 	// const [new] = useState()
 
