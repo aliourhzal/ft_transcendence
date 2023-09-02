@@ -4,7 +4,8 @@ import { io } from "socket.io-client";
 import { useEffect, useState, createContext, useContext, useRef } from 'react';
 import Conversation from './components/conversation';
 import RoomForm from './components/createRoom';
-import { getCookie, userDataContext } from "../layout";
+import { userDataContext } from "../../contexts/UniversalData";
+import { getCookie } from "../layout"
 import ConvList from "./components/ConvList";
 import JoinRoomForm from "./components/joinRoom";
 import ButtomButtons from "./components/ButtomButtons";
