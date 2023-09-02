@@ -13,7 +13,7 @@ const Search:React.FC<SearchProps> = ( {_Filter, type} ) => {
 
     return (
         <div className='h-[80px] flex items-center justify-center w-[100%] relative'>
-            {type === 'conv' && <img className='absolute left-16 top-9' alt='search' src='/images/loupe.svg' width={20} height={20}/>}
+            {type === 'conv' && <img className='absolute left-[14%] top-[45%]' alt='search' src='/images/loupe.svg' width={20} height={20}/>}
             <input
                 onFocus={e => e.target.placeholder = ''}
                 onBlur={e => {

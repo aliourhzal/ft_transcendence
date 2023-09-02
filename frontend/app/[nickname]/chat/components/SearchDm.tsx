@@ -5,13 +5,15 @@ import Search from './search'
 import { Avatar } from '@nextui-org/react'
 
 interface SearchDmProps {
-  currentUsers: any
+  currentUsers: any[]
   setActiveUserConv: any
+  showSearchUsersForm: any
+  setShowSearchUsersForm: any
 }
 
-const SearchDm:React.FC<SearchDmProps> = ( { currentUsers, setActiveUserConv } ) => {
+const SearchDm:React.FC<SearchDmProps> = ( { currentUsers, setActiveUserConv, showSearchUsersForm, setShowSearchUsersForm } ) => {
 
-  const {showSearchUsersForm, setShowSearchUsersForm, socket, rooms, setChatBoxMessages, setShowConv, userData} = useContext(Context)
+  const {socket, rooms, setChatBoxMessages, setShowConv, userData} = useContext(Context)
 
   const [showList, setShowList] = useState(false)
   const [users, setUsers] = useState([...currentUsers])
@@ -20,12 +22,13 @@ const SearchDm:React.FC<SearchDmProps> = ( { currentUsers, setActiveUserConv } )
   
   const filerList = (needle = '') => {
     if (needle === '')
-      setUsers(currentUsers)
+      setUsers([...currentUsers])
     else
-      setUsers(currentUsers.filter((user) => (user.nickname.startsWith(needle))))
+      setUsers([...currentUsers.filter((user) => (user.nickname.startsWith(needle)))])
   }
 
   const hide = () => {
+      console.log(users)
       setShowSearchUsersForm(false)
       setShowList(false)
       filerList()

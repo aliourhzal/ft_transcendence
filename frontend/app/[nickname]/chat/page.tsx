@@ -117,23 +117,24 @@ export interface _Notification {
 	type: string
 }
 
-let allUsers: any[] = []
-
-socket.on('all-users', (res) => {allUsers = res.allUsers})
-
 export default function Chat() {
-
 	const [cookies, setCookie, removeCookie] = useCookies();
-
+	
 	const searchParams = useSearchParams();
+	
+	const [allUsers, setAllUsers] = useState<any[]>([])
+
+
 	useEffect( () => {
+		console.log('test')
 		const dmId = searchParams.get('id');
 		if (dmId)
 			socket.emit('start-dm', {reciverUserId: dmId})
+		// socket.on('all-users', (res) => {setAllUsers(res.allUsers)})
 	}, [])
 	// const [new] = useState()
 
-	useEffect ( () => {
+	// useEffect ( () => {
 		// setInterval(() => {
 		// 	console.log("---->", cookies.access_token)
 		// }, 5000);
@@ -145,7 +146,7 @@ export default function Chat() {
 		// 	const router = useRouter()
 		// 	router.push('/')
 		// }
-	}, [cookies.access_token])
+	// }, [cookies.access_token])
 
 	const ref = useRef(null);
 	const msgInputRef = useRef(null);
@@ -211,6 +212,17 @@ export default function Chat() {
 	const [showAlert, setShowAlert] = useState(false)
 	const [alertText, setAlertText] = useState('')
 
+	const [deviceType, setDeviceType] = useState('normal')
+    useEffect( () => {
+      typeof window != 'undefined' ? (window.innerWidth <= 990 ? setDeviceType('small') : setDeviceType('normal')) : setDeviceType('normal')
+      typeof window != 'undefined' ? window.onresize = () => {
+        if (window.innerWidth <= 990)
+          setDeviceType('small')
+        else
+          setDeviceType('normal')
+      } : setDeviceType('normal')
+    } , [])
+
 	return (
 		<main className='scrollbar-none select-none h-full w-full relative'>
 			{showAlert && <MyAlert setShowAlert={setShowAlert} text={alertText}/>}
@@ -220,15 +232,16 @@ export default function Chat() {
 				set_room_created, room_created, rooms, setRooms, showSearchUsersForm, setShowSearchUsersForm, scrollToBottom, _notification,
 				convs, setConvs, setShowUserInfos, setUserInfoNick, msgInputRef}}>
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200">
-					<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">
+					<div className={"flex flex-col items-center justify-center text-sm lg:text-base h-[90vh] text-center " +
+					(deviceType === 'normal' ? 'w-[calc(90%/2)]' : 'w-[100%]')}>
 						<ConvList allUsers={allUsers} activeUserConv={activeUserConv} setActiveUserConv={setActiveUserConv} />
 						<ButtomButtons />
 					</div>
-					<Conversation allUsers={allUsers} activeUserConv={activeUserConv} />
+					<Conversation allUsers={allUsers} activeUserConv={activeUserConv} deviceType={deviceType} />
 				</div>
 				<RoomForm setShowAlert={setShowAlert} setAlertText={setAlertText} allUsers={allUsers} setConvs={setConvs} set_room_created={set_room_created} showForm={showForm} setShowForm={setShowForm} />
 				<JoinRoomForm />
-				<SearchDm currentUsers={ allUsers } setActiveUserConv={ setActiveUserConv } />
+				<SearchDm setShowSearchUsersForm={setShowSearchUsersForm} showSearchUsersForm={showSearchUsersForm} currentUsers={ allUsers } setActiveUserConv={ setActiveUserConv } />
 				<UserInfo showUserInfos={showUserInfos} setShowUserInfos={setShowUserInfos} nickname={userInfoNick} currentUsers={ allUsers } setActiveUserConv={setActiveUserConv} setChatBoxMessages={setChatBoxMessages} setShowConv={setShowConv}/>
 			</Context.Provider>
 		</main>
