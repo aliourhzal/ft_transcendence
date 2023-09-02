@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { BiUserX } from 'react-icons'
+import { BiUserX } from 'react-icons/bi'
 
 interface BanProps {
     banUser: any

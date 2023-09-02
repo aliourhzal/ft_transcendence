@@ -13,26 +13,6 @@ const ChatBox:React.FC<ChatBoxProps> = ( { activeUserConv } ) => {
   
   const {scrollToBottom, ref, socket, chatBoxMessages, setChatBoxMessages, userData, rooms, setRooms} = useContext(Context)
 
-  const addmsg = (msg) => {
-    setRooms(_rooms => {
-      _rooms.find(o => o.name === activeUserConv.name)?.msgs.push({user:msg.user, msg:msg.msg})
-      console.log(_rooms)
-      return _rooms
-    })
-    console.log(activeUserConv)
-    if (rooms.find(o => o.id === activeUserConv.id).id == msg.roomId) {
-      console.log("lmfaoing")
-      setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.msg, id:msg.idOfmsg}])
-    }
-  }
-  
-  useEffect( () => {
-    // if (msg_sent) {
-        socket.on('add-message', addmsg)
-        return () => socket.off('add-message', addmsg)
-    // }
-	},[chatBoxMessages])
-
   // let temp = document.getElementById('chatbox')
 
   useEffect ( () => {

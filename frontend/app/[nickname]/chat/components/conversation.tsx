@@ -11,17 +11,18 @@ interface ConversationProps {
     setShowConv: any
     showConv: boolean
     setActiveUserConv: any,
+    setAlertText: any,
+    setShowAlert: any
 }
 
-const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, deviceType, setShowConv, showConv, setActiveUserConv } ) => {
-
+const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, deviceType, setShowConv, showConv, setActiveUserConv, setShowAlert, setAlertText } ) => {
     
     const [showInfo, setShowInfo] = useState(false)
     
     const [msg_sender, set_msg_sender] = useState('')
     
     const {setAlertNewMessage, scrollToBottom, chatBoxMessages, rooms, socket,
-        userData, setChatBoxMessages, setShowUserInfos, setUserInfoNick, msgInputRef} = useContext(Context)
+        userData, setChatBoxMessages, setShowUserInfos, setUserInfoNick, msgInputRef, setRooms, setConvs} = useContext(Context)
 
     const sendMessage = (e) => {
         e.preventDefault()
@@ -49,11 +50,31 @@ const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, d
         }
     }, [chatBoxMessages])
 
-    // if (showConv) {
+    const addmsg = (msg) => {
+        console.log("**********", msg)
+        setRooms(_rooms => {
+          _rooms.find(o => o.id === msg.roomId)?.msgs.push({user:msg.user, msg:msg.msg})
+          console.log(_rooms)
+          setConvs(_rooms)
+          return _rooms
+        })
+        console.log(activeUserConv)
+        if (rooms.find(o => o.id === activeUserConv.id)?.id == msg.roomId) {
+          console.log("lmfaoing")
+          setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.msg, id:msg.idOfmsg}])
+        }
+    }
+    
+    useEffect( () => {
+    // if (msg_sent) {
+        socket.on('add-message', addmsg)
+        return () => socket.off('add-message', addmsg)
+    // }
+    },[chatBoxMessages])
+
     return (
-        // deviceType === 'normal' ?
         <div className={'flex flex-col items-center justify-center rounded-3xl ' + (deviceType === 'normal' ? 'h-[90vh] w-[calc(120%/2)] ' : ' h-[100%] w-[100%] absolute ' +  (showConv ? 'bg-darken-200' : 'hidden'))}>
-            {activeUserConv.name && <RoomInfo allUsers={allUsers} room={rooms.find(o => o.id === activeUserConv.id)} setShow={setShowInfo} show={showInfo} userData={userData} />}
+            {activeUserConv.name && <RoomInfo setAlertText={setAlertText} setShowAlert={setShowAlert} allUsers={allUsers} room={rooms.find(o => o.id === activeUserConv.id)} setShow={setShowInfo} show={showInfo} userData={userData} />}
             { showConv && <>
                 <div className="h-[80px] z-0 flex items-center justify-between text-white pl-10 py-4 w-[100%] border-blue-gray-200 text-blue-gray-700 outline border-b outline-0 placeholder-shown:border-blue-gray-200 focus:outline-0">
                     <div className=' min-w-[150px] bg-zinc-800 rounded-l-3xl pr-2 rounded-r-xl flex items-center gap-3 justify-start w-auto h-auto cursor-pointer hover:underline' onClick={() => {

@@ -18,12 +18,14 @@ interface RoomInfoProps {
     show: boolean
     userData: UniversalData
     allUsers: any[]
+    setAlertText: any,
+    setShowAlert: any
 }
 
 
 const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     
-    const {setConvs, socket, setRooms, _notification} = useContext(Context)
+    const {setConvs, socket, setRooms, _notification, userData} = useContext(Context)
 
     const [infoUpdate, setInfoUpdate] = useState(false)
 
@@ -46,13 +48,26 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         return false
     }
 
-
+    const unvalidUsers = (users) => {
+        var _unvalidUsers: string[] = []
+        users.map(user => {
+            if (!info.allUsers.find(o => o.nickname === user) || user === userData.nickname)
+                _unvalidUsers.push(user)
+        })
+        return _unvalidUsers
+    }
 
     const   addUsersToRoom = async (e, newUsers) => {
         e.preventDefault()
-        setShowUsersForm(false)
-        if (newUsers.length)
+        const _unvalidUsers = unvalidUsers(newUsers)
+        if (_unvalidUsers.length) {
+            info.setAlertText('unvalid users : ' + _unvalidUsers)
+            info.setShowAlert(true)
+        }
+        else if (newUsers.length) {
             socket.emit('add-room-users', {roomName: info.room.name, users: newUsers})
+            setShowUsersForm(false)
+        }
     }
 
     const   setNewName = async (e, name) => {

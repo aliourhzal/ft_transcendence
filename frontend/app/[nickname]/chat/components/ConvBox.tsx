@@ -3,7 +3,6 @@ import { conversation } from '../page'
 import { Context } from '../page'
 import axios from 'axios'
 import { getCookie } from '../../layout'
-import useDeepCompareEffect from 'use-deep-compare-effect'
 
 interface ConvBoxProps {
     data : conversation
@@ -16,8 +15,6 @@ interface ConvBoxProps {
 const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, activeUserConv, convsFilter}) => {
 
   const {rooms, setShowConv, setChatBoxMessages, msgInputRef} = useContext(Context)
-
-  const [refresh, setRefresh] = useState(false)
 
   const handleClick = async () => {
     if (data.id == activeUserConv.id) {
@@ -56,13 +53,9 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
     msgInputRef.current?.focus()
     // const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
   }
-
-  useDeepCompareEffect(() => {
-    setRefresh(old => !old)
-  }, [allUsers])
   
-  const [lastmsg, setLastMsg] = useState(rooms.find(o => o.id === data.id).msgs[rooms.find(o => o.id === data.id).msgs.length - 1])
-  // console.log(lastmsg)
+  const lastmsg = rooms.find(o => o.id === data.id).msgs[rooms.find(o => o.id === data.id).msgs.length - 1]
+  console.log(lastmsg)
 
   return (
     <div className={(activeUserConv.id === data.id ? 'bg-blueStrong' : 'bg-zinc-800 hover:bg-zinc-700') + " cursor-pointer convGroup z-0 focus:bg-blueStrong w-[70%] left-[15%] h-[100px] gap-4 relative my-3 rounded-md active:bg-blue-500 flex items-center justify-start text-[16px]"} onClick={handleClick} onFocus={handleClick}>

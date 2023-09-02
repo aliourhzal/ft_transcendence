@@ -119,21 +119,22 @@ export interface _Notification {
 
 let allUsers = []
 socket.on('all-users', (res) => {allUsers = res.allUsers})
-
 export default function Chat() {
+	// alert('')
 	const [cookies, setCookie, removeCookie] = useCookies();
 	
 	const searchParams = useSearchParams();
 	
 	// const [allUsers, setAllUsers] = useState<any[]>([])
-
-
+	
+	
 	useEffect( () => {
 		console.log('test')
 		const dmId = searchParams.get('id');
 		if (dmId)
 			socket.emit('start-dm', {reciverUserId: dmId})
-		socket.emit('get-rooms', userData.id)
+		socket.emit('get-rooms', null)
+		// socket.on('all-users', (res) => {setAllUsers(res.allUsers)})
 	}, [])
 	// const [new] = useState()
 
@@ -150,7 +151,7 @@ export default function Chat() {
 		// 	router.push('/')
 		// }
 	// }, [cookies.access_token])
-
+	console.log("yo")
 	const ref = useRef(null);
 	const msgInputRef = useRef(null);
 
@@ -240,7 +241,7 @@ export default function Chat() {
 						<ConvList allUsers={allUsers} activeUserConv={activeUserConv} setActiveUserConv={setActiveUserConv} />
 						<ButtomButtons />
 					</div>
-					<Conversation allUsers={allUsers} activeUserConv={activeUserConv} deviceType={deviceType} setShowConv={setShowConv} showConv={showConv} setActiveUserConv={setActiveUserConv} />
+					<Conversation setAlertText={setAlertText} setShowAlert={setShowAlert} allUsers={allUsers} activeUserConv={activeUserConv} deviceType={deviceType} setShowConv={setShowConv} showConv={showConv} setActiveUserConv={setActiveUserConv} />
 				</div>
 				<RoomForm setShowAlert={setShowAlert} setAlertText={setAlertText} allUsers={allUsers} setConvs={setConvs} set_room_created={set_room_created} showForm={showForm} setShowForm={setShowForm} />
 				<JoinRoomForm />

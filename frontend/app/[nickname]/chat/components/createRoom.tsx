@@ -82,7 +82,7 @@ const RoomForm:React.FC<RoomFormProps> = ( { allUsers, showForm, setShowForm, se
     const unvalidUsers = () => {
         var _unvalidUsers: string[] = []
         users.map(user => {
-            if (!allUsers.find(o => o.nickname === user))
+            if (!allUsers.find(o => o.nickname === user) || user === userData.nickname)
                 _unvalidUsers.push(user)
         })
         return _unvalidUsers

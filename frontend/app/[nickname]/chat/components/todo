@@ -23,7 +23,6 @@ phone responsiveness (DONE)
 
 
 
-send new message to all users in room (backend)
 
 room from public to protected (backend)
 
@@ -56,3 +55,5 @@ ask ali for the popup in top for errors
 update online status realtime
 
 clean context
+
+scroll to bottom when clicking conv
