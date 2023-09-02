@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
-import { BiConversation, BiUserMinus } from 'react-icons/Bi'
-import { TbUserDown, TbUserUp } from 'react-icons/Tb'
+import { BiConversation, BiUserMinus } from 'react-icons/bi'
+import { TbUserDown, TbUserUp } from 'react-icons/tb'
 import { Context } from '../page'
 import Ban from './Ban'
 import Mute from './Mute'

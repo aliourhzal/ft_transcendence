@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import Popup from './Popup'
 import { Avatar } from '@nextui-org/react'
-import { BiConversation } from 'react-icons/Bi'
+import { BiConversation } from 'react-icons/bi'
 import { FaRegUser } from 'react-icons/fa'
 import { Context } from '../page'
 import { useRouter } from 'next/navigation'

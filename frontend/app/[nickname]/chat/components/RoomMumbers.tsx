@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { Avatar } from '@nextui-org/react'
-import { AiFillStar } from 'react-icons/Ai'
+import { AiFillStar } from 'react-icons/ai'
 import { FaCrown } from 'react-icons/fa'
 import RoomOptions from './RoomOptions'
 import { IoIosArrowDown } from 'react-icons/io'

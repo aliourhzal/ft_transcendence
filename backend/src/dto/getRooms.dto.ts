@@ -10,8 +10,3 @@ export class getRooms {
     @IsString()
     userId: string;
 }
- 
-
-
-
-// 

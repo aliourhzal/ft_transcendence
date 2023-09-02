@@ -29,7 +29,7 @@ import { RenameRoom } from 'src/dto/renameRoom.dto';
 import { RemoveRoomPassword } from 'src/dto/removeRoomPassword.dto';
 import { Unmute } from 'src/dto/unmute.dto';
 import { DirectMessages } from 'src/dto/directMessages.dto';
-import { getRooms } from 'src/dto/getRooms';
+import { getRooms } from 'src/dto/getRooms.dto';
  
 
 @WebSocketGateway(3004)
@@ -183,7 +183,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 {
                     const createdMsg = await this.messagesService.createMessages(dto.message ,user['sub'], rtn.room.id);
                      
-                    // console.log(rtn.room.room_name)
                     await this.emmiteEventesToUsers(socket, rtn.room.id  ,"add-message", {user: createdMsg.username, msg: createdMsg.msg , roomId: rtn.room.id , idOfmsg : createdMsg.idOfMsg})
                           
                 }
@@ -978,29 +977,45 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         }
         
         @SubscribeMessage('get-rooms')
-        async getAllRooms(@MessageBody() dto:getRooms , @ConnectedSocket() socket: Socket) 
-        {
-            console.log(dto)
-            // await this.utils.getUserId([dto.userId]); // if current user in db
+        async getAllRooms(@ConnectedSocket() socket: Socket) 
+        {   
+            try 
+            {
+                const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+                
+                if (token) 
+                {
+                    const user = await this.utils.verifyToken(token); // // if has error will catch it
+                    
+                    const userId = await this.utils.getUserId([user['sub']]); // if current user in db
+                    if(userId.error)
+                    {
+                        console.log(userId.error)
+                        return;
+                    }
 
-            // if(existingUser.error)
-            // {
-            //     return {error : 'user not found.'};
-            // }
-
-           
-            // const rooms = await this.utils.getRoomsForUser(existingUser.existingUser[0]); // all rooms who this user is member into it
-
-             
-            // let messages:any[] = [];
-
-
-            // for(let i = 0; i < rooms.length; i++)
-            // {
-            //     messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i].room.id) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
-            // }
+                    const rooms = await this.utils.getRoomsForUser(user['sub']); // all rooms who this user is member into it
             
-            // this.server.to(socket.id).emit("list-rooms",{messages}); 
+            
+                    let messages:any[] = [];
+                    
+                    
+                    for(let i = 0; i < rooms.length; i++)
+                    {
+                        messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i].room.id) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
+                    }
+                    
+                    this.server.to(socket.id).emit("list-rooms",{messages});  //  evry client will connected will display the rooms who is member into 
+                }
+            }
+            catch (error) 
+            {
+                console.log(error)
+            } 
+
+
+
+            
         }
 
         async emmiteEventesToUsers(@ConnectedSocket() socket: Socket , roomId : string , event : string , data : object , removedUser ?: any)

@@ -2,9 +2,9 @@ import { useContext, useEffect, useState } from "react"
 import { Context, conversation, getUsersInfo, gimmeRandom } from "../page"
 import ConvBox from "./ConvBox"
 import Search from "./search"
-import { AiOutlineUsergroupAdd } from "react-icons/Ai"
-import { LiaUsersSolid } from "react-icons/Lia"
-import { TbMessage2Search } from "react-icons/Tb"
+import { AiOutlineUsergroupAdd } from "react-icons/ai"
+import { LiaUsersSolid } from "react-icons/lia"
+import { TbMessage2Search } from "react-icons/tb"
 
 interface ConvListProps {
   allUsers: any[]

@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react'
 import { Context } from '../page';
-import { LiaUsersSolid } from 'react-icons/Lia'
-import { AiOutlineUsergroupAdd } from 'react-icons/Ai'
-import { TbMessage2Search } from 'react-icons/Tb';
+import { LiaUsersSolid } from 'react-icons/lia'
+import { AiOutlineUsergroupAdd } from 'react-icons/ai'
+import { TbMessage2Search } from 'react-icons/tb';
 
 const ButtomButtons = () => {
 
