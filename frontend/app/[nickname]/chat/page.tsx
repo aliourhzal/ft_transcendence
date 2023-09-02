@@ -117,12 +117,15 @@ export interface _Notification {
 	type: string
 }
 
+let allUsers = []
+socket.on('all-users', (res) => {allUsers = res.allUsers})
+
 export default function Chat() {
 	const [cookies, setCookie, removeCookie] = useCookies();
 	
 	const searchParams = useSearchParams();
 	
-	const [allUsers, setAllUsers] = useState<any[]>([])
+	// const [allUsers, setAllUsers] = useState<any[]>([])
 
 
 	useEffect( () => {
@@ -214,9 +217,9 @@ export default function Chat() {
 
 	const [deviceType, setDeviceType] = useState('normal')
     useEffect( () => {
-      typeof window != 'undefined' ? (window.innerWidth <= 990 ? setDeviceType('small') : setDeviceType('normal')) : setDeviceType('normal')
+      typeof window != 'undefined' ? (window.innerWidth <= 910 ? setDeviceType('small') : setDeviceType('normal')) : setDeviceType('normal')
       typeof window != 'undefined' ? window.onresize = () => {
-        if (window.innerWidth <= 990)
+        if (window.innerWidth <= 910)
           setDeviceType('small')
         else
           setDeviceType('normal')
@@ -226,7 +229,7 @@ export default function Chat() {
 	return (
 		<main className='scrollbar-none select-none h-full w-full relative'>
 			{showAlert && <MyAlert setShowAlert={setShowAlert} text={alertText}/>}
-			<Notification newNotif={newNotif} setNewNotif={setNewNotif} notifications={notifications} notify={notify} setNotify={setNotify}/>
+			{!(showConv && deviceType != 'normal') && <Notification newNotif={newNotif} setNewNotif={setNewNotif} notifications={notifications} notify={notify} setNotify={setNotify}/>}
 			<Context.Provider value={{alertNewMessage, setAlertNewMessage, ref, showConv, setShowConv, socket,
 				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm,
 				set_room_created, room_created, rooms, setRooms, showSearchUsersForm, setShowSearchUsersForm, scrollToBottom, _notification,
@@ -237,7 +240,7 @@ export default function Chat() {
 						<ConvList allUsers={allUsers} activeUserConv={activeUserConv} setActiveUserConv={setActiveUserConv} />
 						<ButtomButtons />
 					</div>
-					<Conversation allUsers={allUsers} activeUserConv={activeUserConv} deviceType={deviceType} />
+					<Conversation allUsers={allUsers} activeUserConv={activeUserConv} deviceType={deviceType} setShowConv={setShowConv} showConv={showConv} setActiveUserConv={setActiveUserConv} />
 				</div>
 				<RoomForm setShowAlert={setShowAlert} setAlertText={setAlertText} allUsers={allUsers} setConvs={setConvs} set_room_created={set_room_created} showForm={showForm} setShowForm={setShowForm} />
 				<JoinRoomForm />

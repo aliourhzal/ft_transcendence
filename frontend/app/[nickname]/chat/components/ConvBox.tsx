@@ -20,10 +20,21 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
   const [refresh, setRefresh] = useState(false)
 
   const handleClick = async () => {
+    if (data.id == activeUserConv.id) {
+      setShowConv(false)
+      setActiveUserConv({
+        name: '.',
+        photo: '',
+        lastmsg: '', 
+        id: 0,
+      })
+      convsFilter('')
+      setChatBoxMessages([])
+      return ;
+    }
     setActiveUserConv(data)
     setShowConv(true)
     convsFilter('')
-    console.log(rooms, "eowigbpqeubhp")
     // if (new_msg_notif.name == activeUserConv.name)
     //   notify_conv_msg(false, '')
     try {

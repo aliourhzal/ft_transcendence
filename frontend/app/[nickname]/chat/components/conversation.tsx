@@ -8,17 +8,20 @@ interface ConversationProps {
     allUsers: any[]
     activeUserConv: any
     deviceType: string
+    setShowConv: any
+    showConv: boolean
+    setActiveUserConv: any,
 }
 
-const Conversation = ( { allUsers, activeUserConv, deviceType } ) => {
+const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, deviceType, setShowConv, showConv, setActiveUserConv } ) => {
 
     
     const [showInfo, setShowInfo] = useState(false)
     
     const [msg_sender, set_msg_sender] = useState('')
     
-    const {setAlertNewMessage, scrollToBottom, showConv, chatBoxMessages, rooms, socket,
-        userData, msg_sent, set_msg_sent, setChatBoxMessages, setShowUserInfos, setUserInfoNick, msgInputRef} = useContext(Context)
+    const {setAlertNewMessage, scrollToBottom, chatBoxMessages, rooms, socket,
+        userData, setChatBoxMessages, setShowUserInfos, setUserInfoNick, msgInputRef} = useContext(Context)
 
     const sendMessage = (e) => {
         e.preventDefault()
@@ -49,10 +52,10 @@ const Conversation = ( { allUsers, activeUserConv, deviceType } ) => {
     // if (showConv) {
     return (
         // deviceType === 'normal' ?
-        <div className={'flex flex-col items-center justify-center rounded-3xl ' + (deviceType === 'normal' ? 'h-[90vh] w-[calc(120%/2)]' : ' h-[100%] w-[100%] absolute ' +  (showConv ? 'bg-gray-600' : 'hidden'))}>
+        <div className={'flex flex-col items-center justify-center rounded-3xl ' + (deviceType === 'normal' ? 'h-[90vh] w-[calc(120%/2)] ' : ' h-[100%] w-[100%] absolute ' +  (showConv ? 'bg-darken-200' : 'hidden'))}>
                 {activeUserConv.name && <RoomInfo allUsers={allUsers} room={rooms.find(o => o.id === activeUserConv.id)} setShow={setShowInfo} show={showInfo} userData={userData} />}
 				{ showConv && <>
-                    <div className="h-[80px] z-0 flex justify-between text-white pl-10 py-4 w-[100%] border-blue-gray-200 text-blue-gray-700 outline border-b outline-0 placeholder-shown:border-blue-gray-200 focus:outline-0">
+                    <div className="h-[80px] z-0 flex items-center justify-between text-white pl-10 py-4 w-[100%] border-blue-gray-200 text-blue-gray-700 outline border-b outline-0 placeholder-shown:border-blue-gray-200 focus:outline-0">
                         <div className=' min-w-[150px] bg-zinc-800 rounded-l-3xl pr-2 rounded-r-xl flex items-center gap-3 justify-start w-auto h-auto cursor-pointer hover:underline' onClick={() => {
                             if (rooms.find(o => o.id === activeUserConv.id).type != 'DM')
                                 setShowInfo(true)
@@ -69,6 +72,12 @@ const Conversation = ( { allUsers, activeUserConv, deviceType } ) => {
                         <FcInfo className='cursor-pointer mr-5 w-7 h-7' width={30} height={30} onClick={ () => {
                             setShowInfo(true)
                         }}/>} */}
+                        {deviceType != 'normal' && <button className='w-9 h-9 border border-blue-800 bg-blue-700 text-whiteSmoke hover:scale-110 hover:bg-whiteSmoke hover:text-blueStrong focus:outline-none focus:ring-blue-300 font-bold rounded-full text-lg flex text-center justify-center items-center mr-5' onClick={() => {setShowConv(false); setActiveUserConv({
+                            name: '.',
+                            photo: '',
+                            lastmsg: '', 
+                            id: 0,
+                        }); setChatBoxMessages([])}}>x</button>}
                     </div>
 
                     <div id='chatbox' className='relative flex flex-col w-full mt-8 overflow-y-scroll basis-[80%]'>
