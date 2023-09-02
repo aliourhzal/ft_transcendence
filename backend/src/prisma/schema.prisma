@@ -35,6 +35,7 @@ model User {
 	matches					Match[]
 	sentRequests			FriendRequest[] @relation("sender")
 	receivedRequest			FriendRequest[] @relation("target")
+	achievements	Achievements[]
 }
 
 model Room{
@@ -108,6 +109,8 @@ model Match {
 	id			String @id @default(uuid())
 	players		User[]
 	scores		Int[]
+	score1		Json[]
+	score2		Json[]
 	playerAt	DateTime @default(now())
 }
 
@@ -118,6 +121,15 @@ model FriendRequest {
 	sender		User @relation("sender", fields: [senderId], references: [id])
 	targetId	String
 	senderId	String
+}
+
+model Achievements {
+	id			String @id @default(uuid())
+	category	String
+	level		Int
+	title		String @unique
+	description	String
+	users		User[]
 }
 
 enum RoomType {
@@ -132,6 +144,7 @@ enum UserType {
     ADMIN
     OWNER
 }
+
 
 enum UserBnned {
     BANNEDFORLIMMITED_TIME

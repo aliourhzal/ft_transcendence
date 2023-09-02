@@ -80,7 +80,7 @@ export default function FriendCarouselBar()
 		socket.on('update-status', data => {
 			setFriends(friends => {
 				return friends.map(friend => {
-					if (friend.nickname === data.user)
+					if (friend.id === data.user)
 						friend.status = data.status		
 					return friend;
 				})

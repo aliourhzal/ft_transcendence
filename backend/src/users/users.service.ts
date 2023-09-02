@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { HttpException, HttpStatus, Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
-import { PrismaClient, User } from '@prisma/client';
+import { Match, PrismaClient, User } from '@prisma/client';
 import { unlinkSync } from 'fs';
 import { extname } from 'path';
 import { parse } from 'path';
@@ -8,7 +8,8 @@ import { createReadStream} from 'fs';
 import { readdir } from 'fs/promises';
 import { UserData } from 'src/utils/userData.interface';
 import { twoFactorAuth } from 'src/QrCode/qr.services';
- 
+ import * as achievements from './achievements.json'
+
 @Injectable()
 export class UsersService {
 	private readonly prisma = new PrismaClient()
@@ -270,7 +271,7 @@ export class UsersService {
 			},
 			data: {
 				userFriends: {
-					connect: [{id: request.sender.id}]
+						connect: [{id: request.sender.id}]
 				}
 			}
 		})
@@ -426,5 +427,167 @@ export class UsersService {
 		}catch(err){
 			console.log("failed to turn Off Qr validation !")
 		}
+	}
+
+	async	createMatch(p1 :string, p2: string, score1:number, score2: number)
+	{
+		const user1 = await this.findOneByNickname(p1);
+		const user2 = await this.findOneByNickname(p2);
+		if (!user1 || !user2)
+			throw new NotFoundException("not users to insert in match");
+		const match = await this.prisma.match.create({
+			data:{
+				players:{
+					connect:[
+						user1,
+						user2
+					]
+				},
+				score1: [user1.id, score1],
+				score2: [user2.id, score2]
+			}
+		});
+	}
+
+	async	returnMatches(nickname: string)
+	{
+		const user = await this.prisma.user.findFirst({
+			where :{
+				nickname: nickname
+			},
+			include : {
+				matches : {
+					include : {
+						players :true
+					}
+				}
+			}
+		})
+		if (!user)
+			throw new NotFoundException('user not found while fetching his matches!!');
+		return user;
+	}
+
+	async	stats(nickname : string)
+	{
+		let matchesStats = {
+			total : 0,
+			totalP : 0,
+			scoreW : 0,
+			scoreL : 0,
+			wins : 0,
+			loss : 0
+		}
+		let s1: number, s2 : number;
+
+		const {matches} = await this.returnMatches(nickname);
+		matches.map(x => {
+			matchesStats.total++;
+			s1 = (x.players[0].id === x.score1[0] ? parseInt(x.score1[1].toString()) : parseInt(x.score2[1].toString()));
+			s2 = (x.players[1].id === x.score1[0] ? parseInt(x.score1[1].toString()) : parseInt(x.score2[1].toString()));
+			matchesStats.totalP += (s1 + s2);
+			if (x.players[0].nickname === nickname)
+			{
+				matchesStats.scoreW += s1;//(x.score1[0] === x.players[0].id ? s1 : s2);
+				matchesStats.scoreL += s2;//(x.score1[0] === x.players[0].id ? s2 : s1);
+				(s1 > s2 ? matchesStats.wins++ : matchesStats.loss++);
+				
+			}
+			else
+			{
+				matchesStats.scoreW += s2;
+				matchesStats.scoreL += s1;
+				(s2 > s1 ? matchesStats.wins++ : matchesStats.loss++);
+			}
+		});
+		return matchesStats;
+	}
+
+	async matchHistory(nickName: string)
+	{
+		let history : {}[] = []
+		const matches = (await this.returnMatches(nickName)).matches;
+
+		matches.map(x => {
+			let match = {
+				player1:{
+					avatar	: x.players[0].profilePic,
+					nickname : x.players[0].nickname,
+					score: (x.players[0].id === x.score1[0] ? x.score1[1] : x.score2[1])
+					// score : x.scores[0],
+				},
+				player2:{
+					avatar : x.players[1].profilePic,
+					nickname : x.players[1].nickname,
+					score: (x.players[1].id === x.score1[0] ? x.score1[1] : x.score2[1])
+				}
+			}
+			history.push( match );
+		});
+		return history;
+	}
+
+	async getAchievements(nickname: string) {
+		const user = await this.prisma.user.findUnique({
+			where: {
+				nickname
+			},
+			include: {
+				achievements: true
+			}
+		});
+		if (!user)
+			throw new NotFoundException('user not found while fetching his achievements!!');
+		if (!user.achievements)
+			return [];
+		return (user.achievements);
+	}
+
+	async getMissions(nickname: string) {
+		const acs = await this.getAchievements(nickname);
+		const missions = [];
+		let breakerLvl = 0;
+		let seniorityLvl = 0;
+		let humiliatorLvl = 0;
+		let hat_trick = true;
+
+		acs.forEach(a => {
+			if (a.category === 'breaker' && a.level > breakerLvl) {
+				breakerLvl = a.level
+			}
+			else if (a.category === 'seniority' && a.level > seniorityLvl) {
+				seniorityLvl = a.level
+			}
+			else if (a.category === 'humiliator' && a.level > humiliatorLvl) {
+				humiliatorLvl = a.level
+			}
+			else if (a.category === 'hat-trick')
+				hat_trick = false
+		});
+		if (hat_trick)
+			missions.push(achievements.missions.hat_trick);
+		if (breakerLvl < achievements.missions.theBreaker.length)
+			missions.push(achievements.missions.theBreaker[breakerLvl]);
+		if (seniorityLvl < achievements.missions.Seniority.length)
+			missions.push(achievements.missions.Seniority[seniorityLvl]);
+		if (humiliatorLvl < achievements.missions.Humiliator.length)
+			missions.push(achievements.missions.Humiliator[humiliatorLvl]);
+
+		return (missions);
+	}
+
+	async incrementLvl(nickname:string, xp: number) {
+		const user = await this.findOneByNickname(nickname);
+		const newLvl = +(user.level + (xp / 100)).toFixed(2);
+		console.log(newLvl);
+		await this.prisma.user.update({
+			where: {
+				nickname
+			},
+			data: {
+				level: newLvl
+			}
+		});
+
 	}
 }

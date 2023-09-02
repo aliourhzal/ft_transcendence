@@ -115,7 +115,41 @@ export class UsersController{
 	async getFriends(@Req() request: any) {
 		return await this.usersService.getFriendsWithNickname(request.user.nickname);
 	}
- 
-    
+
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/profile/stats')
+	async stats(@Query('nickname') nickname: string, @Req() req: any)
+	{
+		if (!nickname)
+			return await this.usersService.stats(req.user.nickname);
+		return await this.usersService.stats(nickname);
+	}
+
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/profile/history')
+	async history(@Query('nickname') nickname: string, @Req() req: any)
+	{
+		if (!nickname)
+			return await this.usersService.matchHistory(req.user.nickname);
+		return await this.usersService.matchHistory(nickname);
+	}
+
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/profile/achievements')
+	async getAchievements(@Query('nickname') nickname: string, @Req() req: any)
+	{
+		if (!nickname)
+			return await this.usersService.getAchievements(req.user.nickname);
+		return await this.usersService.getAchievements(nickname);
+	}
+
+	@UseGuards(AuthGuard('jwt'))
+	@Get('/profile/missions')
+	async getMissions(@Query('nickname') nickname: string, @Req() req: any)
+	{
+		if (!nickname)
+			return await this.usersService.getMissions(req.user.nickname);
+		return await this.usersService.getMissions(nickname);
+	}
 
 }

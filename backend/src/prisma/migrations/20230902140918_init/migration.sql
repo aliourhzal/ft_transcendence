@@ -26,6 +26,8 @@ CREATE TABLE "User" (
     "level" DOUBLE PRECISION NOT NULL,
     "grade" TEXT NOT NULL,
     "status" TEXT NOT NULL,
+    "twoFactorAuth" BOOLEAN NOT NULL DEFAULT false,
+    "AsciiSecretQr" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -80,6 +82,8 @@ CREATE TABLE "BlackList" (
 CREATE TABLE "Match" (
     "id" TEXT NOT NULL,
     "scores" INTEGER[],
+    "score1" JSONB[],
+    "score2" JSONB[],
     "playerAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Match_pkey" PRIMARY KEY ("id")
@@ -95,6 +99,17 @@ CREATE TABLE "FriendRequest" (
 );
 
 -- CreateTable
+CREATE TABLE "Achievements" (
+    "id" TEXT NOT NULL,
+    "category" TEXT NOT NULL,
+    "level" INTEGER NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+
+    CONSTRAINT "Achievements_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "_friends" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
@@ -102,6 +117,12 @@ CREATE TABLE "_friends" (
 
 -- CreateTable
 CREATE TABLE "_MatchToUser" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_AchievementsToUser" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
 );
@@ -116,6 +137,9 @@ CREATE UNIQUE INDEX "User_nickname_key" ON "User"("nickname");
 CREATE UNIQUE INDEX "Room_room_name_key" ON "Room"("room_name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Achievements_title_key" ON "Achievements"("title");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "_friends_AB_unique" ON "_friends"("A", "B");
 
 -- CreateIndex
@@ -126,6 +150,12 @@ CREATE UNIQUE INDEX "_MatchToUser_AB_unique" ON "_MatchToUser"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_MatchToUser_B_index" ON "_MatchToUser"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_AchievementsToUser_AB_unique" ON "_AchievementsToUser"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_AchievementsToUser_B_index" ON "_AchievementsToUser"("B");
 
 -- AddForeignKey
 ALTER TABLE "Messages" ADD CONSTRAINT "Messages_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -162,3 +192,9 @@ ALTER TABLE "_MatchToUser" ADD CONSTRAINT "_MatchToUser_A_fkey" FOREIGN KEY ("A"
 
 -- AddForeignKey
 ALTER TABLE "_MatchToUser" ADD CONSTRAINT "_MatchToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_AchievementsToUser" ADD CONSTRAINT "_AchievementsToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "Achievements"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_AchievementsToUser" ADD CONSTRAINT "_AchievementsToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

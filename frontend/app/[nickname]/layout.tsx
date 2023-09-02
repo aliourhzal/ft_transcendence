@@ -31,7 +31,6 @@ export async function fetchUserData(url: string) {
 function reducer(state, action) {
 	if (action.type === ACTIONS.INIT) {
 		const user: UniversalData = {...action.payload.data};
-		user.chatSocket = action.payload.socket;
 		return({...user});
 	}
 	else if (action.type === ACTIONS.UPDATE_AVATAR) {
@@ -97,8 +96,8 @@ export default function ProfileLayout({
 			{
 				completed && 
 				<section className='w-full flex h-screen'> 
-					<SideBar dispatch={dispatch}/>
-					{children}
+					<SideBar dispatch={dispatch}/>{/*any page.tsx have a sideBare*/}
+					{children} {/*page.tsx*/}
 				</section>
 			}
 		</userDataContext.Provider>

@@ -55,7 +55,6 @@ export default function Friends(props: any) {
 			}, 2500);
 		});
 		socket.on('update-status', data => {
-			console.log('friends page: ', data);
 			setFriends(friends => {
 				return friends.map(friend => {
 					if (friend.id === data.user)

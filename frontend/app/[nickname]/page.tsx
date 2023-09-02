@@ -21,6 +21,7 @@ export default function Profile(props) {
 	const loggedUser = useContext(userDataContext)
 	const [userData, setUserData] = useState<UniversalData>(loggedUser);
 	const socket = useContext(InvitationSocketContext);
+	const currentUser = loggedUser.nickname === props.params.nickname;
 	async function fetchUserData(nickname: string) {
 		try {
 			const {data} = await axios.get('http://127.0.0.1:3000/users/profile', {
@@ -45,7 +46,7 @@ export default function Profile(props) {
 			if (data.length > 0)
 				setNotify(data[data.length - 1]?.sender.nickname);
 		});
-		if (loggedUser.nickname !== props.params.nickname)
+		if (!currentUser)
 			fetchUserData(props.params.nickname);
 		else 
 			setCompleted(true);
@@ -59,15 +60,15 @@ export default function Profile(props) {
 				{
 					completed && !err ?
 					<>
-						<ProfileInfo data={loggedUser.nickname !== props.params.nickname ? userData : loggedUser} currentUser={loggedUser.nickname === props.params.nickname}/>
+						<ProfileInfo data={!currentUser ? userData : loggedUser} currentUser={currentUser}/>
 						{
-							loggedUser.nickname === props.params.nickname && <FriendsCarouselBar />
+							currentUser && <FriendsCarouselBar />
 						}
 						<div className=" playerGameInfo grid grid-cols-1 gap-5 mb-10 w-[90%]">
-							<MatchHistory />
-							<GameStats />
-							<Missions />
-							<Achievements />
+							<MatchHistory data={currentUser ? loggedUser : userData} currentUser={currentUser} />
+							<GameStats data={currentUser ? loggedUser : userData} currentUser={currentUser} />
+							<Missions data={currentUser ? loggedUser : userData} currentUser={currentUser} />
+							<Achievements data={currentUser ? loggedUser : userData} currentUser={currentUser} />
 						</div>
 					</> : <NotFound nickname={loggedUser.nickname}/>
 				}
