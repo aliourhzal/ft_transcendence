@@ -31,7 +31,7 @@ export class UsersController{
 	async putUserAvatar(@Req() req: any, @UploadedFile() file: Express.Multer.File) {
 		// the changeUserAvatar carry the logic of changing the avatar in the database
 		if (file)
-			await this.usersService.changeUserCatalogue(req.user.nickname, file, 'avatar');
+			return await this.usersService.changeUserCatalogue(req.user.nickname, file, 'avatar');
 	}
 
 	// this endpoint is to be called when want to change the user avatar
@@ -40,7 +40,7 @@ export class UsersController{
 	@UseInterceptors(FileInterceptor('cover', saveCoverStorage))
 	async putUserCover(@Req() req: any, @UploadedFile() file: Express.Multer.File) {
 		if (file)
-			await this.usersService.changeUserCatalogue(req.user.nickname, file, 'cover');
+			return await this.usersService.changeUserCatalogue(req.user.nickname, file, 'cover');
 	}
 
 	// this endpoint is responsible of returning the assets (avatars and cover pic): fileTarget is the name of the returned file
