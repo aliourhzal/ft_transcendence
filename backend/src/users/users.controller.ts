@@ -7,6 +7,7 @@ import { saveAvatarStorage, saveCoverStorage } from './fileTypeValidators';
 import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { comparePasswd, encodePasswd } from 'src/utils/bcrypt';
+import { ChangeNicknameDTO, ChangePassDTO } from 'src/dto/configureUser';
 
 @Controller('users')
 export class UsersController{
@@ -38,7 +39,6 @@ export class UsersController{
 	@Put('profile/cover')
 	@UseInterceptors(FileInterceptor('cover', saveCoverStorage))
 	async putUserCover(@Req() req: any, @UploadedFile() file: Express.Multer.File) {
-		// the changeUserAvatar carry the logic of changing the avatar in the database
 		if (file)
 			await this.usersService.changeUserCatalogue(req.user.nickname, file, 'cover');
 	}
@@ -51,15 +51,15 @@ export class UsersController{
 
 	@UseGuards(AuthGuard('jwt'))
 	@Post('/profile/nickName')
-	async setting(@Body('newNickname') newNickname: string, @Req() req: any, @Res() response: Response)
+	async setting(@Body() nicknameObj: ChangeNicknameDTO, @Req() req: any, @Res() response: Response)
 	{
-		if ((await this.usersService.findOneByNickname(newNickname)))
+		if ((await this.usersService.findOneByNickname(nicknameObj.newNickname)))
 			throw new Error("already in use NickName");
 		else
 		{
-			this.usersService.updateUserNickName(req.user.sub, newNickname);
+			this.usersService.updateUserNickName(req.user.sub, nicknameObj.newNickname);
 			const Pay = {
-					nickname : newNickname,
+					nickname : nicknameObj.newNickname,
 					sub : req.user.sub
 			}
 			const access_token = await this.jwtService.signAsync(Pay);
@@ -70,13 +70,13 @@ export class UsersController{
 
 	@UseGuards(AuthGuard('jwt'))
 	@Post('/profile/password')
-	async passwordSetting(@Body('confirmPass') newPassword: string, @Req() req: any, @Res() response: Response)
+	async passwordSetting(@Body() passwordObj: ChangePassDTO, @Req() req: any, @Res() response: Response)
 	{
 		const re = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
-		if (!re.test(newPassword))
+		if (!re.test(passwordObj.newPassword))
 			throw new BadRequestException('this password is weak choose another')
 		try{
-			this.usersService.setHashedPassword(req.user.sub, encodePasswd(newPassword));
+			this.usersService.setHashedPassword(req.user.sub, encodePasswd(passwordObj.newPassword));
 			response.end('ok');
 		}
 		catch(err)
