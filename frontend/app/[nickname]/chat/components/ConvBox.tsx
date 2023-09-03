@@ -63,13 +63,13 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
   return (
     <div className={(activeUserConv.id === data.id ? 'bg-blueStrong' : 'bg-zinc-800 hover:bg-zinc-700') + " cursor-pointer convGroup z-0 focus:bg-blueStrong w-[70%] left-[15%] h-[100px] gap-4 relative my-3 rounded-md active:bg-blue-500 flex items-center justify-start text-[16px]"} onClick={handleClick} onFocus={handleClick}>
         <div className='w-20 h-20 flex items-center justify-center relative mx-[7%]'>
-          <img alt={data.name} width={11} height={11} className="rounded-full border-2 border-slate-300 w-11 h-11" src={data.photo} />
-          { rooms.find(o => o.id === data.id)?.type === 'DM' && allUsers.find(o => o.nickname === data.name)?.status === 'online' ?
+          <img alt={data.name} width={11} height={11} className="rounded-full border-2 border-slate-300 w-11 h-11" src={rooms.find(o => o.id === data.id).type === 'DM' ? allUsers.find(o => o.id === rooms.find(o => o.id === data.id).users.find(o => o.nickName === data.name).id).profilePic : data.photo} />
+          { rooms.find(o => o.id === data.id)?.type === 'DM' && allUsers.find(o => o.id === rooms.find(o => o.id === data.id).users.find(o => o.nickName === data.name).id)?.status === 'online' ?
           <span className='rounded-full bg-green-400 opacity-90 border-2 border-green-500 w-2 h-2 absolute top-[65%] right-[15%]'></span>
           : ''}
         </div>
         <div className='flex flex-col justify-center gap-2 w-[100%] h-[50%] items-start'>
-          <div className="left-[30%] top-[25%] text-gray-200 font-medium">{data.name}</div>
+          <div className="left-[30%] top-[25%] text-gray-200 font-medium">{rooms.find(o => o.id === data.id).type === 'DM' ? allUsers.find(o => o.id === rooms.find(o => o.id === data.id).users.find(o => o.nickName === data.name).id).nickname : data.name}</div>
           <div className="left-[30%] top-[50%] text-gray-200 text-opacity-70 font-normal">{
             lastmsg?.msg ? lastmsg?.msg.length > 15 ? allUsers.find(o => o.id === lastmsg.userId).nickname + " : " + lastmsg?.msg.substring(0, 15) + '...' : allUsers.find(o => o.id === lastmsg.userId).nickname + " : " + lastmsg?.msg : ''}</div>
         </div>
