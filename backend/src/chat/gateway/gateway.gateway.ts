@@ -30,6 +30,7 @@ import { RemoveRoomPassword } from 'src/dto/removeRoomPassword.dto';
 import { Unmute } from 'src/dto/unmute.dto';
 import { DirectMessages } from 'src/dto/directMessages.dto';
 import { getRooms } from 'src/dto/getRooms.dto';
+import { MakeRoomProtected } from 'src/dto/makeRoomProtected.dto';
  
 
 @WebSocketGateway(3004)
@@ -113,7 +114,11 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         console.log(ifUserExist.error);
                         return;
                     }
-                    
+                    if (dto.roomName.length > 20) 
+                    {
+                        console.log("room name should be less then 20 characters");
+                        return;
+                    }
                     if (dto.type === RoomType.PRIVATE || dto.type === RoomType.PROTECTED || dto.type === RoomType.PUBLIC) 
                     {
                         if (dto.type === "PROTECTED") 
@@ -879,6 +884,58 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             } 
         }
 
+
+
+        @SubscribeMessage('make-room-protected') 
+        @UsePipes(new ValidationPipe()) 
+        async makeRoomProtected(@MessageBody() dto:MakeRoomProtected , @ConnectedSocket() socket: Socket) 
+        {
+            try 
+            {
+                const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+                
+                if (token) 
+                {
+                    const user  = await this.utils.verifyToken(token); // // if has error will catch it
+
+                    const rtn = await this.gatewayService.checkUpdateRoom(user['sub'] , dto.roomName);
+                    
+                    if(rtn.error)
+                    {
+                        console.log(rtn.error)
+                        return ;
+                    }
+
+                    if(rtn.room.roomType !== 'PROTECTED')
+                    {
+                        if(dto.newPassword.length > 8)
+                        {
+                            await this.roomService.updateRoomToProtected(rtn.room.id ,dto.newPassword);
+                            await this.emmiteEventesToUsers(socket, rtn.room.id,"change-room-password",{ roomName : rtn.room.room_name , password : 'new'});
+
+                        }
+                        else
+                        {
+                            console.log("error password should be strong.")
+                        }
+                    }
+                    else
+                    {
+                        console.log('room is aleredy protected .')
+                    }
+                    
+                } 
+                else
+                {
+                    console.log('invalid jwt.');
+                }
+            }   
+            catch (error)   
+            {
+               
+                console.log(error)
+            } 
+        }
 
         /* direct messages */
 

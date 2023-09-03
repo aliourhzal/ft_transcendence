@@ -26,6 +26,10 @@ model User {
 	userFriends                 User[]              @relation("friends")
     friendOfUser                User[]              @relation("friends")
     
+    blockedBy      User[]      @relation("block")
+
+    blockedUsers   User[]      @relation("block")
+
 	messages                    Messages[]
     rooms                   JoinedTable[]
     bannedUsers                   BlackList[]

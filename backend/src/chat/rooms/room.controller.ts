@@ -88,57 +88,71 @@ export class RoomController {
     
      
     @Post('/')
-    // async block(@Req() request: Request , @Body() dto:Block, @Res() res:any)
-    async block(@Req() request: Request , @Res() res:any)
+    async block(@Req() request: Request , @Body() dto:Block, @Res() res:any)
     {
-        // const roo
+        const roomId = "test";
+ 
+        try 
+        {
+            const token = this.utils.verifyJwtFromHeader(request.headers['authorization']);
 
-        // try 
-        // {
-        //     const token = this.utils.verifyJwtFromHeader(request.headers['authorization']);
-
-        //     if (token) 
-        //     {
-        //         const user = await this.utils.verifyToken(token)
+            if (token) 
+            {
+                const user = await this.utils.verifyToken(token)
               
-        //         if (user) 
-        //         {
-        //             const ifUserExist = await this.utils.getUserId([user['sub']]);
-                    
-        //             if(ifUserExist.error)
-        //                 return res.status(404).send(ifUserExist.error);
-
-        //             const roomId = await this.utils.getRoomById(dto.roomId);
+                 const rtn = await this.checkBlockUser(user['sub'] , roomId , dto.blockedUserId);
                 
-                    
-        //             if (roomId) // if room is founding check if current user is member into it and it not banned
-        //             {
-        //                 const isUserInRoom = await this.utils.getUserType(roomId,[user['sub']]);
+                if(rtn.error)
+                {
+                    console.log(rtn.error);
+                    return
+                }
 
-        //                 if(isUserInRoom.error)
-        //                     return res.status(404).send(isUserInRoom.error);
-                        
-        //                 const messageAndUserName = await this.messagesService.getAllMessagesofRoom(dto.roomId);
-                        
-        //                 return res.status(200).send({ msg: messageAndUserName });
-        //             }
-        //             else
-        //             {
-        //                 return res.status(404).send('room not found.');
-        //             }
-        //         }
-        //     }
-        //     else
-        //     {
-        //         return res.status(404).send('invalid jwt.')
-        //     }
+                await this.roomService.blockUser(user['sub'] , dto.blockedUserId);
+                console.log(await this.roomService.isBlocked(dto.blockedUserId , user['sub'] ));
+                await this.roomService.unblockUser( user['sub'] , dto.blockedUserId );
+                console.log(await this.roomService.isBlocked(dto.blockedUserId , user['sub'] ));
+            }
+            else
+            {
+                return res.status(404).send('invalid jwt.')
+            }
      
-        // }
-        // catch(error)
-        // {
-        //     return res.status(500).json({ error: error.message });
-        // }
+        }
+        catch(error)
+        {
+            return res.status(500).json({ error: error.message });
+        }
 
     }
+
+        async checkBlockUser(currentUserId :string , roomName  : string, blockedUserId : string)
+        {
+            const existingUser = await this.utils.getUserId([currentUserId , blockedUserId ]); // if current user in db
+
+            if(existingUser.error)
+            {
+                return {error : 'user not found.'};
+            } 
+
+            const roomInfos = await this.utils.getRoomByName(roomName); 
+
+            if(roomInfos)  // if room exist
+            {
+                const ifUserInroom = await this.utils.getUserType(roomInfos.id , [currentUserId , blockedUserId ]); // if both users in this room
+                
+                if(ifUserInroom.error)
+                {
+                    return {error : ifUserInroom.error};
+                }
+
+                return {room : roomInfos , ifUserInroom , currentUserId };
+            }
+            else 
+            {
+                return {error : 'room not found'}
+            }
+
+        }
 
 }
