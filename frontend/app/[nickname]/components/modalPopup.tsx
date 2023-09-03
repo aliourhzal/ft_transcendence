@@ -67,7 +67,7 @@ export default function MyModal(props: any) {
         e.preventDefault();
 		let p : number = 3;
 		let oldPass : string;
-        const newNickname = e.target[2].value;
+        const newNickname = e.target[2].value as string;
 		if (userData.password)
 		{
 			oldPass = e.target[3].value;
@@ -118,6 +118,12 @@ export default function MyModal(props: any) {
 		{
 			try
 			{
+				if (newNickname.indexOf(' ') >= 0) {
+					nickNameRef.current.textContent = "Nickname can't Contain Space";
+					nickNameRef.current.style.color = "E76161";
+					return ;
+				}
+					
 				await axios.post('http://127.0.0.1:3000/users/profile/nickName', {newNickname}, {
 					withCredentials: true
 				});
@@ -128,7 +134,10 @@ export default function MyModal(props: any) {
 			}
 			catch(error)
 			{
-				nickNameRef.current.textContent = "Nick Name Already In Use";
+				if (error.response.status === 409)
+					nickNameRef.current.textContent = "Nick Name Already In Use";
+				if (error.response.status === 400)
+					nickNameRef.current.textContent = "Nick Name Can't Contain Space";
 				nickNameRef.current.style.color = "E76161";
 			}
 		}
