@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { BadRequestException, Body, Controller, Get, Param, Post, Put, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, ConflictException, Controller, Get, Param, Post, Put, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -54,7 +54,7 @@ export class UsersController{
 	async setting(@Body() nicknameObj: ChangeNicknameDTO, @Req() req: any, @Res() response: Response)
 	{
 		if ((await this.usersService.findOneByNickname(nicknameObj.newNickname)))
-			throw new Error("already in use NickName");
+			throw new ConflictException("already in use NickName");
 		else
 		{
 			this.usersService.updateUserNickName(req.user.sub, nicknameObj.newNickname);
