@@ -137,7 +137,7 @@ export function Missions(props) {
 				{
 					missions.map(m => {
 						return (
-							<Mission description={m.description} xp={m.xp}/>
+							<Mission key={m.description} description={m.description} xp={m.xp}/>
 						);
 					})
 				}
@@ -165,7 +165,7 @@ export function Achievements(props) {
 				{
 					achievements.map(a => {
 						return(
-							<Achieve achievement={a}/>
+							<Achieve key={a.id} achievement={a}/>
 						);
 					})
 				}
