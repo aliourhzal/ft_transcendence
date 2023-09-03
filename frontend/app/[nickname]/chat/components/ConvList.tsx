@@ -28,7 +28,7 @@ const ConvList:React.FC<ConvListProps> = ({allUsers, activeUserConv, setActiveUs
         }
         rooms.unshift({
           name: _name,
-          lastmsg:'',
+          lastmsg: room.msg[room.msg.length - 1],
           msgs: room.msg,
           id: room.room.room.id,
           users: getUsersInfo(room.usersInRoom),
@@ -39,7 +39,7 @@ const ConvList:React.FC<ConvListProps> = ({allUsers, activeUserConv, setActiveUs
       else {
         rooms.unshift({
           name: room.room.room.room_name,
-          lastmsg:'welcome to group chat',
+          lastmsg: room.msg[room.msg.length - 1],
           msgs: room.msg,
           id: room.room.room.id,
           users: getUsersInfo(room.usersInRoom),

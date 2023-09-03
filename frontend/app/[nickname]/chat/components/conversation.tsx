@@ -21,7 +21,7 @@ const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, d
     
     const [msg_sender, set_msg_sender] = useState('')
     
-    const {setAlertNewMessage, scrollToBottom, chatBoxMessages, rooms, socket,
+    const {setAlertNewMessage, scrollToBottom, chatBoxMessages, rooms, socket, setRefresh,
         userData, setChatBoxMessages, setShowUserInfos, setUserInfoNick, msgInputRef, setRooms, setConvs} = useContext(Context)
 
     const sendMessage = (e) => {
@@ -51,17 +51,23 @@ const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, d
     }, [chatBoxMessages])
 
     const addmsg = (msg) => {
-        console.log("**********", msg)
         setRooms(_rooms => {
-          _rooms.find(o => o.id === msg.roomId)?.msgs.push({user:msg.user, msg:msg.msg})
-          console.log(_rooms)
+          let temp = _rooms.find(o => o.id === msg.roomId)
+          if (temp) {
+              temp?.msgs.push({user:msg.user, msg:msg.msg})
+              temp.lastmsg = {user:msg.user, msg:msg.msg}
+          }
+            
           setConvs(_rooms)
           return _rooms
         })
-        console.log(activeUserConv)
         if (rooms.find(o => o.id === activeUserConv.id)?.id == msg.roomId) {
-          console.log("lmfaoing")
           setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.msg, id:msg.idOfmsg}])
+        }
+        else{
+            rooms.find(o => o.id === msg.roomId).pending = true
+            console.log("*******", rooms.find(o => o.id === msg.roomId))
+            setRefresh(old => !old)
         }
     }
     

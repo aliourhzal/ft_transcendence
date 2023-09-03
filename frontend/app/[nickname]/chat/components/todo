@@ -20,13 +20,14 @@ add block user to search dm (DONE)
 fix messages from room with the same name as user (DONE)
 change edit room icons design (DONE)
 phone responsiveness (DONE)
+request room data once page loads (DONE)
 
 
 
+
+add last msg to convbox (in progress)
 
 room from public to protected (backend)
-
-request room data once page loads (backend)
 
 get blocked users on load to compare when looking for dms (back and front)
 
@@ -37,8 +38,6 @@ fix search dm bug
 mark room with new message
 
 fix bug msg sent twice after opening dm from search
-
-add last msg to convbox (in progress)
 
 check cookies after msg sent
 

@@ -20,8 +20,9 @@ import MyAlert from "./components/MyAlert";
 export interface conversation {
 	readonly name: string,
 	readonly photo: string,
-	readonly lastmsg: string, 
+	readonly lastmsg: {user: string, msg:string}, 
 	readonly id: number,
+	readonly pending?: boolean
 }
 
 export const Context = createContext<any>(undefined)
@@ -36,7 +37,7 @@ export interface Room {
 	id: string,
 	name: string,
 	type: string,
-	lastmsg: string,
+	lastmsg: {user: string, msg: string},
 	photo?: string,
 	users: {
 		id: string,
@@ -46,7 +47,8 @@ export interface Room {
 		photo?: string,
 		type: "OWNER"| "ADMIN" | "USER",
 		isMuted: string
-	}[]
+	}[],
+	pending: boolean
 }
 
 export const getUsersInfo = (users) => {
@@ -127,6 +129,7 @@ export default function Chat() {
 	
 	// const [allUsers, setAllUsers] = useState<any[]>([])
 	
+	const [refresh, setRefresh] = useState(false)
 	
 	useEffect( () => {
 		console.log('test')
@@ -174,7 +177,7 @@ export default function Chat() {
 	const [activeUserConv, setActiveUserConv] = useState<conversation | undefined>({
 		name: '.',
 		photo: '',
-		lastmsg: '', 
+		lastmsg: {user: '', msg: ''}, 
 		id: 0,
 	})
 
@@ -234,7 +237,7 @@ export default function Chat() {
 			<Context.Provider value={{alertNewMessage, setAlertNewMessage, ref, showConv, setShowConv, socket,
 				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm,
 				set_room_created, room_created, rooms, setRooms, showSearchUsersForm, setShowSearchUsersForm, scrollToBottom, _notification,
-				convs, setConvs, setShowUserInfos, setUserInfoNick, msgInputRef}}>
+				convs, setConvs, setShowUserInfos, setUserInfoNick, msgInputRef, setRefresh}}>
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200">
 					<div className={"flex flex-col items-center justify-center text-sm lg:text-base h-[90vh] text-center " +
 					(deviceType === 'normal' ? 'w-[calc(90%/2)]' : 'w-[100%]')}>

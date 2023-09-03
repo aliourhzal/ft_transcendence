@@ -29,6 +29,7 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
       setChatBoxMessages([])
       return ;
     }
+    rooms.find(o => o.id === data.id).pending = false
     setActiveUserConv(data)
     setShowConv(true)
     convsFilter('')
@@ -54,14 +55,12 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
     // const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
   }
   
-  const lastmsg = rooms.find(o => o.id === data.id).msgs[rooms.find(o => o.id === data.id).msgs.length - 1]
-  console.log(lastmsg)
+  const [lastmsg, setLastMsg] = useState(rooms.find(o => o.id === data.id).lastmsg)
+  const [pending, setPending] = useState(data.pending)
+  console.log(data)
 
   return (
     <div className={(activeUserConv.id === data.id ? 'bg-blueStrong' : 'bg-zinc-800 hover:bg-zinc-700') + " cursor-pointer convGroup z-0 focus:bg-blueStrong w-[70%] left-[15%] h-[100px] gap-4 relative my-3 rounded-md active:bg-blue-500 flex items-center justify-start text-[16px]"} onClick={handleClick} onFocus={handleClick}>
-        {/* {data && <div className='absolute z-0 h-[100px] w-full flex flex-col items-end justify-center bg-transparent'>
-          <span className='mx-5 animate-ping inline-flex w-2 h-2 rounded-full bg-blueStrong z-10 opacity-90'></span>
-        </div>} */}
         <div className='w-20 h-20 flex items-center justify-center relative mx-[7%]'>
           <img alt={data.name} width={45} height={45} className="rounded-full border-2 border-slate-300 w-30 h-30" src={data.photo} />
           { rooms.find(o => o.id === data.id)?.type === 'DM' && allUsers.find(o => o.nickname === data.name)?.status === 'online' ?
@@ -71,8 +70,11 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
         <div className='flex flex-col justify-center gap-2 w-[100%] h-[50%] items-start'>
           <div className="left-[30%] top-[25%] text-gray-200 font-medium">{data.name}</div>
           <div className="left-[30%] top-[50%] text-gray-200 text-opacity-70 font-normal">{
-          lastmsg?.msg ? lastmsg?.msg.length > 15 ? lastmsg.user + " : " + lastmsg?.msg.substring(0, 15) + '...' : lastmsg.user + " : " + lastmsg?.msg : ''}</div>
+            lastmsg?.msg ? lastmsg?.msg.length > 15 ? lastmsg.user + " : " + lastmsg?.msg.substring(0, 15) + '...' : lastmsg.user + " : " + lastmsg?.msg : ''}</div>
         </div>
+        { pending &&
+          <span className='mx-5 absolute animate-ping inline-flex w-2 h-2 rounded-full bg-blueStrong z-10 opacity-90 right-0 top-[20%]'></span>
+        }
         {/* <div className="left-[85%] top-[70%] lg:top-[50%] absolute text-gray-200 text-opacity-70 font-normal">10:30</div> */}
     </div>
   )
