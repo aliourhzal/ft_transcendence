@@ -31,7 +31,7 @@ export class MessagesService
             for (let i = 0; i < messages.messages.length; i++) {// put them in map or array of obj and return it
                 
                 const msg: AllMessages = {
-                    user: (await this.findUserById(messages.messages[i].userId)).nickname,
+                    user: (await this.findUserById(messages.messages[i].userId)).id,
                     msg: messages.messages[i].text
                 };
                 allMessages.push(msg);
@@ -82,12 +82,12 @@ export class MessagesService
 
         const userAndText = {userId: rtn.id, msg: rtn.text}
 
-        const username = (await this.findUserById(userId)).nickname;
+        const user = (await this.findUserById(userId)).id;
 
-        if(username)
+        if(user)
         {
             return { 
-                username, 
+                user, 
                 msg: userAndText.msg,
                 idOfMsg:rtn.id
                  
