@@ -130,7 +130,6 @@ export class Specials {
 		let randomX = this.randomIntFromInterval(2 / 10 * 800, 8 / 10 * 800);
 		let randomY = this.randomIntFromInterval(2 / 10 * 450, 8 / 10 * 450);
 		const randomSpecial = this.randomIntFromInterval(0, 1);
-		console.log('test: ', specials[randomSpecial]);
 		specials.forEach((s) => {
 			this[s] = false;
 		})
