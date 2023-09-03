@@ -32,8 +32,10 @@ export default function Game(props: any)
 		socket.on("playersInfo", (data: {nickname:string, avatar:string}) => {
 			setOpData({loading: true, ...data});
 		});
-	}
-	,[]);
+		return (() => {
+			socket.disconnect();
+		})
+	},[]);
 
 	return (
 		<section className="flex w-full h-full items-center bg-darken-200 relative">
