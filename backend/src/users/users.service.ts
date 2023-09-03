@@ -117,6 +117,7 @@ export class UsersService {
 		try {
 			sizeOf.imageSize(file.path);
 		} catch (e) {
+			unlinkSync(`uploads/${category}/${nickname}.${category}${ext}`);
 			path = `${process.env.BACK_HOST}/users/uploads/default.${category}.png`;
 		}
 		await this.prisma.user.update({
@@ -127,6 +128,7 @@ export class UsersService {
 				[category === 'avatar' ? 'profilePic' : 'coverPic']: path
 			}
 		});
+		return path;
 	}
 
 	async deletePreviousImage(nickname: string, category: string) {
