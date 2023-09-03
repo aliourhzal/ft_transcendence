@@ -45,7 +45,7 @@ const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin,
                     : <span className='w-2 h-2 -ml-1'></span>}
                     <Avatar bordered color={"primary"} pointer zoomed src={info.room.users.find(o => o.id === user.id).photo} />
                 </div>
-                <div>{user.id === info.userData.id ? 'you' : user.nickName}</div>
+                <div>{user.id === info.userData.id ? 'you' : allUsers.find(o => o.id === user.id).nickname}</div>
                 {isOwner(info.room.users.find(o => o.id === user.id)) ? <FaCrown/> : ''}
                 {isAdmin(info.room.users.find(o => o.id === user.id)) && !isOwner(info.room.users.find(o => o.id === user.id)) ? <AiFillStar/> : ''}
             </div>
@@ -56,7 +56,7 @@ const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin,
                     (showOptions ? 'rotate-180' : '')}/> : ''}
             </div>
         </div>
-        {showOptions && <RoomOptions info={info} user={user} isAdmin={isAdmin} isOwner={isOwner} />}
+        <RoomOptions className={`transition-all duration-300 delay-130 ${showOptions ? 'flex' : 'hidden'}`} info={info} user={user} isAdmin={isAdmin} isOwner={isOwner} />
     </div>
   )
 }

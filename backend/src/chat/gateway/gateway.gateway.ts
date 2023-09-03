@@ -890,51 +890,52 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         @UsePipes(new ValidationPipe()) 
         async makeRoomProtected(@MessageBody() dto:MakeRoomProtected , @ConnectedSocket() socket: Socket) 
         {
-            try 
-            {
-                const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+            console.log(dto)
+            // try 
+            // {
+            //     const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
                 
-                if (token) 
-                {
-                    const user  = await this.utils.verifyToken(token); // // if has error will catch it
+            //     if (token) 
+            //     {
+            //         const user  = await this.utils.verifyToken(token); // // if has error will catch it
 
-                    const rtn = await this.gatewayService.checkUpdateRoom(user['sub'] , dto.roomName);
+            //         const rtn = await this.gatewayService.checkUpdateRoom(user['sub'] , dto.roomName);
                     
-                    if(rtn.error)
-                    {
-                        console.log(rtn.error)
-                        return ;
-                    }
+            //         if(rtn.error)
+            //         {
+            //             console.log(rtn.error)
+            //             return ;
+            //         }
 
-                    if(rtn.room.roomType !== 'PROTECTED')
-                    {
-                        if(dto.newPassword.length > 8)
-                        {
-                            await this.roomService.updateRoomToProtected(rtn.room.id ,dto.newPassword);
-                            await this.emmiteEventesToUsers(socket, rtn.room.id,"change-room-password",{ roomName : rtn.room.room_name , password : 'new'});
+            //         if(rtn.room.roomType !== 'PROTECTED')
+            //         {
+            //             if(dto.newPassword.length > 8)
+            //             {
+            //                 await this.roomService.updateRoomToProtected(rtn.room.id ,dto.newPassword);
+            //                 await this.emmiteEventesToUsers(socket, rtn.room.id,"change-room-password",{ roomName : rtn.room.room_name , password : 'new'});
 
-                        }
-                        else
-                        {
-                            console.log("error password should be strong.")
-                        }
-                    }
-                    else
-                    {
-                        console.log('room is aleredy protected .')
-                    }
+            //             }
+            //             else
+            //             {
+            //                 console.log("error password should be strong.")
+            //             }
+            //         }
+            //         else
+            //         {
+            //             console.log('room is aleredy protected .')
+            //         }
                     
-                } 
-                else
-                {
-                    console.log('invalid jwt.');
-                }
-            }   
-            catch (error)   
-            {
+            //     } 
+            //     else
+            //     {
+            //         console.log('invalid jwt.');
+            //     }
+            // }   
+            // catch (error)   
+            // {
                
-                console.log(error)
-            } 
+            //     console.log(error)
+            // } 
         }
 
         /* direct messages */

@@ -91,7 +91,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     const changeRoomType = async (newType:string) => {
         console.log(newType)
         newType === 'public' ? socket.emit('delete-room-password', {roomName:info.room.name}) :
-        socket.emit('add-room-password', {roomName:info.room.name, newPassword: newType})
+        socket.emit('make-room-protected', {roomId:info.room.id, newPassword: newType})
         setshowRoomEditForm(false)
     }
 
@@ -104,7 +104,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     {(info.room && info.show) &&
         <Popup isOpen={info.show} modalAppearance={hide}>
             <div className='flex items-center justify-center gap-4 -mt-8'>
-                <h1 className='bg-blueStrong py-1 px-3 absolute top-0 font-extrabold text-sm rounded-t-lg rounded-b-full'>{info.room.name.substring(0, 10)}</h1>
+                <h1 className='bg-blueStrong py-1 px-3 absolute top-0 hover:scale-105 cursor-none font-extrabold text-sm rounded-t-lg rounded-b-full'>{info.room.name.substring(0, 10)}</h1>
                 {isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) &&
                     <div className='flex items-center p-3 bg-slate-500 rounded-full hover:scale-110 hover:text-whiteSmoke cursor-pointer'>
                         <AiOutlineUsergroupAdd size={19} color={showUsersForm ? 'rgb(41 120 242)' : ''} cursor={'pointer'} className='hover:text-whiteSmoke' onClick={ () => {

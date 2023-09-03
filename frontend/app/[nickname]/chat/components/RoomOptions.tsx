@@ -11,9 +11,10 @@ interface RoomOptionsProps {
     user: any,
     isAdmin: any,
     isOwner: any,
+    className: string
 }
 
-const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner } ) => {
+const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner, className } ) => {
 
     const {socket} = useContext(Context)
 
@@ -79,7 +80,7 @@ const OptionsIcon = ( { icon } ) => {
 
 
   return (
-    <div className='flex flex-col items-center'>
+    <div className={`${className} justify-start`}>
         {(isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) && user.nickName != info.userData.nickname) &&
             !isOwner(info.room.users.find(o => o.nickName === user.nickName)) &&
             <>

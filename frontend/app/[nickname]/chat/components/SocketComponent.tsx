@@ -123,6 +123,14 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
     console.log("change pass")
     if (res.password === 'exist')
       _notification(`'${res.roomName}' password changed !`, "good")
+    else if (res.password === 'new') {
+      _notification(`'${res.roomName}' is set to protected`, "good")
+      setRooms( (_rooms: Room[]) => {
+        _rooms.find(o => o.name === res.roomName).type = 'PROTECTED'
+        setConvs([..._rooms])
+        return _rooms
+      })
+    }
     else {
       _notification(`'${res.roomName}' is set to public`, "good")
       setRooms( (_rooms: Room[]) => {
