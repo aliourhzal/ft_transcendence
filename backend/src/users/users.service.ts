@@ -8,7 +8,8 @@ import { createReadStream} from 'fs';
 import { readdir } from 'fs/promises';
 import { UserData } from 'src/utils/userData.interface';
 import { twoFactorAuth } from 'src/QrCode/qr.services';
- import * as achievements from './achievements.json'
+import * as achievements from './achievements.json';
+import * as sizeOf from "image-size"
 
 @Injectable()
 export class UsersService {
@@ -112,7 +113,12 @@ export class UsersService {
 
 	async changeUserCatalogue(nickname: string , file: Express.Multer.File, category: string) {
 		const ext = extname(file.originalname);
-		const path = `${process.env.BACK_HOST}/users/uploads/${nickname}.${category}${ext}`;
+		let path = `${process.env.BACK_HOST}/users/uploads/${nickname}.${category}${ext}`;
+		try {
+			sizeOf.imageSize(file.path);
+		} catch (e) {
+			path = `${process.env.BACK_HOST}/users/uploads/default.${category}.png`;
+		}
 		await this.prisma.user.update({
 			where: {
 				nickname
@@ -134,9 +140,10 @@ export class UsersService {
 			provider = user.profilePic.split('/')[2];
 		else
 			provider = user.coverPic;
-		if (provider !== 'cdn.intra.42.fr' && provider !== 'http://127.0.0.1:3000/users/uploads/default.cover.jpeg')
+		if (provider !== 'cdn.intra.42.fr' && provider !== `http://127.0.0.1:3000/users/uploads/default.${category}.png`)
 		{
-			const oldImage = category === 'avatar' ? user.profilePic.split('/')[5] :  user.coverPic.split('/')[5] 
+			const oldImage = category === 'avatar' ? user.profilePic.split('/')[5] :  user.coverPic.split('/')[5];
+
 			unlinkSync(`uploads/${category}/${oldImage}`);
 		}
 	}
@@ -161,7 +168,7 @@ export class UsersService {
 		}
 		else
 		{
-			const file = createReadStream(`./uploads/${category}/default.png`);
+			const file = createReadStream(`./uploads/${category}/default.${category}.png`);
 			return new StreamableFile(file);
 		}
 	}
