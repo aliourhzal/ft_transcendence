@@ -104,7 +104,7 @@ const ConvList:React.FC<ConvListProps> = ({allUsers, activeUserConv, setActiveUs
           newusers.map(_new => {
             _notification(`"${_new.user.nickname}" joined '${res.roomId.room_name}'`, "good")
             if (activeUserConv.name === res.roomId.room_name)
-              setChatBoxMessages(old => [...old, {user: 'bot', msg : `"${_new.user.nickname}" joined`}])
+              setChatBoxMessages(old => [...old, {userId: 'bot', msg : `"${_new.user.nickname}" joined`}])
           })
         }
       }

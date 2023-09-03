@@ -52,7 +52,7 @@ const RoomForm:React.FC<RoomFormProps> = ( { allUsers, showForm, setShowForm, se
                 }
                 setRooms(_rooms => {_rooms.unshift({
                     name: _name,
-                    lastmsg:'',
+                    lastmsg:{userId: '', msg: ''},
                     msgs: [],
                     id: res.room.id,
                     users: setDmUsers(res.usersInfos.existingUser),

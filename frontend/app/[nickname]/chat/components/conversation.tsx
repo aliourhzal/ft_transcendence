@@ -22,7 +22,7 @@ const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, d
     const [msg_sender, set_msg_sender] = useState('')
     
     const {setAlertNewMessage, scrollToBottom, chatBoxMessages, rooms, socket, setRefresh,
-        userData, setChatBoxMessages, setShowUserInfos, setUserInfoNick, msgInputRef, setRooms, setConvs} = useContext(Context)
+        userData, setChatBoxMessages, setShowUserInfos, setUserInfoNick, setUserInfoId, msgInputRef, setRooms, setConvs} = useContext(Context)
 
     const sendMessage = (e) => {
         e.preventDefault()
@@ -36,7 +36,7 @@ const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, d
                     set_msg_sender(userData.nickname)
                 }
                 else {
-                    setChatBoxMessages(old => [...old, {user: 'bot', msg : "You are muted"}])
+                    setChatBoxMessages(old => [...old, {userId: 'bot', msg : "You are muted"}])
                     e.target[0].value = ''
                 }
             }
@@ -54,15 +54,15 @@ const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, d
         setRooms(_rooms => {
           let temp = _rooms.find(o => o.id === msg.roomId)
           if (temp) {
-              temp?.msgs.push({user:msg.user, msg:msg.msg})
-              temp.lastmsg = {user:msg.user, msg:msg.msg}
+              temp?.msgs.push({userId:msg.user, msg:msg.msg})
+              temp.lastmsg = {userId:msg.userId, msg:msg.msg}
           }
             
           setConvs(_rooms)
           return _rooms
         })
         if (rooms.find(o => o.id === activeUserConv.id)?.id == msg.roomId) {
-          setChatBoxMessages((old:any) => [...old, {user:msg.user, msg:msg.msg, id:msg.idOfmsg}])
+          setChatBoxMessages((old:any) => [...old, {userId:msg.userId, msg:msg.msg, id:msg.idOfmsg}])
         }
         else{
             rooms.find(o => o.id === msg.roomId).pending = true
@@ -87,8 +87,10 @@ const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, d
                         if (rooms.find(o => o.id === activeUserConv.id).type != 'DM')
                             setShowInfo(true)
                         else {
-                            console.log(activeUserConv.name)
+                            // console.log(activeUserConv.name)
                             setUserInfoNick(activeUserConv.name)
+                            // console.log(rooms.find(o => o.id === activeUserConv.id)?.users)
+                            setUserInfoId(rooms.find(o => o.id === activeUserConv.id)?.users.find(o => o.nickName === activeUserConv.name)?.id)
                             setShowUserInfos(true)
                         }
                         }}>
@@ -98,13 +100,13 @@ const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, d
                     {deviceType != 'normal' && <button className='w-9 h-9 border border-blue-800 bg-blue-700 text-whiteSmoke hover:scale-110 hover:bg-whiteSmoke hover:text-blueStrong focus:outline-none focus:ring-blue-300 font-bold rounded-full text-lg flex text-center justify-center items-center mr-5' onClick={() => {setShowConv(false); setActiveUserConv({
                         name: '.',
                         photo: '',
-                        lastmsg: '', 
+                        lastmsg: {userId: '', msg: ''}, 
                         id: 0,
                     }); setChatBoxMessages([])}}>x</button>}
                 </div>
 
                 <div id='chatbox' className='relative flex flex-col w-full mt-8 overflow-y-scroll basis-[80%]'>
-                    <ChatBox activeUserConv={activeUserConv}/>
+                    <ChatBox activeUserConv={activeUserConv} allUsers={allUsers}/>
                 </div>
 
                 <div className='h-[8%] w-[90%] flex items-center justify-center'>

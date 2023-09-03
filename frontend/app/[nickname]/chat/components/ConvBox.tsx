@@ -22,7 +22,7 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
       setActiveUserConv({
         name: '.',
         photo: '',
-        lastmsg: '', 
+        lastmsg: {userId: '', msg: ''}, 
         id: 0,
       })
       convsFilter('')
@@ -44,6 +44,7 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
         })
       .then((res) => {
         setChatBoxMessages(res.data.msg)
+        console.log(res.data.msg)
       })
     } catch(error) {
       // alert(error)
@@ -57,12 +58,12 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
   
   const [lastmsg, setLastMsg] = useState(rooms.find(o => o.id === data.id).lastmsg)
   const [pending, setPending] = useState(data.pending)
-  console.log(data)
+  console.log(lastmsg)
 
   return (
     <div className={(activeUserConv.id === data.id ? 'bg-blueStrong' : 'bg-zinc-800 hover:bg-zinc-700') + " cursor-pointer convGroup z-0 focus:bg-blueStrong w-[70%] left-[15%] h-[100px] gap-4 relative my-3 rounded-md active:bg-blue-500 flex items-center justify-start text-[16px]"} onClick={handleClick} onFocus={handleClick}>
         <div className='w-20 h-20 flex items-center justify-center relative mx-[7%]'>
-          <img alt={data.name} width={45} height={45} className="rounded-full border-2 border-slate-300 w-30 h-30" src={data.photo} />
+          <img alt={data.name} width={11} height={11} className="rounded-full border-2 border-slate-300 w-11 h-11" src={data.photo} />
           { rooms.find(o => o.id === data.id)?.type === 'DM' && allUsers.find(o => o.nickname === data.name)?.status === 'online' ?
           <span className='rounded-full bg-green-400 opacity-90 border-2 border-green-500 w-2 h-2 absolute top-[65%] right-[15%]'></span>
           : ''}
@@ -70,7 +71,7 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
         <div className='flex flex-col justify-center gap-2 w-[100%] h-[50%] items-start'>
           <div className="left-[30%] top-[25%] text-gray-200 font-medium">{data.name}</div>
           <div className="left-[30%] top-[50%] text-gray-200 text-opacity-70 font-normal">{
-            lastmsg?.msg ? lastmsg?.msg.length > 15 ? lastmsg.user + " : " + lastmsg?.msg.substring(0, 15) + '...' : lastmsg.user + " : " + lastmsg?.msg : ''}</div>
+            lastmsg?.msg ? lastmsg?.msg.length > 15 ? allUsers.find(o => o.id === lastmsg.userId).nickname + " : " + lastmsg?.msg.substring(0, 15) + '...' : allUsers.find(o => o.id === lastmsg.userId).nickname + " : " + lastmsg?.msg : ''}</div>
         </div>
         { pending &&
           <span className='mx-5 absolute animate-ping inline-flex w-2 h-2 rounded-full bg-blueStrong z-10 opacity-90 right-0 top-[20%]'></span>

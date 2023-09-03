@@ -20,7 +20,7 @@ import MyAlert from "./components/MyAlert";
 export interface conversation {
 	readonly name: string,
 	readonly photo: string,
-	readonly lastmsg: {user: string, msg:string}, 
+	readonly lastmsg: {userId: string, msg:string}, 
 	readonly id: number,
 	readonly pending?: boolean
 }
@@ -33,11 +33,11 @@ export const gimmeRandom = () => {
 };
 
 export interface Room {
-	msgs: {user:string, msg:string}[],
+	msgs: {userId:string, msg:string}[],
 	id: string,
 	name: string,
 	type: string,
-	lastmsg: {user: string, msg: string},
+	lastmsg: {userId: string, msg: string},
 	photo?: string,
 	users: {
 		id: string,
@@ -164,7 +164,7 @@ export default function Chat() {
 
 	const [rooms, setRooms] = useState<Room[]>([])
 
-	const [chatBoxMessages, setChatBoxMessages] = useState<{user:string, msg:string, roomId?: string, id?:string}[]>([])
+	const [chatBoxMessages, setChatBoxMessages] = useState<{userId:string, msg:string, roomId?: string, id?:string}[]>([])
 
 	const [showForm, setShowForm] = useState(false)
 	const [showJoinForm, setShowJoinForm] = useState(false)
@@ -173,11 +173,12 @@ export default function Chat() {
 
 	const [showUserInfos, setShowUserInfos] = useState(false)
 	const [userInfoNick, setUserInfoNick] = useState('')
+	const [userInfoId, setUserInfoId] = useState('')
 
 	const [activeUserConv, setActiveUserConv] = useState<conversation | undefined>({
 		name: '.',
 		photo: '',
-		lastmsg: {user: '', msg: ''}, 
+		lastmsg: {userId: '', msg: ''}, 
 		id: 0,
 	})
 
@@ -237,7 +238,7 @@ export default function Chat() {
 			<Context.Provider value={{alertNewMessage, setAlertNewMessage, ref, showConv, setShowConv, socket,
 				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm,
 				set_room_created, room_created, rooms, setRooms, showSearchUsersForm, setShowSearchUsersForm, scrollToBottom, _notification,
-				convs, setConvs, setShowUserInfos, setUserInfoNick, msgInputRef, setRefresh}}>
+				convs, setConvs, setShowUserInfos, setUserInfoNick, msgInputRef, setRefresh, setUserInfoId}}>
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200">
 					<div className={"flex flex-col items-center justify-center text-sm lg:text-base h-[90vh] text-center " +
 					(deviceType === 'normal' ? 'w-[calc(90%/2)]' : 'w-[100%]')}>
@@ -249,7 +250,7 @@ export default function Chat() {
 				<RoomForm setShowAlert={setShowAlert} setAlertText={setAlertText} allUsers={allUsers} setConvs={setConvs} set_room_created={set_room_created} showForm={showForm} setShowForm={setShowForm} />
 				<JoinRoomForm />
 				<SearchDm setShowSearchUsersForm={setShowSearchUsersForm} showSearchUsersForm={showSearchUsersForm} currentUsers={ allUsers } setActiveUserConv={ setActiveUserConv } />
-				<UserInfo showUserInfos={showUserInfos} setShowUserInfos={setShowUserInfos} nickname={userInfoNick} currentUsers={ allUsers } setActiveUserConv={setActiveUserConv} setChatBoxMessages={setChatBoxMessages} setShowConv={setShowConv}/>
+				<UserInfo showUserInfos={showUserInfos} setShowUserInfos={setShowUserInfos} nickname={userInfoNick} id={userInfoId} currentUsers={ allUsers } setActiveUserConv={setActiveUserConv} setChatBoxMessages={setChatBoxMessages} setShowConv={setShowConv}/>
 			</Context.Provider>
 		</main>
 	)
