@@ -37,12 +37,11 @@ export default function MyModal(props: any) {
 		const reader = new FileReader();
 		reader.onload = async function(ev) {
 			avatarElement.current.src = e.target!.result as string;
-			props.dispatch({type: ACTIONS.UPDATE_AVATAR, payload: ev.target!.result});
 			const formData = new FormData();
 			formData.append('avatar', e.target.files[0])
 			await axios.put('http://127.0.0.1:3000/users/profile/avatar', formData, {
 				withCredentials: true,
-			})
+			}).then(res => props.dispatch({type: ACTIONS.UPDATE_AVATAR, payload: res.data}));
 		}
 		reader.readAsDataURL(e.target.files[0]);
 	}
@@ -57,7 +56,7 @@ export default function MyModal(props: any) {
 			formData.append('cover', e.target.files[0])
 			await axios.put('http://127.0.0.1:3000/users/profile/cover', formData, {
 				withCredentials: true,
-			})
+			}).then(res => props.dispatch({type: ACTIONS.UPDATE_COVER, payload: res.data}));
 		}
 		reader.readAsDataURL(e.target.files[0]);
 	}
