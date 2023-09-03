@@ -6,6 +6,7 @@ import { IoIosArrowDown } from 'react-icons/io'
 import { Context } from '../page'
 import { useRouter } from 'next/navigation'
 import { AiFillStar } from 'react-icons/Ai'
+import { userInfo } from 'os'
 
 interface RoomMumbersProps {
     info: any,
@@ -43,7 +44,7 @@ const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin,
                     { allUsers.find(o => o.id === user.id).status === 'online' && userData.id != user.id ?
                     <span className='rounded-full bg-green-400 opacity-90 border-2 border-green-500 w-2 h-2 -ml-1'></span>
                     : <span className='w-2 h-2 -ml-1'></span>}
-                    <Avatar bordered color={"primary"} pointer zoomed src={info.room.users.find(o => o.id === user.id).photo} />
+                    <Avatar bordered color={"primary"} pointer zoomed src={ allUsers.find(o => o.id === info.room.users.find(o => o.id === user.id).id).profilePic} />
                 </div>
                 <div>{user.id === info.userData.id ? 'you' : allUsers.find(o => o.id === user.id).nickname}</div>
                 {isOwner(info.room.users.find(o => o.id === user.id)) ? <FaCrown/> : ''}

@@ -94,8 +94,8 @@ const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, d
                             setShowUserInfos(true)
                         }
                         }}>
-                        <Avatar zoomed text={activeUserConv.name} bordered color={'gradient'} alt={activeUserConv.name} src={rooms.find(o => o.id === activeUserConv.id)?.photo} pointer/>
-                        <div className='w-full flex items-center justify-center'>{activeUserConv.name}</div>
+                        <Avatar zoomed text={activeUserConv.name} bordered color={'gradient'} alt={activeUserConv.name} src={rooms.find(o => o.id === activeUserConv.id)?.type === 'DM' ? allUsers.find(o => o.id === rooms.find(o => o.id === activeUserConv.id).users.find(o => o.nickName === activeUserConv.name).id).profilePic : rooms.find(o => o.id === activeUserConv.id).photo} pointer/>
+                        <div className='w-full flex items-center justify-center'>{rooms.find(o => o.id === activeUserConv.id)?.type === 'DM' ? allUsers.find(o => o.id === rooms.find(o => o.id === activeUserConv.id).users.find(o => o.nickName === activeUserConv.name).id).nickname : activeUserConv.name}</div>
                     </div>
                     {deviceType != 'normal' && <button className='w-9 h-9 border border-blue-800 bg-blue-700 text-whiteSmoke hover:scale-110 hover:bg-whiteSmoke hover:text-blueStrong focus:outline-none focus:ring-blue-300 font-bold rounded-full text-lg flex text-center justify-center items-center mr-5' onClick={() => {setShowConv(false); setActiveUserConv({
                         name: '.',
