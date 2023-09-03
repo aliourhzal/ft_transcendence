@@ -55,7 +55,7 @@ export enum UserTypRoomType {
 }
 
 export interface AllMessages {
-    user: string;
+    userId: string;
     msg: string;
   }
 

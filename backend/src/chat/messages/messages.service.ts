@@ -31,7 +31,7 @@ export class MessagesService
             for (let i = 0; i < messages.messages.length; i++) {// put them in map or array of obj and return it
                 
                 const msg: AllMessages = {
-                    user: (await this.findUserById(messages.messages[i].userId)).id,
+                    userId: (await this.findUserById(messages.messages[i].userId)).id,
                     msg: messages.messages[i].text
                 };
                 allMessages.push(msg);

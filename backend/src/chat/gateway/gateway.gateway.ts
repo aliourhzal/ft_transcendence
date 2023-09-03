@@ -183,7 +183,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 {
                     const createdMsg = await this.messagesService.createMessages(dto.message ,user['sub'], rtn.room.id);
                      
-                    await this.emmiteEventesToUsers(socket, rtn.room.id  ,"add-message", {user: createdMsg.user, msg: createdMsg.msg , roomId: rtn.room.id , idOfmsg : createdMsg.idOfMsg})
+                    await this.emmiteEventesToUsers(socket, rtn.room.id  ,"add-message", {userId: createdMsg.user, msg: createdMsg.msg , roomId: rtn.room.id , idOfmsg : createdMsg.idOfMsg})
                           
                 }
             } 
@@ -942,7 +942,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         
         
         
-        //this.server.to(socket.id).emit("list-rooms",{messages});
         /*-------------------------------------------------on connect use this utils function--------------------------------------------------------- */
         
         async checkOnConnect(@ConnectedSocket() socket: Socket , currentUserId :string)
@@ -968,7 +967,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i].room.id) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
             }
             
-            // this.server.to(socket.id).emit("list-rooms",{messages});  //  evry client will connected will display the rooms who is member into 
             
             this.server.to(socket.id).emit("all-users", {allUsers: await this.utils.getAllUsers()}); 
             // emmit all users infos
@@ -996,10 +994,9 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
                     const rooms = await this.utils.getRoomsForUser(user['sub']); // all rooms who this user is member into it
             
-            
+             
                     let messages:any[] = [];
-                    
-                    
+                     
                     for(let i = 0; i < rooms.length; i++)
                     {
                         messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i].room.id) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
