@@ -299,13 +299,16 @@ export default function MyModal(props: any) {
 							{
 								qrCodeActive && <div className='flex flex-col items-center justify-center'>
 									<img className=' mix-blend-multiply dark:mix-blend-lighten w-2/3 h-auto rounded-lg' src={imgSrc} alt="wait ..." />
-									<Input
-										value={token}
-										onChange={hundleChangeToken}
-										placeholder='Enter Token'
-										startDecorator={<QrCodeScannerIcon color='primary' />}
-										endDecorator={<Button onClick={activateQr}>Active 2FA</Button>}
-									></Input>
+									{
+										imgSrc !== "./images/qrLoading.png" && 
+										<Input
+											value={token}
+											onChange={hundleChangeToken}
+											placeholder='Enter Token'
+											startDecorator={<QrCodeScannerIcon color='primary' />}
+											endDecorator={<Button onClick={activateQr}>Active 2FA</Button>}
+										></Input>
+									}
 								</div>
 							}
 							{/* <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 rounded ring-offset-gray-800 focus:ring-2bg-gray-700 border-gray-600"/> */}
