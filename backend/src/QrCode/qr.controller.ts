@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
-
+import { Body, ConflictException, Controller, Get, HttpCode, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Response } from 'express';
 import { twoFactorAuth } from './qr.services';
 import { UsersService } from 'src/users/users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { error } from 'console';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 
 @Controller('qr')
 export class QrController {
@@ -24,9 +25,14 @@ export class QrController {
 
     @UseGuards(AuthGuard('jwt'))
     @Post('codeCheck')
-    async checkQr(@Req() req: any, @Body('token') tok: string)
+    async checkQr(@Req() req: any, @Body('token') tok: string, @Res() response: Response)
     {
-        console.log( await this.twoFactorAuth.verifyCode(req.user.sub, tok)); // return true if tokn valid false otherwise
+        const valid = await this.twoFactorAuth.verifyCode(req.user.sub, tok); // return true if tokn valid false otherwise
+        console.log(valid);
+        if (valid)
+            response.end("ok");
+        else
+            throw new ConflictException("error while enabling 2FA");
     }
 
     @UseGuards(AuthGuard('jwt'))
