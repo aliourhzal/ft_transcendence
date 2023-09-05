@@ -29,10 +29,13 @@ export class twoFactorAuth
     
     async   verifyCode(id: string, tok: string)//true or false
     {
-        return speakeasy.totp.verify({
+        const valid = speakeasy.totp.verify({
             secret: (await this.userServices.findOneById(id)).AsciiSecretQr,
             encoding: 'ascii',
             token: tok
-        })
+        });
+        if (valid)
+            await this.userServices.twoFactorOn(id);
+        return valid;
     }
 }
