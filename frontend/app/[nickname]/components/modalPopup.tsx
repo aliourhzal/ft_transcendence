@@ -1,13 +1,17 @@
 'use client'
 import { Dialog, Transition } from '@headlessui/react'
 // import { Clicker_Script } from "next/font/google";
-import { useContext, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { Fragment, useState } from 'react';
 import { IoIosAddCircle, IoIosSettings } from "react-icons/io";
 import axios from "axios";
 import { ACTIONS } from '../layout';
 import { userDataContext } from '@/app/contexts/UniversalData';
 import { useRouter } from 'next/navigation';
+import { Switch } from '@headlessui/react';
+import Input from '@mui/joy/Input';
+import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
+import Button from '@mui/joy/Button';
 
 function InputTemplate(props: any) {
 	return (
@@ -20,6 +24,9 @@ function InputTemplate(props: any) {
 
 export default function MyModal(props: any) {
 	let [isOpen, setIsOpen] = useState(false);
+	const [token, setToken] = useState("");
+	const [qrCodeActive, setQr] = useState(false);
+	const [imgSrc, setSrc] = useState("./images/qrLoading.png");
 	const router = useRouter();
 	const avatarElement : any = useRef();
 	const coverElement : any = useRef();
@@ -59,6 +66,16 @@ export default function MyModal(props: any) {
 			}).then(res => props.dispatch({type: ACTIONS.UPDATE_COVER, payload: res.data}));
 		}
 		reader.readAsDataURL(e.target.files[0]);
+	}
+
+	function hundleChangeToken(ev)
+	{
+		setToken(ev.target.value);
+	}
+
+	function Two_factor_Auth()
+	{
+		setQr(prev => !prev);
 	}
 
     async function formSubmitHandler(e: any) {
@@ -143,6 +160,33 @@ export default function MyModal(props: any) {
 		else
 			alert("Can't save empty inputs");
 	}
+
+	async function activateQr()
+	{
+		try {
+			await axios.post('http://127.0.0.1:3000/qr/codeCheck', {token}, {withCredentials: true});
+		}
+		catch(err)
+		{
+			console.log("Token miss match !");
+		}
+	}
+
+	useEffect(() => {
+		async function load() 
+		{
+			await axios.get('http://127.0.0.1:3000/qr/code', {
+				withCredentials: true
+			}).then(res => {
+				console.log(res.data);
+				if (res.data.Qr !== undefined)
+					setSrc(res.data.Qr);
+				setQr(res.data.active);
+			}).catch(err => {console.log("error getting the Qr data !!!")});
+		}
+
+		load();
+	}, []);
 	
   return (
 	<div>
@@ -235,9 +279,36 @@ export default function MyModal(props: any) {
 						</label>
 						
 						{/* Two-Factor checkBox */}
-						<div className="flex items-center mb-4">
-							<input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 rounded ring-offset-gray-800 focus:ring-2bg-gray-700 border-gray-600"/>
-							<label htmlFor="default-checkbox" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Two-factor Authentication</label>
+						<div className="flex flex-col gap-7 items-center mb-4 text-sm font-medium text-darken-300 dark:text-gray-300">
+							<div className='flex items-center justify-center gap-5'>
+								<Switch
+									id='default-checkbox'
+									checked={qrCodeActive}
+									onChange={Two_factor_Auth}
+									className={`${qrCodeActive ? 'bg-blueStrong' : 'bg-darken-300'}
+									relative inline-flex h-[25px] w-[60px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+								>
+									<span
+									aria-hidden="true"
+									className={`${qrCodeActive ? 'translate-x-8' : 'translate-x-0'}
+										pointer-events-none inline-block h-[21px] w-[24px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+									/>
+								</Switch>
+								<label htmlFor="default-checkbox" className="cursor-pointer">Two-factor Authentication</label>
+							</div>
+							{
+								qrCodeActive && <div className='flex flex-col items-center justify-center'>
+									<img className=' mix-blend-multiply dark:mix-blend-lighten w-2/3 h-auto rounded-lg' src={imgSrc} alt="wait ..." />
+									<Input
+										value={token}
+										onChange={hundleChangeToken}
+										placeholder='Enter Token'
+										startDecorator={<QrCodeScannerIcon color='primary' />}
+										endDecorator={<Button onClick={activateQr}>Active 2FA</Button>}
+									></Input>
+								</div>
+							}
+							{/* <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 rounded ring-offset-gray-800 focus:ring-2bg-gray-700 border-gray-600"/> */}
 						</div>
 						<button type="submit" className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2">Save</button>
 					</form>
