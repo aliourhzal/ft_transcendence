@@ -86,8 +86,31 @@ export default function MyModal(props: any) {
 		setToken(ev.target.value);
 	}
 
-	function Two_factor_Auth()
+	async function Two_factor_Auth()
 	{
+		if (doneScanning)
+		{
+			try {
+					const res = await toast.promise(
+					axios.post('http://127.0.0.1:3000/qr/disable2FA',{qrCodeActive}, {
+					withCredentials: true}),
+					{
+						pending: 'Disabling 2FA',
+						success: '2FA Disibled',
+						error: 'Error While Disabling 2FA'
+					}
+					);
+					if (res.status === 201)
+					{
+						setScanned(false);
+						setToken("");
+					}
+				}
+				catch(err)
+				{
+					console.log("error while disabling 2FA")
+				}
+		}
 		setQr(prev => !prev);
 	}
 
