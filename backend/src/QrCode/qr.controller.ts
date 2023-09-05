@@ -37,8 +37,15 @@ export class QrController {
 
     @UseGuards(AuthGuard('jwt'))
     @Post('disable2FA')
-    async disable2FA(@Req() req: any)
+    async disable2FA(@Req() req: any, @Res() response: Response)
     {
-        await this.userServices.twoFactorOff(req.user.sub);
+        try{
+            await this.userServices.twoFactorOff(req.user.sub);
+            response.end("ok");
+        }
+        catch(err)
+        {
+            throw new ConflictException("error while disabling 2FA");
+        }
     }
 }
