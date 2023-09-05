@@ -29,4 +29,10 @@ export class QrController {
         console.log( await this.twoFactorAuth.verifyCode(req.user.sub, tok)); // return true if tokn valid false otherwise
     }
 
+    @UseGuards(AuthGuard('jwt'))
+    @Post('disable2FA')
+    async disable2FA(@Req() req: any)
+    {
+        await this.userServices.twoFactorOff(req.user.sub);
+    }
 }
