@@ -15,7 +15,7 @@ interface RoomFormProps {
 
 const RoomForm:React.FC<RoomFormProps> = ( { allUsers, showForm, setShowForm, setConvs, set_room_created, setShowAlert, setAlertText } ) => {
      
-    const {socket, rooms, setRooms, userData} = useContext(Context)
+    const {socket, rooms, setRooms, userData, internalError} = useContext(Context)
 
     const [roomName, setName] = useState('')
     const [users, setUsers] = useState<string[]>([])
@@ -94,8 +94,7 @@ const RoomForm:React.FC<RoomFormProps> = ( { allUsers, showForm, setShowForm, se
         const _unvalidUsers = unvalidUsers()
 
         if (_unvalidUsers.length) {
-            setAlertText('unvalid users : ' + _unvalidUsers)
-            setShowAlert(true)
+            internalError('unvalid users : ' + _unvalidUsers)
         }
 
         else if (roomName != '' && users.length) {
@@ -110,9 +109,8 @@ const RoomForm:React.FC<RoomFormProps> = ( { allUsers, showForm, setShowForm, se
     }
     
     const addUser = () => {
-        if (user.trim() != '') {
+        if (user.trim() != '')
             setUsers(old => [...old, user.trim()])
-        }
         setUser('')
     }
 

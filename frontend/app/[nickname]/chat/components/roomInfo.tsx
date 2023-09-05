@@ -18,14 +18,11 @@ interface RoomInfoProps {
     show: boolean
     userData: UniversalData
     allUsers: any[]
-    setAlertText: any,
-    setShowAlert: any
 }
-
 
 const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     
-    const {setConvs, socket, setRooms, _notification, userData} = useContext(Context)
+    const {setConvs, socket, setRooms, _notification, userData, internalError} = useContext(Context)
 
     const [infoUpdate, setInfoUpdate] = useState(false)
 
@@ -57,12 +54,11 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         return _unvalidUsers
     }
 
-    const   addUsersToRoom = async (e, newUsers) => {
+    const   addUsersToRoom = (e, newUsers) => {
         e.preventDefault()
         const _unvalidUsers = unvalidUsers(newUsers)
         if (_unvalidUsers.length) {
-            info.setAlertText('unvalid users : ' + _unvalidUsers)
-            info.setShowAlert(true)
+            internalError('unvalid users : ' + _unvalidUsers)
         }
         else if (newUsers.length) {
             socket.emit('add-room-users', {roomName: info.room.name, users: newUsers})
@@ -70,7 +66,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         }
     }
 
-    const   setNewName = async (e, name) => {
+    const   setNewName = (e, name) => {
         e.preventDefault()
         setshowRoomEditForm(false)
         if (name) {
@@ -88,7 +84,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         }
     }
 
-    const changeRoomType = async (newType:string) => {
+    const changeRoomType = (newType:string) => {
         console.log(newType)
         newType === 'public' ? socket.emit('delete-room-password', {roomName:info.room.name}) :
         socket.emit('make-room-protected', {roomId:info.room.id, newPassword: newType})

@@ -11,12 +11,7 @@ interface SocketComponentProps {
 
 const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpdate, _notification, setConvs } ) => {
   
-  const { userData, setShowConv, setAlertText, setShowAlert, socket, rooms } = useContext(Context)
-
-  const _error = (text:string) => {
-    setAlertText(text)
-    setShowAlert(true)
-  } 
+  const { userData, setShowConv, internalError, socket, rooms } = useContext(Context)
 
   const promoteUser = (res) => {
     console.log('promote')
@@ -31,7 +26,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
       else
         _notification(`"${_promotedUser.nickName}" promoted at '${res.roomId.room_name}'`, "good")
     }
-    else _error('Internal error when trying to promote')
+    else internalError('Internal error when trying to promote')
     setInfoUpdate(old => !old)
   }
   
@@ -48,7 +43,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
       else
         _notification(`"${_demotedUser.nickName}" demoted at '${res.roomId.room_name}'`, "good")
     }
-    else _error('Internal error when trying to demote')
+    else internalError('Internal error when trying to demote')
     setInfoUpdate(old => !old)
   }
   
@@ -69,7 +64,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
         }
         setConvs([..._rooms])
       }
-      else _error('Internal error when trying to kick')
+      else internalError('Internal error when trying to kick')
       return _rooms
     })
     setInfoUpdate(old => !old)
@@ -92,7 +87,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
         }
         setConvs([..._rooms])
       }
-      else _error('Internal error when trying to ban')
+      else internalError('Internal error when trying to ban')
       return _rooms
     })
     setInfoUpdate(old => !old)
@@ -121,7 +116,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
         return _rooms
       })
     }
-    else _error('Internal error when trying to leave room')
+    else internalError('Internal error when trying to leave room')
     setInfoUpdate(old => !old)
   }
 
@@ -130,7 +125,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
     setRooms( (_rooms: Room[]) => {
       if (_rooms.find(o => o.name === res.oldRoomName)?.name)
         _rooms.find(o => o.name === res.oldRoomName).name = res.newRoomName
-      else _error('Internal error when trying to change room name')
+      else internalError('Internal error when trying to change room name')
       setConvs([..._rooms])
       return _rooms
     })
@@ -167,7 +162,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
     setRooms((_rooms: Room[]) => {
       if (_rooms.find(o => o.name === res.roomId.room_name)?.users?.find(o => o.id === res.mutedUser.userId)?.isMuted)
         _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.mutedUser.userId).isMuted = 'MUTED'
-      else _error('Internal error when trying to mute user')
+      else internalError('Internal error when trying to mute user')
       setConvs([..._rooms])
       return _rooms
     })
@@ -178,7 +173,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
     setRooms((_rooms: Room[]) => {
       if (_rooms.find(o => o.name === res.roomId.room_name)?.users?.find(o => o.id === res.mutedUser.userId)?.isMuted)
         _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.unMutedUser.userId).isMuted = 'UNMUTED'
-      else _error('Internal error when trying to unmute user')
+      else internalError('Internal error when trying to unmute user')
       setConvs([..._rooms])
       return _rooms
     })

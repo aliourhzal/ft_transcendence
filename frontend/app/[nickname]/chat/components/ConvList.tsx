@@ -109,20 +109,6 @@ const ConvList:React.FC<ConvListProps> = ({allUsers, activeUserConv, setActiveUs
         }
       }
     }
-    
-    // const removeConv = (res) => {
-      //   var kickedUser = rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.kickedUser.userId)
-      //   if (kickedUser.nickname === userData.nickname) {
-        //     // var currentRoomUsers = rooms.find(o => o.name === res.roomId.room_name).users
-        //     setConvs((_convs:conversation[]) => {
-          //       var convToRemove = _convs.find(o => o.name === res.roomId.room_name)
-          //       _convs.splice(convs.indexOf(convToRemove), 1)
-          //       console.log(_convs)
-          //       return _convs
-          //     })
-          //   }
-          
-          // }
             
     useEffect(() => {
       socket.on('users-join', AddUserToRoom)

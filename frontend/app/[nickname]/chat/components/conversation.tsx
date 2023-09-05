@@ -81,22 +81,22 @@ const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, d
 
     return (
         <div className={'flex flex-col items-center justify-center rounded-3xl ' + (deviceType === 'normal' ? 'h-[90vh] w-[calc(120%/2)] ' : ' h-[100%] w-[100%] absolute ' +  (showConv ? 'bg-darken-200' : 'hidden'))}>
-            {activeUserConv.name && <RoomInfo setAlertText={setAlertText} setShowAlert={setShowAlert} allUsers={allUsers} room={rooms.find(o => o.id === activeUserConv.id)} setShow={setShowInfo} show={showInfo} userData={userData} />}
+            {activeUserConv.name && <RoomInfo allUsers={allUsers} room={rooms.find(o => o.id === activeUserConv.id)} setShow={setShowInfo} show={showInfo} userData={userData} />}
             { showConv ? <>
                 <div className="h-[80px] z-0 flex items-center justify-between text-white pl-10 py-4 w-[100%] border-blue-gray-200 text-blue-gray-700 outline border-b outline-0 placeholder-shown:border-blue-gray-200 focus:outline-0">
                     <div className=' min-w-[150px] bg-zinc-800 rounded-l-3xl pr-2 rounded-r-xl flex items-center gap-3 justify-start w-auto h-auto cursor-pointer hover:underline' onClick={() => {
-                        if (rooms.find(o => o.id === activeUserConv.id).type != 'DM')
+                        if (rooms.find(o => o.id === activeUserConv.id)?.type != 'DM')
                             setShowInfo(true)
                         else {
                             // console.log(activeUserConv.name)
                             setUserInfoNick(activeUserConv.name)
                             // console.log(rooms.find(o => o.id === activeUserConv.id)?.users)
-                            setUserInfoId(rooms.find(o => o.id === activeUserConv.id)?.users.find(o => o.nickName === activeUserConv.name)?.id)
+                            setUserInfoId(rooms.find(o => o.id === activeUserConv.id)?.users?.find(o => o.nickName === activeUserConv.name)?.id)
                             setShowUserInfos(true)
                         }
                         }}>
-                        <Avatar zoomed text={activeUserConv.name} bordered color={'gradient'} alt={activeUserConv.name} src={rooms.find(o => o.id === activeUserConv.id)?.type === 'DM' ? allUsers.find(o => o.id === rooms.find(o => o.id === activeUserConv.id).users.find(o => o.nickName === activeUserConv.name).id).profilePic : rooms.find(o => o.id === activeUserConv.id).photo} pointer/>
-                        <div className='w-full flex items-center justify-center'>{rooms.find(o => o.id === activeUserConv.id)?.type === 'DM' ? allUsers.find(o => o.id === rooms.find(o => o.id === activeUserConv.id).users.find(o => o.nickName === activeUserConv.name).id).nickname : activeUserConv.name}</div>
+                        <Avatar zoomed text={activeUserConv.name} bordered color={'gradient'} alt={activeUserConv.name} src={rooms.find(o => o.id === activeUserConv.id)?.type === 'DM' ? allUsers.find(o => o.id === rooms.find(o => o.id === activeUserConv.id)?.users?.find(o => o.nickName === activeUserConv.name)?.id)?.profilePic : rooms.find(o => o.id === activeUserConv.id)?.photo} pointer/>
+                        <div className='w-full flex items-center justify-center'>{rooms.find(o => o.id === activeUserConv.id)?.type === 'DM' ? allUsers.find(o => o.id === rooms.find(o => o.id === activeUserConv.id)?.users?.find(o => o.nickName === activeUserConv.name)?.id)?.nickname : activeUserConv.name}</div>
                     </div>
                     {deviceType != 'normal' && <button className='w-9 h-9 border border-blue-800 bg-blue-700 text-whiteSmoke hover:scale-110 hover:bg-whiteSmoke hover:text-blueStrong focus:outline-none focus:ring-blue-300 font-bold rounded-full text-lg flex text-center justify-center items-center mr-5' onClick={() => {setShowConv(false); setActiveUserConv({
                         name: '.',

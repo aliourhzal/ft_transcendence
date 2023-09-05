@@ -231,11 +231,16 @@ export default function Chat() {
       } : setDeviceType('normal')
     } , [])
 
+	const internalError = (text:string) => {
+		setAlertText(text)
+		setShowAlert(true)
+	}
+
 	return (
 		<main className='scrollbar-none select-none h-full w-full relative'>
 			{showAlert && <MyAlert showAlert={showAlert} setShowAlert={setShowAlert} text={alertText}/>}
 			{!(showConv && deviceType != 'normal') && <Notification newNotif={newNotif} setNewNotif={setNewNotif} notifications={notifications} notify={notify} setNotify={setNotify}/>}
-			<Context.Provider value={{alertNewMessage, setAlertNewMessage, ref, showConv, setShowConv, socket,
+			<Context.Provider value={{internalError, setAlertNewMessage, ref, showConv, setShowConv, socket,
 				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm,
 				set_room_created, room_created, rooms, setRooms, showSearchUsersForm, setShowSearchUsersForm, scrollToBottom, _notification,
 				convs, setConvs, setShowUserInfos, setUserInfoNick, msgInputRef, setRefresh, setUserInfoId}}>
