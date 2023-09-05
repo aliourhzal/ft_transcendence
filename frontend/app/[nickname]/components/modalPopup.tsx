@@ -12,6 +12,9 @@ import { Switch } from '@headlessui/react';
 import Input from '@mui/joy/Input';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import Button from '@mui/joy/Button';
+import { toast } from 'react-toastify';
+import Lottie from 'react-lottie';
+import qrCodeScanned from './../game/utils/qrCodeScanned.json';
 
 function InputTemplate(props: any) {
 	return (
@@ -22,9 +25,19 @@ function InputTemplate(props: any) {
 	);
 }
 
+const scanned = {
+	loop: true,
+	autoplay: true,
+	animationData: qrCodeScanned,
+	rendererSettings: {
+	  preserveAspectRatio: "xMidYMid slice"
+	}
+  };
+
 export default function MyModal(props: any) {
 	let [isOpen, setIsOpen] = useState(false);
 	const [token, setToken] = useState("");
+	const [doneScanning, setScanned] = useState(false);
 	const [qrCodeActive, setQr] = useState(false);
 	const [imgSrc, setSrc] = useState("./images/qrLoading.png");
 	const router = useRouter();
@@ -164,7 +177,19 @@ export default function MyModal(props: any) {
 	async function activateQr()
 	{
 		try {
-			await axios.post('http://127.0.0.1:3000/qr/codeCheck', {token}, {withCredentials: true});
+			const response = await toast.promise(
+				axios.post('http://127.0.0.1:3000/qr/codeCheck', {token}, {withCredentials: true}),
+				{
+					pending: 'enabling 2FA',
+					success: '2FA Activated',
+					error: 'Error While Activating 2FA'
+				}
+			);
+			if (response.status === 201)
+			{
+				setScanned(true);
+				// setSrc("./images/qrLoading.png");
+			}
 		}
 		catch(err)
 		{
@@ -182,6 +207,7 @@ export default function MyModal(props: any) {
 				if (res.data.Qr !== undefined)
 					setSrc(res.data.Qr);
 				setQr(res.data.active);
+				setScanned(res.data.active);
 			}).catch(err => {console.log("error getting the Qr data !!!")});
 		}
 
@@ -298,9 +324,15 @@ export default function MyModal(props: any) {
 							</div>
 							{
 								qrCodeActive && <div className='flex flex-col items-center justify-center'>
-									<img className=' mix-blend-multiply dark:mix-blend-lighten w-2/3 h-auto rounded-lg' src={imgSrc} alt="wait ..." />
 									{
-										imgSrc !== "./images/qrLoading.png" && 
+										(doneScanning ? 
+											<Lottie 
+												options={scanned}
+												height={320}
+												width={320}
+											/> :
+										<><img className=' mix-blend-multiply dark:mix-blend-lighten w-2/3 h-auto rounded-lg' src={imgSrc} alt="wait ..." />
+									
 										<Input
 											value={token}
 											onChange={hundleChangeToken}
@@ -308,7 +340,8 @@ export default function MyModal(props: any) {
 											startDecorator={<QrCodeScannerIcon color='primary' />}
 											endDecorator={<Button onClick={activateQr}>Active 2FA</Button>}
 										></Input>
-									}
+										</>
+										)}
 								</div>
 							}
 							{/* <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 rounded ring-offset-gray-800 focus:ring-2bg-gray-700 border-gray-600"/> */}
