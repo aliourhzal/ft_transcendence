@@ -229,12 +229,29 @@ export default function Chat() {
         else
           setDeviceType('normal')
       } : setDeviceType('normal')
+
     } , [])
+
+	useEffect( () => {
+		document.addEventListener('keydown', (e) => {
+			if (e.key === "Escape") {
+				setShowConv(false)
+				setActiveUserConv({
+					name: '.',
+					photo: '',
+					lastmsg: {userId: '', msg: ''}, 
+					id: 0,
+				})
+				setChatBoxMessages([])
+			}
+		});
+	}, [])
 
 	const internalError = (text:string) => {
 		setAlertText(text)
 		setShowAlert(true)
 	}
+
 
 	return (
 		<main className='scrollbar-none select-none h-full w-full relative'>

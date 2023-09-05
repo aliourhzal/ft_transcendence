@@ -17,7 +17,13 @@ const NewRoomUsers:React.FC<NewRoomUsersProps> = ( {addUsers} ) => {
     
     const addUser = () => {
         if (newUser.trim() != '')
-            setNewUsers(old => [...old, newUser.trim()])
+            if (newUsers.length && newUser)
+                if (newUsers.indexOf(newUser.trim()) == -1)
+                    setNewUsers(old => [...old, newUser.trim()])
+                else
+                    setNewUser('')
+            else
+                setNewUsers(old => [...old, newUser.trim()])
         setNewUser('')
     }
 

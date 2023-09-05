@@ -79,21 +79,8 @@ const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, d
     // }
     },[chatBoxMessages])
 
-    const handleKeyDown = (e) => {
-        if (e.key === "Escape") {
-            setShowConv(false)
-            setActiveUserConv({
-                name: '.',
-                photo: '',
-                lastmsg: {userId: '', msg: ''}, 
-                id: 0,
-            })
-            setChatBoxMessages([])
-        }
-    }
-
     return (
-        <div className={'flex flex-col items-center justify-center rounded-3xl ' + (deviceType === 'normal' ? 'h-[90vh] w-[calc(120%/2)] ' : ' h-[100%] w-[100%] absolute ' +  (showConv ? 'bg-darken-200' : 'hidden'))} onKeyDown={handleKeyDown}>
+        <div className={'flex flex-col items-center justify-center rounded-3xl ' + (deviceType === 'normal' ? 'h-[90vh] w-[calc(120%/2)] ' : ' h-[100%] w-[100%] absolute ' +  (showConv ? 'bg-darken-200' : 'hidden'))}>
             {activeUserConv.name && <RoomInfo allUsers={allUsers} room={rooms.find(o => o.id === activeUserConv.id)} setShow={setShowInfo} show={showInfo} userData={userData} />}
             { showConv ? <>
                 <div className="h-[80px] z-0 flex items-center justify-between text-white pl-10 py-4 w-[100%] border-blue-gray-200 text-blue-gray-700 outline border-b outline-0 placeholder-shown:border-blue-gray-200 focus:outline-0">

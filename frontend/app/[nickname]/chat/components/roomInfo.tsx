@@ -79,7 +79,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         e.preventDefault()
         setshowRoomEditForm(false)
         if (pass != '') {
-            console.log(pass)
+            console.log('pass',pass)
             socket.emit('edit-room-password', { roomName:info.room.name, newPassword: pass })
         }
     }

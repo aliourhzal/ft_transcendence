@@ -110,7 +110,13 @@ const RoomForm:React.FC<RoomFormProps> = ( { allUsers, showForm, setShowForm, se
     
     const addUser = () => {
         if (user.trim() != '')
-            setUsers(old => [...old, user.trim()])
+            if (users.length && user)
+                if (users.indexOf(user.trim()) == -1)
+                    setUsers(old => [...old, user.trim()])
+                else
+                    setUser('')
+            else
+                setUsers(old => [...old, user.trim()])
         setUser('')
     }
 

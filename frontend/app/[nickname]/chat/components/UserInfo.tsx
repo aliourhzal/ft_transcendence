@@ -41,20 +41,20 @@ const UserInfo:React.FC<UserInfoProps> = ( {id, showUserInfos, setShowUserInfos,
     nickname && id &&
     <>
     <Popup isOpen={showUserInfos} modalAppearance={() => setShowUserInfos(false)}>
-        <img className='rounded-2xl' src={currentUsers.find(o => o.id === id).coverPic} alt="" />
+        <img className='rounded-2xl' src={currentUsers.find(o => o.id === id)?.coverPic} alt="" />
         <div className='flex items-center justify-center -mt-7 mb-6'>
-            <Avatar pointer size={'xl'} zoomed bordered color={'gradient'} src={currentUsers.find(o => o.id === id).profilePic} className='scale-150' onMouseOver={()=>{
+            <Avatar pointer size={'xl'} zoomed bordered color={'gradient'} src={currentUsers.find(o => o.id === id)?.profilePic} className='scale-150' onMouseOver={()=>{
                 setShowPic(true)
             }} onMouseLeave={() => {setShowPic(false)}}/>
         </div>
         
         <div className='flex flex-col items-center justify-center gap-4'>
             <div className='flex items-center justify-center gap-1 font-bold mt-2'>
-                <span>{currentUsers.find(o => o.id === id).firstName}</span>
-                <span>{currentUsers.find(o => o.id === id).lastName}</span>
+                <span>{currentUsers.find(o => o.id === id)?.firstName}</span>
+                <span>{currentUsers.find(o => o.id === id)?.lastName}</span>
             </div>
             <div className='flex gap-4 scale-110 text-whiteSmoke w-20 h-8 rounded-2xl items-center justify-center bg-darken-200'>
-                <BiConversation className='hover:scale-110' title='DM' aria-label='DM' cursor="pointer" size={25} onClick={ () => {
+                <BiConversation className='transition-all hover:scale-110' title='DM' aria-label='DM' cursor="pointer" size={25} onClick={ () => {
                     setShowUserInfos(false)
                     if (!rooms.find(o => o.name === nickname)) {
                         socket.emit('start-dm', {reciverUserId: currentUsers.find(o => o.id === id).id})
@@ -69,13 +69,12 @@ const UserInfo:React.FC<UserInfoProps> = ( {id, showUserInfos, setShowUserInfos,
                         // setActiveUserConv(rooms.find(o => o.name === user.nickname))
                       }
                       else {
-                        console.log(rooms.find(o => o.name === nickname))
                         setActiveUserConv(rooms.find(o => o.name === nickname))
                         setShowConv(true)
-                        setChatBoxMessages(rooms.find(o => o.name === nickname).msgs)
+                        setChatBoxMessages(rooms.find(o => o.name === nickname)?.msgs)
                       }
                 }}/>
-                <FaRegUser className='hover:scale-110' title='profile' aria-label='profile' cursor="pointer" size={20} onClick={() => {
+                <FaRegUser className='transition-all hover:scale-110' title='profile' aria-label='profile' cursor="pointer" size={20} onClick={() => {
                     _router.push(`/${nickname}`)
                 }}/>
             </div>

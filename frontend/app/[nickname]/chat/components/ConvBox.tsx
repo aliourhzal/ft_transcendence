@@ -9,10 +9,11 @@ interface ConvBoxProps {
     allUsers: any[]
     setActiveUserConv: any,
     activeUserConv: any,
-    convsFilter: any
+    convsFilter: any,
+    _tabIndex: number,
 }
 
-const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, activeUserConv, convsFilter}) => {
+const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, activeUserConv, convsFilter, _tabIndex}) => {
 
   const {rooms, setShowConv, setChatBoxMessages, msgInputRef} = useContext(Context)
 
@@ -58,10 +59,10 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
   
   const [lastmsg, setLastMsg] = useState(rooms.find(o => o.id === data.id).lastmsg)
   const [pending, setPending] = useState(data.pending)
-  console.log(lastmsg)
+  console.log(_tabIndex)
 
   return (
-    <div className={'transition-all duration-200 ' + (activeUserConv.id === data.id ? 'bg-blueStrong' : 'bg-zinc-800 hover:bg-zinc-700') + " cursor-pointer convGroup z-0 focus:bg-blueStrong w-[70%] left-[15%] h-[100px] gap-4 relative my-3 rounded-md active:bg-blue-500 flex items-center justify-start text-[16px]"} onClick={handleClick} onFocus={handleClick}>
+    <div tabIndex={_tabIndex} className={'transition-all duration-200 ' + (activeUserConv.id === data.id ? 'bg-blueStrong' : 'bg-zinc-800 hover:bg-zinc-700') + " cursor-pointer convGroup z-0 focus:bg-blueStrong w-[70%] left-[15%] h-[100px] gap-4 relative my-3 rounded-md active:bg-blue-500 flex items-center justify-start text-[16px]"} onClick={handleClick} onFocus={handleClick}>
         <div className='w-20 h-20 flex items-center justify-center relative mx-[7%]'>
           <img alt={data.name} width={11} height={11} className="rounded-full border-2 border-slate-300 w-11 h-11" src={rooms.find(o => o.id === data.id)?.type === 'DM' ? allUsers.find(o => o.id === rooms.find(o => o.id === data.id)?.users?.find(o => o.nickName === data.name)?.id)?.profilePic : data.photo} />
           { rooms.find(o => o.id === data.id)?.type === 'DM' && allUsers.find(o => o.id === rooms.find(o => o.id === data.id).users.find(o => o.nickName === data.name).id)?.status === 'online' ?
