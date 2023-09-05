@@ -506,10 +506,12 @@ export class RoomsService
           data: { blockedUsers: { connect: { id: blockedUserId } } },
         });
       
-        await this.prisma.user.update({
+        const blockedUser = await this.prisma.user.update({
           where: { id: blockedUserId },
           data: { blockedBy: { connect: { id: blockerUserId } } },
         });
+
+        return { blockedUser}
       }
 
       async   isBlocked(blockedUserId: string, blockerUserId: string)
@@ -519,7 +521,7 @@ export class RoomsService
           select: { blockedBy: { where: { id: blockerUserId } } },
         });
       
-        return user.blockedBy.length; // it return all user blocked
+        return user; // it return all user blocked
     }
 
     async   unblockUser(blockerUserId: string, unblockedUserId: string) {

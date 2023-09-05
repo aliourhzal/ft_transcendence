@@ -34,6 +34,12 @@ export class UtilsService {
    
     async getUserId(ids : string[])
     {
+        if(ids.length === 2)// if wnt to ban or nute ... , can user pass same user for ban or block
+        {
+            if(ids[0] === ids[1])
+                return {error : "you pass same ids of users."}
+        }
+
         let  existingUser: string[] = [];       
 
         for(const id of ids)

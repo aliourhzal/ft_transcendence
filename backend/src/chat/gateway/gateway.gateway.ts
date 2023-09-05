@@ -31,6 +31,7 @@ import { Unmute } from 'src/dto/unmute.dto';
 import { DirectMessages } from 'src/dto/directMessages.dto';
 import { getRooms } from 'src/dto/getRooms.dto';
 import { MakeRoomProtected } from 'src/dto/makeRoomProtected.dto';
+import { Block } from 'src/dto/block.dto';
  
 
 @WebSocketGateway(3004)
@@ -890,52 +891,51 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         @UsePipes(new ValidationPipe()) 
         async makeRoomProtected(@MessageBody() dto:MakeRoomProtected , @ConnectedSocket() socket: Socket) 
         {
-            console.log(dto)
-            // try 
-            // {
-            //     const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+            try 
+            {
+                const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
                 
-            //     if (token) 
-            //     {
-            //         const user  = await this.utils.verifyToken(token); // // if has error will catch it
+                if (token) 
+                {
+                    const user  = await this.utils.verifyToken(token); // // if has error will catch it
 
-            //         const rtn = await this.gatewayService.checkUpdateRoom(user['sub'] , dto.roomName);
+                    const rtn = await this.gatewayService.checkUpdateRoom(user['sub'] , dto.roomId);
                     
-            //         if(rtn.error)
-            //         {
-            //             console.log(rtn.error)
-            //             return ;
-            //         }
+                    if(rtn.error)
+                    {
+                        console.log(rtn.error)
+                        return ;
+                    }
 
-            //         if(rtn.room.roomType !== 'PROTECTED')
-            //         {
-            //             if(dto.newPassword.length > 8)
-            //             {
-            //                 await this.roomService.updateRoomToProtected(rtn.room.id ,dto.newPassword);
-            //                 await this.emmiteEventesToUsers(socket, rtn.room.id,"change-room-password",{ roomName : rtn.room.room_name , password : 'new'});
+                    if(rtn.room.roomType !== 'PROTECTED')
+                    {
+                        if(dto.newPassword.length > 8)
+                        {
+                            await this.roomService.updateRoomToProtected(rtn.room.id ,dto.newPassword);
+                            await this.emmiteEventesToUsers(socket, rtn.room.id,"change-room-password",{ roomName : rtn.room.room_name , password : 'new'});
 
-            //             }
-            //             else
-            //             {
-            //                 console.log("error password should be strong.")
-            //             }
-            //         }
-            //         else
-            //         {
-            //             console.log('room is aleredy protected .')
-            //         }
+                        }
+                        else
+                        {
+                            console.log("error password should be strong.")
+                        }
+                    }
+                    else
+                    {
+                        console.log('room is aleredy protected .')
+                    }
                     
-            //     } 
-            //     else
-            //     {
-            //         console.log('invalid jwt.');
-            //     }
-            // }   
-            // catch (error)   
-            // {
+                } 
+                else
+                {
+                    console.log('invalid jwt.');
+                }
+            }   
+            catch (error)   
+            {
                
-            //     console.log(error)
-            // } 
+                console.log(error)
+            } 
         }
 
         /* direct messages */
@@ -949,7 +949,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         @UsePipes(new ValidationPipe()) // need room id ,   user id who want to send it.
         async directMessages(@MessageBody() dto:DirectMessages , @ConnectedSocket() socket: Socket) 
         {
-            try 
+            try // before start dm check if are blocked or not 
             {
                 const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
                 
@@ -976,7 +976,68 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             } 
         }
 
-        
+    @SubscribeMessage('user-block') 
+    @UsePipes(new ValidationPipe())     
+    async block(@MessageBody()  dto:Block,  @ConnectedSocket() socket: Socket)
+    {
+
+        try 
+        {
+            const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+
+            if (token) 
+            {
+                const user = await this.utils.verifyToken(token)
+              
+                const rtn = await this.checkBlockUser(user['sub']  , dto.blockedUserId);
+                
+                if(rtn.error)
+                {
+                    console.log(rtn.error);
+                    return
+                }
+
+                const blockedUser = await this.roomService.blockUser(user['sub'] , dto.blockedUserId);
+
+
+                for (let i = 0; i < this.soketsId.length; i++) 
+                {
+                    if(this.soketsId[i].userId === dto.blockedUserId)
+                    {
+                        this.server.to(this.soketsId[i].socketIds).emit("blocked-user" , {blockedUser});
+                    } 
+                }
+                
+                // emmit blocked user
+
+
+                // console.log(await this.roomService.isBlocked(dto.blockedUserId , user['sub'] ));
+                // await this.roomService.unblockUser( user['sub'] , dto.blockedUserId );
+                // console.log(await this.roomService.isBlocked(dto.blockedUserId , user['sub'] ));
+            }
+            else
+            {
+                console.log('invalid jwt.')
+            }
+     
+        }
+        catch(error)
+        {
+            console.log(error)
+        }
+
+    }
+
+        async checkBlockUser(currentUserId :string , blockedUserId : string)
+        {
+            const existingUser = await this.utils.getUserId([currentUserId , blockedUserId ]); // if current user in db
+
+            if(existingUser.error)
+            {
+                return {error : existingUser.error};
+            } 
+            return {ok : 'ok'}
+        }
         
         @SubscribeMessage('get-users') 
         async getAllusers( @ConnectedSocket() socket: Socket) 
@@ -1004,11 +1065,13 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         
         async checkOnConnect(@ConnectedSocket() socket: Socket , currentUserId :string)
         {
+            // on connect send all blocked users by this user
+            // and blocker and blocked
             const existingUser = await this.utils.getUserId([currentUserId]); // if current user in db
             
             if(existingUser.error)
             {
-                return {error : 'user not found.'};
+                return {error : existingUser.error};
             } 
             
             this.soketsId.push({userId : existingUser.existingUser[0], socketIds:socket.id})

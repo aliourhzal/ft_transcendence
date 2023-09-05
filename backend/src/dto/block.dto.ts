@@ -7,9 +7,6 @@ import { RoomType } from 'src/utils/userData.interface';
 
 export class Block {
      
-    @IsNotEmpty()
-    @IsString()
-    roomName: string;
   
     @IsNotEmpty()
     @IsString()

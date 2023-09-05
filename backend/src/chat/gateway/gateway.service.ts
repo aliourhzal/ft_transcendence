@@ -89,7 +89,7 @@ export class GatewayService
 
             if(existingUser.error)
             {
-                return {error : 'user not found.'};
+                return {error : existingUser.error};
             } 
 
             const roomInfos = await this.utils.getRoomByName(roomName); 
@@ -142,7 +142,7 @@ export class GatewayService
 
             if(existingUser.error)
             {
-                return {error : 'user not found.'};
+                return {error : existingUser.error};
             } 
 
             const roomInfos = await this.utils.getRoomByName(roomName); 
@@ -199,7 +199,7 @@ export class GatewayService
 
             if(existingUser.error)
             {
-                return {error : 'user not found.'};
+                return {error : existingUser.error};
             } 
 
             const roomInfos = await this.utils.getRoomByName(roomName); 
@@ -237,7 +237,7 @@ export class GatewayService
 
             if(existingUser.error)
             {
-                return {error : 'user not found.'};
+                return {error : existingUser.error};
             } 
 
             const roomInfos = await this.utils.getRoomByName(roomName); 
@@ -273,7 +273,7 @@ export class GatewayService
 
             if(existingUser.error)
             {
-                return {error : 'user not found.'};
+                return {error : existingUser.error};
             } 
 
             const roomInfos = await this.utils.getRoomByName(roomName); 
@@ -310,7 +310,7 @@ export class GatewayService
 
             if(existingUser.error)
             {
-                return {error : 'user not found.'};
+                return {error : existingUser.error};
             } 
 
             const roomInfos = await this.utils.getRoominfosById(roomId); 
@@ -358,7 +358,7 @@ export class GatewayService
 
             if(existingUser.error)
             {
-                return {error : 'user not found.'};
+                return {error : existingUser.error};
             } 
 
             const roomInfos = await this.utils.getRoomByName(roomName); 
@@ -382,16 +382,16 @@ export class GatewayService
         }
 
 
-        async checkUpdateRoom(currentUserId :string , roomName  :string)
+        async checkUpdateRoom(currentUserId :string , roomId  :string)
         {
             const existingUser = await this.utils.getUserId([currentUserId]); // if current user in db
 
             if(existingUser.error)
             {
-                return {error : 'user not found.'};
+                return {error : existingUser.error};
             } 
 
-            const roomInfos = await this.utils.getRoomByName(roomName); 
+            const roomInfos = await this.utils.getRoominfosById(roomId); 
 
             if(roomInfos)  // if room exist
             {
@@ -421,7 +421,7 @@ export class GatewayService
 
             if(existingUser.error)
             {
-                return {error : 'user not found.'};
+                return {error : existingUser.error};
             } 
 
             const roomInfos = await this.utils.getRoomByName(roomName); 
@@ -470,7 +470,7 @@ export class GatewayService
 
             if(existingUser.error)
             {
-                return {error : 'user not found.'};
+                return {error : existingUser.error};
             } 
 
             const roomInfos = await this.utils.getRoomByName(roomName); 
@@ -507,7 +507,7 @@ export class GatewayService
     
                 if(existingUser.error)
                 {
-                    return {error : 'user not found.'};
+                    return {error : existingUser.error};
                 } 
     
                 if(currentUserId === reciverUserId)
