@@ -14,7 +14,7 @@ export class twoFactorAuth
     // private secret: any;
     private qrCode = null;
     
-    secreteGenerator(id : string)
+    async secreteGenerator(id : string)
     {
         var secret = speakeasy.generateSecret();
 
@@ -23,11 +23,11 @@ export class twoFactorAuth
             if (err) throw Error("Qr_Code generation failed !!!");
             this.qrCode = data;
         });
-        this.userServices.updateUserQr(id, secret.ascii);
-        return this.qrCode;
+        const user = await this.userServices.updateUserQr(id, secret.ascii);
+        return {Qr:(user ? this.qrCode : undefined) , active: (user ? user.twoFactorAuth : true)};
     }
     
-    async   verefyCode(id: string, tok: string)//true or false
+    async   verifyCode(id: string, tok: string)//true or false
     {
         return speakeasy.totp.verify({
             secret: (await this.userServices.findOneById(id)).AsciiSecretQr,

@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 
 import { twoFactorAuth } from './qr.services';
 import { UsersService } from 'src/users/users.service';
 import { AuthGuard } from '@nestjs/passport';
+import { error } from 'console';
 
 @Controller('qr')
 export class QrController {
@@ -22,10 +23,10 @@ export class QrController {
     }
 
     @UseGuards(AuthGuard('jwt'))
-    @Get('codeCheck')
-    checkQr(@Req() req: any, @Body('token') tok: string)
+    @Post('codeCheck')
+    async checkQr(@Req() req: any, @Body('token') tok: string)
     {
-        return this.twoFactorAuth.verefyCode(req.user.sub, tok); // return true if tokn valid false otherwise
+        console.log( await this.twoFactorAuth.verifyCode(req.user.sub, tok)); // return true if tokn valid false otherwise
     }
 
 }

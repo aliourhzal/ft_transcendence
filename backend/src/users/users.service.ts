@@ -410,13 +410,14 @@ export class UsersService {
 		try{
 			await this.prisma.user.update({
 				where: {
-					id
+					id,
+					twoFactorAuth: false
 				},
 				data: {
-					twoFactorAuth: true,
 					AsciiSecretQr: secret
 				}
 			});
+			return await this.prisma.user.findFirst({where:{id}});
 		}catch(err){
 			console.log("failed to set Qr true !!!")
 		}
@@ -435,6 +436,22 @@ export class UsersService {
 			});
 		}catch(err){
 			console.log("failed to turn Off Qr validation !")
+		}
+	}
+
+	async	twoFactorOn(id: string)
+	{
+		try{
+			await this.prisma.user.update({
+				where: {
+					id
+				},
+				data: {
+					twoFactorAuth: true
+				}
+			});
+		}catch(err){
+			console.log("failed to turn On Qr validation !")
 		}
 	}
 
