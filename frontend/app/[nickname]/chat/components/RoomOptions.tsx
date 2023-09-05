@@ -68,7 +68,7 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner,
 const OptionsIcon = ( { icon } ) => {
     return (
         
-        <div className=' cursor-pointer w-11 text-whiteSmoke h-8 rounded-2xl flex items-center justify-center hover:scale-110 hover:text-white bg-darken-200'>
+        <div className='transition-all cursor-pointer w-11 text-whiteSmoke h-8 rounded-2xl flex items-center justify-center hover:scale-110 hover:text-white bg-darken-200'>
             {icon === 'demote' && <TbUserDown aria-label='demote' cursor="pointer" size={25} onClick={() => {demoteUser(user.id)}}/>}
             {icon === 'promote' && <TbUserUp aria-label='promote' cursor="pointer" size={25} onClick={() => {promoteUser(user.id)}}/>}
             {icon === 'kick' && <BiUserMinus strokeWidth={0} aria-label='kick' cursor="pointer" size={30} onClick={() => {kickUser(user.id)}}/>}

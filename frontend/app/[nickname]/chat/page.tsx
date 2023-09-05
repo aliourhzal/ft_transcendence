@@ -233,7 +233,7 @@ export default function Chat() {
 
 	return (
 		<main className='scrollbar-none select-none h-full w-full relative'>
-			{showAlert && <MyAlert setShowAlert={setShowAlert} text={alertText}/>}
+			{showAlert && <MyAlert showAlert={showAlert} setShowAlert={setShowAlert} text={alertText}/>}
 			{!(showConv && deviceType != 'normal') && <Notification newNotif={newNotif} setNewNotif={setNewNotif} notifications={notifications} notify={notify} setNotify={setNotify}/>}
 			<Context.Provider value={{alertNewMessage, setAlertNewMessage, ref, showConv, setShowConv, socket,
 				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm,

@@ -104,9 +104,9 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     {(info.room && info.show) &&
         <Popup isOpen={info.show} modalAppearance={hide}>
             <div className='flex items-center justify-center gap-4 -mt-8'>
-                <h1 className='bg-blueStrong py-1 px-3 absolute top-0 hover:scale-105 cursor-none font-extrabold text-sm rounded-t-lg rounded-b-full'>{info.room.name.substring(0, 10)}</h1>
+                <h1 className='transition-all bg-blueStrong py-1 px-3 absolute top-0 hover:scale-105 cursor-none font-extrabold text-sm rounded-t-lg rounded-b-full'>{info.room.name.substring(0, 10)}</h1>
                 {isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) &&
-                    <div className='flex items-center p-3 bg-slate-500 rounded-full hover:scale-110 hover:text-whiteSmoke cursor-pointer'>
+                    <div className='transition-all flex items-center p-3 bg-slate-500 rounded-full hover:scale-110 hover:text-whiteSmoke cursor-pointer'>
                         <AiOutlineUsergroupAdd size={19} color={showUsersForm ? 'rgb(41 120 242)' : ''} cursor={'pointer'} className='hover:text-whiteSmoke' onClick={ () => {
                             setShowUsersForm(old => !old)
                             showRoomEditForm ? setshowRoomEditForm(false) : ''
@@ -115,7 +115,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
                 }
                 <Avatar pointer src={info.room.photo} size={"xl"} zoomed text={info.room.name} bordered color={"gradient"} alt={info.room.name} className="w-auto h-auto"></Avatar>
                 {isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) &&
-                    <div className='flex items-center p-3 bg-slate-500 rounded-full hover:scale-110 hover:text-whiteSmoke cursor-pointer' onClick={ () => {
+                    <div className='transition-all flex items-center p-3 bg-slate-500 rounded-full hover:scale-110 hover:text-whiteSmoke cursor-pointer' onClick={ () => {
                         setshowRoomEditForm(old => !old)
                         showUsersForm ? setShowUsersForm(false) : ''
                     }}>
@@ -131,7 +131,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
                 ))}
             </div>
             <div className='w-full flex items-center justify-center'>
-                <button type="button" className="w-auto text-white bg-blueStrong hover:bg-red-300 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" onClick={
+                <button type="button" className="w-auto text-white bg-blueStrong hover:bg-red-300 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-all duration-300" onClick={
                     () => { socket.emit('leave-room', { roomName: info.room.name}); hide() }
                 }>Leave</button>
             </div>

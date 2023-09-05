@@ -28,9 +28,9 @@ const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin,
     socket.emit('get-users', null)
 
   return (
-    <div className='m-2 border-2 p-2 rounded-lg bg-slate-600 border-slate-500 w-full flex flex-col items-center justify-center' key={user.id}>
-        <div className='m-1 w-full flex justify-between items-center px-4 cursor-pointer' onClick={ () => {setShowOptions(old => !old)} }>
-            <div className='font-bold flex justify-between items-center gap-3 hover:underline' onClick={() => {
+    <div className='transition-all m-2 border-2 p-2 rounded-lg bg-slate-600 border-slate-500 w-full flex flex-col items-center justify-center' key={user.id}>
+        <div className='transition-all hover:scale-105 m-1 w-full flex justify-between items-center px-4 cursor-pointer' onClick={ () => {setShowOptions(old => !old)} }>
+            <div className='transition-all font-bold flex justify-between items-center gap-3 hover:underline' onClick={() => {
                     if (user.id === userData.id)
                         _router.push(`/${user.nickName}`)
                     else {
@@ -40,7 +40,7 @@ const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin,
                         setShowUserInfos(true)
                     }
                 }}>
-                <div className='flex items-center gap-2 justify-center'>
+                <div className='transition-all flex items-center gap-2 justify-center'>
                     { allUsers.find(o => o.id === user.id).status === 'online' && userData.id != user.id ?
                     <span className='rounded-full bg-green-400 opacity-90 border-2 border-green-500 w-2 h-2 -ml-1'></span>
                     : <span className='w-2 h-2 -ml-1'></span>}

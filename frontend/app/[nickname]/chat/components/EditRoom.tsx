@@ -14,7 +14,7 @@ const EditRoom:React.FC<EditRoomProps> = ({_setNewName, _setNewPass, roomType, c
     const [showPassInput, setShowPassInput] = useState(false)
 
   return (
-    <div className='ping-it'>
+    <div className=''>
       <form className='flex justify-between items-center' noValidate onSubmit={(e) => { _setNewName(e, newName) }}>
         <div className='relative m-4'>
           <input autoComplete='off' value={newName} type="text" name="_name" id="_name" className="text-gray-300 text-xs lg:text-base block py-2.5 px-0 w-full bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " onChange={(e) => setNewName(e.target.value)}/>
