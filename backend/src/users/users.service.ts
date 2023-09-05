@@ -408,7 +408,7 @@ export class UsersService {
 	async	updateUserQr(id: string, secret: string)
 	{
 		try{
-			await this.prisma.user.update({
+			return await this.prisma.user.update({
 				where: {
 					id,
 					twoFactorAuth: false
@@ -417,7 +417,6 @@ export class UsersService {
 					AsciiSecretQr: secret
 				}
 			});
-			return await this.prisma.user.findFirst({where:{id}});
 		}catch(err){
 			console.log("failed to set Qr true !!!")
 		}
