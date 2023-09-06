@@ -1,5 +1,5 @@
 import Container from "@/components/UI/ProfileBoxs";
-import { UniversalData } from "../../../contexts/UniversalData";
+import { UniversalData, userDataContext } from "../../../contexts/UniversalData";
 import Link from "next/link"
 import { useContext, useEffect } from "react";
 import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
@@ -10,6 +10,7 @@ export default function FriendCard({user}: {
 }) {
 	const [lvl, progess] = user.level.toString().split('.');
 	const socket = useContext(InvitationSocketContext);
+	const loggedUser = useContext(userDataContext);
 	
 	function removeFriend() {
 		socket.emit('delete-friend', user.id);
@@ -39,6 +40,7 @@ export default function FriendCard({user}: {
 			</div>
 			<div className="flex justify-between w-full">
 				<Link href={`/${user.nickname}`} className="p-2 bg-green-500 text-white font-medium rounded-xl">See Profile</Link>
+				<Link href={`/${loggedUser.nickname}/game?id=${user.id}`} className="p-2 bg-blue-500 text-white font-medium rounded-xl">Play</Link>
 				<button onClick={removeFriend} className="p-2 bg-red-500 text-white font-medium rounded-xl">Remove Friend</button>
 			</div>
 			{
