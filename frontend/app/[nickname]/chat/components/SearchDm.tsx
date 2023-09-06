@@ -3,6 +3,8 @@ import Popup from './Popup'
 import { Context, gimmeRandom } from '../page'
 import Search from './search'
 import { Avatar } from '@nextui-org/react'
+import axios from 'axios'
+import { getCookie } from '../../layout'
 
 interface SearchDmProps {
   currentUsers: any[]
@@ -17,8 +19,6 @@ const SearchDm:React.FC<SearchDmProps> = ( { currentUsers, setActiveUserConv, sh
 
   const [showList, setShowList] = useState(false)
   const [users, setUsers] = useState([...currentUsers])
-
-  // console.log(users)
   
   const filerList = (needle = '') => {
     if (needle === '')
@@ -28,10 +28,28 @@ const SearchDm:React.FC<SearchDmProps> = ( { currentUsers, setActiveUserConv, sh
   }
 
   const hide = () => {
-      console.log(users)
       setShowSearchUsersForm(false)
       setShowList(false)
       filerList()
+  }
+
+  const getDm = async (user, data) => {
+    try {
+      await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomId:rooms.find(o => o.id === data.id).id}, {
+        withCredentials: true,
+        headers: {
+          'Authorization': `Bearer ${getCookie('access_token')}`,
+          'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
+        })
+      .then((res) => {
+        setChatBoxMessages(res.data.msg)
+      })
+    } catch(error) {
+      // alert(error)
+      console.log(error)
+    }
+    setActiveUserConv(rooms.find(o => o.name === user.nickname))
+    setShowConv(true)
   }
 
   return (
@@ -42,16 +60,12 @@ const SearchDm:React.FC<SearchDmProps> = ( { currentUsers, setActiveUserConv, sh
         <div className='flex flex-col justify-start items-center min-h-[12rem] bg-darken-100 gap-2 rounded-xl overflow-y-auto pt-1'>
           {users.map(user => user.nickname != userData.nickname && (
             <span className='cursor-pointer rounded-xl w-[100%] p-[5%] h-14 bg-darken-100 hover:bg-darken-300 flex items-center justify-between z-10' key={gimmeRandom()} onClick={ () => {
-              console.log(user)
               if (!rooms.find(o => o.name === user.nickname)) {
                 socket.emit('start-dm', {reciverUserId: user.id})
                 // setActiveUserConv(rooms.find(o => o.name === user.nickname))
               }
               else {
-                console.log(rooms.find(o => o.name === user.nickname))
-                setActiveUserConv(rooms.find(o => o.name === user.nickname))
-                setShowConv(true)
-                setChatBoxMessages(rooms.find(o => o.name === user.nickname).msgs)
+                getDm(user, rooms.find(o => o.id === currentUsers.find(o => o.nickname === user.nickName).id))
               }
               hide()
             }}>

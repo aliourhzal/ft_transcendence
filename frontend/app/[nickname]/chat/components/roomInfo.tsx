@@ -57,10 +57,10 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     const   addUsersToRoom = (e, newUsers) => {
         e.preventDefault()
         const _unvalidUsers = unvalidUsers(newUsers)
-        if (_unvalidUsers.length) {
-            internalError('unvalid users : ' + _unvalidUsers)
-        }
-        else if (newUsers.length) {
+        // if (_unvalidUsers.length) {
+        //     internalError('unvalid users : ' + _unvalidUsers)
+        // }
+        if (newUsers.length) {
             socket.emit('add-room-users', {roomName: info.room.name, users: newUsers})
             setShowUsersForm(false)
         }
@@ -78,14 +78,11 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     const   setNewPass = async (e, pass) => {
         e.preventDefault()
         setshowRoomEditForm(false)
-        if (pass != '') {
-            console.log('pass',pass)
+        if (pass != '')
             socket.emit('edit-room-password', { roomName:info.room.name, newPassword: pass })
-        }
     }
 
     const changeRoomType = (newType:string) => {
-        console.log(newType)
         newType === 'public' ? socket.emit('delete-room-password', {roomName:info.room.name}) :
         socket.emit('make-room-protected', {roomId:info.room.id, newPassword: newType})
         setshowRoomEditForm(false)
@@ -121,7 +118,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
             </div>
             {showUsersForm && <NewRoomUsers addUsers={addUsersToRoom} />}
             {showRoomEditForm && <EditRoom _setNewName={setNewName} _setNewPass={setNewPass} roomType={info.room.type} changeRoomType={changeRoomType}/>}
-            <div className='my-4 h-65 flex flex-col justify-start items-center overflow-y-scroll overflow-x-hidden'>
+            <div className='my-4 h-64 flex flex-col justify-start items-center overflow-y-scroll overflow-x-hidden'>
                 {info.room.users.map(user => (
                     <RoomMumbers info={info} user={user} isOwner={isOwner} isAdmin={isAdmin} key={gimmeRandom()} hide={hide} allUsers={info.allUsers} />
                 ))}

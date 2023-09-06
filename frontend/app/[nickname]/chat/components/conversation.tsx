@@ -67,7 +67,6 @@ const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, d
         }
         else{
             rooms.find(o => o.id === msg.roomId).pending = true
-            console.log("*******", rooms.find(o => o.id === msg.roomId))
             setRefresh(old => !old)
         }
     }
@@ -80,7 +79,7 @@ const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, d
     },[chatBoxMessages])
 
     return (
-        <div className={'flex flex-col items-center justify-center rounded-3xl ' + (deviceType === 'normal' ? 'h-[90vh] w-[calc(120%/2)] ' : ' h-[100%] w-[100%] absolute ' +  (showConv ? 'bg-darken-200' : 'hidden'))}>
+        <div className={'transition-all flex flex-col items-center justify-center rounded-3xl ' + (deviceType === 'normal' ? 'h-[90vh] w-[calc(120%/2)] ' : ' h-[100%] w-[100%] absolute ' +  (showConv ? 'bg-darken-200' : 'hidden'))}>
             {activeUserConv.name && <RoomInfo allUsers={allUsers} room={rooms.find(o => o.id === activeUserConv.id)} setShow={setShowInfo} show={showInfo} userData={userData} />}
             { showConv ? <>
                 <div className="h-[80px] z-0 flex items-center justify-between text-white pl-10 py-4 w-[100%] border-blue-gray-200 text-blue-gray-700 outline border-b outline-0 placeholder-shown:border-blue-gray-200 focus:outline-0">
@@ -88,9 +87,7 @@ const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, d
                         if (rooms.find(o => o.id === activeUserConv.id)?.type != 'DM')
                             setShowInfo(true)
                         else {
-                            // console.log(activeUserConv.name)
                             setUserInfoNick(activeUserConv.name)
-                            // console.log(rooms.find(o => o.id === activeUserConv.id)?.users)
                             setUserInfoId(rooms.find(o => o.id === activeUserConv.id)?.users?.find(o => o.nickName === activeUserConv.name)?.id)
                             setShowUserInfos(true)
                         }

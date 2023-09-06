@@ -42,7 +42,6 @@ const RoomForm:React.FC<RoomFormProps> = ( { allUsers, showForm, setShowForm, se
     
     useEffect(() => {
         socket.on('new-room', (res) => {
-            console.log(res)
             if (res.room.roomType === 'DM') {
                 var _name = res.usersInfos.existingUser[0].nickname
                 var _photo = res.usersInfos.existingUser[0].profilePic
@@ -72,9 +71,7 @@ const RoomForm:React.FC<RoomFormProps> = ( { allUsers, showForm, setShowForm, se
                 }); setConvs([..._rooms]); return _rooms})
             }
             set_room_created(old => !old)
-            // setConvs([...rooms])
         })
-        console.log(rooms)
     }, [])
     
     socket.emit('get-users', null)
@@ -93,11 +90,11 @@ const RoomForm:React.FC<RoomFormProps> = ( { allUsers, showForm, setShowForm, se
         
         const _unvalidUsers = unvalidUsers()
 
-        if (_unvalidUsers.length) {
-            internalError('unvalid users : ' + _unvalidUsers)
-        }
+        // if (_unvalidUsers.length) {
+        //     internalError('unvalid users : ' + _unvalidUsers)
+        // }
 
-        else if (roomName != '' && users.length) {
+        if (roomName != '' && users.length) {
             hideForm()
             socket.emit('create-room', {roomName:roomName, users:users, type:roomType, password:pass})
         }

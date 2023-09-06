@@ -45,7 +45,6 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
         })
       .then((res) => {
         setChatBoxMessages(res.data.msg)
-        console.log(res.data.msg)
       })
     } catch(error) {
       // alert(error)
@@ -59,7 +58,6 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, allUsers, setActiveUserConv, act
   
   const [lastmsg, setLastMsg] = useState(rooms.find(o => o.id === data.id).lastmsg)
   const [pending, setPending] = useState(data.pending)
-  console.log(_tabIndex)
 
   return (
     <div tabIndex={_tabIndex} className={'transition-all duration-200 ' + (activeUserConv.id === data.id ? 'bg-blueStrong' : 'bg-zinc-800 hover:bg-zinc-700') + " cursor-pointer convGroup z-0 focus:bg-blueStrong w-[70%] left-[15%] h-[100px] gap-4 relative my-3 rounded-md active:bg-blue-500 flex items-center justify-start text-[16px]"} onClick={handleClick} onFocus={handleClick}>
