@@ -88,6 +88,8 @@ export default function MyModal(props: any) {
 
 	async function Two_factor_Auth()
 	{
+		if (!qrCodeActive)
+			load();
 		if (doneScanning)
 		{
 			try {
@@ -220,21 +222,37 @@ export default function MyModal(props: any) {
 		}
 	}
 
-	useEffect(() => {
-		async function load() 
-		{
-			await axios.get('http://127.0.0.1:3000/qr/code', {
-				withCredentials: true
-			}).then(res => {
-				console.log(res.data);
-				if (res.data.Qr !== undefined)
-					setSrc(res.data.Qr);
-				setQr(res.data.active);
-				setScanned(res.data.active);
-			}).catch(err => {console.log("error getting the Qr data !!!")});
-		}
+	async function load() 
+	{
+		await axios.get('http://127.0.0.1:3000/qr/code', {
+			withCredentials: true
+		}).then(res => {
+			console.log(res.data);
+			if (res.data.Qr)
+				setSrc(res.data.Qr);
+			setScanned(res.data.active);
+		}).catch(err => {console.log("error getting the Qr data !!!")});
+	}
 
-		load();
+	async function checkQrActivity() {
+		await axios.get('http://127.0.0.1:3000/qr/active_or_not', {
+			withCredentials: true
+		}).then(res => {
+			if (res.data.twoFa)
+			{
+				setQr(true);
+				setScanned(true);
+			}
+			else
+			{
+				setQr(false);
+				setScanned(false);
+			}
+		}).catch(err => {console.log("unknown 2FA active or not.")});
+	}
+
+	useEffect(() => {
+		checkQrActivity();
 	}, []);
 	
   return (

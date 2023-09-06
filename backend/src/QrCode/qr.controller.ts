@@ -48,4 +48,12 @@ export class QrController {
             throw new ConflictException("error while disabling 2FA");
         }
     }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Get('active_or_not')
+    async QrActivity(@Req() req: any)
+    {
+        const user = await this.userServices.findOneById(req.user.sub);
+        return {twoFa:(user ? user.twoFactorAuth : undefined)};
+    }
 }
