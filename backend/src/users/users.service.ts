@@ -456,8 +456,8 @@ export class UsersService {
 
 	async	createMatch(p1 :string, p2: string, score1:number, score2: number)
 	{
-		const user1 = await this.findOneByNickname(p1);
-		const user2 = await this.findOneByNickname(p2);
+		const user1 = await this.findOneById(p1);
+		const user2 = await this.findOneById(p2);
 		if (!user1 || !user2)
 			throw new NotFoundException("not users to insert in match");
 		const match = await this.prisma.match.create({
@@ -474,11 +474,30 @@ export class UsersService {
 		});
 	}
 
-	async	returnMatches(nickname: string)
+	async	returnMatchesWithNickname(nickname: string)
 	{
 		const user = await this.prisma.user.findFirst({
 			where :{
-				nickname: nickname
+				nickname
+			},
+			include : {
+				matches : {
+					include : {
+						players :true
+					}
+				}
+			}
+		})
+		if (!user)
+			throw new NotFoundException('user not found while fetching his matches!!');
+		return user;
+	}
+
+	async	returnMatchesWithId(id: string)
+	{
+		const user = await this.prisma.user.findFirst({
+			where :{
+				id
 			},
 			include : {
 				matches : {
@@ -505,7 +524,7 @@ export class UsersService {
 		}
 		let s1: number, s2 : number;
 
-		const {matches} = await this.returnMatches(nickname);
+		const {matches} = await this.returnMatchesWithNickname(nickname);
 		matches.map(x => {
 			matchesStats.total++;
 			s1 = (x.players[0].id === x.score1[0] ? parseInt(x.score1[1].toString()) : parseInt(x.score2[1].toString()));
@@ -531,7 +550,7 @@ export class UsersService {
 	async matchHistory(nickName: string)
 	{
 		let history : {}[] = []
-		const matches = (await this.returnMatches(nickName)).matches;
+		const matches = (await this.returnMatchesWithNickname(nickName)).matches;
 
 		matches.map(x => {
 			let match = {
@@ -601,13 +620,12 @@ export class UsersService {
 		return (missions);
 	}
 
-	async incrementLvl(nickname:string, xp: number) {
-		const user = await this.findOneByNickname(nickname);
+	async incrementLvl(id:string, xp: number) {
+		const user = await this.findOneById(id);
 		const newLvl = +(user.level + (xp / 100)).toFixed(2);
-		console.log(newLvl);
 		await this.prisma.user.update({
 			where: {
-				nickname
+				id
 			},
 			data: {
 				level: newLvl

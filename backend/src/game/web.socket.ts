@@ -5,7 +5,7 @@ import { randomUUID } from "crypto";
 import { Server, Socket } from 'socket.io'
 import { UsersService } from "src/users/users.service";
 import { AcheivementsService } from "src/users/achievements.service";
-import { Player, userNode, roomT, Ball, Specials, msgFromPlayer } from "./Player";
+import { Player, userNode, roomT, Ball, Specials, msgFromPlayer, planedGames } from "./Player";
 
 
 
@@ -15,8 +15,9 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	@WebSocketServer()
 	server:Server;
 
-	private connectedUsers: {socket: Socket, nickname: string}[] = [];
+	private connectedUsers: {socket: Socket, id: string}[] = [];
 	private gameQueue: userNode[] = [];
+	private planedGames: planedGames[] = [];
 
 	private rooms : roomT[] = [];
 
@@ -33,7 +34,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
     }
 
 	async handleDisconnect(socket: Socket) {///delete room when someone disconnected
-		console.log(this.connectedUsers.find(x => x.socket === socket ).nickname ,' : has disconnected from game socket')//
+		console.log(this.connectedUsers.find(x => x.socket === socket ).id ,' : has disconnected from game socket')//
 		try {
 			const room = this.rooms.find(x => x.player1.socket === socket || x.player2.socket === socket);
 			if (room.player1.gameGoing === true || room.player2.gameGoing === true)
@@ -41,7 +42,8 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 				room.player1.gameGoing = room.player2.gameGoing = false;
 				if (room.player1.score !== room.player2.score)
 				{
-					await this.usersService.createMatch(room.player1.nickName, room.player2.nickName, (room.player1.socket.connected ? 8 : 0), (room.player2.socket.connected ? 8 : 0));
+					await this.usersService.incrementLvl(room.player1.socket.connected ? room.player1.id : room.player2.id, 10);
+					await this.usersService.createMatch(room.player1.id, room.player2.id, (room.player1.socket.connected ? 8 : 0), (room.player2.socket.connected ? 8 : 0));
 					// await this.usersService.createMatch(room.player1.nickName, room.player2.nickName, room.player1.score, room.player2.score);
 					this.server.to(room.roomId).emit("gameOver", 
 						room[room.player1.socket.connected ? 'player1' : 'player2'].socket.id);
@@ -88,9 +90,9 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		if (room.player1.score === 7 || room.player2.score === 7)//
 		{
 			room.player1.gameGoing = room.player2.gameGoing = false;
-			await this.usersService.createMatch(room.player1.nickName, room.player2.nickName, room.player1.score, room.player2.score);
+			await this.usersService.createMatch(room.player1.id, room.player2.id, room.player1.score, room.player2.score);
 			clearInterval(room.loop);
-			await this.usersService.incrementLvl(room.player1.score === 7 ? room.player1.nickName : room.player2.nickName, 10);
+			await this.usersService.incrementLvl(room.player1.score === 7 ? room.player1.id : room.player2.id, 10);
 			await this.achievementsService.checkForAchievement(room.player1, room.player2);
 			this.server.to(room.roomId).emit("gameOver", 
 				room[room.player1.score === 7 ? 'player1' : 'player2'].socket.id
@@ -207,6 +209,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		player1Socket.join(roomId);
 		player2Socket.join(roomId);
 
+
 		const newRoom:roomT = {
 			player1: new Player(player1Socket),
 			player2: new Player(player2Socket),
@@ -218,11 +221,11 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			specialsMode: false,
 			specials: new Specials()
 		};
-		newRoom.player1.setData(this.gameQueue[0].user.nickName, this.gameQueue[0].user.avatar);
-		newRoom.player2.setData(this.gameQueue[1].user.nickName, this.gameQueue[1].user.avatar);
-		this.server.to(newRoom.player1.socket.id).emit("playersInfo", {nickname:newRoom.player2.nickName,
+		newRoom.player1.setData(this.gameQueue[0].user.id, this.gameQueue[0].user.avatar, this.gameQueue[0].user.nickname);
+		newRoom.player2.setData(this.gameQueue[1].user.id, this.gameQueue[1].user.avatar, this.gameQueue[1].user.nickname);
+		this.server.to(newRoom.player1.socket.id).emit("playersInfo", {nickname:newRoom.player2.nickname,
 								avatar:newRoom.player2.avatar});
-		this.server.to(newRoom.player2.socket.id).emit("playersInfo", {nickname:newRoom.player1.nickName,
+		this.server.to(newRoom.player2.socket.id).emit("playersInfo", {nickname:newRoom.player1.nickname,
 								avatar:newRoom.player1.avatar});
 		
 		newRoom.player1.gameGoing = newRoom.player2.gameGoing = true; //set the game as started
@@ -254,12 +257,12 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		if (!user) {
 			this.OnWebSocektError(socket);
 		}
-		this.connectedUsers.push({socket, nickname: user.nickname});
-		player.setData(user.nickname, user.profilePic);
+		this.connectedUsers.push({socket, id: user.id});
+		player.setData(user.id, user.profilePic, user.nickname);
 		this.gameQueue.push({socket, user: player});
 		if (this.gameQueue.length < 2 || this.connectedUsers.length < 2)
 			return ;
-		if (this.gameQueue[0].user.nickName === this.gameQueue[1].user.nickName)
+		if (this.gameQueue[0].user.id === this.gameQueue[1].user.id)
 		{
 			this.gameQueue.pop();
 			return ;

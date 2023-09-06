@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Match, PrismaClient, User } from '@prisma/client';
-import { Player } from 'src/webSocket/Player';
+import { Player } from 'src/game/Player';
 import * as achievements from "./achievements.json"
 import { UsersService } from 'src/users/users.service';
 
@@ -26,10 +26,10 @@ export class AcheivementsService {
 		})
 	}
 
-	async getUserWithAchievements(nickname: string) {
+	async getUserWithAchievements(id: string) {
 		return await this.prisma.user.findUnique({
 			where: {
-				nickname
+				id
 			},
 			include: {
 				achievements: true
@@ -37,14 +37,14 @@ export class AcheivementsService {
 		})
 	}
 
-	async giveAcToUser(nickname: string, achievement: Achievement) {
-		const user = await this.usersService.findOneByNickname(nickname);
+	async giveAcToUser(id: string, achievement: Achievement) {
+		const user = await this.usersService.findOneById(id);
 		const ac = await this.findAchievement(achievement.title);
 		if (!user || !ac)
 			return ;
 		await this.prisma.user.update({
 			where: {
-				nickname
+				id: user.id
 			}, 
 			data: {
 				achievements: {
@@ -77,9 +77,9 @@ export class AcheivementsService {
 
 	async checkBreaker(p1: Player, p2: Player) {
 		const winner = p1.score > p2.score ? p1 : p2;
-		const user = await this.usersService.findOneByNickname(winner.nickName)
-		const {achievements: userAc} = await this.getUserWithAchievements(winner.nickName);
-		const {matches} = await this.usersService.returnMatches(winner.nickName);
+		const user = await this.usersService.findOneById(winner.id)
+		const {achievements: userAc} = await this.getUserWithAchievements(winner.id);
+		const {matches} = await this.usersService.returnMatchesWithId(winner.id);
 		const breakers = userAc.filter(a => a.category === 'breaker');
 		let wonMatches = 0;
 		let matchRequirement = 0;
@@ -118,16 +118,16 @@ export class AcheivementsService {
 				wonMatches++;
 		}
 		if (wonMatches === matchRequirement) {
-			await this.giveAcToUser(winner.nickName, newBreaker);
-			await this.usersService.incrementLvl(winner.nickName, newBreaker.xp)
+			await this.giveAcToUser(winner.id, newBreaker);
+			await this.usersService.incrementLvl(winner.id, newBreaker.xp)
 		}
 	}
 
 	async checkHumiliator(p1: Player, p2: Player) {
 		const winner = p1.score > p2.score ? p1 : p2;
-		const user = await this.usersService.findOneByNickname(winner.nickName)
-		const {achievements: userAc} = await this.getUserWithAchievements(winner.nickName);
-		const {matches} = await this.usersService.returnMatches(winner.nickName);
+		const user = await this.usersService.findOneById(winner.id)
+		const {achievements: userAc} = await this.getUserWithAchievements(winner.id);
+		const {matches} = await this.usersService.returnMatchesWithId(winner.id);
 		const humiliates = userAc.filter(a => a.category === 'humiliator');
 		let newHumilite: Achievement;
 		let matchRequirement = 0;
@@ -166,7 +166,7 @@ export class AcheivementsService {
 	}
 
 	async checkSeniority(player: Player) {
-		const {matches: pMatches} = await this.usersService.returnMatches(player.nickName);
+		const {matches: pMatches} = await this.usersService.returnMatchesWithId(player.id);
 		let Seniority: Achievement = undefined;
 
 		switch (pMatches.length) {
@@ -184,7 +184,7 @@ export class AcheivementsService {
 				break;
 		}
 		Seniority && await this.createAchievement(Seniority);
-		Seniority && await this.giveAcToUser(player.nickName, Seniority)
+		Seniority && await this.giveAcToUser(player.id, Seniority)
 	}
 
 	async checkForAchievement(p1: Player, p2: Player) {
@@ -197,12 +197,12 @@ export class AcheivementsService {
 	async checkHatTrick(scorer: Player, scoredAt: Player) {
 		if (!(scorer.score === 3 && scoredAt.score === 0))
 			return ;
-		const {achievements: ac} = await this.getUserWithAchievements(scorer.nickName);
+		const {achievements: ac} = await this.getUserWithAchievements(scorer.id);
 		const oldAc = ac.find(a => a.title === 'Hat-trick')
 		if (oldAc)
 			return ;
 		await this.createAchievement(achievements.achievements.hat_trick);
-		await this.giveAcToUser(scorer.nickName, achievements.achievements.hat_trick);
+		await this.giveAcToUser(scorer.id, achievements.achievements.hat_trick);
 	}
 
 	async giveWelcome(nickname: string) {

@@ -13,7 +13,13 @@ export type coords = {
 
 export type userNode = {
 	socket: Socket,
-	user: Player
+	user: Player,
+}
+
+export type planedGames = {
+	socket: Socket,
+	user: Player,
+	against: string
 }
 
 export type paddleInfo = {
@@ -48,8 +54,9 @@ export class Player {
 	readonly socket: Socket;
 	ball: coords;
 	score: number;
-	nickName: string;
+	id: string;
 	avatar: string;
+	nickname: string;
 	height: number;
 	gameGoing: boolean;
 	special: boolean;
@@ -78,9 +85,10 @@ export class Player {
 		this.ball = {x, y};
 	}
 
-	setData(nickName: string, avatar: string) {
-		this.nickName = nickName;
+	setData(id: string, avatar: string, nickname: string) {
+		this.id = id;
 		this.avatar = avatar;
+		this.nickname = nickname;
 	}
 
 	resetHeight() {
