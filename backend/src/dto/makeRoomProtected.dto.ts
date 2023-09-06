@@ -9,7 +9,7 @@ export class MakeRoomProtected {
      
     @IsNotEmpty()
     @IsString()
-    roomId: string;
+    roomName: string;
   
     @IsNotEmpty()
     @IsString()

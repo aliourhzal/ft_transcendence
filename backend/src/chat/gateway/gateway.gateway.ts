@@ -938,7 +938,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 {
                     const user  = await this.utils.verifyToken(token); // // if has error will catch it
 
-                    const rtn = await this.gatewayService.checkUpdateRoom(user['sub'] , dto.roomId);
+                    const rtn = await this.gatewayService.checkUpdateRoom(user['sub'] , dto.roomName);
                     
                     if(rtn.error)
                     {
@@ -1132,8 +1132,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i].room.id ,currentUserId ) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
             }
             
-            console.log(await this.roomService.allUsersWhoBlockMe(currentUserId))
-            console.log((await this.roomService.allUsersBlockedByMe(currentUserId)).blockedUsers)
+            // console.log(await this.roomService.allUsersWhoBlockMe(currentUserId))
+            const allUsersBlockedByMe =   (await this.roomService.allUsersBlockedByMe(currentUserId)).blockedUsers;
+
+            this.server.to(socket.id).emit("all-blocked-users", {allUsersBlockedByMe}); 
             
             this.server.to(socket.id).emit("all-users", {allUsers: await this.utils.getAllUsers()}); 
             // emmit all users infos
