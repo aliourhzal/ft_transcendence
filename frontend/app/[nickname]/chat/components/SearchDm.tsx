@@ -78,7 +78,7 @@ const SearchDm:React.FC<SearchDmProps> = ( { currentUsers, setActiveUserConv, sh
                 <span className='text-whiteSmoke'>{user.nickname}</span>
               </div>
               <button className='w-auto text-white bg-red-400 hover:bg-red-300 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center' onClick={(e) => {
-                socket.emit('user-block', {userId: user.id})
+                socket.emit('user-block', {blockedUserId: user.id})
                 e.stopPropagation() // dont propagate onclick event to parent
               }}>block</button>
             </span>
