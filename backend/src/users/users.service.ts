@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { HttpException, HttpStatus, Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException, StreamableFile } from '@nestjs/common';
 import { PrismaClient, User } from '@prisma/client';
 import { unlinkSync } from 'fs';
 import { extname } from 'path';
@@ -12,7 +12,18 @@ import { UserData } from 'src/utils/userData.interface';
 export class UsersService {
 	private readonly prisma = new PrismaClient()
 
-    
+    async getUsers() {
+		const users = await this.prisma.user.findMany({
+			select: {
+				id: true,
+				profilePic: true,
+				nickname: true
+			}
+		})
+		if (!users)
+			throw new InternalServerErrorException('prisma failed to retieve data form db!!');
+		return (users);
+	}
 	// update a user NickName
 	async updateUserNickName(id : string , newNick: string)
 	{

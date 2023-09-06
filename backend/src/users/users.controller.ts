@@ -23,6 +23,12 @@ export class UsersController{
 		return await this.usersService.fetchUserByNickname(nickname);
 	}
 
+	@UseGuards(AuthGuard('jwt'))
+	@Get('users')
+	async getUsers(@Req() request: any) {
+		return await this.usersService.getUsers();
+	}
+
 	// this endpoint is to be called when want to change the user avatar
 	@UseGuards(AuthGuard('jwt'))
 	@Put('profile/avatar')
