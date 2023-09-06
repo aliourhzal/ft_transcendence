@@ -33,7 +33,7 @@ const SearchDm:React.FC<SearchDmProps> = ( { currentUsers, setActiveUserConv, sh
       filerList()
   }
 
-  const getDm = async (user, data) => {
+  const getDm = async (data) => {
     try {
       await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomId:rooms.find(o => o.id === data.id).id}, {
         withCredentials: true,
@@ -48,7 +48,6 @@ const SearchDm:React.FC<SearchDmProps> = ( { currentUsers, setActiveUserConv, sh
       // alert(error)
       console.log(error)
     }
-    setActiveUserConv(rooms.find(o => o.name === user.nickname))
     setShowConv(true)
   }
 
@@ -65,7 +64,8 @@ const SearchDm:React.FC<SearchDmProps> = ( { currentUsers, setActiveUserConv, sh
                 // setActiveUserConv(rooms.find(o => o.name === user.nickname))
               }
               else {
-                getDm(user, rooms.find(o => o.id === currentUsers.find(o => o.nickname === user.nickName).id))
+                setActiveUserConv(rooms.find(o => o.name === user.nickname))
+                getDm(rooms.find(o => o.name === user.nickname))
               }
               hide()
             }}>
@@ -78,7 +78,7 @@ const SearchDm:React.FC<SearchDmProps> = ( { currentUsers, setActiveUserConv, sh
                 <span className='text-whiteSmoke'>{user.nickname}</span>
               </div>
               <button className='w-auto text-white bg-red-400 hover:bg-red-300 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center' onClick={(e) => {
-                socket.emit('user-block', {userId: user.id})
+                socket.emit('user-block', {blockedUserId: user.id})
                 e.stopPropagation() // dont propagate onclick event to parent
               }}>block</button>
             </span>
