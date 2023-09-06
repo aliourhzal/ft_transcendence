@@ -4,6 +4,7 @@ import * as qrcode from 'qrcode';
 
 import { Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
+import { diskStorage } from 'multer';
 
 @Injectable()
 export class twoFactorAuth
@@ -11,20 +12,18 @@ export class twoFactorAuth
     constructor (
         private readonly userServices: UsersService
     ){}
-    // private secret: any;
-    private qrCode = null;
     
     async secreteGenerator(id : string)
     {
         var secret = speakeasy.generateSecret();
 
-        console.log(secret);
-        qrcode.toDataURL(secret.otpauth_url, (err, data) => {
-            if (err) throw Error("Qr_Code generation failed !!!");
-            this.qrCode = data;
-        });
+        const qrCodeG = await qrcode.toDataURL(secret.otpauth_url);
         const user = await this.userServices.updateUserQr(id, secret.ascii);
-        return {Qr:(user ? this.qrCode : undefined) , active: (user ? user.twoFactorAuth : true)};
+        // qrcode.toDataURL(secret.otpauth_url, (err, data) => {
+        //     if (err) throw Error("Qr_Code generation failed !!!");
+        //     this.qrCode = data;
+        // });
+        return {Qr: qrCodeG , active: (user ? user.twoFactorAuth : true)};
     }
     
     async   verifyCode(id: string, tok: string)//true or false
