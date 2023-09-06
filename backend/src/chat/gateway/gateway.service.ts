@@ -382,7 +382,7 @@ export class GatewayService
         }
 
 
-        async checkUpdateRoom(currentUserId :string , roomId  :string)
+        async checkUpdateRoom(currentUserId :string , roomName  :string)
         {
             const existingUser = await this.utils.getUserId([currentUserId]); // if current user in db
 
@@ -391,8 +391,7 @@ export class GatewayService
                 return {error : existingUser.error};
             } 
 
-            const roomInfos = await this.utils.getRoominfosById(roomId); 
-
+            const roomInfos = await this.utils.getRoomByName(roomName); 
             if(roomInfos)  // if room exist
             {
                 const ifUserInroom = await this.utils.getUserType(roomInfos.id , [currentUserId]); // if both users in this room
@@ -401,6 +400,7 @@ export class GatewayService
                 {
                     return {error : ifUserInroom.error};
                 }
+                
                 if(ifUserInroom.usersType[0].userType  === 'USER' )
                 {
                     return {error : 'dont have permmition.'}
@@ -509,7 +509,13 @@ export class GatewayService
                 {
                     return {error : existingUser.error};
                 } 
-    
+
+                if((await this.roomService.isBlocked(currentUserId , reciverUserId )).blockedBy.length > 0)
+                    return {error : 'user aleredy blocked.'}
+                if((await this.roomService.isBlocked(reciverUserId , currentUserId )).blockedBy.length > 0)
+                    return {error : 'user aleredy blocked.'}
+
+
                 if(currentUserId === reciverUserId)
                     return {error : 'same user'}
             }

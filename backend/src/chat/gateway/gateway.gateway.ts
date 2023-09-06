@@ -177,7 +177,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             if (token) 
             {
                 const user  = await this.utils.verifyToken(token); // // if has error will catch it
-                
+                               
                 const rtn = await this.gatewayService.checkSendMessage( user['sub'] , dto.roomId);
 
                 if(rtn.error)
@@ -189,8 +189,47 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 {
                     const createdMsg = await this.messagesService.createMessages(dto.message ,user['sub'], rtn.room.id);
                      
-                    await this.emmiteEventesToUsers(socket, rtn.room.id  ,"add-message", {userId: createdMsg.user, msg: createdMsg.msg , roomId: rtn.room.id , idOfmsg : createdMsg.idOfMsg})
+                    // await this.emmiteEventesToUsers(socket, rtn.room.id  ,"add-message", {userId: createdMsg.user, msg: createdMsg.msg , roomId: rtn.room.id , idOfmsg : createdMsg.idOfMsg})
                           
+                    const allUsersBlockedByMe = (await this.roomService.allUsersBlockedByMe(user['sub'])).blockedUsers;
+            
+                    const allUsersWhoBlockMe = await this.roomService.allUsersWhoBlockMe(  user['sub']);
+                
+                    let allBlockedUsers =   allUsersWhoBlockMe.map((item) => item.id);
+                    
+                    allBlockedUsers.push(...allUsersBlockedByMe.map((item) => item.id))
+
+                    let uniqBlockedUsers : string[] = [];
+                    const  getAllUsersIdInRoom = await this.roomService.getAllUsersIdInRoom(rtn.room.id);
+
+                    for(let i = 0; i < getAllUsersIdInRoom.length ; i++)
+                    {
+                        let t = 0;
+                        for(let j = 0 ; j < allBlockedUsers.length ; j++)
+                        {
+                            if(getAllUsersIdInRoom[i].userId === allBlockedUsers[j])
+                                t++;
+                        }
+                        if(t === 0)
+                            uniqBlockedUsers.push(getAllUsersIdInRoom[i].userId);
+                    }
+                    if(uniqBlockedUsers.length === 1 && getAllUsersIdInRoom.length === 2) // if two users in block in direct message dont send message or all users are blocked in room dont send message
+                    {
+                        return ;
+                    }
+                    for(const userInRoom of uniqBlockedUsers)
+                    {
+                        for (let i = 0; i < this.soketsId.length; i++) 
+                        {
+
+                            if(this.soketsId[i].userId === userInRoom)
+                            {
+                                this.server.to(this.soketsId[i].socketIds).emit("add-message" ,{ userId: createdMsg.user, msg: createdMsg.msg , roomId: rtn.room.id , idOfmsg : createdMsg.idOfMsg});
+                            } 
+                        }
+
+                    }  
+
                 }
             } 
             else
@@ -899,7 +938,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 {
                     const user  = await this.utils.verifyToken(token); // // if has error will catch it
 
-                    const rtn = await this.gatewayService.checkUpdateRoom(user['sub'] , dto.roomId);
+                    const rtn = await this.gatewayService.checkUpdateRoom(user['sub'] , dto.roomName);
                     
                     if(rtn.error)
                     {
@@ -980,7 +1019,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     @UsePipes(new ValidationPipe())     
     async block(@MessageBody()  dto:Block,  @ConnectedSocket() socket: Socket)
     {
-
         try 
         {
             const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
@@ -988,6 +1026,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             if (token) 
             {
                 const user = await this.utils.verifyToken(token)
+                
+                
               
                 const rtn = await this.checkBlockUser(user['sub']  , dto.blockedUserId);
                 
@@ -1025,7 +1065,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         {
             console.log(error)
         }
-
     }
 
         async checkBlockUser(currentUserId :string , blockedUserId : string)
@@ -1036,6 +1075,11 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             {
                 return {error : existingUser.error};
             } 
+         
+            if((await this.roomService.isBlocked(currentUserId , blockedUserId )).blockedBy.length > 0)
+                return {error : 'user aleredy blocked.'}
+            if((await this.roomService.isBlocked(blockedUserId , currentUserId )).blockedBy.length > 0)
+                return {error : 'user aleredy blocked.'}
             return {ok : 'ok'}
         }
         
@@ -1082,12 +1126,16 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             
             let messages:any[] = [];
             
-            
+            socket['userId'] = currentUserId;
             for(let i = 0; i < rooms.length; i++)
             {
-                messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i].room.id) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
+                messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i].room.id ,currentUserId ) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
             }
             
+            // console.log(await this.roomService.allUsersWhoBlockMe(currentUserId))
+            const allUsersBlockedByMe =   (await this.roomService.allUsersBlockedByMe(currentUserId)).blockedUsers;
+
+            this.server.to(socket.id).emit("all-blocked-users", {allUsersBlockedByMe}); 
             
             this.server.to(socket.id).emit("all-users", {allUsers: await this.utils.getAllUsers()}); 
             // emmit all users infos
@@ -1120,7 +1168,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                      
                     for(let i = 0; i < rooms.length; i++)
                     {
-                        messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i].room.id) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
+                        messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i].room.id ,user['sub'] ) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
                     }
                     
                     this.server.to(socket.id).emit("list-rooms",{messages});  //  evry client will connected will display the rooms who is member into 
@@ -1130,9 +1178,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             {
                 console.log(error)
             } 
-
-
-
             
         }
 
@@ -1142,28 +1187,25 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             
             if(removedUser)
             {
-                // console.log(removedUser)
                 usersInroom.push(removedUser)
             }
-            
-             
-            
+
             for(const userInRoom of usersInroom)
             {
+                                
                 for (let i = 0; i < this.soketsId.length; i++) 
                 {
+
                     if(this.soketsId[i].userId === userInRoom.userId)
                     {
                         this.server.to(this.soketsId[i].socketIds).emit(event , data);
                     } 
                 }
+
             }   
 
         }
 
-       
-
-        
 
         OnWebSocektError(socket:Socket)
         { 

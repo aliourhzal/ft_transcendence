@@ -64,7 +64,7 @@ export class RoomController {
                         if(isUserInRoom.error)
                             return res.status(404).send(isUserInRoom.error);
                         
-                        const messageAndUserName = await this.messagesService.getAllMessagesofRoom(dto.roomId);
+                        const messageAndUserName = await this.messagesService.getAllMessagesofRoom(dto.roomId , user['sub']);
                         
                         return res.status(200).send({ msg: messageAndUserName });
                     }

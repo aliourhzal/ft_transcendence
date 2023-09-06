@@ -522,7 +522,7 @@ export class RoomsService
         });
       
         return user; // it return all user blocked
-    }
+        }
 
     async   unblockUser(blockerUserId: string, unblockedUserId: string) {
         await this.prisma.user.update({
@@ -534,6 +534,31 @@ export class RoomsService
           where: { id: unblockedUserId },
           data: { blockedBy: { disconnect: { id: blockerUserId } } },
         });
+      }
+
+      async allUsersBlockedByMe(id : string)
+      {
+        return await this.prisma.user.findUnique({
+            where: {
+              id,
+            },
+            include: {
+              blockedUsers: true,
+            },
+          });
+      }
+
+      async allUsersWhoBlockMe(id : string)
+      {
+        return await this.prisma.user.findMany({
+            where: {
+                blockedUsers: {
+                some: {
+                  id,
+                },
+              },
+            },
+          });
       }
 
       async   updateRoomToProtected(roomId: string, newPassword: string) {
@@ -550,4 +575,18 @@ export class RoomsService
       
         return updatedRoom;
       }
+
+      async getAllUsersIdInRoom(roomId : string)
+      {
+        const rtn =  await this.prisma.joinedTable.findMany({
+            where: {
+              roomId: roomId,
+            },
+            select: {
+              userId: true,
+            },
+          });
+          return rtn;
+      }
+
 }
