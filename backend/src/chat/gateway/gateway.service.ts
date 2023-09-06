@@ -401,6 +401,7 @@ export class GatewayService
                 {
                     return {error : ifUserInroom.error};
                 }
+                
                 if(ifUserInroom.usersType[0].userType  === 'USER' )
                 {
                     return {error : 'dont have permmition.'}
@@ -509,7 +510,13 @@ export class GatewayService
                 {
                     return {error : existingUser.error};
                 } 
-    
+
+                if((await this.roomService.isBlocked(currentUserId , reciverUserId )).blockedBy.length > 0)
+                    return {error : 'user aleredy blocked.'}
+                if((await this.roomService.isBlocked(reciverUserId , currentUserId )).blockedBy.length > 0)
+                    return {error : 'user aleredy blocked.'}
+
+
                 if(currentUserId === reciverUserId)
                     return {error : 'same user'}
             }

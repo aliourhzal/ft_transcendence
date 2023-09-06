@@ -213,7 +213,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         if(t === 0)
                             uniqBlockedUsers.push(getAllUsersIdInRoom[i].userId);
                     }
-                    
+                    if(uniqBlockedUsers.length === 1 && getAllUsersIdInRoom.length === 2) // if two users in block in direct message dont send message or all users are blocked in room dont send message
+                    {
+                        return ;
+                    }
                     for(const userInRoom of uniqBlockedUsers)
                     {
                         for (let i = 0; i < this.soketsId.length; i++) 
@@ -226,7 +229,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                         }
 
                     }  
-
 
                 }
             } 
@@ -1073,7 +1075,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             {
                 return {error : existingUser.error};
             } 
- 
+         
             if((await this.roomService.isBlocked(currentUserId , blockedUserId )).blockedBy.length > 0)
                 return {error : 'user aleredy blocked.'}
             if((await this.roomService.isBlocked(blockedUserId , currentUserId )).blockedBy.length > 0)
@@ -1127,9 +1129,11 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             socket['userId'] = currentUserId;
             for(let i = 0; i < rooms.length; i++)
             {
-                messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i].room.id) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
+                messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i].room.id ,currentUserId ) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
             }
             
+            console.log(await this.roomService.allUsersWhoBlockMe(currentUserId))
+            console.log((await this.roomService.allUsersBlockedByMe(currentUserId)).blockedUsers)
             
             this.server.to(socket.id).emit("all-users", {allUsers: await this.utils.getAllUsers()}); 
             // emmit all users infos
@@ -1162,7 +1166,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                      
                     for(let i = 0; i < rooms.length; i++)
                     {
-                        messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i].room.id) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
+                        messages.push({msg : await this.messagesService.getAllMessagesofRoom(rooms[i].room.id ,user['sub'] ) , room : rooms[i] , usersInRoom: await this.utils.getUserInfosInRoom(rooms[i].roomId)})
                     }
                     
                     this.server.to(socket.id).emit("list-rooms",{messages});  //  evry client will connected will display the rooms who is member into 

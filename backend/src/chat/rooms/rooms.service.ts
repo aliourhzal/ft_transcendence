@@ -522,7 +522,7 @@ export class RoomsService
         });
       
         return user; // it return all user blocked
-    }
+        }
 
     async   unblockUser(blockerUserId: string, unblockedUserId: string) {
         await this.prisma.user.update({
