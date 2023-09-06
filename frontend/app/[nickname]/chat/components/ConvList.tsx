@@ -17,7 +17,6 @@ const ConvList:React.FC<ConvListProps> = ({allUsers, activeUserConv, setActiveUs
   
   const fillUserList = (res) => {
     setConvs([])
-    console.log("**", res)
     res.messages.map( (room: any) => {
       if (room.room.room.roomType === 'DM') {
         var _name = room.usersInRoom[0].user.nickname
@@ -65,7 +64,6 @@ const ConvList:React.FC<ConvListProps> = ({allUsers, activeUserConv, setActiveUs
       newusers.map((newuser) => {
         if (newuser.userType != 'OWNER') {
           if (newuser.user.nickname === userData.nickname || !rooms.find(o => o.name === res.roomId.room_name)) {
-            console.log("YESSS")
             _newUser = newuser.user.nickname
             if (!rooms.find(o => o.id === res.roomId.id)) {
               rooms.unshift({
@@ -94,7 +92,6 @@ const ConvList:React.FC<ConvListProps> = ({allUsers, activeUserConv, setActiveUs
           }
         })
         setConvs([...rooms])
-        console.log(rooms)
         set_room_created(old => !old)
         // setUpdateList(old => !old)
         if (userData.nickname === _newUser) {
@@ -121,8 +118,6 @@ const ConvList:React.FC<ConvListProps> = ({allUsers, activeUserConv, setActiveUs
         setConvs(rooms.filter((user:conversation) => (user.name.startsWith(needle))))
     }
 
-    // convs.map ((item:conversation) => {console.log(item, "&&&&")})
-
     let _tabIndex: number = 1
 
     return (
@@ -132,7 +127,7 @@ const ConvList:React.FC<ConvListProps> = ({allUsers, activeUserConv, setActiveUs
           {
             rooms.length ? convs.length ? convs.map ((item:conversation) =>  (<ConvBox _tabIndex={_tabIndex++} convsFilter={convsFilter} key={gimmeRandom()} allUsers={allUsers} data={item} activeUserConv={activeUserConv} setActiveUserConv={setActiveUserConv} />)) 
             : 
-            <div className="text-white">No conversations found !</div>
+            <div className="text-white w-full h-full flex items-center justify-center">No conversations found !</div>
             :
             <div className="text-whiteSmoke font-bold h-[100%] w-[100%] flex flex-col items-center justify-center flex-wrap gap-3">
               <div className="gap-2 bg-darken-300 w-[80%] h-[40%] flex flex-col rounded-xl items-center justify-center text-whiteSmoke">
