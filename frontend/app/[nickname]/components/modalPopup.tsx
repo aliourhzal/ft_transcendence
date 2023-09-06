@@ -148,7 +148,7 @@ export default function MyModal(props: any) {
 				}
 				if (newPass === confirmPass)
 				{
-					await axios.post('http://127.0.0.1:3000/users/profile/password ', {confirmPass}, {
+					await axios.post('http://127.0.0.1:3000/users/profile/password ', {newPassword: confirmPass}, {
 						withCredentials: true
 					});
 					passwordRef.current.textContent = "Password Updated";
@@ -184,7 +184,7 @@ export default function MyModal(props: any) {
 				nickNameRef.current.textContent = "Updated";
 				nickNameRef.current.style.color = "#98D8AA";
 				props.dispatch({type: ACTIONS.UPDATE_NICKNAME, payload: newNickname});
-				router.replace(window.location.href.replace(userData.nickname, newNickname));
+				router.replace(window.location.href.replace(userData.nickname, newNickname))
 			}
 			catch(error)
 			{
