@@ -277,7 +277,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 
 	async handleConnection(socket: Socket) {
 		let player = new Player(socket, undefined);
-		const against = socket.handshake.query.against as string;
+		const against = socket.handshake.query.against as string;0
 		let decodeJWt: any;
 		try {
 			decodeJWt = this.jwtService.verify(socket.handshake.auth.token, {
