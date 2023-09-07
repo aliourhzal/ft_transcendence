@@ -10,9 +10,10 @@ interface SearchDmProps {
   setActiveUserConv: any
   showSearchUsersForm: any
   setShowSearchUsersForm: any
+  blockedUsers: any[]
 }
 
-const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersForm, setShowSearchUsersForm } ) => {
+const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersForm, setShowSearchUsersForm, blockedUsers } ) => {
 
   const {socket, rooms, setChatBoxMessages, setShowConv, userData} = useContext(Context)
 
@@ -76,9 +77,9 @@ const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersF
         <h1 className='absolute top-7 text-center text-2xl mb-2 drop-shadow-[0px_0px_5px_rgba(150,150,150,0.7)]'>Search for users</h1>
         <div onClick={() => setShowList(true)} className='-mt-5'><Search _Filter={filerList} type={'dm'}/></div>
         {showList &&
-        <div className='flex flex-col justify-start items-center min-h-[12rem] bg-darken-100 gap-2 rounded-xl overflow-y-auto pt-1'>
+        <div className='transition-all flex flex-col justify-start items-center min-h-[12rem] bg-darken-100 gap-2 rounded-xl overflow-y-auto pt-1'>
           {users.map(user => user.nickname != userData.nickname && (
-            <span className='cursor-pointer rounded-xl w-[100%] p-[5%] h-14 bg-darken-100 hover:bg-darken-300 flex items-center justify-between z-10' key={gimmeRandom()} onClick={ () => {
+            <span className='transition-all duration-300 cursor-pointer rounded-xl w-[100%] p-[5%] h-14 bg-darken-100 hover:bg-darken-300 flex items-center justify-between z-10' key={gimmeRandom()} onClick={ () => {
               if (!rooms.find(o => o.name === user.nickname)) {
                 socket.emit('start-dm', {reciverUserId: user.id})
                 // setActiveUserConv(rooms.find(o => o.name === user.nickname))
@@ -97,10 +98,14 @@ const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersF
                 </div>
                 <span className='text-whiteSmoke'>{user.nickname}</span>
               </div>
-              <button className='w-auto text-white bg-red-400 hover:bg-red-300 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center' onClick={(e) => {
+              { !blockedUsers.find(o => o.id === user.id) ? <button className='transition-all w-24 text-white bg-red-400 hover:bg-red-300 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center' onClick={(e) => {
                 socket.emit('user-block', {blockedUserId: user.id})
                 e.stopPropagation() // dont propagate onclick event to parent
-              }}>block</button>
+              }}>block</button> :
+              <button className='transition-all w-24 flex items-center justify-center text-white bg-blue-400 hover:bg-blue-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center' onClick={(e) => {
+                socket.emit('user-unblock', {blockedUserId: user.id})
+                e.stopPropagation() // dont propagate onclick event to parent
+              }}>unblock</button>}
             </span>
           ))}
         </div>}

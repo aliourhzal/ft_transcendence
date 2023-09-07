@@ -132,12 +132,16 @@ export default function Chat() {
 	
 	const [refresh, setRefresh] = useState(false)
 	
+	const [blockedUsers, setBlockedUsers] = useState([])
+
 	useEffect( () => {
 		console.log('test')
 		const dmId = searchParams.get('id');
 		if (dmId)
 			socket.emit('start-dm', {reciverUserId: dmId})
 		socket.emit('get-rooms', null)
+		socket.on('all-blocked-users', (res) => {setBlockedUsers(res.allUsersBlockedByMe)})
+		socket.on('blocked-user', (res) => {console.log(res); setBlockedUsers(old => [...old, res.blockedUser])})
 	}, [])
 	// const [new] = useState()
 
@@ -267,7 +271,7 @@ export default function Chat() {
 				</div>
 				<RoomForm setShowAlert={setShowAlert} setAlertText={setAlertText} setConvs={setConvs} set_room_created={set_room_created} showForm={showForm} setShowForm={setShowForm} />
 				<JoinRoomForm />
-				<SearchDm setShowSearchUsersForm={setShowSearchUsersForm} showSearchUsersForm={showSearchUsersForm} setActiveUserConv={ setActiveUserConv } />
+				<SearchDm blockedUsers={blockedUsers} setShowSearchUsersForm={setShowSearchUsersForm} showSearchUsersForm={showSearchUsersForm} setActiveUserConv={ setActiveUserConv } />
 				<UserInfo showUserInfos={showUserInfos} setShowUserInfos={setShowUserInfos} nickname={userInfoNick} id={userInfoId} setActiveUserConv={setActiveUserConv} setChatBoxMessages={setChatBoxMessages} setShowConv={setShowConv}/>
 			</Context.Provider>
 		</main>

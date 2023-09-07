@@ -4,6 +4,8 @@ import ChatBox from './ChatBox'
 import RoomInfo from './roomInfo'
 import {Avatar} from '@nextui-org/react'
 import { LuMessagesSquare } from 'react-icons/lu'
+import { GrEmoji } from 'react-icons/gr'
+import Emojis from './Emojis'
 
 interface ConversationProps {
     activeUserConv: any
@@ -20,6 +22,8 @@ const Conversation:React.FC<ConversationProps> = ( { activeUserConv, deviceType,
     const [showInfo, setShowInfo] = useState(false)
     
     const [msg_sender, set_msg_sender] = useState('')
+
+    const [showEmojis, setShowEmojis] = useState(false)
     
     const {setAlertNewMessage, scrollToBottom, chatBoxMessages, rooms, socket, setRefresh,
         userData, setChatBoxMessages, setShowUserInfos, setUserInfoNick, setUserInfoId, msgInputRef, setRooms, setConvs} = useContext(Context)
@@ -106,12 +110,17 @@ const Conversation:React.FC<ConversationProps> = ( { activeUserConv, deviceType,
                     <ChatBox activeUserConv={activeUserConv}/>
                 </div>
 
+                <Emojis className={'transition-all duration-500 ' + (showEmojis ? 'w-36 h-36 bg-darken-300 rounded-xl' : 'hidden')} />
+
                 <div className='h-[8%] w-[90%] flex items-center justify-center'>
                     <div className='w-full h-[70%] rounded-[100px] bg-zinc-800 flex items-center justify-between'>
+                        <div className='transition-all w-10 h-8 flex justify-center items-center text-whiteSmoke ml-3 rounded-full cursor-pointer hover:scale-105' onClick={() => {setShowEmojis(old => !old)}}>
+                            <GrEmoji size={30}/>
+                        </div>
                         <form onSubmit={sendMessage} id='form' className='w-[98%]'>
                             <input ref={msgInputRef} onFocus={e => e.target.placeholder = ''} onBlur={e => e.target.placeholder = 'Type a message...'} autoComplete="off" placeholder='Type a message...' type="text" id="message" className="transition-all delay-100 duration-100 outline outline-0 bg-transparent  p-5 text-gray-100 text-xs sm:text-base focus:ring-blue-500 focus:border-blue-500 w-[100%]"/>
                         </form>
-                        <div className='w-13 h-8 flex items-center justify-center'>
+                        <div className='w-12 h-8 flex items-center justify-center'>
                             <button type='submit' form='form' className=' border-blue-500 border-[6px] bg-blue-500 rounded-full w-[100%] h-[100%] mr-3 flex items-center justify-end cursor-pointer'>
                                 <img className='w-auto h-auto' src="/images/send.svg" alt="send" width={150} height={150}/>
                             </button>
