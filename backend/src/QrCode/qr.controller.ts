@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prettier/prettier */
-import { Body, ConflictException, Controller, Get, HttpCode, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, ForbiddenException, Get, HttpCode, ImATeapotException, NotAcceptableException, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { twoFactorAuth } from './qr.services';
 import { UsersService } from 'src/users/users.service';
@@ -41,7 +41,6 @@ export class QrController {
     {
         try{
             await this.userServices.twoFactorOff(req.user.sub);
-            response.end("ok");
         }
         catch(err)
         {
@@ -55,5 +54,14 @@ export class QrController {
     {
         const user = await this.userServices.findOneById(req.user.sub);
         return {twoFa:(user ? user.twoFactorAuth : undefined)};
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Post('TokenCheck')
+    async verifyToekn(@Req() req: any, @Body('tokenCode') tok: string)
+    {
+        return {valid:await this.twoFactorAuth.verifyCode(req.user.sub, tok), nickname:req.user.nickname}; // return true if tokn valid false otherwise
+        // else
+        //     throw new ImATeapotException("error wrong Token !!!");
     }
 }
