@@ -33,4 +33,10 @@ export class AuthService {
             access_token: await this.jwtService.signAsync(payload)
         });
     }
+
+    //this function check wether a user has active 2FA
+    async checkTwoFA(id: string)
+    {
+        return (await this.userService.findOneById(id)).twoFactorAuth;
+    }
 }
