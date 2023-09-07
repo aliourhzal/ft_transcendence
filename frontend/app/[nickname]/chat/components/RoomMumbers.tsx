@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Avatar } from '@nextui-org/react'
 import { FaCrown } from 'react-icons/fa'
 import RoomOptions from './RoomOptions'
@@ -38,7 +38,9 @@ const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin,
     }
   }
 
-  getStatus()
+  useEffect( () => {
+    getStatus()
+  }, [])
 
   return (
     <div className='transition-all m-2 border-2 p-2 rounded-lg bg-slate-600 border-slate-500 w-full flex flex-col items-center justify-center' key={user.id}>

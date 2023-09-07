@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Popup from './Popup'
 import { Context, gimmeRandom } from '../page'
 import Search from './search'
@@ -18,22 +18,25 @@ const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersF
 
   const [showList, setShowList] = useState(false)
   
-  let currentUsers = [];
+  const [users, setUsers] = useState([])
+
+  const [currentUsers, setCurrentUsers] = useState([]);
 
   const getUsers = async () => {
     try {
-      currentUsers = (await axios.get('http://127.0.0.1:3000/users/users', {withCredentials: true})).data
+      return await axios.get('http://127.0.0.1:3000/users/users', {withCredentials: true})
     } catch(error) {
       // alert(error)
       // setShowSearchUsersForm(false)
       console.log(error)
-      return []
     }
+    return ;
   }
 
-  getUsers()
+  useEffect( () => {
+    getUsers().then(res => {setUsers(res.data); setCurrentUsers(res.data)})
+  }, [])
 
-  const [users, setUsers] = useState(currentUsers)
 
   const filerList = (needle = '') => {
     if (needle === '')
@@ -43,6 +46,8 @@ const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersF
   }
 
   const hide = () => {
+      setCurrentUsers([])
+      setUsers([])
       setShowSearchUsersForm(false)
       setShowList(false)
       filerList()

@@ -217,9 +217,9 @@ export default function Chat() {
 
 	const [deviceType, setDeviceType] = useState('normal')
     useEffect( () => {
-      typeof window != 'undefined' ? (window.innerWidth <= 910 ? setDeviceType('small') : setDeviceType('normal')) : setDeviceType('normal')
+      typeof window != 'undefined' ? (window.innerWidth <= 970 ? setDeviceType('small') : setDeviceType('normal')) : setDeviceType('normal')
       typeof window != 'undefined' ? window.onresize = () => {
-        if (window.innerWidth <= 910)
+        if (window.innerWidth <= 970)
           setDeviceType('small')
         else
           setDeviceType('normal')
