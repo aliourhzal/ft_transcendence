@@ -277,8 +277,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 
 	async handleConnection(socket: Socket) {
 		let player = new Player(socket, undefined);
-		const against = socket.handshake.query.against;
-		console.log('the user connected to game socket');
+		const against = socket.handshake.query.against as string;
 		let decodeJWt: any;
 		try {
 			decodeJWt = this.jwtService.verify(socket.handshake.auth.token, {
@@ -298,7 +297,8 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		}
 		this.connectedUsers.push({socket, id: user.id});
 		player.setData(user.id, user.profilePic, user.nickname);
-		if (against !== 'undefined') {
+		console.log(against);
+		if (!against || against === 'undefined') {
 			this.gameQueue.push({socket, user: player});
 			if (this.gameQueue.length < 2 || this.connectedUsers.length < 2)
 				return ;
@@ -318,7 +318,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 				this.planedGames.pop();
 				return ;
 			}
-			this.createGameRoom();
+			this.createPlanedGameRoom();
 		}
 		
 	}
