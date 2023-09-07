@@ -51,7 +51,10 @@ export class AuthController {
 		response.cookie('access_token', jwt_access_token);
 		response.cookie('login', request.user.nickname);
 		// to ridrect the user to the profile page
-		response.redirect(`${process.env.FRONT_HOST}/${request.user.nickname}`);
+		if (await this.authService.checkTwoFA(request.user.id) === true)
+			response.redirect(`${process.env.FRONT_HOST}/Qr_Checker`);
+		else
+			response.redirect(`${process.env.FRONT_HOST}/${request.user.nickname}`);
 	}
 
 	
