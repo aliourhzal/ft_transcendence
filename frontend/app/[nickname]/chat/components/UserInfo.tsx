@@ -19,13 +19,12 @@ interface UserInfoProps {
     setShowUserInfos: any,
     nickname: any,
     id: any,
-    currentUsers: any
     setChatBoxMessages: any,
     setActiveUserConv: any,
     setShowConv: any
 }
 
-const UserInfo:React.FC<UserInfoProps> = ( {id, showUserInfos, setShowUserInfos, nickname, currentUsers, setChatBoxMessages, setActiveUserConv, setShowConv} ) => {
+const UserInfo:React.FC<UserInfoProps> = ( {id, showUserInfos, setShowUserInfos, nickname, setChatBoxMessages, setActiveUserConv, setShowConv} ) => {
 
     const [showPic, setShowPic] = useState(false)
 
@@ -35,29 +34,27 @@ const UserInfo:React.FC<UserInfoProps> = ( {id, showUserInfos, setShowUserInfos,
 
     socket.emit('get-users', null)
 
-    console.log("id", id)
-
   return (
     nickname && id &&
     <>
     <Popup isOpen={showUserInfos} modalAppearance={() => setShowUserInfos(false)}>
-        <img className='rounded-2xl' src={currentUsers.find(o => o.id === id)?.coverPic} alt="" />
+        <img className='rounded-2xl' src={rooms.find(o => o.name === nickname)?.users.find(o => o.id === id)?.cover} alt="" />
         <div className='flex items-center justify-center -mt-7 mb-6'>
-            <Avatar pointer size={'xl'} zoomed bordered color={'gradient'} src={currentUsers.find(o => o.id === id)?.profilePic} className='scale-150' onMouseOver={()=>{
+            <Avatar pointer size={'xl'} zoomed bordered color={'gradient'} src={rooms.find(o => o.name === nickname)?.users.find(o => o.id === id)?.photo} className='scale-150' onMouseOver={()=>{
                 setShowPic(true)
             }} onMouseLeave={() => {setShowPic(false)}}/>
         </div>
         
         <div className='flex flex-col items-center justify-center gap-4'>
             <div className='flex items-center justify-center gap-1 font-bold mt-2'>
-                <span>{currentUsers.find(o => o.id === id)?.firstName}</span>
-                <span>{currentUsers.find(o => o.id === id)?.lastName}</span>
+                <span>{rooms.find(o => o.name === nickname)?.users.find(o => o.id === id)?.firstName}</span>
+                <span>{rooms.find(o => o.name === nickname)?.users.find(o => o.id === id)?.lastName}</span>
             </div>
             <div className='flex gap-4 scale-110 text-whiteSmoke w-20 h-8 rounded-2xl items-center justify-center bg-darken-200'>
                 <BiConversation className='transition-all hover:scale-110' title='DM' aria-label='DM' cursor="pointer" size={25} onClick={ () => {
                     setShowUserInfos(false)
                     if (!rooms.find(o => o.name === nickname)) {
-                        socket.emit('start-dm', {reciverUserId: currentUsers.find(o => o.id === id).id})
+                        socket.emit('start-dm', {reciverUserId: rooms.find(o => o.name === nickname)?.users.find(o => o.id === id)?.id})
                         setActiveUserConv({
                             name: '.',
                             photo: '',

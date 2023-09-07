@@ -7,12 +7,11 @@ import BotChatBox from './BotChatBox'
 
 interface ChatBoxProps {
   activeUserConv: any
-  allUsers: any[]
 }
 
-const ChatBox:React.FC<ChatBoxProps> = ( { activeUserConv, allUsers } ) => {
+const ChatBox:React.FC<ChatBoxProps> = ( { activeUserConv } ) => {
   
-  const {scrollToBottom, ref, chatBoxMessages, userData, rooms, currentUsers} = useContext(Context)
+  const {scrollToBottom, ref, chatBoxMessages, userData, rooms} = useContext(Context)
 
   // let temp = document.getElementById('chatbox')
 
@@ -25,8 +24,8 @@ const ChatBox:React.FC<ChatBoxProps> = ( { activeUserConv, allUsers } ) => {
     <div className='z-0' ref={ref}>
         {chatBoxMessages.map ((BoxMessage) =>
           BoxMessage.userId != 'bot' ?
-              (BoxMessage.userId == userData.id ? <SelfChatBox msg={BoxMessage.msg} user={allUsers.find(o => o.id === BoxMessage.userId)} key={gimmeRandom()}/>
-              : <OthersChatBox msg={BoxMessage.msg} user={allUsers.find(o => o.id === BoxMessage.userId)} key={gimmeRandom()}/>)
+              (BoxMessage.userId == userData.id ? <SelfChatBox msg={BoxMessage.msg} user={rooms.find(o => o.id === activeUserConv.id).users.find(o => o.id === BoxMessage.userId)} key={gimmeRandom()}/>
+              : <OthersChatBox msg={BoxMessage.msg} user={rooms.find(o => o.id === activeUserConv.id).users.find(o => o.id === BoxMessage.userId)} key={gimmeRandom()}/>)
           : <BotChatBox msg={BoxMessage.msg} key={gimmeRandom()} />
         )}
       </div>

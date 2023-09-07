@@ -12,12 +12,24 @@ import { UserData } from 'src/utils/userData.interface';
 export class UsersService {
 	private readonly prisma = new PrismaClient()
 
+	getUserStatus = async (userId: string) => {
+		const user = await this.prisma.user.findUnique({
+			where:{
+				id: userId
+			}
+		})
+		if (!user)
+			throw new InternalServerErrorException('prisma failed to retieve user status form db!!');
+		return user.status
+	}
+
     async getUsers() {
 		const users = await this.prisma.user.findMany({
 			select: {
 				id: true,
 				profilePic: true,
-				nickname: true
+				nickname: true,
+				status: true
 			}
 		})
 		if (!users)

@@ -4,7 +4,6 @@ import AddedUsersForm from "./addedUsersForm"
 import Popup from "./Popup"
 
 interface RoomFormProps {
-    allUsers: any[],
     showForm: boolean,
     setShowForm: any,
     setConvs: any,
@@ -13,7 +12,7 @@ interface RoomFormProps {
     setAlertText: any,
 }
 
-const RoomForm:React.FC<RoomFormProps> = ( { allUsers, showForm, setShowForm, setConvs, set_room_created, setShowAlert, setAlertText } ) => {
+const RoomForm:React.FC<RoomFormProps> = ( { showForm, setShowForm, setConvs, set_room_created, setShowAlert, setAlertText } ) => {
      
     const {socket, rooms, setRooms, userData, internalError} = useContext(Context)
 
@@ -76,19 +75,19 @@ const RoomForm:React.FC<RoomFormProps> = ( { allUsers, showForm, setShowForm, se
     
     socket.emit('get-users', null)
 
-    const unvalidUsers = () => {
-        var _unvalidUsers: string[] = []
-        users.map(user => {
-            if (!allUsers.find(o => o.nickname === user) || user === userData.nickname)
-                _unvalidUsers.push(user)
-        })
-        return _unvalidUsers
-    }
+    // const unvalidUsers = () => {
+    //     var _unvalidUsers: string[] = []
+    //     users.map(user => {
+    //         if (!allUsers.find(o => o.nickname === user) || user === userData.nickname)
+    //             _unvalidUsers.push(user)
+    //     })
+    //     return _unvalidUsers
+    // }
 
     const confirmForm = async (e) => {
         e.preventDefault()
         
-        const _unvalidUsers = unvalidUsers()
+        // const _unvalidUsers = unvalidUsers()
 
         // if (_unvalidUsers.length) {
         //     internalError('unvalid users : ' + _unvalidUsers)

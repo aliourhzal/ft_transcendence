@@ -7,12 +7,11 @@ import { LiaUsersSolid } from "react-icons/Lia"
 import { TbMessage2Search } from "react-icons/tb"
 
 interface ConvListProps {
-  allUsers: any[]
   activeUserConv: any
   setActiveUserConv: any
 }
 
-const ConvList:React.FC<ConvListProps> = ({allUsers, activeUserConv, setActiveUserConv}) => {
+const ConvList:React.FC<ConvListProps> = ({activeUserConv, setActiveUserConv}) => {
   const {socket, set_room_created, rooms, userData, convs, setConvs, _notification, setChatBoxMessages, setShowForm, setShowJoinForm, setShowSearchUsersForm } = useContext(Context)
   
   const fillUserList = (res) => {
@@ -125,7 +124,7 @@ const ConvList:React.FC<ConvListProps> = ({allUsers, activeUserConv, setActiveUs
       <Search _Filter={convsFilter} type={'conv'}/>
       <div className='scrollbar-none group left-[10%] flex-col bg-transparent w-full h-[80%] mt-8 overflow-hidden overflow-y-scroll'>
           {
-            rooms.length ? convs.length ? convs.map ((item:conversation) =>  (<ConvBox _tabIndex={_tabIndex++} convsFilter={convsFilter} key={gimmeRandom()} allUsers={allUsers} data={item} activeUserConv={activeUserConv} setActiveUserConv={setActiveUserConv} />)) 
+            rooms.length ? convs.length ? convs.map ((item:conversation) =>  (<ConvBox _tabIndex={_tabIndex++} convsFilter={convsFilter} key={gimmeRandom()} data={item} activeUserConv={activeUserConv} setActiveUserConv={setActiveUserConv} />)) 
             : 
             <div className="text-white w-full h-full flex items-center justify-center">No conversations found !</div>
             :

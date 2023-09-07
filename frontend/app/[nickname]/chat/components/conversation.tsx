@@ -6,7 +6,6 @@ import {Avatar} from '@nextui-org/react'
 import { LuMessagesSquare } from 'react-icons/lu'
 
 interface ConversationProps {
-    allUsers: any[]
     activeUserConv: any
     deviceType: string
     setShowConv: any
@@ -16,7 +15,7 @@ interface ConversationProps {
     setShowAlert: any
 }
 
-const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, deviceType, setShowConv, showConv, setActiveUserConv, setShowAlert, setAlertText } ) => {
+const Conversation:React.FC<ConversationProps> = ( { activeUserConv, deviceType, setShowConv, showConv, setActiveUserConv, setShowAlert, setAlertText } ) => {
     
     const [showInfo, setShowInfo] = useState(false)
     
@@ -80,7 +79,7 @@ const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, d
 
     return (
         <div className={'transition-all flex flex-col items-center justify-center rounded-3xl ' + (deviceType === 'normal' ? 'h-[90vh] w-[calc(120%/2)] ' : ' h-[100%] w-[100%] absolute ' +  (showConv ? 'bg-darken-200' : 'hidden'))}>
-            {activeUserConv.name && <RoomInfo allUsers={allUsers} room={rooms.find(o => o.id === activeUserConv.id)} setShow={setShowInfo} show={showInfo} userData={userData} />}
+            {activeUserConv.name && <RoomInfo room={rooms.find(o => o.id === activeUserConv.id)} setShow={setShowInfo} show={showInfo} userData={userData} />}
             { showConv ? <>
                 <div className="h-[80px] z-0 flex items-center justify-between text-white pl-10 py-4 w-[100%] border-blue-gray-200 text-blue-gray-700 outline border-b outline-0 placeholder-shown:border-blue-gray-200 focus:outline-0">
                     <div className=' min-w-[150px] bg-zinc-800 rounded-l-3xl pr-2 rounded-r-xl flex items-center gap-3 justify-start w-auto h-auto cursor-pointer hover:underline' onClick={() => {
@@ -92,8 +91,8 @@ const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, d
                             setShowUserInfos(true)
                         }
                         }}>
-                        <Avatar zoomed text={activeUserConv.name} bordered color={'gradient'} alt={activeUserConv.name} src={rooms.find(o => o.id === activeUserConv.id)?.type === 'DM' ? allUsers.find(o => o.id === rooms.find(o => o.id === activeUserConv.id)?.users?.find(o => o.nickName === activeUserConv.name)?.id)?.profilePic : rooms.find(o => o.id === activeUserConv.id)?.photo} pointer/>
-                        <div className='w-full flex items-center justify-center'>{rooms.find(o => o.id === activeUserConv.id)?.type === 'DM' ? allUsers.find(o => o.id === rooms.find(o => o.id === activeUserConv.id)?.users?.find(o => o.nickName === activeUserConv.name)?.id)?.nickname : activeUserConv.name}</div>
+                        <Avatar zoomed text={activeUserConv.name} bordered color={'gradient'} alt={activeUserConv.name} src={rooms.find(o => o.id === activeUserConv.id)?.photo} pointer/>
+                        <div className='w-full flex items-center justify-center'>{activeUserConv.name}</div>
                     </div>
                     {deviceType != 'normal' && <button className='w-9 h-9 border border-blue-800 bg-blue-700 text-whiteSmoke hover:scale-110 hover:bg-whiteSmoke hover:text-blueStrong focus:outline-none focus:ring-blue-300 font-bold rounded-full text-lg flex text-center justify-center items-center mr-5' onClick={() => {setShowConv(false); setActiveUserConv({
                         name: '.',
@@ -104,7 +103,7 @@ const Conversation:React.FC<ConversationProps> = ( { allUsers, activeUserConv, d
                 </div>
 
                 <div id='chatbox' className='relative flex flex-col w-full mt-8 overflow-y-scroll basis-[80%]'>
-                    <ChatBox activeUserConv={activeUserConv} allUsers={allUsers}/>
+                    <ChatBox activeUserConv={activeUserConv}/>
                 </div>
 
                 <div className='h-[8%] w-[90%] flex items-center justify-center'>

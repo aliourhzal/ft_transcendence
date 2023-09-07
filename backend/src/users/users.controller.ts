@@ -29,6 +29,15 @@ export class UsersController{
 		return await this.usersService.getUsers();
 	}
 
+	@UseGuards(AuthGuard('jwt'))
+	@Post('userStatus')
+	async getUserStatus(@Req() request: Request , @Body() body, @Res() res: Response) {
+		const status =  await this.usersService.getUserStatus(body.userId)
+		if (!status)
+			throw new Error("failed to retrieve user status");
+		return res.status(200).send(status);
+	}
+
 	// this endpoint is to be called when want to change the user avatar
 	@UseGuards(AuthGuard('jwt'))
 	@Put('profile/avatar')

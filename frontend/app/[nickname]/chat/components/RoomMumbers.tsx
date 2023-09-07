@@ -7,6 +7,7 @@ import { Context } from '../page'
 import { useRouter } from 'next/navigation'
 import { AiFillStar } from 'react-icons/Ai'
 import { userInfo } from 'os'
+import axios from 'axios'
 
 interface RoomMumbersProps {
     info: any,
@@ -14,10 +15,9 @@ interface RoomMumbersProps {
     isOwner: any,
     isAdmin: any,
     hide: any,
-    allUsers: any
 }
 
-const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin, hide, allUsers } ) => {
+const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin, hide } ) => {
 
     const _router = useRouter()
 
@@ -26,6 +26,19 @@ const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin,
     const {setShowUserInfos, setUserInfoNick, setUserInfoId,  userData, rooms, socket} = useContext(Context)
 
     socket.emit('get-users', null)
+
+    const [userStatus, setUserStatus] = useState<"online" | "offline" | undefined>(undefined)
+
+  const getStatus = async () => {
+    const userId = user.id
+    try {
+      setUserStatus((await axios.post('http://127.0.0.1:3000/users/userStatus', {userId}, {withCredentials: true})).data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  getStatus()
 
   return (
     <div className='transition-all m-2 border-2 p-2 rounded-lg bg-slate-600 border-slate-500 w-full flex flex-col items-center justify-center' key={user.id}>
@@ -41,12 +54,12 @@ const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin,
                     }
                 }}>
                 <div className='transition-all flex items-center gap-2 justify-center'>
-                    { allUsers.find(o => o.id === user.id).status === 'online' && userData.id != user.id ?
+                    { userStatus === 'online' && userData.id != user.id ?
                     <span className='rounded-full bg-green-400 opacity-90 border-2 border-green-500 w-2 h-2 -ml-1'></span>
                     : <span className='w-2 h-2 -ml-1'></span>}
-                    <Avatar bordered color={"primary"} pointer zoomed src={ allUsers.find(o => o.id === info.room.users.find(o => o.id === user.id).id).profilePic} />
+                    <Avatar bordered color={"primary"} pointer zoomed src={ info.room.users.find(o => o.id === user.id).photo } />
                 </div>
-                <div>{user.id === info.userData.id ? 'you' : allUsers.find(o => o.id === user.id).nickname}</div>
+                <div>{user.id === info.userData.id ? 'you' : info.room.users.find(o => o.id === user.id)?.nickName}</div>
                 {isOwner(info.room.users.find(o => o.id === user.id)) ? <FaCrown/> : ''}
                 {isAdmin(info.room.users.find(o => o.id === user.id)) && !isOwner(info.room.users.find(o => o.id === user.id)) ? <AiFillStar/> : ''}
             </div>

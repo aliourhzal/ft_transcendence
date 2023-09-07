@@ -14,7 +14,6 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
   const { userData, setShowConv, internalError, socket, rooms } = useContext(Context)
 
   const promoteUser = (res) => {
-    console.log('promote')
     var _promotedUser = rooms.find(o => o.name === res.roomId.room_name)?.users.find(o => o.id === res.newAdmin.userId)
     if (_promotedUser) {
       setRooms((_rooms: Room[]) => {
@@ -31,7 +30,6 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
   }
   
   const demoteUser = (res) => {
-    console.log('demote')
     var _demotedUser = rooms.find(o => o.name === res.roomId.room_name)?.users.find(o => o.id === res.domotedAdmin.userId)
     if (_demotedUser) {
       setRooms((_rooms: Room[]) => {
@@ -48,7 +46,6 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
   }
   
   const kickUser = (res) => {
-    console.log('kick')
     setRooms((_rooms: Room[]) => {
       var current_room = _rooms.find(o => o.name === res.roomId.room_name)
       var userToBeKicked = current_room?.users?.find(o => o.id === res.kickedUser.userId)
@@ -71,7 +68,6 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
   }
 
   const banUser = (res) => {
-    console.log('ban')
     setRooms((_rooms: Room[]) => {
       var current_room = _rooms.find(o => o.name === res.roomId.room_name)
       var userToBeKicked = current_room?.users?.find(o => o.id === res.bannedUser.userId)
@@ -94,7 +90,6 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
   }
 
   const leaveUser = (res) => {
-    console.log("leave", res)
     const userToRemoveId = res.leavedUser?.kickedUser?.userId
     const newOwnerId = res.newOwner
     const room = rooms.find(o => o.name === res.roomId.room_name)
@@ -121,7 +116,6 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
   }
 
   const changeRoomName = (res) => {
-    console.log('change name')
     setRooms( (_rooms: Room[]) => {
       if (_rooms.find(o => o.name === res.oldRoomName)?.name)
         _rooms.find(o => o.name === res.oldRoomName).name = res.newRoomName
@@ -135,7 +129,6 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
   }
 
   const changeRoomPass = (res) => {
-    console.log("change pass")
     if (res.password === 'exist')
       _notification(`'${res.roomName}' password changed !`, "good")
     else if (res.password === 'new') {
@@ -158,7 +151,6 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
   }
 
   const muteUser = (res) => {
-    console.log("mute")
     setRooms((_rooms: Room[]) => {
       if (_rooms.find(o => o.name === res.roomId.room_name)?.users?.find(o => o.id === res.mutedUser.userId)?.isMuted)
         _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.mutedUser.userId).isMuted = 'MUTED'
@@ -169,7 +161,6 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
   }
 
   const unMuteUser = (res) => {
-    console.log("unmute")
     setRooms((_rooms: Room[]) => {
       if (_rooms.find(o => o.name === res.roomId.room_name)?.users?.find(o => o.id === res.mutedUser.userId)?.isMuted)
         _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.unMutedUser.userId).isMuted = 'UNMUTED'

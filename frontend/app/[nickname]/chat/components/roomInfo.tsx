@@ -17,7 +17,6 @@ interface RoomInfoProps {
     setShow: any
     show: boolean
     userData: UniversalData
-    allUsers: any[]
 }
 
 const RoomInfo: React.FC<RoomInfoProps> = (info) => {
@@ -45,18 +44,18 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
         return false
     }
 
-    const unvalidUsers = (users) => {
-        var _unvalidUsers: string[] = []
-        users.map(user => {
-            if (!info.allUsers.find(o => o.nickname === user) || user === userData.nickname)
-                _unvalidUsers.push(user)
-        })
-        return _unvalidUsers
-    }
+    // const unvalidUsers = (users) => {
+    //     var _unvalidUsers: string[] = []
+    //     users.map(user => {
+    //         if (!info.allUsers.find(o => o.nickname === user) || user === userData.nickname)
+    //             _unvalidUsers.push(user)
+    //     })
+    //     return _unvalidUsers
+    // }
 
     const   addUsersToRoom = (e, newUsers) => {
         e.preventDefault()
-        const _unvalidUsers = unvalidUsers(newUsers)
+        // const _unvalidUsers = unvalidUsers(newUsers)
         // if (_unvalidUsers.length) {
         //     internalError('unvalid users : ' + _unvalidUsers)
         // }
@@ -69,10 +68,8 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
     const   setNewName = (e, name) => {
         e.preventDefault()
         setshowRoomEditForm(false)
-        if (name) {
-            console.log(name)
+        if (name)
             socket.emit('edit-room-name', { roomName:info.room.name, newName: name })
-        }
     }
 
     const   setNewPass = async (e, pass) => {
@@ -120,7 +117,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
             {showRoomEditForm && <EditRoom _setNewName={setNewName} _setNewPass={setNewPass} roomType={info.room.type} changeRoomType={changeRoomType}/>}
             <div className='my-4 h-64 flex flex-col justify-start items-center overflow-y-scroll overflow-x-hidden'>
                 {info.room.users.map(user => (
-                    <RoomMumbers info={info} user={user} isOwner={isOwner} isAdmin={isAdmin} key={gimmeRandom()} hide={hide} allUsers={info.allUsers} />
+                    <RoomMumbers info={info} user={user} isOwner={isOwner} isAdmin={isAdmin} key={gimmeRandom()} hide={hide} />
                 ))}
             </div>
             <div className='w-full flex items-center justify-center'>

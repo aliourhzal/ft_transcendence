@@ -7,19 +7,34 @@ import axios from 'axios'
 import { getCookie } from '../../layout'
 
 interface SearchDmProps {
-  currentUsers: any[]
   setActiveUserConv: any
   showSearchUsersForm: any
   setShowSearchUsersForm: any
 }
 
-const SearchDm:React.FC<SearchDmProps> = ( { currentUsers, setActiveUserConv, showSearchUsersForm, setShowSearchUsersForm } ) => {
+const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersForm, setShowSearchUsersForm } ) => {
 
   const {socket, rooms, setChatBoxMessages, setShowConv, userData} = useContext(Context)
 
   const [showList, setShowList] = useState(false)
-  const [users, setUsers] = useState([...currentUsers])
   
+  let currentUsers = [];
+
+  const getUsers = async () => {
+    try {
+      currentUsers = (await axios.get('http://127.0.0.1:3000/users/users', {withCredentials: true})).data
+    } catch(error) {
+      // alert(error)
+      // setShowSearchUsersForm(false)
+      console.log(error)
+      return []
+    }
+  }
+
+  getUsers()
+
+  const [users, setUsers] = useState(currentUsers)
+
   const filerList = (needle = '') => {
     if (needle === '')
       setUsers([...currentUsers])
@@ -71,7 +86,7 @@ const SearchDm:React.FC<SearchDmProps> = ( { currentUsers, setActiveUserConv, sh
             }}>
               <div className='flex gap-3 items-center'>
                 <div className='flex items-center justify-start gap-3'>
-                  {currentUsers.find(o => o.nickname === user.nickname)?.status === 'online' ? <span className='rounded-full bg-green-400 opacity-90 border-2 border-green-500 w-2 h-2 -ml-1'></span>
+                  {user.status === 'online' ? <span className='rounded-full bg-green-400 opacity-90 border-2 border-green-500 w-2 h-2 -ml-1'></span>
                   : <span className='w-2 h-2 -ml-1'></span>}
                   <Avatar pointer src={user.profilePic} />
                 </div>

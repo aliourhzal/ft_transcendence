@@ -20,6 +20,7 @@ import MyAlert from "./components/MyAlert";
 export interface conversation {
 	readonly name: string,
 	readonly photo: string,
+	readonly cover?: string
 	readonly lastmsg: {userId: string, msg:string}, 
 	readonly id: number,
 	readonly pending?: boolean
@@ -45,6 +46,7 @@ export interface Room {
 		firstName: string,
 		lastName: string,
 		photo?: string,
+		cover?: string,
 		type: "OWNER"| "ADMIN" | "USER",
 		isMuted: string
 	}[],
@@ -58,6 +60,7 @@ export const getUsersInfo = (users) => {
 		  firstName: string,
 		  lastName: string,
 		  photo?: string,
+		  cover?: string,
 		  type: "OWNER"| "ADMIN" | "USER",
 		  isMuted: string
 	  }[] = []
@@ -69,6 +72,7 @@ export const getUsersInfo = (users) => {
 			firstName: user.user.firstName,
 			lastName: user.user.lastName,
 			photo: user.user.profilePic,
+			cover: user.user.coverPic,
 			type: user.userType,
 			isMuted: user.isMuted,
 			}
@@ -84,7 +88,8 @@ export const setDmUsers = (users) => {
 		  nickName: string,
 		  firstName: string,
 		  lastName: string,
-		  photo: string | undefined,
+		  photo?: string,
+		  cover?: string,
 		  type: "OWNER"| "ADMIN" | "USER",
 		  isMuted: string
 	  }[] = []
@@ -96,13 +101,13 @@ export const setDmUsers = (users) => {
 			firstName: user.firstName,
 			lastName: user.lastName,
 			photo: user.profilePic,
+			cover: user.coverPic,
 			type: 'USER',
 			isMuted: 'UNMUTED',
 			}
 		)
 	  } 
 	)
-	console.log(_users)
 	return (_users)
 }
 
@@ -119,15 +124,11 @@ export interface _Notification {
 	type: string
 }
 
-let allUsers = []
-socket.on('all-users', (res) => {allUsers = res.allUsers})
 export default function Chat() {
 	// alert('')
 	const [cookies, setCookie, removeCookie] = useCookies();
 	
 	const searchParams = useSearchParams();
-	
-	// const [allUsers, setAllUsers] = useState<any[]>([])
 	
 	const [refresh, setRefresh] = useState(false)
 	
@@ -137,7 +138,6 @@ export default function Chat() {
 		if (dmId)
 			socket.emit('start-dm', {reciverUserId: dmId})
 		socket.emit('get-rooms', null)
-		// socket.on('all-users', (res) => {setAllUsers(res.allUsers)})
 	}, [])
 	// const [new] = useState()
 
@@ -154,7 +154,7 @@ export default function Chat() {
 		// 	router.push('/')
 		// }
 	// }, [cookies.access_token])
-	console.log("yo")
+
 	const ref = useRef(null);
 	const msgInputRef = useRef(null);
 
@@ -178,6 +178,7 @@ export default function Chat() {
 	const [activeUserConv, setActiveUserConv] = useState<conversation | undefined>({
 		name: '.',
 		photo: '',
+		cover: '',
 		lastmsg: {userId: '', msg: ''}, 
 		id: 0,
 	})
@@ -189,12 +190,6 @@ export default function Chat() {
 	const [convs, setConvs] = useState<conversation[]>([])
 
 	const [notify, setNotify] = useState(false)
-
-	// const [new_msg_notif, set_new_msg_notif] = useState({state:false, name:''})
-	// const notify_conv_msg = (state, name) => {
-	// 	set_new_msg_notif({state, name})
-	// 	console.log(new_msg_notif)
-	// }
 
 	const [notifications, setNotifications] = useState<_Notification[]>([])
 	const [newNotif, setNewNotif] = useState(false)
@@ -239,6 +234,7 @@ export default function Chat() {
 				setActiveUserConv({
 					name: '.',
 					photo: '',
+					cover: '',
 					lastmsg: {userId: '', msg: ''}, 
 					id: 0,
 				})
@@ -264,15 +260,15 @@ export default function Chat() {
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200">
 					<div className={"flex flex-col items-center justify-center text-sm lg:text-base h-[90vh] text-center " +
 					(deviceType === 'normal' ? 'w-[calc(90%/2)]' : 'w-[100%]')}>
-						<ConvList allUsers={allUsers} activeUserConv={activeUserConv} setActiveUserConv={setActiveUserConv} />
+						<ConvList activeUserConv={activeUserConv} setActiveUserConv={setActiveUserConv} />
 						<ButtomButtons />
 					</div>
-					<Conversation setAlertText={setAlertText} setShowAlert={setShowAlert} allUsers={allUsers} activeUserConv={activeUserConv} deviceType={deviceType} setShowConv={setShowConv} showConv={showConv} setActiveUserConv={setActiveUserConv} />
+					<Conversation setAlertText={setAlertText} setShowAlert={setShowAlert} activeUserConv={activeUserConv} deviceType={deviceType} setShowConv={setShowConv} showConv={showConv} setActiveUserConv={setActiveUserConv} />
 				</div>
-				<RoomForm setShowAlert={setShowAlert} setAlertText={setAlertText} allUsers={allUsers} setConvs={setConvs} set_room_created={set_room_created} showForm={showForm} setShowForm={setShowForm} />
+				<RoomForm setShowAlert={setShowAlert} setAlertText={setAlertText} setConvs={setConvs} set_room_created={set_room_created} showForm={showForm} setShowForm={setShowForm} />
 				<JoinRoomForm />
-				<SearchDm setShowSearchUsersForm={setShowSearchUsersForm} showSearchUsersForm={showSearchUsersForm} currentUsers={ allUsers } setActiveUserConv={ setActiveUserConv } />
-				<UserInfo showUserInfos={showUserInfos} setShowUserInfos={setShowUserInfos} nickname={userInfoNick} id={userInfoId} currentUsers={ allUsers } setActiveUserConv={setActiveUserConv} setChatBoxMessages={setChatBoxMessages} setShowConv={setShowConv}/>
+				<SearchDm setShowSearchUsersForm={setShowSearchUsersForm} showSearchUsersForm={showSearchUsersForm} setActiveUserConv={ setActiveUserConv } />
+				<UserInfo showUserInfos={showUserInfos} setShowUserInfos={setShowUserInfos} nickname={userInfoNick} id={userInfoId} setActiveUserConv={setActiveUserConv} setChatBoxMessages={setChatBoxMessages} setShowConv={setShowConv}/>
 			</Context.Provider>
 		</main>
 	)
