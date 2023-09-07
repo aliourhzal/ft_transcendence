@@ -1,6 +1,6 @@
 'use client'
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { userDataContext } from "../../contexts/UniversalData";
 import Canvas from "./components/Canvas";
 import { WebsocketContext } from "@/app/contexts/gameWebSocket";
@@ -19,17 +19,21 @@ const startbuttonGame = {
     }
 };
 
+function returnSocket(against: string) {
+	return io('http://127.0.0.1:3003', {
+    auth: {
+        token: getCookie('access_token')
+    },
+	query: {
+		against
+	}
+});
+}
+
 export default function Game(props: any)
 {
-	console.log("props");
-	const socket = io('http://127.0.0.1:3003', {
-		auth: {
-			token: getCookie('access_token')
-		},
-		query: {
-			against: props.against
-		}
-	});
+	const [socket, setSocket] = useState(null);
+	const issecondrender = useRef(false)
 	const userData = useContext(userDataContext);
 	const [opData, setOpData] = useState<{loading:boolean, nickname: string, avatar: string}>({
 		loading: true,
@@ -38,11 +42,13 @@ export default function Game(props: any)
 	});
 
 	useEffect(() => {
-		socket.on("playersInfo", (data: {nickname:string, avatar:string}) => {
+		issecondrender.current && setSocket(returnSocket(props.against));
+		issecondrender.current = true;
+		socket && socket.on("playersInfo", (data: {nickname:string, avatar:string}) => {
 			setOpData({loading: true, ...data});
 		});
 		return (() => {
-			socket.disconnect();
+			socket && socket.disconnect();
 		})
 	},[]);
 
@@ -67,7 +73,9 @@ export default function Game(props: any)
 						<img className="w-16 h-16 rounded-full" src={opData.avatar} alt="man_hhhh" />
 					</div>
 				</div>
-				<Canvas colors={props.colors} socket={socket} specials={props.specials} themeN={props.themeN} ball={props.ball}  hell={props.hell} opData={setOpData}/>
+				{
+					socket && <Canvas colors={props.colors} socket={socket} specials={props.specials} themeN={props.themeN} ball={props.ball}  hell={props.hell} opData={setOpData}/>
+				}
 			</div>
 		</section>
 	);
