@@ -44,7 +44,7 @@ export class AuthController {
 	async intra42AuthRedirect(@Request() request: any, @Res() response: Response)
 	{//request contains user_data, response used to bake cookies
 		// pass the user data to the function that signs the jwt token
-		await this.achievementsService.giveWelcome(request.user.nickname);
+		await this.achievementsService.giveWelcome(request.user.id);
 		const { access_token: jwt_access_token } = await this.authService.login(request.user);
 		//create the cookie
        

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Match, PrismaClient, User } from '@prisma/client';
 import { Player } from 'src/game/Player';
 import * as achievements from "./achievements.json"
@@ -27,14 +27,18 @@ export class AcheivementsService {
 	}
 
 	async getUserWithAchievements(id: string) {
-		return await this.prisma.user.findUnique({
-			where: {
-				id
-			},
-			include: {
-				achievements: true
-			}
-		})
+		try {
+			return await this.prisma.user.findUnique({
+				where: {
+					id
+				},
+				include: {
+					achievements: true
+				}
+			})
+		} catch(e) {
+			throw new InternalServerErrorException('error retieving achievements from dh!!');
+		}
 	}
 
 	async giveAcToUser(id: string, achievement: Achievement) {
@@ -205,12 +209,18 @@ export class AcheivementsService {
 		await this.giveAcToUser(scorer.id, achievements.achievements.hat_trick);
 	}
 
-	async giveWelcome(nickname: string) {
-		const {achievements: ac} = await this.getUserWithAchievements(nickname);
-		const oldAc = ac.find(a => a.title === 'Welcome')
-		if (oldAc)
-			return ;
-		await this.createAchievement(achievements.achievements.Welcome);
-		await this.giveAcToUser(nickname, achievements.achievements.Welcome);
+	async giveWelcome(id: string) {
+		try {
+			const {achievements: ac} = await this.getUserWithAchievements(id);
+			const oldAc = ac.find(a => a.title === 'Welcome')
+			if (oldAc)
+				return ;
+			await this.createAchievement(achievements.achievements.Welcome);
+			await this.giveAcToUser(id, achievements.achievements.Welcome);
+		} catch(e) {
+			throw new InternalServerErrorException('error giveWelcome!')
+		}
 	}
 }
+//ce018fa1-14da-4dd9-b947-9cf918be98eb
+//ce018fa1-14da-4dd9-b947-9cf918be98eb

@@ -187,18 +187,6 @@ export class UsersService {
 		})
 	}
 
-	async findOneByNicknameWithRequests(nickname: string) {
-		return await this.prisma.user.findUnique({
-			where: {
-				nickname
-			},
-			include: {
-				sentRequests: true,
-				userFriends: true
-			}
-		})
-	}
-
 	async findOneByIdWithReceived(id: string) {
 		return await this.prisma.user.findUnique({
 			where: {
@@ -231,25 +219,9 @@ export class UsersService {
 		}
 	}
 
-	async getFriendsWithNickname(nickname: string) {
-		try {
-			const {userFriends} = await this.prisma.user.findUnique({
-				where: {
-					nickname
-				},
-				include: {
-					userFriends: true
-				}
-			})
-			return (userFriends);
-		} catch(err) {
-			console.log(nickname + ' user not found');
-		}
-	}
-
-	async isPossibleToSendRequest(friendNickname: string, nickname: string) {
+	async isPossibleToSendRequest(friendNickname: string, id: string) {
 		const target = await this.findOneByNickname(friendNickname);
-		const user = await this.findOneByNicknameWithRequests(nickname);
+		const user = await this.findOneByIdWithRequests(id);
 		for (const request of user.sentRequests) {
 			if (request.targetId === target.id)
 				return (false);
@@ -307,7 +279,7 @@ export class UsersService {
 		if (!sender)
 			return ('');
 		const newFriend = await this.findOneByNickname(friendNickname);
-		const user = await this.findOneByNicknameWithRequests(sender.nickname);
+		const user = await this.findOneByIdWithRequests(id);
 
 		// to prevent sending the request to your self
 		if (newFriend.nickname === user.nickname)
@@ -377,12 +349,6 @@ export class UsersService {
 				}
 			}
 		})
-	}
-
-	async getFriendsRequestsWithNickname(nickName: string) {
-		const user = await this.findOneByNickname(nickName);
-		const received = await this.findOneByIdWithReceived(user.id);
-		return (received.receivedRequest);
 	}
 
 	async getFriendsRequestsWithId(id: string) {

@@ -62,10 +62,17 @@ export class Player {
 	special: boolean;
 	hell: boolean;
 
-	constructor(socket: Socket, score = 0, gameGoing = false, special = false, hell = false) {
-		this.socket = socket;
-		this.ball = {x: 400, y: 450 / 2};
-		this.height = 450 / 4;
+	constructor(socket: Socket, p: Player) {
+		if (socket)
+			this.socket = socket
+		if (p) {
+			this.socket = p.socket;
+			this.ball = {x: 400, y: 450 / 2};
+			this.height = 450 / 4;
+			this.id = p.id;
+			this.avatar = p.avatar;
+			this.nickname = p.nickname;
+		}
 	}
 
 	moveBall(velocityX: number, velocityY: number) {

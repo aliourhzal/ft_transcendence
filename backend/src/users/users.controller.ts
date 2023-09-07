@@ -100,20 +100,20 @@ export class UsersController{
 	@Get('/friend/requests')
 	async getRequest(@Body('nickname') friendName:string, @Req() request: any)
 	{
-		return await this.usersService.getFriendsRequestsWithNickname(request.user.nickname);
+		return await this.usersService.getFriendsRequestsWithId(request.user.sub);
 	}
 
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/friend/checkFriend')
 	async checkIsFriend(@Query('nickname') friendName: string, @Req() request: any)
 	{
-		return await this.usersService.isPossibleToSendRequest(friendName, request.user.nickname);
+		return await this.usersService.isPossibleToSendRequest(friendName, request.user.sub);
 	}
 
 	@UseGuards(AuthGuard('jwt'))
 	@Get('/friends')
 	async getFriends(@Req() request: any) {
-		return await this.usersService.getFriendsWithNickname(request.user.nickname);
+		return await this.usersService.getFriendsWithId(request.user.sub);
 	}
 
 	@UseGuards(AuthGuard('jwt'))

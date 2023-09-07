@@ -324,8 +324,6 @@ export default function GameLogin()
         bc: "#FFFFFF",
         bg: "#353D49"
     });
-    const searchParams = useSearchParams();
-    const playerId = searchParams.get('id');
     return(
         <div className=" w-full bg-darken-200 flex items-center justify-center h-full">
             <div ref={main} className="w-[90%] h-auto px-5 py-1 max-sm:h-[95%] border-collapse bg-darken-100 rounded-xl overflow-y-auto">
@@ -337,7 +335,7 @@ export default function GameLogin()
                 <Effects setBall={setBall} setEffect={setEffect} setHell={setHell} setMode={setMode} main={main} playWith={playWith} />
             </div>
             {/* {!show && } */}
-            {(Mode === "online" && <LazyGame specials={Effect} colors={colors} themeN={themeN} ball={ballColors} hell={hell} playAgainst={playerId} />) ||
+            {(Mode === "online" && <LazyGame specials={Effect} colors={colors} themeN={themeN} ball={ballColors} hell={hell} />) ||
                 (Mode==="bot" && <BotGame  colors={colors} themeN={themeN} ball={ballColors} hell={hell} />)}
         </div>
     );
