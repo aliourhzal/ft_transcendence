@@ -41,6 +41,7 @@ export class QrController {
     {
         try{
             await this.userServices.twoFactorOff(req.user.sub);
+            response.end("ok");
         }
         catch(err)
         {
