@@ -303,7 +303,7 @@ export function StartGame(props)
                 bgColor = "#000";
                 user.color = "#FFF";
             }
-            if (com.score === 1 || user.score === 1)
+            if (com.score === 7 || user.score === 7)
             {
                 drawRect(0, 0, canvas.width, canvas.height, bgColor);
                 (n === 3 ? ctx.fillStyle = "#000" : ctx.fillStyle = user.color)
@@ -332,8 +332,8 @@ export default function BotPractice(props:any)
     }, []);
 
     return (
-        <section className="flex w-full h-full items-center bg-darken-200">
-            <div className="flex flex-col items-center w-full gap-5">
+        <section className="flex w-full h-full items-center bg-darken-200 relative">
+            <div className=" aspec max-sm:absolute max-sm:top-1/3 flex flex-col items-center w-full gap-5">
             <canvas id="pongy" className="bg-darken-300 rounded-md
                 w-[90%] aspect-[16/9]
                 max-sm:rotate-90 max-sm:w-[600px] max-sm:h-[337px]
