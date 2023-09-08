@@ -5,7 +5,7 @@ import { randomUUID } from "crypto";
 import { Server, Socket } from 'socket.io'
 import { UsersService } from "src/users/users.service";
 import { AcheivementsService } from "src/users/achievements.service";
-import { Player, userNode, roomT, Ball, Specials, msgFromPlayer, planedGames } from "./Player";
+import { Player, userNode, roomT, Ball, Specials, msgFromPlayer, planedGame } from "./Player";
 
 
 
@@ -17,7 +17,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 
 	private connectedUsers: {socket: Socket, id: string}[] = [];
 	private gameQueue: userNode[] = [];
-	private planedGames: planedGames[] = [];
+	private planedGames: planedGame[] = [];
 
 	private rooms : roomT[] = [];
 
@@ -206,6 +206,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	}
 
 	async createGameRoom() {
+		console.log('start game');
 		const roomId = randomUUID();
 		const ballDynamics = new Ball();
 		const player1 = this.gameQueue[0];
@@ -239,11 +240,19 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		}, 3000);
 	}
 
-	async createPlanedGameRoom() {
+	async checkForRivals() {
+		const newUser = this.planedGames[this.planedGames.length - 1];
+		return this.planedGames.find(p => {
+			if (p.user.id === newUser.against && p.against === newUser.user.id)
+				return true;
+		})
+	}
+	
+	async createPlanedGameRoom(rivals: planedGame[]) {
 		const roomId = randomUUID();
 		const ballDynamics = new Ball();
-		const player1 = this.planedGames[0];
-		const player2 = this.planedGames.find(g => g.user.id === player1.against);
+		const player1 = rivals[0];
+		const player2 = rivals[1]
 		player1.socket.join(roomId);
 		player2.socket.join(roomId);
 
@@ -266,9 +275,6 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		
 		newRoom.player1.gameGoing = newRoom.player2.gameGoing = true; //set the game as started
 		this.rooms.push(newRoom);
-		this.planedGames.splice(0, 1);
-		const player2Index = this.planedGames.findIndex(g => g.user.id === player2.user.id);
-		this.planedGames.splice(player2Index, 1);
 		setTimeout(()=>{
 			this.server.to(roomId).emit("send_canva_W_H");
 			this.startGame(newRoom);
@@ -276,8 +282,6 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	}
 
 	async handleConnection(socket: Socket) {
-		let player = new Player(socket, undefined);
-		const against = socket.handshake.query.against as string;0
 		let decodeJWt: any;
 		try {
 			decodeJWt = this.jwtService.verify(socket.handshake.auth.token, {
@@ -296,31 +300,6 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			this.OnWebSocektError(socket);
 		}
 		this.connectedUsers.push({socket, id: user.id});
-		player.setData(user.id, user.profilePic, user.nickname);
-		console.log(against);
-		if (!against || against === 'undefined') {
-			this.gameQueue.push({socket, user: player});
-			if (this.gameQueue.length < 2 || this.connectedUsers.length < 2)
-				return ;
-			if (this.gameQueue[0].user.id === this.gameQueue[1].user.id)
-			{
-				this.gameQueue.pop();
-				return ;
-			}
-			this.createGameRoom();
-		}
-		else {
-			this.planedGames.push({socket, user: player, against});
-			if (this.planedGames.length < 2 || this.connectedUsers.length < 2)
-			return ;
-			if (this.planedGames[0].user.id === this.planedGames[1].user.id)
-			{
-				this.planedGames.pop();
-				return ;
-			}
-			this.createPlanedGameRoom();
-		}
-		
 	}
 
 	@SubscribeMessage('player')
@@ -370,6 +349,47 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			room.player1.initBallPos(room.canvas.width / 2, room.canvas.height / 2, room.canvas.width * 10 / 800);
 			room.player2.initBallPos(room.canvas.width / 2, room.canvas.height / 2, room.canvas.width * 10 / 800);
 		}
+	}
+
+	@SubscribeMessage('GameMode')
+	async setGameMode(socket: Socket, data: {against: string})
+	{
+		const {id: userId} = this.connectedUsers.find(c => c.socket.id === socket.id);
+		const user = await this.usersService.findOneById(userId);
+		const player = new Player(socket, undefined);
+		player.setData(user.id, user.profilePic, user.nickname);
+		if (!data.against || data.against === 'undefined') {
+			console.log("normal game");
+			this.gameQueue.push({socket, user: player});
+			if (this.gameQueue.length < 2 || this.connectedUsers.length < 2)
+				return ;
+			if (this.gameQueue[0].user.id === this.gameQueue[1].user.id)
+			{
+				this.gameQueue.pop();
+				return ;
+			}
+			this.createGameRoom();
+		}
+		else {
+			const opp: planedGame = {socket, user: player, against: data.against};
+			this.planedGames.push(opp);
+			if (this.planedGames.length < 2 || this.connectedUsers.length < 2)
+				return ;
+			if (this.planedGames[0].user.id === this.planedGames[1].user.id)
+			{
+				this.planedGames.pop();
+				return ;
+			}
+			const rival = await this.checkForRivals();
+			if (rival) {
+				this.planedGames.splice(this.planedGames.length - 1, 1);
+				const rivalIndex = this.planedGames.findIndex(p => p.user.id === rival.user.id);
+				if (rivalIndex >= 0)
+					this.planedGames.splice(rivalIndex, 1);
+				this.createPlanedGameRoom([rival, opp]);
+			}
+		}
+
 	}
 
 	@SubscribeMessage('consume-special')

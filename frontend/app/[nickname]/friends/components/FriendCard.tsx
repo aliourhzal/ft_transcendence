@@ -6,23 +6,18 @@ import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 import Game from "../../game/Game";
 
 
-export default function FriendCard({user}: {
-	user: UniversalData
+export default function FriendCard({user, setPlay}: {
+	user: UniversalData,
+	setPlay: Function
 }) {
 	const [lvl, progess] = user.level.toString().split('.');
 	const socket = useContext(InvitationSocketContext);
-	const [play, setPlay] = useState(false);
 	const loggedUser = useContext(userDataContext);
 	
 	function removeFriend() {
 		socket.emit('delete-friend', user.id);
 	}
-
-	function playGame() {
-		setPlay(true);
-	}
 	
-
 	return (
 		<>
 			<Container className="p-0 overflow-hidden flex flex-col items-center relative">
@@ -48,16 +43,13 @@ export default function FriendCard({user}: {
 				</div>
 				<div className="flex justify-between w-full">
 					<Link href={`/${user.nickname}`} className="p-2 bg-green-500 text-white font-medium rounded-xl">See Profile</Link>
-					<button onClick={playGame} className="p-2 bg-blue-500 text-white font-medium rounded-xl">Play</button>
+					<Link href={`/${loggedUser.nickname}/game?id=${user.id}`} className="p-2 bg-blue-500 text-white font-medium rounded-xl">Play</Link>
 					<button onClick={removeFriend} className="p-2 bg-red-500 text-white font-medium rounded-xl">Remove Friend</button>
 				</div>
 				{
 					user.status === 'offline' && <div className="absolute top-0 left-0 h-full w-full z-10 bg-black opacity-50"></div>
 				}
 			</Container>
-			{
-				play && <Game />
-			}
 		</>
 	);
 }
