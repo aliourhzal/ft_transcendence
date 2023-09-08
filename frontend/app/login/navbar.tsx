@@ -20,7 +20,7 @@ export default function Navbar()
     }, []);
 
     return(
-        <nav className="absolute top-0 left-0 w-full">
+        <nav className="absolute top-0 left-0 w-full z-10">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
             <a href="https://github.com/Asalek" className="hover:animate-pulse flex items-center">
                 <img src="images/ping.png" className="h-8 mr-3" alt="Pongy" />
