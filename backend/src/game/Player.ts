@@ -16,7 +16,7 @@ export type userNode = {
 	user: Player,
 }
 
-export type planedGames = {
+export type planedGame = {
 	socket: Socket,
 	user: Player,
 	against: string

@@ -10,6 +10,7 @@ import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 import FriendCard from "./components/FriendCard";
 import { UniversalData, userDataContext } from "../../contexts/UniversalData";
 import { useRouter } from 'next/navigation';
+import Game from '../game/Game';
 
 
 export default function Friends(props: any) {
@@ -17,6 +18,7 @@ export default function Friends(props: any) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [friends, setFriends] = useState<UniversalData[]>([]);
 	const socket = useContext(InvitationSocketContext);
+	const [play, setPlay] = useState(false);
 	// const loggedUser = useContext(userDataContext);
 	// const router = useRouter();
 
@@ -99,7 +101,7 @@ export default function Friends(props: any) {
 					{
 						friends.length > 0 ? friends.map((friend) => {
 							return(
-								<FriendCard key={friend.nickname} user={friend}/>
+								<FriendCard key={friend.nickname} user={friend} setPlay={setPlay}/>
 							);
 						}) : <span className="text-white font-medium text-xl absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] ">You have no Friends</span>
 					}
@@ -108,3 +110,4 @@ export default function Friends(props: any) {
 		</main>
 	);
 }
+

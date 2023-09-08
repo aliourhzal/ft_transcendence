@@ -9,6 +9,7 @@ import Lottie from "react-lottie";
 import { data } from "autoprefixer";
 import { Socket, io } from "socket.io-client";
 import { getCookie } from "../layout";
+import { useSearchParams } from "next/navigation";
 
 const startbuttonGame = {
     loop: true,
@@ -32,23 +33,23 @@ function returnSocket(against: string) {
 
 export default function Game(props: any)
 {
-	const [socket, setSocket] = useState(null);
-	const issecondrender = useRef(false)
+	const socket = useContext(WebsocketContext);
+	const searchParams = useSearchParams();
 	const userData = useContext(userDataContext);
 	const [opData, setOpData] = useState<{loading:boolean, nickname: string, avatar: string}>({
 		loading: true,
 		nickname: '',
 		avatar: ''
 	});
+	console.log('hello: ', searchParams.get('id'));
 
 	useEffect(() => {
-		issecondrender.current && setSocket(returnSocket(props.against));
-		issecondrender.current = true;
-		socket && socket.on("playersInfo", (data: {nickname:string, avatar:string}) => {
+		socket.emit('GameMode', {against: searchParams.get('id')});
+		socket.on("playersInfo", (data: {nickname:string, avatar:string}) => {
 			setOpData({loading: true, ...data});
 		});
 		return (() => {
-			socket && socket.disconnect();
+			socket.disconnect();
 		})
 	},[]);
 

@@ -283,6 +283,7 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 				return ;
 		}
 		props.socket.on('send_canva_W_H', () => {
+			console.log('start game');
 			props.opData(oldata => {
 				const update = {...oldata};
 				update.loading = false;

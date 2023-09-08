@@ -304,6 +304,8 @@ export default function GameLogin()
 {
     const [playWith, setOp] = useState("bot"); // online
     const [ballColors, setBall] = useState(false); // ball colored
+    const searchParams = useSearchParams();
+    const selectOpt = searchParams.get('id') !== null ? false : true;
     const [themeN, setThemeN] = useState(1);    //themes
     const [hell, setHell] = useState(false);    // hell of flame mode
     const [Mode, setMode] = useState("");   //bot online
@@ -324,11 +326,14 @@ export default function GameLogin()
         bc: "#FFFFFF",
         bg: "#353D49"
     });
+
     return(
         <div className=" w-full bg-darken-200 flex items-center justify-center h-full">
             <div ref={main} className="w-[90%] h-auto px-5 py-1 max-sm:h-[95%] border-collapse bg-darken-100 rounded-xl overflow-y-auto">
                 {/* Game Mode Radio Buttons */}
-                <ModeRadio setOp={setOp}/>
+                {
+                    selectOpt && <ModeRadio setOp={setOp}/>
+                }
                 {/* Themse */}
                 <Themes colors={colors} setC={setC} isOpen={isOpen} setIsOpen={setIsOpen} setThemeN={setThemeN} T1={T1} T2={T2} T3={T3} T4={T4} def={def} def1={def1} def2={def2} def3={def3} />
                 {/* Effects */}
