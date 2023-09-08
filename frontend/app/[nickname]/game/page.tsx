@@ -1,5 +1,5 @@
 'use client'
-import { Fragment, SetStateAction, useRef, useState } from "react"
+import { Fragment, SetStateAction, useEffect, useRef, useState } from "react"
 import './utils/style.css';
 import dynamic from "next/dynamic";
 import Lottie from 'react-lottie';
@@ -326,6 +326,11 @@ export default function GameLogin()
         bc: "#FFFFFF",
         bg: "#353D49"
     });
+
+    useEffect(()=>{
+        if (selectOpt === false)
+            setOp("online");
+    }, []);
 
     return(
         <div className=" w-full bg-darken-200 flex items-center justify-center h-full">
