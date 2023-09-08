@@ -98,7 +98,7 @@ export default function MyModal(props: any) {
 					withCredentials: true}),
 					{
 						pending: 'Disabling 2FA',
-						success: '2FA Disibled',
+						success: '2FA Disabled',
 						error: 'Error While Disabling 2FA'
 					}
 					);
