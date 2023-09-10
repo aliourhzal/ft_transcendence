@@ -155,7 +155,7 @@ export default function Chat() {
 		getBlockedUsers(userData.id, setBlockedUsers)
 		socket.on('blocked-user', (res) => {console.log(res); setBlockedUsers(old => [...old, res.blockedUser.blockedUser])})
 		socket.on('unblocked-user', (res) => {console.log(res); setBlockedUsers((_users: any[]) => {
-			_users.splice(_users.indexOf(res.unblockedUser.unblockedUser), 1)
+			_users.splice(_users.indexOf(_users.find(o => o.id === res.unblockedUser.unblockedUser.id)), 1)
 			return _users
 		})})
 	}, [])

@@ -3,6 +3,7 @@ import Popup from './Popup'
 import { Avatar } from '@nextui-org/react'
 import { BiConversation } from 'react-icons/bi'
 import { FaRegUser } from 'react-icons/fa'
+import { PiGameControllerBold } from 'react-icons/pi'
 import { Context } from '../page'
 import { useRouter } from 'next/navigation'
 
@@ -19,7 +20,7 @@ interface UserInfoProps {
 
 const UserInfo:React.FC<UserInfoProps> = ( {id, showUserInfos, setShowUserInfos, nickname, setChatBoxMessages, setActiveUserConv, activeUserConv, setShowConv} ) => {
 
-    const {socket, rooms} = useContext(Context)
+    const {socket, rooms, userData} = useContext(Context)
 
     const _router = useRouter()
 
@@ -37,7 +38,7 @@ const UserInfo:React.FC<UserInfoProps> = ( {id, showUserInfos, setShowUserInfos,
                 <span>{rooms.find(o => o.name === activeUserConv.name)?.users.find(o => o.id === id)?.firstName}</span>
                 <span>{rooms.find(o => o.name === activeUserConv.name)?.users.find(o => o.id === id)?.lastName}</span>
             </div>
-            <div className='flex gap-4 scale-110 text-whiteSmoke w-20 h-8 rounded-2xl items-center justify-center bg-darken-200'>
+            <div className='flex gap-4 scale-110 text-whiteSmoke w-32 h-8 rounded-2xl items-center justify-center bg-darken-200'>
                 <BiConversation className='transition-all hover:scale-110' title='DM' aria-label='DM' cursor="pointer" size={25} onClick={ () => {
                     setShowUserInfos(false)
                     if (!rooms.find(o => o.name === nickname)) {
@@ -60,6 +61,10 @@ const UserInfo:React.FC<UserInfoProps> = ( {id, showUserInfos, setShowUserInfos,
                 }}/>
                 <FaRegUser className='transition-all hover:scale-110' title='profile' aria-label='profile' cursor="pointer" size={20} onClick={() => {
                     _router.push(`/${nickname}`)
+                }}/>
+                <PiGameControllerBold  className='transition-all hover:scale-110' title='profile' aria-label='invite to game' cursor="pointer" size={23} onClick={() => {
+                    socket.emit('send-message', {message:`${userData.nickname} invited you to a pong game %GameInvit%`, roomId:rooms.find(o => o.id === activeUserConv.id).id})
+                    _router.push(`/${userData.nickname}/game?id=${id}`)
                 }}/>
             </div>
         </div>

@@ -127,3 +127,61 @@
 #h1conv {
   font-family: Georgia, 'Times New Roman', Times, serif;
 }
+
+
+
+
+
+
+
+
+
+.joinGameBtn {
+  position: relative;
+  width: 100px;
+  height: 35px;
+  overflow: hidden;
+  border: none;
+  background-color: rgb(41 120 242);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  border-top-left-radius: 20px;
+  cursor: pointer;
+  border-bottom-right-radius: 20px;
+  box-shadow: 0 0 10px rgb(0, 17, 251);
+}
+
+.joinGameBtn::before {
+  content: "";
+  position: absolute;
+  width: 15px;
+  height: 200px;
+  margin-top: -92px;
+  background: linear-gradient(rgb(8, 0, 255),#9100d4);
+  animation: amm 4s linear infinite;
+}
+
+@keyframes amm {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.text-button {
+  position: relative;
+  font-size: 0.9rem;
+  font-weight: bold;
+  z-index: 1;
+}
+
+.joinGameBtn::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  background-color: rgb(41 120 242);
+  border-top-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}

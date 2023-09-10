@@ -17,6 +17,8 @@ const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersF
 
   const {socket, rooms, setChatBoxMessages, setShowConv, userData} = useContext(Context)
 
+  const [refresh, setRefresh] = useState(false)
+
   const [showList, setShowList] = useState(false)
   
   const [users, setUsers] = useState([])
