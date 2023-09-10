@@ -1086,19 +1086,23 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                     console.log(rtn.error);
                     return
                 }
-
-                const unBlockedUser = await this.roomService.unblockUser(user['sub'], dto.unBlockedUserId);
-
-
-                for (let i = 0; i < this.soketsId.length; i++) 
+                if((await this.roomService.isBlocked(dto.unBlockedUserId , user['sub'] )).blockedBy.length > 0)
                 {
-                    if(this.soketsId[i].userId === user['sub'])
+                    const unblockedUser = await this.roomService.unblockUser(user['sub'], dto.unBlockedUserId);
+    
+                    for (let i = 0; i < this.soketsId.length; i++) 
                     {
-                        console.log("test")
-                        this.server.to(this.soketsId[i].socketIds).emit("unblocked-user" , {unBlockedUser});
-                    } 
+                        if(this.soketsId[i].userId === user['sub'])
+                        {
+                            this.server.to(this.soketsId[i].socketIds).emit("unblocked-user" , {unblockedUser});
+                        } 
+                    }
+                    
                 }
-                
+                else
+                {
+                    console.log("user is unblocked")
+                }
                 // emmit blocked user
 
 
@@ -1142,11 +1146,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             {
                 return {error : existingUser.error};
             } 
-         
-            // if((await this.roomService.isBlocked(currentUserId , unBlockedUserId )).blockedBy.length === 0)
-            //     return {error : 'user aleredy unBlocked.'}
-            // if((await this.roomService.isBlocked(unBlockedUserId , currentUserId )).blockedBy.length === 0)
-            //     return {error : 'user aleredy unBlocked.'}
             return {ok : 'ok'}
         }
 

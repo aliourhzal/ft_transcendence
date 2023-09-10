@@ -530,10 +530,11 @@ export class RoomsService
           data: { blockedUsers: { disconnect: { id: unblockedUserId } } },
         });
       
-        await this.prisma.user.update({
+        const unblockedUser = await this.prisma.user.update({
           where: { id: unblockedUserId },
           data: { blockedBy: { disconnect: { id: blockerUserId } } },
         });
+        return {unblockedUser}
       }
 
       async allUsersBlockedByMe(id : string)
