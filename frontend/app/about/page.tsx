@@ -33,24 +33,32 @@ export default function About()
                     linkedin="https://www.linkedin.com/in/ayoub-salek-3841811b7/"
                     discord="https://discordapp.com/users/580557639180746762"
                     email="ayoub.salek8599@gmail.com"
+                    youtube="https://www.youtube.com/@devasalek2582"
+                    intra42="https://profile.intra.42.fr/users/asalek"
                     />
                     <Card n={1} fullName="Ali Ourhzal"
                         github="https://github.com/aliourhzal"
                         discord="https://discordapp.com/users/904985690306125834"
                         email=""
                         linkedin=""
-                    />
+                        youtube=""
+                        intra42="https://profile.intra.42.fr/users/aourhzal"
+                        />
                     <Card n={2} fullName="Taha Namir"
-                        github=""
+                        github="https://github.com/etahae"
                         discord=""
                         email=""
                         linkedin=""
-                    />
+                        youtube=""
+                        intra42="https://profile.intra.42.fr/users/tnamir"
+                        />
                     <Card n={3} fullName="Mustapha Essalih"
-                        github=""
+                        github="https://github.com/messalih1"
                         discord=""
                         email=""
                         linkedin=""
+                        youtube=""
+                        intra42="https://profile.intra.42.fr/users/messalih"
                     />
                 </div>
             </div>
