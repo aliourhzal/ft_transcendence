@@ -11,6 +11,7 @@ import { userDataContext } from "../../contexts/UniversalData";
 import { useRouter } from "next/navigation";
 import { useCookies } from "react-cookie"
 import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
+import Link from "next/link";
 
 interface SideBarProps {
 	nickname: string,
@@ -32,17 +33,18 @@ export function NavOption(props: any) {
 	}
 
 	return (
-		<a className="cursor-pointer flex flex-col md:flex-row items-center gap-5" onClick={()=>{
+		<Link href={`http://${process.env.NEXT_PUBLIC_FRONT}:3001/` + props.nickname + '/' + (props.location ?? '')} 
+			className="cursor-pointer flex flex-col md:flex-row items-center gap-5" onClick={()=>{
 			if (props.location === 'logout') {
 				logout();
 				return ;
 			}
 			// props.router.push(props.nickname + props.location);
-			props.router.push(`http://${process.env.NEXT_PUBLIC_FRONT}:3001/` + props.nickname + '/' + (props.location ?? ''));
+			// props.router.push(`http://${process.env.NEXT_PUBLIC_FRONT}:3001/` + props.nickname + '/' + (props.location ?? ''));
 		}}>
 			<props.icon  style={{color: 'white', fontSize: '24px'}}/>
 			<span className="text-md text-whiteSmoke hidden sm:inline capitalize">{props.location ?? 'profile'}</span>
-		</a>
+		</Link>
 	);
 }
 
