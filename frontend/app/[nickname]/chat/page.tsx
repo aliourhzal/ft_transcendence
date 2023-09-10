@@ -16,6 +16,7 @@ import { useCookies } from "react-cookie";
 import "./style.css"
 import UserInfo from "./components/UserInfo";
 import MyAlert from "./components/MyAlert";
+import axios from "axios";
 
 export interface conversation {
 	readonly name: string,
@@ -124,6 +125,16 @@ export interface _Notification {
 	type: string
 }
 
+const getBlockedUsers = async (userId: string, setter: any) => {
+	try {
+		await axios.post('http://127.0.0.1:3000/users/blockedUsers', {userId: userId}, {withCredentials: true}).then(
+			res => {setter(res.data)}
+		)
+	} catch (error) {
+		alert(error)
+	}
+}
+
 export default function Chat() {
 	// alert('')
 	const [cookies, setCookie, removeCookie] = useCookies();
@@ -140,8 +151,13 @@ export default function Chat() {
 		if (dmId)
 			socket.emit('start-dm', {reciverUserId: dmId})
 		socket.emit('get-rooms', null)
-		socket.on('all-blocked-users', (res) => {setBlockedUsers(res.allUsersBlockedByMe)})
-		socket.on('blocked-user', (res) => {console.log(res); setBlockedUsers(old => [...old, res.blockedUser])})
+		// socket.on('all-blocked-users', (res) => {console.log(res); setBlockedUsers(res.allUsersBlockedByMe)})
+		getBlockedUsers(userData.id, setBlockedUsers)
+		socket.on('blocked-user', (res) => {console.log(res); setBlockedUsers(old => [...old, res.blockedUser.blockedUser])})
+		socket.on('unblocked-user', (res) => {console.log(res); setBlockedUsers((_users: any[]) => {
+			_users.splice(_users.indexOf(res.unblockedUser.unblockedUser), 1)
+			return _users
+		})})
 	}, [])
 	// const [new] = useState()
 

@@ -81,7 +81,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
 
     const changeRoomType = (newType:string) => {
         newType === 'public' ? socket.emit('delete-room-password', {roomName:info.room.name}) :
-        socket.emit('make-room-protected', {roomId:info.room.id, newPassword: newType})
+        socket.emit('make-room-protected', {roomName:info.room.name, newPassword: newType})
         setshowRoomEditForm(false)
     }
 

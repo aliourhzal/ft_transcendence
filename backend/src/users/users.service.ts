@@ -12,6 +12,18 @@ import { UserData } from 'src/utils/userData.interface';
 export class UsersService {
 	private readonly prisma = new PrismaClient()
 
+	getBlockedUsers = async (userId: string) => {
+		const _blockedUsers = await this.prisma.user.findUnique({
+			where: {
+				id: userId
+			},
+			include: {
+				blockedUsers: true,
+			},
+		});
+		return _blockedUsers.blockedUsers
+	}
+
 	getUserStatus = async (userId: string) => {
 		const user = await this.prisma.user.findUnique({
 			where:{

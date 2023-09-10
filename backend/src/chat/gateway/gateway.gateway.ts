@@ -1094,6 +1094,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 {
                     if(this.soketsId[i].userId === user['sub'])
                     {
+                        console.log("test")
                         this.server.to(this.soketsId[i].socketIds).emit("unblocked-user" , {unBlockedUser});
                     } 
                 }
@@ -1142,10 +1143,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 return {error : existingUser.error};
             } 
          
-            if((await this.roomService.isBlocked(currentUserId , unBlockedUserId )).blockedBy.length === 0)
-                return {error : 'user aleredy unBlocked.'}
-            if((await this.roomService.isBlocked(unBlockedUserId , currentUserId )).blockedBy.length === 0)
-                return {error : 'user aleredy unBlocked.'}
+            // if((await this.roomService.isBlocked(currentUserId , unBlockedUserId )).blockedBy.length === 0)
+            //     return {error : 'user aleredy unBlocked.'}
+            // if((await this.roomService.isBlocked(unBlockedUserId , currentUserId )).blockedBy.length === 0)
+            //     return {error : 'user aleredy unBlocked.'}
             return {ok : 'ok'}
         }
 
