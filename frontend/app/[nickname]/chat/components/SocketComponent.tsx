@@ -92,17 +92,18 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
   const leaveUser = (res) => {
     const userToRemoveId = res.leavedUser?.kickedUser?.userId
     const newOwnerId = res.newOwner
-    const room = rooms.find(o => o.name === res.roomId.room_name)
-    if (userToRemoveId && newOwnerId && room) {
+    const room = rooms.find(o => o.id === res.roomId.id)
+    console.log(res)
+    if (userToRemoveId && room) {
       setRooms((_rooms:Room[]) => {
         if (userData.nickname === room?.users?.find(o => o.id === userToRemoveId)?.nickName) {
           if (newOwnerId)
-            _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === newOwnerId.userId).type = 'OWNER'
+            _rooms.find(o => o.id === res.roomId.id).users.find(o => o.id === newOwnerId.userId).type = 'OWNER'
           _rooms.splice(_rooms.indexOf(room), 1)
           setShowConv(false)
         }
         else {
-          var _users = _rooms.find(o => o.name === res.roomId.room_name).users
+          var _users = _rooms.find(o => o.id === res.roomId.id).users
           _users.splice(_users.indexOf(_users.find(o => o.id === userToRemoveId)), 1)
           if (newOwnerId)
             _users.find(o => o.id === newOwnerId.userId).type = 'OWNER'

@@ -17,6 +17,7 @@ import "./style.css"
 import UserInfo from "./components/UserInfo";
 import MyAlert from "./components/MyAlert";
 import axios from "axios";
+import { setRef } from "@mui/material";
 
 export interface conversation {
 	readonly name: string,
@@ -159,7 +160,7 @@ export default function Chat() {
 		socket.on('unblocked-user', (res) => {console.log(res); setBlockedUsers((_users: any[]) => {
 			_users.splice(_users.indexOf(_users.find(o => o.id === res.unblockedUser.unblockedUser.id)), 1)
 			return _users
-		})})
+		}); setRefresh(old => !old)})
 	}, [])
 	// const [new] = useState()
 
