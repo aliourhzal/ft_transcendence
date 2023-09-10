@@ -32,6 +32,7 @@ import { DirectMessages } from 'src/dto/directMessages.dto';
 import { getRooms } from 'src/dto/getRooms.dto';
 import { MakeRoomProtected } from 'src/dto/makeRoomProtected.dto';
 import { Block } from 'src/dto/block.dto';
+import { UnBlock } from 'src/dto/unBlock.dto';
  
 
 @WebSocketGateway(3004)
@@ -508,7 +509,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         @UsePipes(new ValidationPipe()) 
         async addNewUsersToRoom(@MessageBody() dto:AddNewUsersToRoom, @ConnectedSocket() socket: Socket) 
         {
-            
             try 
             {
                 const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
@@ -1027,8 +1027,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             {
                 const user = await this.utils.verifyToken(token)
                 
-                
-              
                 const rtn = await this.checkBlockUser(user['sub']  , dto.blockedUserId);
                 
                 if(rtn.error)
@@ -1042,9 +1040,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
 
                 for (let i = 0; i < this.soketsId.length; i++) 
                 {
-                    if(this.soketsId[i].userId === dto.blockedUserId)
+                    if(this.soketsId[i].userId === user['sub'])
                     {
-                        console.log("test")
                         this.server.to(this.soketsId[i].socketIds).emit("blocked-user" , {blockedUser});
                     } 
                 }
@@ -1068,6 +1065,57 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         }
     }
 
+
+
+    @SubscribeMessage('unblock') 
+    @UsePipes(new ValidationPipe())     
+    async unBlock(@MessageBody()  dto:UnBlock,  @ConnectedSocket() socket: Socket)
+    {
+        try 
+        {
+            const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
+
+            if (token) 
+            {
+                const user = await this.utils.verifyToken(token)
+                
+                const rtn = await this.checkUnBlockUser(user['sub']  , dto.unBlockedUserId);
+                
+                if(rtn.error)
+                {
+                    console.log(rtn.error);
+                    return
+                }
+
+                const unBlockedUser = await this.roomService.unblockUser(user['sub'], dto.unBlockedUserId);
+
+
+                for (let i = 0; i < this.soketsId.length; i++) 
+                {
+                    if(this.soketsId[i].userId === user['sub'])
+                    {
+                        this.server.to(this.soketsId[i].socketIds).emit("unblocked-user" , {unBlockedUser});
+                    } 
+                }
+                
+                // emmit blocked user
+
+
+                // console.log(await this.roomService.isBlocked(dto.blockedUserId , user['sub'] ));
+                // await this.roomService.unblockUser( user['sub'] , dto.blockedUserId );
+                // console.log(await this.roomService.isBlocked(dto.blockedUserId , user['sub'] ));
+            }
+            else
+            {
+                console.log('invalid jwt.')
+            }
+     
+        }
+        catch(error)
+        {
+            console.log(error)
+        }
+    }
         async checkBlockUser(currentUserId :string , blockedUserId : string)
         {
             const existingUser = await this.utils.getUserId([currentUserId , blockedUserId ]); // if current user in db
@@ -1084,6 +1132,23 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             return {ok : 'ok'}
         }
         
+
+        async checkUnBlockUser(currentUserId :string , unBlockedUserId : string)
+        {
+            const existingUser = await this.utils.getUserId([currentUserId , unBlockedUserId ]); // if current user in db
+
+            if(existingUser.error)
+            {
+                return {error : existingUser.error};
+            } 
+         
+            if((await this.roomService.isBlocked(currentUserId , unBlockedUserId )).blockedBy.length === 0)
+                return {error : 'user aleredy unBlocked.'}
+            if((await this.roomService.isBlocked(unBlockedUserId , currentUserId )).blockedBy.length === 0)
+                return {error : 'user aleredy unBlocked.'}
+            return {ok : 'ok'}
+        }
+
         @SubscribeMessage('get-users') // gha 7iyd hadi a sat
         async getAllusers( @ConnectedSocket() socket: Socket) 
         {
