@@ -29,10 +29,29 @@ export default function About()
 
             <div className="container w-full h-3/4 flex static p-8 items-start justify-center gap-10 overflow-y-auto">
                 <div className="w-full h-full justify-items-center content-start gap-5 grid 2xl:grid-cols-4 md:grid-cols-2">
-                    <Card n={0} fullName="Ayoub Salek"/>
-                    <Card n={1} fullName="Ali Ourhzal"/>
-                    <Card n={2} fullName="Taha Namir"/>
-                    <Card n={3} fullName="Mustapha Essalih"/>
+                    <Card n={0} fullName="Ayoub Salek" github="https://github.com/Asalek"
+                    linkedin="https://www.linkedin.com/in/ayoub-salek-3841811b7/"
+                    discord="https://discordapp.com/users/580557639180746762"
+                    email="ayoub.salek8599@gmail.com"
+                    />
+                    <Card n={1} fullName="Ali Ourhzal"
+                        github="https://github.com/aliourhzal"
+                        discord="https://discordapp.com/users/904985690306125834"
+                        email=""
+                        linkedin=""
+                    />
+                    <Card n={2} fullName="Taha Namir"
+                        github=""
+                        discord=""
+                        email=""
+                        linkedin=""
+                    />
+                    <Card n={3} fullName="Mustapha Essalih"
+                        github=""
+                        discord=""
+                        email=""
+                        linkedin=""
+                    />
                 </div>
             </div>
         </div>
