@@ -38,10 +38,10 @@ export default function Login()
         // alert(login + " " + passwd);
         try
         {
-            await axios.post('http://127.0.0.1:3000/auth/login ', {login, passwd}, {
+            await axios.post(`http://${process.env.NEXT_PUBLIC_BACK}:3000/auth/login `, {login, passwd}, {
                 withCredentials: true
             });
-            router.push(`http://127.0.0.1:3001/${login}`);
+            router.push(`http://${process.env.NEXT_PUBLIC_FRONT}:3001/${login}`);
         }
         catch(err)
         {
@@ -60,7 +60,7 @@ export default function Login()
                 <span className='text-white mb-6'>Or</span>
                 <hr className='border-slate-500 w-full mb-6'/>
                 <div className='flex items-cente justify-between w-full'>
-                    <AuthButton src="images/42.png" alt="42 intra" link="http://127.0.0.1:3000/auth/42"/>
+                    <AuthButton src="images/42.png" alt="42 intra" link={`http://${process.env.NEXT_PUBLIC_BACK}:3000/auth/42`}/>
                     <AuthButton src="images/google.png" alt="google" link=""/>
                     <AuthButton src="images/facebook.png" alt="facebook" link=""/>
                 </div>

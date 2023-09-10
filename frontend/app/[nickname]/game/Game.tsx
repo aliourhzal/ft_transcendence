@@ -21,7 +21,7 @@ const startbuttonGame = {
 };
 
 function returnSocket(against: string) {
-	return io('http://127.0.0.1:3003', {
+	return io(`http://${process.env.NEXT_PUBLIC_BACK}:3003`, {
     auth: {
         token: getCookie('access_token')
     },

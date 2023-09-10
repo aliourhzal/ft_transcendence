@@ -105,7 +105,7 @@ export const setDmUsers = (users) => {
 
 const _cookie = getCookie('access_token')
 
-const socket = io('ws://127.0.0.1:3004',{
+const socket = io(`ws://${process.env.NEXT_PUBLIC_BACK}:3004`,{
 	extraHeaders: {
 		Authorization: `Bearer ${getCookie('access_token')}`,
     },

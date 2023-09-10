@@ -28,7 +28,6 @@ export class AuthController {
 		//set the cookie
 		response.cookie('access_token', jwt_access_token);
 		response.cookie('login', user.nickname);
-		// response.redirect('http://127.0.0.1:3001/profile');
 		response.end('ok');
 	}
 

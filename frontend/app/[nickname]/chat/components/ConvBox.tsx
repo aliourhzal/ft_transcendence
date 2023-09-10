@@ -21,7 +21,7 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
     // if (new_msg_notif.name == activeUserConv.name)
     //   notify_conv_msg(false, '')
     try {
-      await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomId:rooms.find(o => o.name === data.data.name).id}, {
+      await axios.post(`http://${process.env.NEXT_PUBLIC_BACK}:3000/rooms/select-room`, {roomId:rooms.find(o => o.name === data.data.name).id}, {
         withCredentials: true,
         headers: {
             'Authorization': `Bearer ${getCookie('access_token')}`,
@@ -34,7 +34,7 @@ const ConvBox: React.FC<ConvBoxProps> = (data) => {
         // alert(error)
         console.log(error)
     }
-    // const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
+    // const response = await fetch(`http://${process.env.NEXT_PUBLIC_BACK}:3000/rooms/join-room`, {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
   }
 
   const activeDiv = (div:HTMLDivElement) => {

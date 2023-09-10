@@ -21,7 +21,7 @@ export default function ProfileInfo(props: {data: UniversalData, currentUser: bo
 
 	useEffect(() => {
 		if (!props.currentUser) {
-			axios.get('http://127.0.0.1:3000/users/friend/checkFriend', {
+			axios.get(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/friend/checkFriend`, {
 				params: {
 					nickname: props.data.nickname
 				},

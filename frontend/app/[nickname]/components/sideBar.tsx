@@ -28,7 +28,7 @@ export function NavOption(props: any) {
 		removeCookie('access_token')
 		socket.emit('logout');
 		removeCookie('login');
-		props.router.push("http://127.0.0.1:3001/");
+		props.router.push(`http://${process.env.NEXT_PUBLIC_FRONT}:3001/`);
 	}
 
 	return (
@@ -38,7 +38,7 @@ export function NavOption(props: any) {
 				return ;
 			}
 			// props.router.push(props.nickname + props.location);
-			props.router.push("http://127.0.0.1:3001/" + props.nickname + '/' + (props.location ?? ''));
+			props.router.push(`http://${process.env.NEXT_PUBLIC_FRONT}:3001/` + props.nickname + '/' + (props.location ?? ''));
 		}}>
 			<props.icon  style={{color: 'white', fontSize: '24px'}}/>
 			<span className="text-md text-whiteSmoke hidden sm:inline capitalize">{props.location ?? 'profile'}</span>

@@ -15,7 +15,7 @@ export default function FriendsRequests() {
 	const socket = useContext(InvitationSocketContext);
 
 	useEffect(() => {
-		const requests = axios.get('http://127.0.0.1:3000/users/friend/requests', {
+		const requests = axios.get(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/friend/requests`, {
 			withCredentials: true
 		}).then(res => {
 			setRequestArray(res.data);

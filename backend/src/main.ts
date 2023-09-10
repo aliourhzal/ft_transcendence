@@ -12,7 +12,7 @@ async function bootstrap() {
 	app.useWebSocketAdapter(new SocketAdapter(app));
 	app.use(cookieParser());
 	app.enableCors({
-		origin: 'http://127.0.0.1:3001',
+		origin: `${process.env.FRONT_HOST}`,
 		credentials: true
 	})
 	await app.listen(3000);

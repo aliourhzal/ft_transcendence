@@ -24,7 +24,7 @@ export default function TwoFa()
 		let tokenCode = token.split(' ').join('');
 		try
 		{
-			const res = await axios.post('http://127.0.0.1:3000/qr/TokenCheck',{tokenCode}, {
+			const res = await axios.post(`http://${process.env.NEXT_PUBLIC_BACK}:3000/qr/TokenCheck`,{tokenCode}, {
 			withCredentials: true});
 			if (res.data.valid)
 			{

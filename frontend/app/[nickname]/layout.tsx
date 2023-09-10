@@ -79,7 +79,7 @@ export default function ProfileLayout({
 	const [completed, setCompleted] = useState(false);
 
 	useEffect(() => {
-		fetchUserData('http://127.0.0.1:3000/users/profile')
+		fetchUserData(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/profile`)
 		.then(res => {
 			dispatch({type: ACTIONS.INIT, payload: {
 				data: res,

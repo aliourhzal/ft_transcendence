@@ -121,7 +121,7 @@ function Achieve({achievement}: {achievement: Achievement}) {
 export function Missions(props) {
 	const [missions, setMissions] = useState<MissionProps[]>([])
 	useEffect(() => {
-		axios.get('http://127.0.0.1:3000/users/profile/missions', {
+		axios.get(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/profile/missions`, {
 			params: {
                 nickname: !props.currentUser ? props.data.nickname : undefined
             },
@@ -149,7 +149,7 @@ export function Missions(props) {
 export function Achievements(props) {
 	const [achievements, setAchievements] = useState<Achievement[]>([])
 	useEffect(() => {
-		axios.get('http://127.0.0.1:3000/users/profile/achievements', {
+		axios.get(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/profile/achievements`, {
 			params: {
                 nickname: !props.currentUser ? props.data.nickname : undefined
             },

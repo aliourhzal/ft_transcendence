@@ -10,7 +10,7 @@ import Link from "next/link";
 export function FriendBarColumns(props: any)
 {
 	return (
-		<Link href={`http://127.0.0.1:3001/${props.nickname}`}>
+		<Link href={`http://${process.env.NEXT_PUBLIC_FRONT}:3001/${props.nickname}`}>
 			<div /*style={ {animation: "scroll 40s linear infinite",}} className="animate flex flex-row gap-1 h-full items-center cursor-pointer  rounded-md"*/
 				className="w-full flex flex-col items-center cursor-pointer"
 				>
@@ -68,7 +68,7 @@ export default function FriendCarouselBar()
 	}
 
 	useEffect(() => {
-		axios.get('http://127.0.0.1:3000/users/friends', {
+		axios.get(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/friends`, {
 			withCredentials: true
 		})
 		.then(res => {

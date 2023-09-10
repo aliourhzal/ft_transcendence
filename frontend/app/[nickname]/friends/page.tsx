@@ -36,8 +36,8 @@ export default function Friends(props: any) {
 
 	useEffect(() => {
 		// if (props.params.nickname !== loggedUser.nickname)
-		// 	router.replace(`http://127.0.0.1:3001/${loggedUser.nickname}/friends`);
-		axios.get('http://127.0.0.1:3000/users/friends', {
+		// 	router.replace(`http://${process.env.NEXT_PUBLIC_FRONT}:3001/${loggedUser.nickname}/friends`);
+		axios.get(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/friends`, {
 			withCredentials: true
 		})
 		.then(res => {

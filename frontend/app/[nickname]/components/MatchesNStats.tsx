@@ -55,7 +55,7 @@ export function MatchHistory(props: any) {
         }
     };
     useEffect(()=>{
-        axios.get('http://127.0.0.1:3000/users/profile/history',{
+        axios.get(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/profile/history`,{
             params: {
                 nickname: !props.currentUser ? props.data.nickname : undefined
             },
@@ -158,7 +158,7 @@ export function GameStats(props) {
 
     // console.log(userData);
     useEffect(()=>{
-        axios.get('http://127.0.0.1:3000/users/profile/stats',{
+        axios.get(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/profile/stats`,{
             params: {
                 nickname: !props.currentUser ? props.data.nickname : undefined
             },

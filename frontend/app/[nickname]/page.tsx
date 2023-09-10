@@ -24,7 +24,7 @@ export default function Profile(props) {
 	const currentUser = loggedUser.nickname === props.params.nickname;
 	async function fetchUserData(nickname: string) {
 		try {
-			const {data} = await axios.get('http://127.0.0.1:3000/users/profile', {
+			const {data} = await axios.get(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/profile`, {
 				params: {
 					nickname
 				},

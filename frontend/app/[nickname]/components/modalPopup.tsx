@@ -59,7 +59,7 @@ export default function MyModal(props: any) {
 			avatarElement.current.src = e.target!.result as string;
 			const formData = new FormData();
 			formData.append('avatar', e.target.files[0])
-			await axios.put('http://127.0.0.1:3000/users/profile/avatar', formData, {
+			await axios.put(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/profile/avatar`, formData, {
 				withCredentials: true,
 			}).then(res => props.dispatch({type: ACTIONS.UPDATE_AVATAR, payload: res.data}));
 		}
@@ -74,7 +74,7 @@ export default function MyModal(props: any) {
 			props.dispatch({type: ACTIONS.UPDATE_COVER, payload: ev.target!.result});
 			const formData = new FormData();
 			formData.append('cover', e.target.files[0])
-			await axios.put('http://127.0.0.1:3000/users/profile/cover', formData, {
+			await axios.put(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/profile/cover`, formData, {
 				withCredentials: true,
 			}).then(res => props.dispatch({type: ACTIONS.UPDATE_COVER, payload: res.data}));
 		}
@@ -94,7 +94,7 @@ export default function MyModal(props: any) {
 		{
 			try {
 					const res = await toast.promise(
-					axios.post('http://127.0.0.1:3000/qr/disable2FA',{qrCodeActive}, {
+					axios.post(`http://${process.env.NEXT_PUBLIC_BACK}:3000/qr/disable2FA`,{qrCodeActive}, {
 					withCredentials: true}),
 					{
 						pending: 'Disabling 2FA',
@@ -135,7 +135,7 @@ export default function MyModal(props: any) {
 				if (userData.password)
 				{
 					try{
-						await axios.post('http://127.0.0.1:3000/users/profile/checkPassword ', {oldPass}, {
+						await axios.post(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/profile/checkPassword `, {oldPass}, {
 							withCredentials: true
 						});
 						oldPassRef.current.textContent = "";
@@ -148,7 +148,7 @@ export default function MyModal(props: any) {
 				}
 				if (newPass === confirmPass)
 				{
-					await axios.post('http://127.0.0.1:3000/users/profile/password ', {newPassword: confirmPass}, {
+					await axios.post(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/profile/password `, {newPassword: confirmPass}, {
 						withCredentials: true
 					});
 					passwordRef.current.textContent = "Password Updated";
@@ -178,7 +178,7 @@ export default function MyModal(props: any) {
 					return ;
 				}
 					
-				await axios.post('http://127.0.0.1:3000/users/profile/nickName', {newNickname}, {
+				await axios.post(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/profile/nickName`, {newNickname}, {
 					withCredentials: true
 				});
 				nickNameRef.current.textContent = "Updated";
@@ -203,7 +203,7 @@ export default function MyModal(props: any) {
 	{
 		try {
 			const response = await toast.promise(
-				axios.post('http://127.0.0.1:3000/qr/codeCheck', {token}, {withCredentials: true}),
+				axios.post(`http://${process.env.NEXT_PUBLIC_BACK}:3000/qr/codeCheck`, {token}, {withCredentials: true}),
 				{
 					pending: 'enabling 2FA',
 					success: '2FA Activated',
@@ -224,7 +224,7 @@ export default function MyModal(props: any) {
 
 	async function load() 
 	{
-		await axios.get('http://127.0.0.1:3000/qr/code', {
+		await axios.get(`http://${process.env.NEXT_PUBLIC_BACK}:3000/qr/code`, {
 			withCredentials: true
 		}).then(res => {
 			console.log(res.data);
@@ -235,7 +235,7 @@ export default function MyModal(props: any) {
 	}
 
 	async function checkQrActivity() {
-		await axios.get('http://127.0.0.1:3000/qr/active_or_not', {
+		await axios.get(`http://${process.env.NEXT_PUBLIC_BACK}:3000/qr/active_or_not`, {
 			withCredentials: true
 		}).then(res => {
 			if (res.data.twoFa)
