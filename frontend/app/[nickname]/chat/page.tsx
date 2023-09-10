@@ -136,6 +136,8 @@ const getBlockedUsers = async (userId: string, setter: any) => {
 }
 
 export default function Chat() {
+
+	const router = useRouter()
 	// alert('')
 	const [cookies, setCookie, removeCookie] = useCookies();
 	
@@ -266,11 +268,15 @@ export default function Chat() {
 	const internalError = (text:string) => {
 		setAlertText(text)
 		setShowAlert(true)
+		setTimeout(() => {
+			router.refresh()
+			return clearTimeout
+		}, 1000)
 	}
 
 
 	return (
-		<main className='scrollbar-none select-none h-full w-full relative'>
+		<main className='select-none h-full w-full relative'>
 			{showAlert && <MyAlert showAlert={showAlert} setShowAlert={setShowAlert} text={alertText}/>}
 			{!(showConv && deviceType != 'normal') && <Notification newNotif={newNotif} setNewNotif={setNewNotif} notifications={notifications} notify={notify} setNotify={setNotify}/>}
 			<Context.Provider value={{internalError, setAlertNewMessage, ref, showConv, setShowConv, socket,
@@ -287,7 +293,7 @@ export default function Chat() {
 				</div>
 				<RoomForm setShowAlert={setShowAlert} setAlertText={setAlertText} setConvs={setConvs} set_room_created={set_room_created} showForm={showForm} setShowForm={setShowForm} />
 				<JoinRoomForm />
-				{ showSearchUsersForm && <SearchDm blockedUsers={blockedUsers} setShowSearchUsersForm={setShowSearchUsersForm} showSearchUsersForm={showSearchUsersForm} setActiveUserConv={ setActiveUserConv } />}
+				{ showSearchUsersForm && <SearchDm setRefresh={setRefresh} blockedUsers={blockedUsers} setShowSearchUsersForm={setShowSearchUsersForm} showSearchUsersForm={showSearchUsersForm} setActiveUserConv={ setActiveUserConv } />}
 				<UserInfo activeUserConv={activeUserConv} showUserInfos={showUserInfos} setShowUserInfos={setShowUserInfos} nickname={userInfoNick} id={userInfoId} setActiveUserConv={setActiveUserConv} setChatBoxMessages={setChatBoxMessages} setShowConv={setShowConv}/>
 			</Context.Provider>
 		</main>

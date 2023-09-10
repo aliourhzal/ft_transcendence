@@ -11,13 +11,13 @@ interface SearchDmProps {
   showSearchUsersForm: any
   setShowSearchUsersForm: any
   blockedUsers: any[]
+  setRefresh: any
 }
 
-const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersForm, setShowSearchUsersForm, blockedUsers } ) => {
+const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersForm, setShowSearchUsersForm, blockedUsers, setRefresh } ) => {
 
   const {socket, rooms, setChatBoxMessages, setShowConv, userData} = useContext(Context)
 
-  const [refresh, setRefresh] = useState(false)
 
   const [showList, setShowList] = useState(false)
   
@@ -103,10 +103,12 @@ const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersF
               { !blockedUsers.find(o => o.id === user.id) ? <button className='transition-all w-24 text-white bg-red-400 hover:bg-red-300 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center' onClick={(e) => {
                 socket.emit('user-block', {blockedUserId: user.id})
                 e.stopPropagation() // dont propagate onclick event to parent
+                setRefresh(old => !old)
               }}>block</button> :
               <button className='transition-all w-24 flex items-center justify-center text-white bg-blue-400 hover:bg-blue-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center' onClick={(e) => {
                 socket.emit('unblock', {unBlockedUserId: user.id})
                 e.stopPropagation() // dont propagate onclick event to parent
+                setRefresh(old => !old)
               }}>unblock</button>}
             </span>
           ))}
