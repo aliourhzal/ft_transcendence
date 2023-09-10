@@ -18,7 +18,7 @@ const Search:React.FC<SearchProps> = ( {_Filter, type} ) => {
                 onFocus={e => e.target.placeholder = ''}
                 onBlur={e => {
                     e.target.placeholder = 'Search';
-                    e.target.value = '';
+                    // e.target.value = '';
                     // _Filter ? filter('') : '';
                 }}
                 type='search'

@@ -1044,6 +1044,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 {
                     if(this.soketsId[i].userId === dto.blockedUserId)
                     {
+                        console.log("test")
                         this.server.to(this.soketsId[i].socketIds).emit("blocked-user" , {blockedUser});
                     } 
                 }
@@ -1083,7 +1084,7 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
             return {ok : 'ok'}
         }
         
-        @SubscribeMessage('get-users') 
+        @SubscribeMessage('get-users') // gha 7iyd hadi a sat
         async getAllusers( @ConnectedSocket() socket: Socket) 
         {
             try 

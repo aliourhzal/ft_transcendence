@@ -34,7 +34,6 @@ const ButtomButtons = () => {
         </div>
         <div className='transition-all hover:scale-110 relative cursor-pointer border-blue-500 border-[6px] bg-blue-500 rounded-full h-10 w-10 flex items-center justify-center' onClick={ () => {
             setShowSearchUsersForm(true)
-            socket.emit('get-users', null)
         }}
             onMouseOver={() => {setDm(true)}}
             onMouseLeave={() => {setDm(false)}}

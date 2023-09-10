@@ -25,8 +25,6 @@ const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin,
 
     const {setShowUserInfos, setUserInfoNick, setUserInfoId,  userData, rooms, socket} = useContext(Context)
 
-    socket.emit('get-users', null)
-
     const [userStatus, setUserStatus] = useState<"online" | "offline" | undefined>(undefined)
 
   const getStatus = async () => {

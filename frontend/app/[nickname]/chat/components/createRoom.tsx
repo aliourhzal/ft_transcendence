@@ -72,8 +72,6 @@ const RoomForm:React.FC<RoomFormProps> = ( { showForm, setShowForm, setConvs, se
             set_room_created(old => !old)
         })
     }, [])
-    
-    socket.emit('get-users', null)
 
     // const unvalidUsers = () => {
     //     var _unvalidUsers: string[] = []
