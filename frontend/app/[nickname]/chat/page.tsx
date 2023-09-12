@@ -113,8 +113,6 @@ export const setDmUsers = (users) => {
 	return (_users)
 }
 
-const _cookie = getCookie('access_token')
-
 const socket = io('ws://127.0.0.1:3004',{
 	extraHeaders: {
 		Authorization: `Bearer ${getCookie('access_token')}`,
@@ -162,7 +160,6 @@ export default function Chat() {
 			return _users
 		}); setRefresh(old => !old)})
 	}, [])
-	// const [new] = useState()
 
 	// useEffect ( () => {
 		// setInterval(() => {
@@ -275,6 +272,11 @@ export default function Chat() {
 		}, 1000)
 	}
 
+	if (!getCookie('access_token')) {
+		document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+		const router = useRouter()
+		router.push('/')
+	}
 
 	return (
 		<main className='select-none h-full w-full relative'>
