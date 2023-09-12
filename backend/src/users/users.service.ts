@@ -7,6 +7,7 @@ import { parse } from 'path';
 import { createReadStream} from 'fs';
 import { readdir } from 'fs/promises';
 import { UserData } from 'src/utils/userData.interface';
+import { Exclude } from 'class-transformer';
  
 @Injectable()
 export class UsersService {
@@ -41,11 +42,14 @@ export class UsersService {
 				id: true,
 				profilePic: true,
 				nickname: true,
-				status: true
+				status: true,
+				blockedBy: true
 			}
+			
 		})
 		if (!users)
 			throw new InternalServerErrorException('prisma failed to retieve data form db!!');
+
 		return (users);
 	}
 	// update a user NickName

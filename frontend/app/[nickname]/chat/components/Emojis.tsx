@@ -22,7 +22,6 @@ const Emojis:React.FC<EmojisProps> = ( { className, inputRef, setShowEmojies } )
       setEmojis([...emojis])
     else
       setEmojis([...emojis.filter((emo) => (emo.name.startsWith(needle)))])
-    console.log(emojisRef.current)
     emojisRef.current.scroll(0, 0)
   }
 

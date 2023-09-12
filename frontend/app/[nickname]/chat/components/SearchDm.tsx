@@ -18,7 +18,6 @@ const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersF
 
   const {socket, rooms, setChatBoxMessages, setShowConv, userData} = useContext(Context)
 
-
   const [showList, setShowList] = useState(false)
   
   const [users, setUsers] = useState([])
@@ -74,6 +73,8 @@ const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersF
     setShowConv(true)
   }
 
+  console.log(users[1]?.nickname, "*****", users[1]?.blockedBy)
+
   return (
     <Popup isOpen={showSearchUsersForm} modalAppearance={hide}>
         <h1 className='absolute top-7 text-center text-2xl mb-2 drop-shadow-[0px_0px_5px_rgba(150,150,150,0.7)]'>Search for users</h1>
@@ -81,6 +82,7 @@ const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersF
         {showList &&
         <div className='transition-all flex flex-col justify-start items-center h-[14rem] bg-darken-100 gap-2 rounded-xl overflow-y-scroll pt-1'>
           {users.map(user => user.nickname != userData.nickname && (
+            !users.find(o => o.id === userData.id)?.blockedBy.find(o => o.id === user.id) &&
             <span className='transition-all duration-300 cursor-pointer rounded-xl w-[100%] p-[5%] h-14 bg-darken-100 hover:bg-darken-300 flex items-center justify-between z-10' key={gimmeRandom()} onClick={ () => {
               if (!rooms.find(o => o.name === user.nickname)) {
                 socket.emit('start-dm', {reciverUserId: user.id})
