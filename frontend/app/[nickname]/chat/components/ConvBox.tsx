@@ -29,14 +29,16 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, setActiveUserConv, activeUserCon
       setChatBoxMessages([])
       return ;
     }
-    rooms.find(o => o.id === data.id).pending = false
+  
+    if (rooms.find(o => o.id === data.id)) rooms.find(o => o.id === data.id).pending = false
+  
     setActiveUserConv(data)
     setShowConv(true)
     convsFilter('')
     // if (new_msg_notif.name == activeUserConv.name)
     //   notify_conv_msg(false, '')
     try {
-      await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomId:rooms.find(o => o.id === data.id).id}, {
+      await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomId:rooms.find(o => o.id === data.id)?.id}, {
         withCredentials: true,
         headers: {
           'Authorization': `Bearer ${getCookie('access_token')}`,
@@ -55,13 +57,13 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, setActiveUserConv, activeUserCon
     // const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
   }
   
-  const [lastmsg, setLastMsg] = useState(rooms.find(o => o.id === data.id).lastmsg)
+  const [lastmsg, setLastMsg] = useState(rooms.find(o => o.id === data.id)?.lastmsg)
   const [pending, setPending] = useState(data.pending)
 
   const [userStatus, setUserStatus] = useState<"online" | "offline" | undefined>(undefined);
 
   const getStatus = async () => {
-    const userId = rooms.find(o => o.id === data.id).users.find(o => o.nickName === data.name).id
+    const userId = rooms.find(o => o.id === data.id)?.users.find(o => o.nickName === data.name)?.id
     try {
       setUserStatus((await axios.post('http://127.0.0.1:3000/users/userStatus', {userId}, {withCredentials: true})).data)
     } catch (error) {
@@ -83,7 +85,7 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, setActiveUserConv, activeUserCon
         <div className='flex flex-col justify-center gap-2 w-[100%] h-[50%] items-start'>
           <div className="left-[30%] top-[25%] text-gray-200 font-medium">{data.name}</div>
           <div className="left-[30%] top-[50%] text-gray-200 text-opacity-70 font-normal text-sm">{
-            lastmsg?.msg ? lastmsg?.msg.length > 10 ? (rooms.find(o => o.id === data.id).users.find(o => o.id === lastmsg.userId).nickName === userData.nickname ? 'you' : rooms.find(o => o.id === data.id).users.find(o => o.id === lastmsg.userId).nickName) + " : " + lastmsg?.msg.substring(0, 10) + '...' : (rooms.find(o => o.id === data.id).users.find(o => o.id === lastmsg.userId).nickName === userData.nickname ? 'you' : rooms.find(o => o.id === data.id).users.find(o => o.id === lastmsg.userId).nickName) + " : " + lastmsg?.msg : ''}</div>
+            lastmsg?.msg ? lastmsg?.msg.length > 10 ? (rooms.find(o => o.id === data.id)?.users.find(o => o.id === lastmsg.userId)?.nickName === userData.nickname ? 'you' : rooms.find(o => o.id === data.id)?.users.find(o => o.id === lastmsg.userId)?.nickName) + " : " + lastmsg?.msg.substring(0, 10) + '...' : (rooms.find(o => o.id === data.id)?.users.find(o => o.id === lastmsg.userId)?.nickName === userData.nickname ? 'you' : rooms.find(o => o.id === data.id)?.users.find(o => o.id === lastmsg.userId)?.nickName) + " : " + lastmsg?.msg : ''}</div>
         </div>
         { pending &&
           <span className='mx-5 absolute animate-ping inline-flex w-2 h-2 rounded-full bg-blueStrong z-10 opacity-90 right-0 top-[20%]'></span>

@@ -63,7 +63,7 @@ const UserInfo:React.FC<UserInfoProps> = ( {id, showUserInfos, setShowUserInfos,
                     _router.push(`/${nickname}`)
                 }}/>
                 <PiGameControllerBold  className='transition-all hover:scale-110' title='profile' aria-label='invite to game' cursor="pointer" size={23} onClick={() => {
-                    socket.emit('send-message', {message:`${userData.nickname} invited you to a pong game %GameInvit%`, roomId:rooms.find(o => o.id === activeUserConv.id).id})
+                    socket.emit('send-message', {message:`${userData.nickname} invited you to a pong game %GameInvit%`, roomId:rooms.find(o => o.id === activeUserConv.id)?.id})
                     _router.push(`/${userData.nickname}/game?id=${id}`)
                 }}/>
             </div>

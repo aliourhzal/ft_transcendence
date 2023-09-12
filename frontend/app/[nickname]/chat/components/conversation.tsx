@@ -35,7 +35,7 @@ const Conversation:React.FC<ConversationProps> = ( { activeUserConv, deviceType,
             var _user = rooms.find(o => o.id === activeUserConv.id)?.users.find(o => o.nickName === userData.nickname)
             if (_user) {
                 if (_user.isMuted === 'UNMUTED') {
-                    socket.emit('send-message', {message:msg, roomId:rooms.find(o => o.id === activeUserConv.id).id})
+                    socket.emit('send-message', {message:msg, roomId:rooms.find(o => o.id === activeUserConv.id)?.id})
                     e.target[0].value = ''
                     set_msg_sender(userData.nickname)
                 }
@@ -69,7 +69,7 @@ const Conversation:React.FC<ConversationProps> = ( { activeUserConv, deviceType,
           setChatBoxMessages((old:any) => [...old, {userId:msg.userId, msg:msg.msg, id:msg.idOfmsg}])
         }
         else{
-            rooms.find(o => o.id === msg.roomId).pending = true
+            if (rooms.find(o => o.id === msg.roomId)) rooms.find(o => o.id === msg.roomId).pending = true
             setRefresh(old => !old)
         }
     }
@@ -91,7 +91,7 @@ const Conversation:React.FC<ConversationProps> = ( { activeUserConv, deviceType,
                             setShowInfo(true)
                         else {
                             setUserInfoNick(activeUserConv.name)
-                            setUserInfoId(rooms.find(o => o.id === activeUserConv.id)?.users?.find(o => o.nickName === activeUserConv.name)?.id)
+                            setUserInfoId(rooms.find(o => o.id === activeUserConv.id)?.users.find(o => o.nickName === activeUserConv.name)?.id)
                             setShowUserInfos(true)
                         }
                         }}>

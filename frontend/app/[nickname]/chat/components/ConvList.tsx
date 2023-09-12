@@ -76,17 +76,19 @@ const ConvList:React.FC<ConvListProps> = ({activeUserConv, setActiveUserConv}) =
               })
             }
           } else {
-            rooms.find(o => o.name === res.roomId.room_name).users.push(
-              {
-                id: newuser.user.id,
-                nickName: newuser.user.nickname,
-                firstName: newuser.user.firstName,
-                lastName: newuser.user.lastName,
-                photo: newuser.user.profilePic,
-                type: newuser.userType,
-                isMuted: newuser.isMuted,
-              }
+            if (rooms.find(o => o.name === res.roomId.room_name)) {
+              rooms.find(o => o.name === res.roomId.room_name).users.push(
+                {
+                  id: newuser.user.id,
+                  nickName: newuser.user.nickname,
+                  firstName: newuser.user.firstName,
+                  lastName: newuser.user.lastName,
+                  photo: newuser.user.profilePic,
+                  type: newuser.userType,
+                  isMuted: newuser.isMuted,
+                }
               )
+            }
             }
           }
         })
