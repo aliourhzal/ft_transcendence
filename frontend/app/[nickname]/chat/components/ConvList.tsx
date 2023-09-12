@@ -124,7 +124,7 @@ const ConvList:React.FC<ConvListProps> = ({activeUserConv, setActiveUserConv}) =
     return (
     <>
       <Search _Filter={convsFilter} type={'conv'}/>
-      <div className='transition-all scrollbar-none group left-[10%] flex-col bg-transparent w-full h-[80%] mt-8 overflow-hidden overflow-y-scroll'>
+      <div className='transition-all group left-[10%] flex-col bg-transparent w-full h-[80%] mt-8 overflow-y-auto scrollbar-thin scrollbar-track-darken-300 scrollbar-thumb-whiteSmoke scrollbar-corner-black'>
           {
             rooms.length ? convs.length ? convs.map ((item:conversation) =>  (<ConvBox _tabIndex={_tabIndex++} convsFilter={convsFilter} key={gimmeRandom()} data={item} activeUserConv={activeUserConv} setActiveUserConv={setActiveUserConv} />)) 
             : 

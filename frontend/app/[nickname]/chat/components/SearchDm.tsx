@@ -80,7 +80,7 @@ const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersF
         <h1 className='absolute top-7 text-center text-2xl mb-2 drop-shadow-[0px_0px_5px_rgba(150,150,150,0.7)]'>Search for users</h1>
         <div onClick={() => setShowList(true)} className='-mt-5'><Search _Filter={filerList} type={'dm'}/></div>
         {showList &&
-        <div className='transition-all flex flex-col justify-start items-center h-[14rem] bg-darken-100 gap-2 rounded-xl overflow-y-scroll pt-1'>
+        <div className='transition-all flex flex-col justify-start items-center h-[14rem] bg-darken-100 gap-2 rounded-xl overflow-y-auto pt-1 scrollbar-thin scrollbar-track-darken-300 scrollbar-thumb-whiteSmoke scrollbar-corner-black'>
           {users.map(user => user.nickname != userData.nickname && (
             !users.find(o => o.id === userData.id)?.blockedBy.find(o => o.id === user.id) &&
             <span className='transition-all duration-300 cursor-pointer rounded-xl w-[100%] p-[5%] h-14 bg-darken-100 hover:bg-darken-300 flex items-center justify-between z-10' key={gimmeRandom()} onClick={ () => {

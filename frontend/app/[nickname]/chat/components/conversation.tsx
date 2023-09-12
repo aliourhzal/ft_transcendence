@@ -106,7 +106,7 @@ const Conversation:React.FC<ConversationProps> = ( { activeUserConv, deviceType,
                     }); setChatBoxMessages([])}}>x</button>}
                 </div>
 
-                <div id='chatbox' className='relative flex flex-col w-full mt-8 overflow-y-scroll basis-[80%]'>
+                <div id='chatbox' className='relative flex flex-col w-full mt-8 overflow-y-auto basis-[80%] scrollbar-thin scrollbar-track-darken-300 scrollbar-thumb-whiteSmoke scrollbar-corner-black'>
                     <ChatBox activeUserConv={activeUserConv}/>
                 </div>
 
