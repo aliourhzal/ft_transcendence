@@ -465,8 +465,9 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                     if(comparePasswd(dto.password,rtn.room.password) )
                                     {
                                         const newUserAdded = await this.roomService.linkBetweenUsersAndRooms(rtn.room.id, [user['sub']]);
+                                        const messageAndUserName = await this.messagesService.getAllMessagesofRoom( rtn.room.id, user['sub']);
                                     
-                                        await this.emmiteEventesToUsers(socket, rtn.room.id  ,"users-join", {roomId : rtn.room , userInfos: await this.utils.getUserInfosInRoom(rtn.room.id) , newUserAdded })
+                                        await this.emmiteEventesToUsers(socket, rtn.room.id  ,"users-join", {messageAndUserName , roomId : rtn.room , userInfos: await this.utils.getUserInfosInRoom(rtn.room.id) , newUserAdded })
 
                                          
                                         return ;
@@ -482,7 +483,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                 {
                                     const newUserAdded = await this.roomService.linkBetweenUsersAndRooms(rtn.room.id, [user['sub']]);
                                     
-                                    await this.emmiteEventesToUsers(socket, rtn.room.id  ,"users-join", {roomId : rtn.room , userInfos: await this.utils.getUserInfosInRoom(rtn.room.id) , newUserAdded })
+                                    const messageAndUserName = await this.messagesService.getAllMessagesofRoom( rtn.room.id, user['sub']);
+
+
+                                    await this.emmiteEventesToUsers(socket, rtn.room.id  ,"users-join", {messageAndUserName , roomId : rtn.room , userInfos: await this.utils.getUserInfosInRoom(rtn.room.id) , newUserAdded })
                                 } 
                             }
                             else 
@@ -535,8 +539,10 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                                     
               
                     const newUsers = await this.roomService.linkBetweenUsersAndRooms(rtn.roomId.id , rtn.usersId);
+
+                    const messageAndUserName = await this.messagesService.getAllMessagesofRoom( rtn.roomId.id, user['sub']);
                         
-                    await this.emmiteEventesToUsers(socket, rtn.roomId.id  , "users-join", {roomId : rtn.roomId , userInfos: await this.utils.getUserInfosInRoom(rtn.roomId.id) , newUserAdded : newUsers })
+                    await this.emmiteEventesToUsers(socket, rtn.roomId.id  , "users-join", {messageAndUserName, roomId : rtn.roomId , userInfos: await this.utils.getUserInfosInRoom(rtn.roomId.id) , newUserAdded : newUsers })
                 } 
                 else
                 {

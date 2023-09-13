@@ -54,6 +54,7 @@ const ConvList:React.FC<ConvListProps> = ({activeUserConv, setActiveUserConv}) =
   }, [])
   
   const AddUserToRoom = (res) => {
+    console.log(res)
     var _newUser;
     const newusers = []
     res.newUserAdded.users.map(_new => {
@@ -66,11 +67,11 @@ const ConvList:React.FC<ConvListProps> = ({activeUserConv, setActiveUserConv}) =
             _newUser = newuser.user.nickname
             if (!rooms.find(o => o.id === res.roomId.id)) {
               rooms.unshift({
-                msgs: [],
+                msgs: res.messageAndUserName,
                 id: res.roomId.id,
                 name: res.roomId.room_name,
                 type: res.roomId.roomType,
-                lastmsg:'welcome to group chat',
+                lastmsg: {user: res.roomId.room_name, msg: 'welcome to group chat'},
                 users: getUsersInfo(res.userInfos),
                 photo: "/images/defaultRoomIcon.png"
               })

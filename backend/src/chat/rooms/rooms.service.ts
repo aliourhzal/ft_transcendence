@@ -107,7 +107,6 @@ export class RoomsService
         }
 
         
-         
         return {users};
     }
 
