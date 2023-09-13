@@ -7,11 +7,13 @@ interface SocketComponentProps {
   setInfoUpdate: any
   setConvs?: any
   _notification: any
+  activeUserConv: any
+  setActiveUserConv: any
 }
 
-const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpdate, _notification, setConvs } ) => {
+const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpdate, _notification, setConvs, activeUserConv, setActiveUserConv } ) => {
   
-  const { userData, setShowConv, internalError, socket, rooms, activeUserConv, setChatBoxMessages, setActiveUserConv } = useContext(Context)
+  const { userData, setShowConv, internalError, socket, rooms, setChatBoxMessages } = useContext(Context)
 
   const promoteUser = (res) => {
     console.log(res)
@@ -25,9 +27,9 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
         _notification(`You are now admin at '${res.roomId.room_name}'`, "good")
       else
         _notification(`"${_promotedUser.nickName}" promoted at '${res.roomId.room_name}'`, "good")
-      console.log(activeUserConv)
-      if (activeUserConv?.name === res.roomId.room_name)
-        setChatBoxMessages(old => [...old, {userId: 'bot', msg : `"${_promotedUser.nickname}" is now admin`}])
+      // console.log(activeUserConv)
+      // if (activeUserConv?.name === res.roomId.room_name)
+      //   setChatBoxMessages(old => [...old, {userId: 'bot', msg : `"${_promotedUser.nickname}" is now admin`}])
     }
     else internalError('Internal error when trying to promote')
     setInfoUpdate(old => !old)

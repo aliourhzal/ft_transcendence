@@ -17,6 +17,8 @@ interface RoomInfoProps {
     setShow: any
     show: boolean
     userData: UniversalData
+    activeUserConv: any
+    setActiveUserConv: any
 }
 
 const RoomInfo: React.FC<RoomInfoProps> = (info) => {
@@ -90,7 +92,7 @@ const RoomInfo: React.FC<RoomInfoProps> = (info) => {
 
   return (
     <>
-    <SocketComponent setRooms={setRooms} setInfoUpdate={setInfoUpdate} setConvs={setConvs} _notification={_notification}/>
+    <SocketComponent setRooms={setRooms} setInfoUpdate={setInfoUpdate} setConvs={setConvs} _notification={_notification} activeUserConv={info.activeUserConv} setActiveUserConv={info.setActiveUserConv}/>
     {(info.room && info.show) &&
         <Popup isOpen={info.show} modalAppearance={hide}>
             <div className='flex items-center justify-center gap-4 -mt-8'>
