@@ -1,22 +1,9 @@
 'use client'
 
-
 import { useEffect, useState } from "react";
 import Player from "../utils/Player.class";
 import {Ball, Special} from "../utils/Ball.class";
 import { Socket } from "socket.io-client";
-import { socket } from "@/app/contexts/gameWebSocket";
-import winner from '../utils/winner.json';
-import Lottie from "react-lottie";
-
-const startbuttonGame = {
-    loop: true,
-    autoplay: true,
-    animationData: winner,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice"
-    }
-};
 
 export default function Canvas(props: {socket:Socket, themeN: number, ball: boolean, specials: boolean, hell: boolean, colors: any, opData: any }) {
 	const [ana, GodWilling] = useState(0);
@@ -227,7 +214,7 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		// listening to the mouse
 		canvas.addEventListener("mousemove", getMousePos);
 		
-		socket.on("gameOver", data => {
+		props.socket.on("gameOver", data => {
 
 			function drawText(text: string, x: number, y: number){
 				(n === 3 ? ctx.fillStyle = "#000" : ctx.fillStyle = "#FFF");
