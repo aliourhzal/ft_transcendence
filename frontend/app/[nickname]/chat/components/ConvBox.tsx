@@ -14,7 +14,7 @@ interface ConvBoxProps {
 
 const ConvBox: React.FC<ConvBoxProps> = ({data, setActiveUserConv, activeUserConv, convsFilter, _tabIndex}) => {
 
-  const {rooms, setShowConv, setChatBoxMessages, msgInputRef, userData} = useContext(Context)
+  const {rooms, setShowConv, setChatBoxMessages, msgInputRef, userData, setRefresh} = useContext(Context)
 
   const handleClick = async () => {
     if (data.id == activeUserConv.id) {
@@ -55,6 +55,7 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, setActiveUserConv, activeUserCon
     if (data.id != activeUserConv.id)
       msgInputRef.current.value = ''
     msgInputRef.current?.focus()
+    setRefresh(old => !old)
     // const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
   }
   

@@ -14,7 +14,7 @@ interface RoomFormProps {
 
 const RoomForm:React.FC<RoomFormProps> = ( { showForm, setShowForm, setConvs, set_room_created, setShowAlert, setAlertText } ) => {
      
-    const {socket, rooms, setRooms, userData, internalError} = useContext(Context)
+    const {socket, rooms, setRooms, userData, _notification} = useContext(Context)
 
     const [roomName, setName] = useState('')
     const [users, setUsers] = useState<string[]>([])
@@ -57,6 +57,8 @@ const RoomForm:React.FC<RoomFormProps> = ( { showForm, setShowForm, setConvs, se
                     type: 'DM',
                     photo: _photo,
                 }); setConvs([..._rooms]); return _rooms})
+                if (_name != userData.nickname)
+                    _notification(`"${_name}" started a conversation`, "good")
             }
             else {
                 setRooms(_rooms => {_rooms.unshift({
@@ -68,6 +70,7 @@ const RoomForm:React.FC<RoomFormProps> = ( { showForm, setShowForm, setConvs, se
                     type: res.room.room.roomType,
                     photo: "/images/defaultRoomIcon.png"
                 }); setConvs([..._rooms]); return _rooms})
+                _notification(`you joined '${res.room.room.room_name}'`, "good")
             }
             set_room_created(old => !old)
         })
@@ -122,10 +125,6 @@ const RoomForm:React.FC<RoomFormProps> = ( { showForm, setShowForm, setConvs, se
                     <input aria-required='true' autoComplete='off' value={roomName} type="text" name="floating_text" id="floating_text" className="text-gray-300 block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required 
                     onChange={(e) => {setName(e.target.value)}}/>
                     <label htmlFor="floating_text" className="text-xs lg:text-sm peer-focus:font-medium absolute text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Name</label>
-                </div>
-                <div className="relative z-0 w-full mb-6 group">
-                    <input autoComplete='off' type="text" name="floating_desc" id="floating_desc" className="text-gray-300 block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-                    <label htmlFor="floating_desc" className="text-xs lg:text-sm peer-focus:font-medium absolute text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Description</label>
                 </div>
                 <div className="flex relative z-0 w-full mb-6 group">
                     <input formNoValidate autoComplete='off' value={user} type="text" name="user" id="user" className="text-gray-300 text-xs lg:text-base block py-2.5 px-0 w-full bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required 

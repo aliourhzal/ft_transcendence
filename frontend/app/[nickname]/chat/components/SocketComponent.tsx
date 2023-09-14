@@ -18,6 +18,7 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
   const promoteUser = (res) => {
     console.log(res)
     var _promotedUser = rooms.find(o => o.name === res.roomId.room_name)?.users.find(o => o.id === res.newAdmin.userId)
+    console.log(_promotedUser)
     if (_promotedUser) {
       setRooms((_rooms: Room[]) => {
         _promotedUser.type = 'ADMIN'
@@ -27,9 +28,11 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
         _notification(`You are now admin at '${res.roomId.room_name}'`, "good")
       else
         _notification(`"${_promotedUser.nickName}" promoted at '${res.roomId.room_name}'`, "good")
-      // console.log(activeUserConv)
-      // if (activeUserConv?.name === res.roomId.room_name)
-      //   setChatBoxMessages(old => [...old, {userId: 'bot', msg : `"${_promotedUser.nickname}" is now admin`}])
+      setActiveUserConv(_conv => {
+          if (_conv?.name === res.roomId.room_name)
+          setChatBoxMessages(old => [...old, {userId: 'bot', msg : `"${_promotedUser.nickName}" is now admin`}])
+        return _conv}
+      )
     }
     else internalError('Internal error when trying to promote')
     setInfoUpdate(old => !old)
@@ -47,6 +50,11 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
         _notification(`You have been demoted at '${res.roomId.room_name}'`, "bad")
       else
         _notification(`"${_demotedUser.nickName}" demoted at '${res.roomId.room_name}'`, "good")
+      setActiveUserConv(_conv => {
+          if (_conv?.name === res.roomId.room_name)
+          setChatBoxMessages(old => [...old, {userId: 'bot', msg : `"${_demotedUser.nickName}" is demoted`}])
+        return _conv}
+      )
     }
     else internalError('Internal error when trying to demote')
     setInfoUpdate(old => !old)
@@ -55,9 +63,8 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
   const kickUser = (res) => {
     console.log(res)
     setRooms((_rooms: Room[]) => {
-      var current_room = _rooms.find(o => o.name === res.roomId.room_name)
-      var userToBeKicked = current_room?.users?.find(o => o.id === res.kickedUser.userId)
-      if (current_room && userToBeKicked) {
+      var userToBeKicked = _rooms.find(o => o.name === res.roomId.room_name)?.users?.find(o => o.id === res.kickedUser.userId)
+      if (userToBeKicked) {
         if (res.kickedUser.userId != userData.id)
           _notification(`"${userToBeKicked.nickName}" has been kicked from '${res.roomId.room_name}'`, "good")
         var currentRoomUsers = _rooms.find(o => o.name === res.roomId.room_name)?.users
@@ -65,10 +72,15 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
           currentRoomUsers.splice(currentRoomUsers.indexOf(userToBeKicked), 1)
         if (res.kickedUser.userId === userData.id) {
           _notification(`You have been kicked from '${res.roomId.room_name}'`, "bad")
-          _rooms.splice(_rooms.indexOf(current_room), 1)
+          _rooms.splice(_rooms.indexOf(_rooms.find(o => o.name === res.roomId.room_name)), 1)
           setShowConv(false)
         }
         setConvs([..._rooms])
+        setActiveUserConv(_conv => {
+          if (_conv?.name === res.roomId.room_name)
+          setChatBoxMessages(old => [...old, {userId: 'bot', msg : `"${userToBeKicked.nickName}" is kicked`}])
+          return _conv}
+        )
       }
       else internalError('Internal error when trying to kick')
       return _rooms
@@ -79,19 +91,23 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
   const banUser = (res) => {
     console.log(res)
     setRooms((_rooms: Room[]) => {
-      var current_room = _rooms.find(o => o.name === res.roomId.room_name)
-      var userToBeKicked = current_room?.users?.find(o => o.id === res.bannedUser.userId)
-      if (current_room && userToBeKicked) {
+      var userToBeKicked = _rooms.find(o => o.name === res.roomId.room_name)?.users?.find(o => o.id === res.bannedUser.userId)
+      if (userToBeKicked) {
         if (res.bannedUser.userId != userData.id)
           _notification(`"${userToBeKicked.nickName}" has been banned from '${res.roomId.room_name}'`, "good")
         var currentRoomUsers = _rooms.find(o => o.name === res.roomId.room_name)?.users
         currentRoomUsers.splice(currentRoomUsers.indexOf(userToBeKicked), 1)
         if (res.bannedUser.userId === userData.id) {
           _notification(`You have been banned from '${res.roomId.room_name}'`, "bad")
-          _rooms.splice(_rooms.indexOf(current_room), 1)
+          _rooms.splice(_rooms.indexOf(_rooms.find(o => o.name === res.roomId.room_name)), 1)
           setShowConv(false)
         }
         setConvs([..._rooms])
+        setActiveUserConv(_conv => {
+          if (_conv?.name === res.roomId.room_name)
+            setChatBoxMessages(old => [...old, {userId: 'bot', msg : `"${userToBeKicked.nickName}" is banned`}])
+          return _conv}
+        )
       }
       else internalError('Internal error when trying to ban')
       return _rooms
@@ -103,13 +119,12 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
     console.log(res)
     const userToRemoveId = res.leavedUser?.kickedUser?.userId
     const newOwnerId = res.newOwner
-    const room = rooms.find(o => o.id === res.roomId.id)
-    if (userToRemoveId && room) {
+    if (userToRemoveId) {
       setRooms((_rooms:Room[]) => {
-        if (userData.nickname === room?.users?.find(o => o.id === userToRemoveId)?.nickName) {
+        if (userData.id === rooms.find(o => o.id === res.roomId.id)?.users?.find(o => o.id === userToRemoveId)?.id) {
           if (newOwnerId)
             _rooms.find(o => o.id === res.roomId.id).users.find(o => o.id === newOwnerId.userId).type = 'OWNER'
-          _rooms.splice(_rooms.indexOf(room), 1)
+          _rooms.splice(_rooms.indexOf(rooms.find(o => o.id === res.roomId.id)), 1)
           setShowConv(false)
         }
         else {
@@ -119,6 +134,13 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
             _users.find(o => o.id === newOwnerId.userId).type = 'OWNER'
         }
         setConvs([..._rooms])
+        setActiveUserConv(_conv => {
+          if (_conv?.name === res.roomId.room_name)
+            setChatBoxMessages(old => [...old, {userId: 'bot', msg : `"${rooms.find(o => o.id === res.roomId.id)?.users?.find(o => o.id === userToRemoveId)?.nickName}" left`}])
+          if (newOwnerId)
+            setChatBoxMessages(old => [...old, {userId: 'bot', msg : `"${_rooms.find(o => o.id === res.roomId.id).users.find(o => o.id === newOwnerId.userId).nickName}" is now the owner`}])
+          return _conv}
+        )
         return _rooms
       })
     }
