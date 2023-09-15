@@ -1,5 +1,5 @@
 'use client'
-import { Fragment, SetStateAction, useEffect, useRef, useState } from "react"
+import { Fragment, SetStateAction, useContext, useEffect, useRef, useState } from "react"
 import './utils/style.css';
 import dynamic from "next/dynamic";
 import Lottie from 'react-lottie';
@@ -9,6 +9,7 @@ import startButton from './utils/startButton.json';
 import { Dialog, Transition } from "@headlessui/react";
 import { CirclePicker } from 'react-color'
 import { useSearchParams } from "next/navigation";
+import { WebsocketContext } from "@/app/contexts/gameWebSocket";
 
 const defaultOptions = {
     loop: true,
@@ -327,10 +328,17 @@ export default function GameLogin()
         bg: "#353D49"
     });
 
+    const gsocket = useContext(WebsocketContext);
+
     useEffect(()=>{
+        if (!gsocket || !gsocket.connected || gsocket === undefined)
+            gsocket.connect();
         if (selectOpt === false)
             setOp("online");
-    }, []);
+        return () => {
+            gsocket.disconnect();
+        }
+    }, [gsocket.connected]);
 
     return(
         <div className=" w-full bg-darken-200 flex items-center justify-center h-full">
@@ -345,7 +353,7 @@ export default function GameLogin()
                 <Effects setBall={setBall} setEffect={setEffect} setHell={setHell} setMode={setMode} main={main} playWith={playWith} />
             </div>
             {/* {!show && } */}
-            {(Mode === "online" && <LazyGame specials={Effect} colors={colors} themeN={themeN} ball={ballColors} hell={hell} />) ||
+            {(Mode === "online" && <LazyGame socket={gsocket} specials={Effect} colors={colors} themeN={themeN} ball={ballColors} hell={hell} />) ||
                 (Mode==="bot" && <BotGame  colors={colors} themeN={themeN} ball={ballColors} hell={hell} />)}
         </div>
     );

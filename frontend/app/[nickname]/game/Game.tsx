@@ -33,7 +33,7 @@ function returnSocket(against: string) {
 
 export default function Game(props: any)
 {
-	const socket = useContext(WebsocketContext);
+	
 	const searchParams = useSearchParams();
 	const userData = useContext(userDataContext);
 	const [opData, setOpData] = useState<{loading:boolean, nickname: string, avatar: string}>({
@@ -44,12 +44,12 @@ export default function Game(props: any)
 	console.log('hello: ', searchParams.get('id'));
 
 	useEffect(() => {
-		socket.emit('GameMode', {against: searchParams.get('id')});
-		socket.on("playersInfo", (data: {nickname:string, avatar:string}) => {
+		props.socket.emit('GameMode', {against: searchParams.get('id')});
+		props.socket.on("playersInfo", (data: {nickname:string, avatar:string}) => {
 			setOpData({loading: true, ...data});
 		});
 		return (() => {
-			socket.disconnect();
+			// props.socket.disconnect();
 		})
 	},[]);
 
@@ -75,7 +75,7 @@ export default function Game(props: any)
 					</div>
 				</div>
 				{
-					socket && <Canvas colors={props.colors} socket={socket} specials={props.specials} themeN={props.themeN} ball={props.ball}  hell={props.hell} opData={setOpData}/>
+					props.socket && <Canvas colors={props.colors} socket={props.socket} specials={props.specials} themeN={props.themeN} ball={props.ball}  hell={props.hell} opData={setOpData}/>
 				}
 			</div>
 		</section>
