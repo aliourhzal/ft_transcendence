@@ -46,9 +46,9 @@ export default function About()
                         />
                     <Card n={2} fullName="Taha Namir"
                         github="https://github.com/etahae"
-                        discord=""
-                        email=""
-                        linkedin=""
+                        discord="https://discordapp.com/users/522026532919705618"
+                        email="tahanamir@hotmail.com"
+                        linkedin="https://www.linkedin.com/in/taha-namir-063ba7256/"
                         youtube=""
                         intra42="https://profile.intra.42.fr/users/tnamir"
                         />
@@ -56,7 +56,7 @@ export default function About()
                         github="https://github.com/messalih1"
                         discord=""
                         email=""
-                        linkedin=""
+                        linkedin="https://www.linkedin.com/in/mustapha-essalih-852901290/"
                         youtube=""
                         intra42="https://profile.intra.42.fr/users/messalih"
                     />

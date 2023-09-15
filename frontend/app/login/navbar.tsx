@@ -35,16 +35,16 @@ export default function Navbar()
                 isDisplayed && <div className="w-full md:block md:w-auto" id="navbar-default">{/* change hidden with button click */}
                 <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border rounded-lg md:flex-row md:space-x-8 md:mt-0 md:border-0 border-gray-700">
                     <li>
-                    <a href={`http://${process.env.NEXT_PUBLIC_FRONT}:3001`}
-                        className="block py-2 pl-3 pr-4 bg-blue-700 rounded md:bg-transparent md:p-0 text-white md:text-blue-500" aria-current="page">Home</a>
+                    <Link href={`http://${process.env.NEXT_PUBLIC_FRONT}:3001`}
+                        className="block py-2 pl-3 pr-4 bg-blue-700 rounded md:bg-transparent md:p-0 text-white md:text-blue-500" aria-current="page">Home</Link>
                     </li>
                     <li>
-                    <a href="#"
-                        className="block py-2 pl-3 pr-4 rounded md:border-0 md:p-0 text-white md:hover:text-blue-500 hover:bg-gray-700 hover:text-white md:hover:bg-transparent">About</a>
+                    <Link href="#"
+                        className="block py-2 pl-3 pr-4 rounded md:border-0 md:p-0 text-white md:hover:text-blue-500 hover:bg-gray-700 hover:text-white md:hover:bg-transparent">About</Link>
                     </li>
                     <li>
-                    <a href={`http://${process.env.NEXT_PUBLIC_FRONT}:3001/contact`}
-                        className="block py-2 pl-3 pr-4 rounded md:border-0 md:p-0 text-white md:hover:text-blue-500 hover:bg-gray-700 hover:text-white md:hover:bg-transparent">Contact</a>
+                    <Link href={`http://${process.env.NEXT_PUBLIC_FRONT}:3001/contact`}
+                        className="block py-2 pl-3 pr-4 rounded md:border-0 md:p-0 text-white md:hover:text-blue-500 hover:bg-gray-700 hover:text-white md:hover:bg-transparent">Contact</Link>
                     </li>
                 </ul>
             </div>
