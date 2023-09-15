@@ -34,7 +34,8 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
     }
 
 	async handleDisconnect(socket: Socket) {///delete room when someone disconnected
-		console.log(this.connectedUsers.find(x => x.socket === socket ).id ,' : has disconnected from game socket')//
+		try {console.log(this.connectedUsers.find(x => x.socket === socket ).id ,' : has disconnected from game socket')}
+		catch(err){console.log("unknown disconnected !!");}
 		try {
 			const room = this.rooms.find(x => x.player1.socket === socket || x.player2.socket === socket);
 			if (room.player1.gameGoing === true || room.player2.gameGoing === true)
@@ -70,7 +71,6 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	async update(room: roomT) {
 		if (room.player1.ball.x - room.ballDynamics.radius < -20)//
 		{
-			console.log('score1');
 			room.player2.score += 1;
 			room.player2.height = room.canvas.height / 4;
 			room.player1.height = room.canvas.height / 4;
@@ -206,7 +206,6 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	}
 
 	async createGameRoom() {
-		console.log('start game');
 		const roomId = randomUUID();
 		const ballDynamics = new Ball();
 		const player1 = this.gameQueue[0];
@@ -359,7 +358,6 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 		const player = new Player(socket, undefined);
 		player.setData(user.id, user.profilePic, user.nickname);
 		if (!data.against || data.against === 'undefined') {
-			console.log("normal game");
 			this.gameQueue.push({socket, user: player});
 			if (this.gameQueue.length < 2 || this.connectedUsers.length < 2)
 				return ;
@@ -420,7 +418,6 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 				})
 			}
 			else if (special === 'dwarf') {
-				console.log('apply for player1');
 				room.player2.height = room.canvas.height / 10;
 				this.server.to(room.roomId).emit('activate-special', {
 					type: room.specials.getSpecial()
@@ -441,7 +438,6 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 				})
 			}
 			else if (special === 'dwarf') {
-				console.log('apply for player2');
 				room.player1.height = room.canvas.height / 10;
 				this.server.to(room.roomId).emit('activate-special', {
 					type: room.specials.getSpecial()
