@@ -65,7 +65,7 @@ export default function Login()
                     <AuthButton src="images/facebook.png" alt="facebook" link=""/>
                 </div>
             </div>
-            <script src="../script.js" />
+            <Script src="../script.js" />
         </main>
     );
 }

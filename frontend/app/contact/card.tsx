@@ -36,7 +36,7 @@ export default function Card(props: {n : number, fullName: string, github: strin
     return (
         <div className="book bg-darken-100 w-full h-full">
             <div className='flex flex-col gap-4 w-[50%]'>
-                <h1 className='font-Shantell text-blueStrong'>I'm at :</h1>
+                <h1 className='font-Shantell text-blueStrong'>I&rsquo;m at :</h1>
                 <div className='grid grid-cols-2 gap-6 justify-items-center place-items-center'>
                     {
                         props.github !== "" &&

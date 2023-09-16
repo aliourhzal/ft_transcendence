@@ -1,6 +1,6 @@
 'use client'
 
-import Input from '@mui/joy/Input';
+import Script from 'next/script'
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import Button from '@mui/joy/Button';
 import { useRef, useState } from 'react';
@@ -53,7 +53,7 @@ export default function TwoFa()
 					</Button>
 				</div>
 			</div>
-			<script src="../script.js" />
+			<Script src="../script.js" />
 		</div>
 	);
 }

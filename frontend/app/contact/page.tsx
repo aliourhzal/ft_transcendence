@@ -19,7 +19,7 @@ export default function About()
 
             <div className="container w-full flex justify-center">
                 <h1 className="text-whiteSmoke text-5xl">
-                    I'm {' '}
+                    I&#39;m {' '}
                     <span className="text-blueStrong font-medium">
                         {text}
                     </span>
