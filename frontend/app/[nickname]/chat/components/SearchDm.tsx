@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Popup from './Popup'
-import { Context, gimmeRandom } from '../page'
+import Context, { gimmeRandom } from './Context'
 import Search from './search'
 import { Avatar } from '@nextui-org/react'
 import axios from 'axios'

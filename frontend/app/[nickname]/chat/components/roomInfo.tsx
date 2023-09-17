@@ -7,7 +7,7 @@ import { FiEdit3 } from "react-icons/Fi";
 import { UniversalData } from '../../../contexts/UniversalData';
 import { Avatar } from '@nextui-org/react';
 import NewRoomUsers from './NewRoomUsers';
-import { Context, gimmeRandom } from '../page';
+import Context, { gimmeRandom } from './Context';
 import SocketComponent from './SocketComponent';
 import EditRoom from './EditRoom';
 import RoomMumbers from './RoomMumbers';

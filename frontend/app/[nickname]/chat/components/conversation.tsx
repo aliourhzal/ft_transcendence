@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Context } from '../page'
+import Context from './Context'
 import ChatBox from './ChatBox'
 import RoomInfo from './roomInfo'
 import {Avatar} from '@nextui-org/react'

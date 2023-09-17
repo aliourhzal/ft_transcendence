@@ -1,7 +1,8 @@
 import { useContext, useEffect, useState } from "react"
-import { Context, getUsersInfo, setDmUsers } from '../page'
+
 import AddedUsersForm from "./addedUsersForm"
 import Popup from "./Popup"
+import Context, { getUsersInfo, setDmUsers } from "./Context"
 
 interface RoomFormProps {
     showForm: boolean,

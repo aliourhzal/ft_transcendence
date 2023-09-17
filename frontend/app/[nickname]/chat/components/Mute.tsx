@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { Context } from '../page'
+import  Context  from './Context'
 import { BiVolumeFull, BiVolumeMute } from 'react-icons/bi'
 
 interface MuteProps {

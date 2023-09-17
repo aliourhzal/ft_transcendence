@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from 'react'
 import { Socket } from 'socket.io-client'
-import { Context, Room } from '../page'
+import { Room } from '../page'
+import Context from './Context'
 
 interface SocketComponentProps {
   setRooms: any

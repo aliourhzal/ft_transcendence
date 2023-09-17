@@ -1,5 +1,5 @@
 import React, { useContext } from "react"
-import { Context, gimmeRandom } from "../page"
+import Context, { gimmeRandom } from "./Context"
 import Link from "next/link"
 
 interface SelfChatBoxProps {

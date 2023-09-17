@@ -1,5 +1,4 @@
 import React from 'react'
-import { gimmeRandom } from '../page'
 
 interface BotChatBoxProps {
     msg: string

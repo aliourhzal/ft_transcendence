@@ -4,7 +4,7 @@ import { Avatar } from '@nextui-org/react'
 import { BiConversation } from 'react-icons/bi'
 import { FaRegUser } from 'react-icons/fa'
 import { PiGameControllerBold } from 'react-icons/pi'
-import { Context } from '../page'
+import Context from './Context'
 import { useRouter } from 'next/navigation'
 
 interface UserInfoProps {

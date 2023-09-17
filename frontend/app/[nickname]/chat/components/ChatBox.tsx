@@ -1,6 +1,5 @@
 import React, { useContext, useEffect } from 'react'
-import user, { Context, gimmeRandom } from '../page'
-import { Socket } from 'socket.io-client'
+import Context, { gimmeRandom } from './Context'
 import SelfChatBox from './selfChatBox'
 import OthersChatBox from './othersChatBox'
 import BotChatBox from './BotChatBox'

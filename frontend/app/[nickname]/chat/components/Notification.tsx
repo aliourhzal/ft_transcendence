@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { _Notification, gimmeRandom } from '../page'
+import { _Notification } from '../page'
+import { gimmeRandom } from './Context'
 import {ImCheckmark} from 'react-icons/Im'
 import { GiCrossMark } from 'react-icons/gi'
 

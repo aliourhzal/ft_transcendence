@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Context } from '../page'
+import Context from './Context'
 
 const AlertMsgDown = () => {
 

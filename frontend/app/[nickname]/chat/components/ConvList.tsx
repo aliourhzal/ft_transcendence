@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react"
-import { Context, conversation, getUsersInfo, gimmeRandom } from "../page"
+import { conversation } from "../page"
+import Context, { gimmeRandom, getUsersInfo } from "./Context"
 import ConvBox from "./ConvBox"
 import Search from "./search"
 import { AiOutlineUsergroupAdd } from "react-icons/Ai"

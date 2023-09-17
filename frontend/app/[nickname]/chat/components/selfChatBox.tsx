@@ -1,5 +1,5 @@
 import React from "react"
-import { gimmeRandom } from "../page"
+import { gimmeRandom } from "./Context"
 
 interface SelfChatBoxProps {
     user: any,

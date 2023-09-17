@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { gimmeRandom } from '../page'
+import { gimmeRandom } from './Context'
 import Search from './search'
 import EmojiPicker from 'emoji-picker-react';
 import * as emoji from 'node-emoji'
