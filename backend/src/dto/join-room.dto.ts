@@ -13,9 +13,5 @@ export class JoinRoomDto {
     @IsString()
     @IsOptional() 
     password?: string;
-     
-    // @IsNotEmpty()
-    // @IsString() 
-    // nickname:string;
 }
  

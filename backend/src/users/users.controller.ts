@@ -24,6 +24,30 @@ export class UsersController{
 		return await this.usersService.fetchUserByNickname(nickname);
 	}
 
+	@UseGuards(AuthGuard('jwt'))
+	@Get('users')
+	async getUsers(@Req() request: any) {
+		return await this.usersService.getUsers();
+	}
+
+	@UseGuards(AuthGuard('jwt'))
+	@Post('userStatus')
+	async getUserStatus(@Req() request: Request , @Body() body, @Res() res: Response) {
+		const status =  await this.usersService.getUserStatus(body.userId)
+		if (!status)
+			throw new Error("failed to retreive user status");
+		return res.status(200).send(status);
+	}
+
+	@UseGuards(AuthGuard('jwt'))
+	@Post('blockedUsers')
+	async getBlockedUsers(@Req() request: Request , @Body() body, @Res() res: Response) {
+		const users =  await this.usersService.getBlockedUsers(body.userId)
+		if (!users)
+			throw new Error("failed to retreive blocked users");
+		return res.status(200).send(users);
+	}
+
 	// this endpoint is to be called when want to change the user avatar
 	@UseGuards(AuthGuard('jwt'))
 	@Put('profile/avatar')

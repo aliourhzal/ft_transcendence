@@ -4,22 +4,28 @@ import { io } from "socket.io-client";
 import { useEffect, useState, createContext, useContext, useRef } from 'react';
 import Conversation from './components/conversation';
 import RoomForm from './components/createRoom';
-import { userDataContext } from "../../contexts/UniversalData";
-import { getCookie } from "../layout"
+import { userDataContext } from "../../contexts/UniversalData"
+import { getCookie } from "../layout";
 import ConvList from "./components/ConvList";
 import JoinRoomForm from "./components/joinRoom";
 import ButtomButtons from "./components/ButtomButtons";
 import SearchDm from "./components/SearchDm";
 import Notification from "./components/Notification";
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useCookies } from "react-cookie";
 import "./style.css"
+import UserInfo from "./components/UserInfo";
+import MyAlert from "./components/MyAlert";
+import axios from "axios";
+import { setRef } from "@mui/material";
 
 export interface conversation {
 	readonly name: string,
 	readonly photo: string,
-	readonly lastmsg: string, 
+	readonly cover?: string
+	readonly lastmsg: {userId: string, msg:string}, 
 	readonly id: number,
+	readonly pending?: boolean
 }
 
 export const Context = createContext<any>(undefined)
@@ -30,11 +36,11 @@ export const gimmeRandom = () => {
 };
 
 export interface Room {
-	msgs: {user:string, msg:string}[],
+	msgs: {userId:string, msg:string}[],
 	id: string,
 	name: string,
 	type: string,
-	lastmsg: string,
+	lastmsg: {userId: string, msg: string},
 	photo?: string,
 	users: {
 		id: string,
@@ -42,9 +48,11 @@ export interface Room {
 		firstName: string,
 		lastName: string,
 		photo?: string,
+		cover?: string,
 		type: "OWNER"| "ADMIN" | "USER",
 		isMuted: string
-	}[]
+	}[],
+	pending: boolean
 }
 
 export const getUsersInfo = (users) => {
@@ -54,10 +62,10 @@ export const getUsersInfo = (users) => {
 		  firstName: string,
 		  lastName: string,
 		  photo?: string,
+		  cover?: string,
 		  type: "OWNER"| "ADMIN" | "USER",
 		  isMuted: string
 	  }[] = []
-	// console.log(users)
 	users.map( (user) => {
 		_users.push(
 			{
@@ -66,6 +74,7 @@ export const getUsersInfo = (users) => {
 			firstName: user.user.firstName,
 			lastName: user.user.lastName,
 			photo: user.user.profilePic,
+			cover: user.user.coverPic,
 			type: user.userType,
 			isMuted: user.isMuted,
 			}
@@ -81,11 +90,11 @@ export const setDmUsers = (users) => {
 		  nickName: string,
 		  firstName: string,
 		  lastName: string,
-		  photo: string | undefined,
+		  photo?: string,
+		  cover?: string,
 		  type: "OWNER"| "ADMIN" | "USER",
 		  isMuted: string
 	  }[] = []
-	// console.log(users)
 	users.map( (user) => {
 		_users.push(
 			{
@@ -94,6 +103,7 @@ export const setDmUsers = (users) => {
 			firstName: user.firstName,
 			lastName: user.lastName,
 			photo: user.profilePic,
+			cover: user.coverPic,
 			type: 'USER',
 			isMuted: 'UNMUTED',
 			}
@@ -116,16 +126,44 @@ export interface _Notification {
 	type: string
 }
 
-let allUsers: any[] = []
-
-socket.on('all-users', (res) => {allUsers = res.allUsers; console.log(allUsers)})
+const getBlockedUsers = async (userId: string, setter: any) => {
+	try {
+		await axios.post('http://127.0.0.1:3000/users/blockedUsers', {userId: userId}, {withCredentials: true}).then(
+			res => {setter(res.data)}
+		)
+	} catch (error) {
+		alert(error)
+	}
+}
 
 export default function Chat() {
-	
-	const [cookies, setCookie, removeCookie] = useCookies();
-	// const [new] = useState()
 
-	useEffect ( () => {
+	const router = useRouter()
+	// alert('')
+	const [cookies, setCookie, removeCookie] = useCookies();
+	
+	const searchParams = useSearchParams();
+	
+	const [refresh, setRefresh] = useState(false)
+	
+	const [blockedUsers, setBlockedUsers] = useState([])
+
+	useEffect( () => {
+		console.log('test')
+		const dmId = searchParams.get('id');
+		if (dmId)
+			socket.emit('start-dm', {reciverUserId: dmId})
+		socket.emit('get-rooms', null)
+		// socket.on('all-blocked-users', (res) => {console.log(res); setBlockedUsers(res.allUsersBlockedByMe)})
+		getBlockedUsers(userData.id, setBlockedUsers)
+		socket.on('blocked-user', (res) => {console.log(res); setBlockedUsers(old => [...old, res.blockedUser.blockedUser])})
+		socket.on('unblocked-user', (res) => {console.log(res); setBlockedUsers((_users: any[]) => {
+			_users.splice(_users.indexOf(_users.find(o => o.id === res.unblockedUser.unblockedUser.id)), 1)
+			return _users
+		}); setRefresh(old => !old)})
+	}, [])
+
+	// useEffect ( () => {
 		// setInterval(() => {
 		// 	console.log("---->", cookies.access_token)
 		// }, 5000);
@@ -137,29 +175,34 @@ export default function Chat() {
 		// 	const router = useRouter()
 		// 	router.push('/')
 		// }
-	}, [cookies.access_token])
+	// }, [cookies.access_token])
 
 	const ref = useRef(null);
+	const msgInputRef = useRef(null);
 
 	const userData = useContext(userDataContext);
 
-	const [msg_sent, set_msg_sent] = useState<1 | 2 | undefined>(undefined)
 	const [room_created, set_room_created] = useState(false)
 
 	const [rooms, setRooms] = useState<Room[]>([])
 
-	const [chatBoxMessages, setChatBoxMessages] = useState<{user:string, msg:string, roomName?: string, id?:string}[]>([])
+	const [chatBoxMessages, setChatBoxMessages] = useState<{userId:string, msg:string, roomId?: string, id?:string}[]>([])
 
 	const [showForm, setShowForm] = useState(false)
 	const [showJoinForm, setShowJoinForm] = useState(false)
 	
 	const [showConv, setShowConv] = useState(false)
 
+	const [showUserInfos, setShowUserInfos] = useState(false)
+	const [userInfoNick, setUserInfoNick] = useState('')
+	const [userInfoId, setUserInfoId] = useState('')
+
 	const [activeUserConv, setActiveUserConv] = useState<conversation | undefined>({
 		name: '.',
 		photo: '',
-		lastmsg: '', 
-		id: gimmeRandom(),
+		cover: '',
+		lastmsg: {userId: '', msg: ''}, 
+		id: 0,
 	})
 
 	const [showSearchUsersForm, setShowSearchUsersForm] = useState(false)
@@ -169,12 +212,6 @@ export default function Chat() {
 	const [convs, setConvs] = useState<conversation[]>([])
 
 	const [notify, setNotify] = useState(false)
-
-	// const [new_msg_notif, set_new_msg_notif] = useState({state:false, name:''})
-	// const notify_conv_msg = (state, name) => {
-	// 	set_new_msg_notif({state, name})
-	// 	console.log(new_msg_notif)
-	// }
 
 	const [notifications, setNotifications] = useState<_Notification[]>([])
 	const [newNotif, setNewNotif] = useState(false)
@@ -197,23 +234,72 @@ export default function Chat() {
         lastChildElement?.scrollIntoView({ behavior: 'smooth', block: 'end' });
     };
 
+	const [showAlert, setShowAlert] = useState(false)
+	const [alertText, setAlertText] = useState('')
+
+	const [deviceType, setDeviceType] = useState('normal')
+    useEffect( () => {
+      typeof window != 'undefined' ? (window.innerWidth <= 970 ? setDeviceType('small') : setDeviceType('normal')) : setDeviceType('normal')
+      typeof window != 'undefined' ? window.onresize = () => {
+        if (window.innerWidth <= 970)
+          setDeviceType('small')
+        else
+          setDeviceType('normal')
+      } : setDeviceType('normal')
+
+    } , [])
+
+	useEffect( () => {
+		document.addEventListener('keydown', (e) => {
+			if (e.key === "Escape") {
+				setShowConv(false)
+				setActiveUserConv({
+					name: '.',
+					photo: '',
+					cover: '',
+					lastmsg: {userId: '', msg: ''}, 
+					id: 0,
+				})
+				setChatBoxMessages([])
+			}
+		});
+	}, [])
+
+	const internalError = (text:string) => {
+		setAlertText(text)
+		setShowAlert(true)
+		setTimeout(() => {
+			router.refresh()
+			return clearTimeout
+		}, 1000)
+	}
+
+	if (!getCookie('access_token')) {
+		document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+		const router = useRouter()
+		router.push('/')
+	}
+
 	return (
-		<main className='scrollbar-none select-none h-full w-full'>
-			<Notification newNotif={newNotif} setNewNotif={setNewNotif} notifications={notifications} notify={notify} setNotify={setNotify}/>
-			<Context.Provider value={{alertNewMessage, setAlertNewMessage, ref, showConv, setShowConv, activeUserConv, setActiveUserConv, socket,
-				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm, msg_sent, set_msg_sent,
+		<main className='select-none h-full w-full relative'>
+			{showAlert && <MyAlert showAlert={showAlert} setShowAlert={setShowAlert} text={alertText}/>}
+			{!(showConv && deviceType != 'normal') && <Notification newNotif={newNotif} setNewNotif={setNewNotif} notifications={notifications} notify={notify} setNotify={setNotify}/>}
+			<Context.Provider value={{internalError, setAlertNewMessage, ref, showConv, setShowConv, socket,
+				showForm, setShowForm, setChatBoxMessages, chatBoxMessages, userData, showJoinForm, setShowJoinForm,
 				set_room_created, room_created, rooms, setRooms, showSearchUsersForm, setShowSearchUsersForm, scrollToBottom, _notification,
-				convs, setConvs}}>
+				convs, setConvs, setShowUserInfos, setUserInfoNick, msgInputRef, setRefresh, setUserInfoId}}>
 				<div id='main' className="flex items-center gap-[3vh] flex-grow h-full overflow-y-auto bg-darken-200">
-					<div className="flex flex-col items-center justify-center w-[100%] text-sm lg:text-base md:relative md:w-[calc(90%/2)] h-[90vh] text-center">
-						<ConvList />
+					<div className={"flex flex-col items-center justify-center text-sm lg:text-base h-[90vh] text-center " +
+					(deviceType === 'normal' ? 'w-[calc(90%/2)]' : 'w-[100%]')}>
+						<ConvList activeUserConv={activeUserConv} setActiveUserConv={setActiveUserConv} />
 						<ButtomButtons />
 					</div>
-					<Conversation />
+					<Conversation setAlertText={setAlertText} setShowAlert={setShowAlert} activeUserConv={activeUserConv} deviceType={deviceType} setShowConv={setShowConv} showConv={showConv} setActiveUserConv={setActiveUserConv} />
 				</div>
-				<RoomForm />
+				<RoomForm setShowAlert={setShowAlert} setAlertText={setAlertText} setConvs={setConvs} set_room_created={set_room_created} showForm={showForm} setShowForm={setShowForm} />
 				<JoinRoomForm />
-				<SearchDm currentUsers={ allUsers } />
+				{ showSearchUsersForm && <SearchDm setRefresh={setRefresh} blockedUsers={blockedUsers} setShowSearchUsersForm={setShowSearchUsersForm} showSearchUsersForm={showSearchUsersForm} setActiveUserConv={ setActiveUserConv } />}
+				<UserInfo activeUserConv={activeUserConv} showUserInfos={showUserInfos} setShowUserInfos={setShowUserInfos} nickname={userInfoNick} id={userInfoId} setActiveUserConv={setActiveUserConv} setChatBoxMessages={setChatBoxMessages} setShowConv={setShowConv}/>
 			</Context.Provider>
 		</main>
 	)

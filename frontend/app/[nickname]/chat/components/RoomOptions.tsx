@@ -1,24 +1,26 @@
 import React, { useContext, useState } from 'react'
-import { BiConversation, BiUserMinus, BiUserX, BiVolumeMute } from 'react-icons/Bi'
-import { TbUserDown, TbUserUp } from 'react-icons/Tb'
+import { BiConversation, BiUserMinus } from 'react-icons/bi'
+import { TbUserDown, TbUserUp } from 'react-icons/tb'
 import { Context } from '../page'
 import Ban from './Ban'
 import Mute from './Mute'
+import { FaRegUser } from 'react-icons/fa'
 
 interface RoomOptionsProps {
     info : any,
     user: any,
     isAdmin: any,
     isOwner: any,
+    className: string
 }
 
-const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner } ) => {
+const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner, className } ) => {
 
     const {socket} = useContext(Context)
 
     const promoteUser = async (id) => { socket.emit('user-promotion', {roomName:info.room.name, newAdminId:id}) }
 
-    const demoteteUser = async (id) => { socket.emit('user-demote', {roomName:info.room.name, dmotedUserId:id}) }
+    const demoteUser = async (id) => { socket.emit('user-demote', {roomName:info.room.name, dmotedUserId:id}) }
 
     const kickUser = async (id) => { socket.emit('kick-user', {roomName:info.room.name, kickedUserId:id}) }
 
@@ -63,22 +65,40 @@ const RoomOptions:React.FC<RoomOptionsProps> = ( { info, user, isAdmin, isOwner 
         socket.emit('unmute-user', {roomName:info.room.name, unmutedUserId:id})
     }
 
+const OptionsIcon = ( { icon } ) => {
+    return (
+        
+        <div className='transition-all cursor-pointer w-11 text-whiteSmoke h-8 rounded-2xl flex items-center justify-center hover:scale-110 hover:text-white bg-darken-200'>
+            {icon === 'demote' && <TbUserDown aria-label='demote' cursor="pointer" size={25} onClick={() => {demoteUser(user.id)}}/>}
+            {icon === 'promote' && <TbUserUp aria-label='promote' cursor="pointer" size={25} onClick={() => {promoteUser(user.id)}}/>}
+            {icon === 'kick' && <BiUserMinus strokeWidth={0} aria-label='kick' cursor="pointer" size={30} onClick={() => {kickUser(user.id)}}/>}
+            {icon === 'ban' && <Ban banUser={banUser} user={user}/>}
+            {icon === 'mute' && <Mute muteUser={muteUser} unMuteUser={unMuteUser} user={user} _state={info.room.users.find(o => o.nickName === user.nickName).isMuted} />}
+        </div>
+    )
+}
+
+
   return (
-    <div className='flex items-center gap-2'>
+    <div className={`${className} justify-start`}>
         {(isAdmin(info.room.users.find(o => o.nickName === info.userData.nickname)) && user.nickName != info.userData.nickname) &&
             !isOwner(info.room.users.find(o => o.nickName === user.nickName)) &&
             <>
+            <div className='m-2 flex items-center justify-center gap-4'>
                 { isAdmin(info.room.users.find(o => o.nickName === user.nickName)) ? isOwner(info.room.users.find(o => o.nickName === info.userData.nickname)) &&
-                    <TbUserDown className='hover:text-whiteSmoke text-blueStrong' title='demote' aria-label='demote' cursor="pointer" size={20} onClick={() => {demoteteUser(user.id)}}/>
+                    <div className='flex flex-col items-center justify-center'><OptionsIcon icon={'demote'} />
+                    <span className='bg-darken-300 text-whiteSmoke text-xs font-bold rounded-xl mt-1 w-16 flex items-center justify-center'>demote</span></div>
                     :
-                    isOwner(info.room.users.find(o => o.nickName === info.userData.nickname)) && <TbUserUp className='hover:text-whiteSmoke text-blueStrong' title='promote' strokeWidth={2.3} aria-label='promote' cursor="pointer" size={25} onClick={() => {promoteUser(user.id)}}/>
+                    isOwner(info.room.users.find(o => o.nickName === info.userData.nickname)) &&
+                    <div className='flex flex-col items-center justify-center'><OptionsIcon icon={'promote'} /><span className='bg-darken-300 text-whiteSmoke text-xs font-bold rounded-xl mt-1 w-16 flex items-center justify-center'>promote</span></div>
                 }
-                <BiUserMinus className='hover:text-whiteSmoke text-blueStrong' title='kick' strokeWidth={0} aria-label='kick' cursor="pointer" size={30} onClick={() => {kickUser(user.id)}}/>
-                <Ban banUser={banUser} user={user}/>
-                <Mute muteUser={muteUser} unMuteUser={unMuteUser} user={user} _state={info.room.users.find(o => o.nickName === user.nickName).isMuted} />
+                <div className='flex flex-col items-center justify-center'><OptionsIcon icon={'kick'} /><span className='bg-darken-300 text-whiteSmoke text-xs font-bold rounded-xl mt-1 w-16 flex items-center justify-center'>kick</span></div>
+                <div className='flex flex-col items-center justify-center'><OptionsIcon icon={'ban'} /><span className='bg-darken-300 text-whiteSmoke text-xs font-bold rounded-xl mt-1 w-16 flex items-center justify-center'>ban</span></div>
+                <div className='flex flex-col items-center justify-center'><OptionsIcon icon={'mute'} /><span className='bg-darken-300 text-whiteSmoke text-xs font-bold rounded-xl mt-1 w-16 flex items-center justify-center'>{info.room.users.find(o => o.nickName === user.nickName).isMuted === 'UNMUTED' ? 'mute' : 'unmute'}</span></div>
+            </div>
             </>}
-        { user.nickName != info.userData.nickname &&
-        <BiConversation className='hover:text-whiteSmoke text-blueStrong' title='DM' aria-label='DM' cursor="pointer" size={25}/>}
+        {/* { user.nickName != info.userData.nickname &&
+        <div className='flex gap-2 m-2'> <OptionsIcon icon={'profile'} /> <OptionsIcon icon={'dm'} /> </div>} */}
     </div>
   )
 }

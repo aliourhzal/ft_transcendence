@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
-import { BiVolumeFull, BiVolumeMute } from 'react-icons/Bi'
 import { Context } from '../page'
+import { BiVolumeFull, BiVolumeMute } from 'react-icons/bi'
 
 interface MuteProps {
     muteUser: any,
@@ -18,7 +18,7 @@ const Mute:React.FC<MuteProps> = ( { muteUser, unMuteUser, user, _state } ) => {
 
   return (
      _state === 'UNMUTED' ? <>
-    <BiVolumeMute className='hover:text-whiteSmoke text-blueStrong' title='mute' aria-label='mute' cursor="pointer" size={25} onClick={ () => { setShowDuration(old => !old) }}/>
+    <BiVolumeMute aria-label='mute' cursor="pointer" size={25} onClick={ () => { setShowDuration(old => !old) }}/>
     {showDuration && 
         <div>
             <select name="banDuration" id="banDuration" onChange={(e) => { setMuteDuration(e.target.value) }}>
@@ -36,7 +36,7 @@ const Mute:React.FC<MuteProps> = ( { muteUser, unMuteUser, user, _state } ) => {
         </div>
     }
     </> :
-    <BiVolumeFull className='hover:text-whiteSmoke text-blueStrong' title='unmute' aria-label='unmute' cursor="pointer" size={25} onClick={() =>{ unMuteUser(user.id) }}/>
+    <BiVolumeFull title='unmute' aria-label='unmute' cursor="pointer" size={25} onClick={() =>{ unMuteUser(user.id) }}/>
   )
 }
 

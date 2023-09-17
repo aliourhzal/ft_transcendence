@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { HttpException, HttpStatus, Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException, StreamableFile } from '@nestjs/common';
 import { Match, PrismaClient, User } from '@prisma/client';
 import { unlinkSync } from 'fs';
 import { extname } from 'path';
@@ -10,12 +10,51 @@ import { UserData } from 'src/utils/userData.interface';
 import { twoFactorAuth } from 'src/QrCode/qr.services';
 import * as achievements from './achievements.json';
 import * as sizeOf from "image-size"
+import { Exclude } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
 	private readonly prisma = new PrismaClient()
 
-    
+	getBlockedUsers = async (userId: string) => {
+		const _blockedUsers = await this.prisma.user.findUnique({
+			where: {
+				id: userId
+			},
+			include: {
+				blockedUsers: true,
+			},
+		});
+		return _blockedUsers.blockedUsers
+	}
+
+	getUserStatus = async (userId: string) => {
+		const user = await this.prisma.user.findUnique({
+			where:{
+				id: userId
+			}
+		})
+		if (!user)
+			throw new InternalServerErrorException('prisma failed to retieve user status form db!!');
+		return user.status
+	}
+
+    async getUsers() {
+		const users = await this.prisma.user.findMany({
+			select: {
+				id: true,
+				profilePic: true,
+				nickname: true,
+				status: true,
+				blockedBy: true
+			}
+			
+		})
+		if (!users)
+			throw new InternalServerErrorException('prisma failed to retieve data form db!!');
+
+		return (users);
+	}
 	// update a user NickName
 	async updateUserNickName(id : string , newNick: string)
 	{

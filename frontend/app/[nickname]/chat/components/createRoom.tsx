@@ -3,9 +3,18 @@ import { Context, getUsersInfo, setDmUsers } from '../page'
 import AddedUsersForm from "./addedUsersForm"
 import Popup from "./Popup"
 
-const RoomForm = () => {
+interface RoomFormProps {
+    showForm: boolean,
+    setShowForm: any,
+    setConvs: any,
+    set_room_created: any,
+    setShowAlert: any,
+    setAlertText: any,
+}
+
+const RoomForm:React.FC<RoomFormProps> = ( { showForm, setShowForm, setConvs, set_room_created, setShowAlert, setAlertText } ) => {
      
-    const {showForm, setShowForm, socket, setConvs, set_room_created, rooms, userData} = useContext(Context)
+    const {socket, rooms, setRooms, userData, _notification} = useContext(Context)
 
     const [roomName, setName] = useState('')
     const [users, setUsers] = useState<string[]>([])
@@ -32,7 +41,6 @@ const RoomForm = () => {
     
     useEffect(() => {
         socket.on('new-room', (res) => {
-            console.log(res)
             if (res.room.roomType === 'DM') {
                 var _name = res.usersInfos.existingUser[0].nickname
                 var _photo = res.usersInfos.existingUser[0].profilePic
@@ -40,18 +48,20 @@ const RoomForm = () => {
                     _name = res.usersInfos.existingUser[1].nickname
                     _photo = res.usersInfos.existingUser[1].profilePic
                 }
-                rooms.unshift({
+                setRooms(_rooms => {_rooms.unshift({
                     name: _name,
-                    lastmsg:'',
+                    lastmsg:{userId: '', msg: ''},
                     msgs: [],
                     id: res.room.id,
                     users: setDmUsers(res.usersInfos.existingUser),
                     type: 'DM',
                     photo: _photo,
-                })
+                }); setConvs([..._rooms]); return _rooms})
+                if (_name != userData.nickname)
+                    _notification(`"${_name}" started a conversation`, "good")
             }
             else {
-                rooms.unshift({
+                setRooms(_rooms => {_rooms.unshift({
                     name: res.room.room.room_name,
                     lastmsg:'welcome to group chat',
                     msgs: [],
@@ -59,15 +69,31 @@ const RoomForm = () => {
                     users: getUsersInfo(res.userInfos),
                     type: res.room.room.roomType,
                     photo: "/images/defaultRoomIcon.png"
-                })
+                }); setConvs([..._rooms]); return _rooms})
+                _notification(`you joined '${res.room.room.room_name}'`, "good")
             }
             set_room_created(old => !old)
-            setConvs([...rooms])
         })
     }, [])
-    
+
+    // const unvalidUsers = () => {
+    //     var _unvalidUsers: string[] = []
+    //     users.map(user => {
+    //         if (!allUsers.find(o => o.nickname === user) || user === userData.nickname)
+    //             _unvalidUsers.push(user)
+    //     })
+    //     return _unvalidUsers
+    // }
+
     const confirmForm = async (e) => {
         e.preventDefault()
+        
+        // const _unvalidUsers = unvalidUsers()
+
+        // if (_unvalidUsers.length) {
+        //     internalError('unvalid users : ' + _unvalidUsers)
+        // }
+
         if (roomName != '' && users.length) {
             hideForm()
             socket.emit('create-room', {roomName:roomName, users:users, type:roomType, password:pass})
@@ -80,9 +106,14 @@ const RoomForm = () => {
     }
     
     const addUser = () => {
-        if (user.trim() != '') {
-            setUsers(old => [...old, user.trim()])
-        }
+        if (user.trim() != '')
+            if (users.length && user)
+                if (users.indexOf(user.trim()) == -1)
+                    setUsers(old => [...old, user.trim()])
+                else
+                    setUser('')
+            else
+                setUsers(old => [...old, user.trim()])
         setUser('')
     }
 
@@ -94,10 +125,6 @@ const RoomForm = () => {
                     <input aria-required='true' autoComplete='off' value={roomName} type="text" name="floating_text" id="floating_text" className="text-gray-300 block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required 
                     onChange={(e) => {setName(e.target.value)}}/>
                     <label htmlFor="floating_text" className="text-xs lg:text-sm peer-focus:font-medium absolute text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Name</label>
-                </div>
-                <div className="relative z-0 w-full mb-6 group">
-                    <input autoComplete='off' type="text" name="floating_desc" id="floating_desc" className="text-gray-300 block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-                    <label htmlFor="floating_desc" className="text-xs lg:text-sm peer-focus:font-medium absolute text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Description</label>
                 </div>
                 <div className="flex relative z-0 w-full mb-6 group">
                     <input formNoValidate autoComplete='off' value={user} type="text" name="user" id="user" className="text-gray-300 text-xs lg:text-base block py-2.5 px-0 w-full bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required 
@@ -129,7 +156,7 @@ const RoomForm = () => {
                 </div>}
 
                 <button type="submit" form="roomform" className="w-auto text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" onClick={confirmForm} disabled={roomName != '' && users.length ? false : true} >Submit</button>
-                    </form>
+            </form>
         </Popup>
     )
 }

@@ -1,29 +1,47 @@
+/* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { AllMessages } from 'src/utils/userData.interface';
+import { RoomsService } from '../rooms/rooms.service';
 // import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class MessagesService 
 {
 
-    // constructor(private prisma:PrismaService){}
+    constructor(private roomService:RoomsService){}
     private readonly prisma = new PrismaClient();
     
-    async getAllMessagesofRoom(roomId : string)
+    async getAllMessagesofRoom(roomId : string , userId : string)
     {
         const allMessages: AllMessages[] = [];
+
+        const allUsersBlockedByMe = (await this.roomService.allUsersBlockedByMe(userId)).blockedUsers;
+            
+        const allUsersWhoBlockMe = await this.roomService.allUsersWhoBlockMe(  userId);
+    
+        let allBlockedUsers =   allUsersWhoBlockMe.map((item) => item.id);
         
+        allBlockedUsers.push(...allUsersBlockedByMe.map((item) => item.id))
+
         const messages = await this.prisma.room.findUnique({
-            where: { id : roomId },
+            where: { id: roomId },
             include: {
-              messages: true,
+              messages: {
+                where: {
+                  NOT: {
+                    userId: {
+                      in: allBlockedUsers,
+                    },
+                  },
+                },
+              },
               users: true,
             },
-        });
+          });
 
         if(messages)
         { 
@@ -31,7 +49,7 @@ export class MessagesService
             for (let i = 0; i < messages.messages.length; i++) {// put them in map or array of obj and return it
                 
                 const msg: AllMessages = {
-                    user: (await this.findUserById(messages.messages[i].userId)).nickname,
+                    userId: (await this.findUserById(messages.messages[i].userId)).id,
                     msg: messages.messages[i].text
                 };
                 allMessages.push(msg);
@@ -82,12 +100,12 @@ export class MessagesService
 
         const userAndText = {userId: rtn.id, msg: rtn.text}
 
-        const username = (await this.findUserById(userId)).nickname;
+        const user = (await this.findUserById(userId)).id;
 
-        if(username)
+        if(user)
         {
             return { 
-                username, 
+                user, 
                 msg: userAndText.msg,
                 idOfMsg:rtn.id
                  

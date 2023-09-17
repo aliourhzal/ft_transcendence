@@ -107,7 +107,6 @@ export class RoomsService
         }
 
         
-         
         return {users};
     }
 
@@ -125,7 +124,10 @@ export class RoomsService
                 {
                     return {error : 'should set password for this protected room.'}
                 }
-                
+                if(password.length < 8)
+                {
+                    return {error : 'should set strong password password (> 8 characters)'}
+                }
                 const room = await this.prisma.room.create({data: {room_name , roomType : roomType_ , password: encodePasswd(password)}});
                  
 
@@ -495,5 +497,96 @@ export class RoomsService
     
         return updatedRoom;
     }
+
+    async  blockUser(blockerUserId: string, blockedUserId: string) 
+    {
+        await this.prisma.user.update({
+          where: { id: blockerUserId },
+          data: { blockedUsers: { connect: { id: blockedUserId } } },
+        });
+      
+        const blockedUser = await this.prisma.user.update({
+          where: { id: blockedUserId },
+          data: { blockedBy: { connect: { id: blockerUserId } } },
+        });
+
+        return { blockedUser}
+      }
+
+      async   isBlocked(blockedUserId: string, blockerUserId: string)
+       {
+        const user = await this.prisma.user.findUnique({
+          where: { id: blockedUserId },
+          select: { blockedBy: { where: { id: blockerUserId } } },
+        });
+      
+        return user; // it return all user blocked
+        }
+
+    async   unblockUser(blockerUserId: string, unblockedUserId: string) {
+        await this.prisma.user.update({
+          where: { id: blockerUserId },
+          data: { blockedUsers: { disconnect: { id: unblockedUserId } } },
+        });
+      
+        const unblockedUser = await this.prisma.user.update({
+          where: { id: unblockedUserId },
+          data: { blockedBy: { disconnect: { id: blockerUserId } } },
+        });
+        return {unblockedUser}
+      }
+
+      async allUsersBlockedByMe(id : string)
+      {
+        return await this.prisma.user.findUnique({
+            where: {
+              id,
+            },
+            include: {
+              blockedUsers: true,
+            },
+          });
+      }
+
+      async allUsersWhoBlockMe(id : string)
+      {
+        return await this.prisma.user.findMany({
+            where: {
+                blockedUsers: {
+                some: {
+                  id,
+                },
+              },
+            },
+          });
+      }
+
+      async   updateRoomToProtected(roomId: string, newPassword: string) {
+
+        const updatedRoom = await this.prisma.room.update({
+          where: {
+            id: roomId,
+          },
+          data: {
+            roomType: 'PROTECTED',
+            password: encodePasswd(newPassword),
+          },
+        });
+      
+        return updatedRoom;
+      }
+
+      async getAllUsersIdInRoom(roomId : string)
+      {
+        const rtn =  await this.prisma.joinedTable.findMany({
+            where: {
+              roomId: roomId,
+            },
+            select: {
+              userId: true,
+            },
+          });
+          return rtn;
+      }
 
 }
