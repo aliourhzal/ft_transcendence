@@ -90,6 +90,7 @@ export default function ProfileLayout({
 			router.push('/')
 		})
 
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 	return (
 		<userDataContext.Provider value={userDataState}>

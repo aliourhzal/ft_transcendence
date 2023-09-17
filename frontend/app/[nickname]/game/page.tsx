@@ -338,7 +338,7 @@ export default function GameLogin()
         return () => {
             gsocket.disconnect();
         }
-    }, [gsocket.connected]);
+    }, [gsocket, selectOpt]);
 
     return(
         <div className=" w-full bg-darken-200 flex items-center justify-center h-full">

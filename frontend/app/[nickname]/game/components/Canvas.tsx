@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Player from "../utils/Player.class";
 import {Ball, Special} from "../utils/Ball.class";
 import { Socket } from "socket.io-client";
@@ -14,7 +14,7 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 	const player = new Player(0, 0, "#2978F2");
 	const com = new Player(0, 0, "#fff");
 	let special = new Special(props.specials);
-	let phoneSize = false;
+	const phoneSize = useRef(false);
 
 	const net = {
 		x : 0,
@@ -84,10 +84,10 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		function drawScore(text: number, x: number, y: number, player: boolean){
 			(n === 3 ? ctx.fillStyle = "#000" : ctx.fillStyle = "#FFF")
 			ctx.font = "75px fantasy";
-			phoneSize && (x = canvas.height / 2);
-			phoneSize && player && (y = - canvas.width / 2 + 90); player
-			phoneSize && !player && (y = - canvas.width / 2 - 50); com
-			if (phoneSize) {
+			phoneSize.current && (x = canvas.height / 2);
+			phoneSize.current && player && (y = - canvas.width / 2 + 90); player
+			phoneSize.current && !player && (y = - canvas.width / 2 - 50); com
+			if (phoneSize.current) {
 				ctx.save();
 				ctx.textAlign = 'center';
 				ctx.rotate(Math.PI / 2);
@@ -210,7 +210,7 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		special.radius = canvas.width * 20 / 800;
 		StartGame(canvas, ctx);
 		if (canvas.height === 337)
-			phoneSize = true;
+			phoneSize.current = true
 		// listening to the mouse
 		canvas.addEventListener("mousemove", getMousePos);
 		
@@ -219,8 +219,8 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			function drawText(text: string, x: number, y: number){
 				(n === 3 ? ctx.fillStyle = "#000" : ctx.fillStyle = "#FFF");
 				ctx.font = "75px fantasy";
-				phoneSize && (x = canvas.height / 2);
-				phoneSize && (y = -canvas.width / 2);
+				phoneSize.current && (x = canvas.height / 2);
+				phoneSize.current && (y = -canvas.width / 2);
 				ctx.textAlign = 'center';
 				if (canvas.height === 337) {
 					ctx.font = "45px fantasy";
@@ -252,9 +252,9 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			ball.setRadius(canvas.width * 10 / 800);
 			special.radius = canvas.width * 20 / 800;
 			if (canvas.height === 337)
-				phoneSize = true;
+				phoneSize.current = true;
 			else
-				phoneSize = false;
+				phoneSize.current = false;
 		});
 		//change player Paddle According to Mouse Position
 		function getMousePos(evt: { clientY: number, clientX: number }){
@@ -336,6 +336,7 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 			player.setPos(0, canvas.height / 2 - player.height / 2);
 			com.setPos(canvas.width - com.width, canvas.height / 2 - player.height / 2);
 		});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
 

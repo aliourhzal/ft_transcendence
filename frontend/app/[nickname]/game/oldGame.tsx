@@ -329,7 +329,7 @@ export default function BotPractice(props:any)
 
     useEffect(() => {
         StartGame(props);
-    }, []);
+    }, [props]);
 
     return (
         <section className="flex w-full h-full items-center bg-darken-200 relative">
