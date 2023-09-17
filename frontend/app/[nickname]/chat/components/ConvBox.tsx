@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { conversation } from '../page'
-import { Context } from '../page'
+import Context from './Context'
 import axios from 'axios'
 import { getCookie } from '../../layout'
 
@@ -38,7 +38,7 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, setActiveUserConv, activeUserCon
     // if (new_msg_notif.name == activeUserConv.name)
     //   notify_conv_msg(false, '')
     try {
-      await axios.post(`http://${process.env.NEXT_PUBLIC_BACK}:3000/rooms/select-room`, {roomId:rooms.find(o => o.name === data.data.name).id}, {
+      await axios.post(`http://${process.env.NEXT_PUBLIC_BACK}:3000/rooms/select-room`, {roomId:rooms.find(o => o.name === data.name).id}, {
         withCredentials: true,
         headers: {
           'Authorization': `Bearer ${getCookie('access_token')}`,
