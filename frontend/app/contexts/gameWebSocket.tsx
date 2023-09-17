@@ -26,7 +26,7 @@ export function WebSocketProvider({ children } : Props)
             socket.disconnect();
         };
     }
-    ,[socket.connected]);
+    ,[]);
 
     return (
       <WebsocketContext.Provider value={Gsocket}>{children}</WebsocketContext.Provider>
