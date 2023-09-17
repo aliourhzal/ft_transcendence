@@ -1,12 +1,8 @@
 import Container from "@/components/UI/ProfileBoxs";
 import { UniversalData, userDataContext } from "../../../contexts/UniversalData";
 import Link from "next/link"
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
-import { HiExternalLink } from "react-icons/hi"
-import { RiPingPongFill } from "react-icons/ri"
-import { RiDeleteBin6Fill } from "react-icons/ri"
-import { BiSolidMessageSquareDots } from "react-icons/Bi"
 
 import Game from "../../game/Game";
 
@@ -18,7 +14,6 @@ export default function FriendCard({user, setPlay}: {
 	const [lvl, progess] = user.level.toString().split('.');
 	const loggedUser = useContext(userDataContext);
 	const socket = useContext(InvitationSocketContext);
-	const loggedUser = useContext(userDataContext);
 	
 	function removeFriend() {
 		socket.emit('delete-friend', user.id);
