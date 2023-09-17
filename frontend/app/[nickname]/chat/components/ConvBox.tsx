@@ -52,7 +52,7 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, setActiveUserConv, activeUserCon
       // alert(error)
       console.log(error)
     }
-    if (data.id != activeUserConv.id)
+    if (data.id != activeUserConv.id && msgInputRef?.current)
       msgInputRef.current.value = ''
     msgInputRef.current?.focus()
     setRefresh(old => !old)
