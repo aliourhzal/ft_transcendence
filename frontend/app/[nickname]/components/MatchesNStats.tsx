@@ -91,6 +91,7 @@ export function MatchHistory(props: any) {
         .catch(e => {
             console.log(e);
         })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return(
@@ -173,7 +174,7 @@ export function GameStats(props) {
             console.log(e);
         })
     }
-    , []);
+    , [props.currentUser, props.data.nickname]);
     console.log(data);
     return (
         <Container>
