@@ -197,7 +197,7 @@ function Effects(props: any)
     );
 }
 
-export function CustomPopUp(props)
+function CustomPopUp(props)
 {
     // const [colors, setC] = useState({
     //     p1: "#2879F2",
