@@ -9,8 +9,6 @@ import FriendsRequests from "./components/FriendsRequest";
 import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 import FriendCard from "./components/FriendCard";
 import { UniversalData, userDataContext } from "../../contexts/UniversalData";
-import { useRouter } from 'next/navigation';
-import Game from '../game/Game';
 
 
 export default function Friends(props: any) {
@@ -74,7 +72,7 @@ export default function Friends(props: any) {
 				return old;
 			});
 		})
-	}, [])
+	}, [friends, socket])
 
 	return (
 		<main className='h-full w-full bg-darken-200 overflow-y-auto relative'>

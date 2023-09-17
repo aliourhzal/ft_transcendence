@@ -35,6 +35,7 @@ export default function ProfileInfo(props: {data: UniversalData, currentUser: bo
 			if (data.nickname === props.data.nickname)
 				setShowSendRequest(false);
 		});
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	return (

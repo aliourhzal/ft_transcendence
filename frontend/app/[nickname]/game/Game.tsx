@@ -41,7 +41,6 @@ export default function Game(props: any)
 		nickname: '',
 		avatar: ''
 	});
-	console.log('hello: ', searchParams.get('id'));
 
 	useEffect(() => {
 		props.socket.emit('GameMode', {against: searchParams.get('id')});
@@ -51,6 +50,7 @@ export default function Game(props: any)
 		return (() => {
 			// props.socket.disconnect();
 		})
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	},[]);
 
 	return (

@@ -25,6 +25,7 @@ export default function FriendsRequests() {
 			setRequestCounter(data.length);
 			setRequestArray(data);
 		})
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	function modalAppearance() {
