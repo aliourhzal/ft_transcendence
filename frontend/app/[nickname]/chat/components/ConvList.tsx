@@ -55,7 +55,6 @@ const ConvList:React.FC<ConvListProps> = ({activeUserConv, setActiveUserConv}) =
   }, [])
   
   const AddUserToRoom = (res) => {
-    console.log(res)
     var _newUser;
     const newusers = []
     res.newUserAdded.users.map(_new => {

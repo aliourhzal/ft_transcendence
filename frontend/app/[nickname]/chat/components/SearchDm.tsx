@@ -73,8 +73,6 @@ const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersF
     setShowConv(true)
   }
 
-  console.log(users[1]?.nickname, "*****", users[1]?.blockedBy)
-
   return (
     <Popup isOpen={showSearchUsersForm} modalAppearance={hide}>
         <h1 className='absolute top-7 text-center text-2xl mb-2 drop-shadow-[0px_0px_5px_rgba(150,150,150,0.7)]'>Search for users</h1>

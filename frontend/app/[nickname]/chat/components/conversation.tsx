@@ -111,7 +111,7 @@ const Conversation:React.FC<ConversationProps> = ( { activeUserConv, deviceType,
                 </div>
 
                 <div className='relative h-[8%] w-[90%] flex items-center justify-center'>
-                    <Emojis setShowEmojies={setShowEmojis} className={'transition-all duration-300 ' + (showEmojis ? 'visible w-64 h-64 bg-darken-300 rounded-xl' : ' hidden')} inputRef={msgInputRef} />
+                    <Emojis showEmojies={showEmojis} setShowEmojies={setShowEmojis} className={'transition-all duration-300 ' + (showEmojis ? 'visible w-64 h-64 bg-darken-300 rounded-xl' : ' hidden')} inputRef={msgInputRef} />
                     <div className='w-full h-18 rounded-[100px] bg-zinc-800 flex items-center justify-between'>
                         <div className='transition-all flex justify-center items-center text-whiteSmoke ml-3 rounded-full cursor-pointer hover:scale-110 hover:text-slate-400' onClick={() => {setShowEmojis(old => !old); msgInputRef.current.focus()}}>
                             <GrEmoji size={30}/>

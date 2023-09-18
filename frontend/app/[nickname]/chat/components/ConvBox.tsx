@@ -17,45 +17,44 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, setActiveUserConv, activeUserCon
   const {rooms, setShowConv, setChatBoxMessages, msgInputRef, userData, setRefresh} = useContext(Context)
 
   const handleClick = async () => {
-    if (data.id == activeUserConv.id) {
-      setShowConv(false)
-      setActiveUserConv({
-        name: '.',
-        photo: '',
-        lastmsg: {userId: '', msg: ''}, 
-        id: 0,
-      })
-      convsFilter('')
-      setChatBoxMessages([])
-      return ;
-    }
-  
-    if (rooms.find(o => o.id === data.id)) rooms.find(o => o.id === data.id).pending = false
-  
-    setActiveUserConv(data)
-    setShowConv(true)
-    convsFilter('')
-    // if (new_msg_notif.name == activeUserConv.name)
-    //   notify_conv_msg(false, '')
     try {
-      await axios.post(`http://${process.env.NEXT_PUBLIC_BACK}:3000/rooms/select-room`, {roomId:rooms.find(o => o.name === data.name).id}, {
-        withCredentials: true,
-        headers: {
-          'Authorization': `Bearer ${getCookie('access_token')}`,
-          'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
+      if (data.id == activeUserConv.id) {
+        setShowConv(false)
+        setActiveUserConv({
+          name: '.',
+          photo: '',
+          lastmsg: {userId: '', msg: ''}, 
+          id: 0,
         })
-      .then((res) => {
-        console.log("*********", res)
-        setChatBoxMessages(res.data.msg)
-      })
+        convsFilter('')
+        setChatBoxMessages([])
+        return ;
+      }
+    
+      if (rooms.find(o => o.id === data.id)) rooms.find(o => o.id === data.id).pending = false
+    
+      setActiveUserConv(data)
+      setShowConv(true)
+      convsFilter('')
+      // if (new_msg_notif.name == activeUserConv.name)
+      //   notify_conv_msg(false, '')
+        await axios.post(`http://${process.env.NEXT_PUBLIC_BACK}:3000/rooms/select-room`, {roomId:rooms.find(o => o.name === data.name).id}, {
+          withCredentials: true,
+          headers: {
+            'Authorization': `Bearer ${getCookie('access_token')}`,
+            'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
+          })
+        .then((res) => {
+          setChatBoxMessages(res.data.msg)
+        })
+        if (data.id != activeUserConv.id && msgInputRef?.current)
+        msgInputRef.current.value = ''
+      msgInputRef.current?.focus()
+      setRefresh(old => !old)
     } catch(error) {
       // alert(error)
       console.log(error)
     }
-    if (data.id != activeUserConv.id && msgInputRef?.current)
-      msgInputRef.current.value = ''
-    msgInputRef.current?.focus()
-    setRefresh(old => !old)
     // const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
   }
   
@@ -65,8 +64,8 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, setActiveUserConv, activeUserCon
   const [userStatus, setUserStatus] = useState<"online" | "offline" | undefined>(undefined);
 
   const getStatus = async () => {
-    const userId = rooms.find(o => o.id === data.id)?.users.find(o => o.nickName === data.name)?.id
     try {
+      const userId = rooms.find(o => o.id === data.id)?.users.find(o => o.nickName === data.name)?.id
       setUserStatus((await axios.post('http://127.0.0.1:3000/users/userStatus', {userId}, {withCredentials: true})).data)
     } catch (error) {
       console.log(error)
