@@ -15,7 +15,7 @@ interface RoomFormProps {
 
 const RoomForm:React.FC<RoomFormProps> = ( { showForm, setShowForm, setConvs, set_room_created, setShowAlert, setAlertText } ) => {
      
-    const {socket, rooms, setRooms, userData, _notification} = useContext(Context)
+    const {socket, setRooms, userData, _notification} = useContext(Context)
 
     const [roomName, setName] = useState('')
     const [users, setUsers] = useState<string[]>([])
@@ -95,9 +95,9 @@ const RoomForm:React.FC<RoomFormProps> = ( { showForm, setShowForm, setConvs, se
         //     internalError('unvalid users : ' + _unvalidUsers)
         // }
 
-        if (roomName != '' && users.length) {
+        if (roomName.trim() != '' && users.length) {
             hideForm()
-            socket.emit('create-room', {roomName:roomName, users:users, type:roomType, password:pass})
+            socket.emit('create-room', {roomName:roomName.trim(), users:users, type:roomType, password:pass})
         }
     }
 
@@ -105,21 +105,18 @@ const RoomForm:React.FC<RoomFormProps> = ( { showForm, setShowForm, setConvs, se
         if (e.key === ' ')
             addUser()
     }
-    
+
     const addUser = () => {
         if (user.trim() != '') {
-            if (users.length && user)
-                if (users.indexOf(user.trim()) == -1) {
+            if (users.length)
+                if (users.indexOf(user.trim()) == -1)
                     setUsers(old => [...old, user.trim()])
-                    setUser('')
-                }
                 else
-                setUser('')
-            else {
+                    setUser('')
+            else
                 setUsers(old => [...old, user.trim()])
-                setUser('')
-            }
         }
+        setUser('')
     }
 
     return (

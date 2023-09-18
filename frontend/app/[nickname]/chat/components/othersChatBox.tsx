@@ -19,11 +19,11 @@ const OthersChatBox:React.FC<SelfChatBoxProps> = (msg) => {
                 msg.msg.endsWith("%GameInvit%") ? 
                 <span className="flex flex-col items-center justify-center">
                     {msg.msg.substring(0, msg.msg.length - 11)}
-                    <Link href={`/${userData.nickname}/game?id=${msg.user.id}`}>
+                    {msg.user && <Link href={`/${userData.nickname}/game?id=${msg.user?.id}`}>
                         <button className="joinGameBtn transition-all hover:scale-110 my-2">
                             <p className="text-button">join</p>
                         </button>
-                    </Link>
+                    </Link>}
                 </span> :
                 msg.msg
             }</div>

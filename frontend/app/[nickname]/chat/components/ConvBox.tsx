@@ -80,7 +80,7 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, setActiveUserConv, activeUserCon
         <div className='w-20 h-20 flex items-center justify-center relative mx-[7%]'>
           <img alt={data.name} width={11} height={11} className="rounded-full border-2 border-slate-300 w-11 h-11" src={data.photo} />
           { rooms.find(o => o.id === data.id)?.type === 'DM' && userStatus === 'online' ?
-          <span className='rounded-full bg-green-400 opacity-90 border-2 border-green-500 w-2 h-2 absolute top-[65%] right-[15%]'></span>
+          <span className='animate-pulse rounded-full bg-green-400 opacity-90 border-2 border-green-500 w-2 h-2 absolute top-[65%] right-[15%]'></span>
           : ''}
         </div>
         <div className='flex flex-col justify-center gap-2 w-[100%] h-[50%] items-start'>

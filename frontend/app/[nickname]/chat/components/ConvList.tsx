@@ -97,7 +97,7 @@ const ConvList:React.FC<ConvListProps> = ({activeUserConv, setActiveUserConv}) =
         set_room_created(old => !old)
         // setUpdateList(old => !old)
         if (userData.nickname === _newUser) {
-          _notification(`You have joined '${res.roomId.room_name}'`, "good")
+          _notification(`You joined '${res.roomId.room_name}'`, "good")
         }
         else {
           newusers.map(_new => {
