@@ -122,7 +122,7 @@ const ConvList:React.FC<ConvListProps> = ({activeUserConv, setActiveUserConv}) =
         setConvs(rooms.filter((user:conversation) => (user.name.startsWith(needle))))
     }
 
-    let _tabIndex: number = 1
+    let _tabIndex = 1
 
     return (
     <>

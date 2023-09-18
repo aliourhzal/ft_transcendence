@@ -185,3 +185,18 @@
   border-top-left-radius: 20px;
   border-bottom-right-radius: 20px;
 }
+
+
+#emojis {
+  /* -webkit-transition: all 0.5s;
+  transition: all 0.5s;
+  -webkit-transform: scale(0);
+  -ms-transform: scale(1);
+  transform: scale(1); */
+  animation: crescendo 0.2s alternate ease-in;
+}
+
+@keyframes crescendo {
+  0%   {opacity: 0;}
+  100% {opacity: 90;}
+}
