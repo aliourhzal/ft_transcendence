@@ -23,7 +23,7 @@ const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin,
 
     const [showOptions, setShowOptions] = useState(false)
 
-    const {setShowUserInfos, setUserInfoNick, setUserInfoId,  userData, rooms, socket} = useContext(Context)
+    const {setShowUserInfos, setUserInfoNick, setUserInfoId,  userData} = useContext(Context)
 
     const [userStatus, setUserStatus] = useState<"online" | "offline" | undefined>(undefined)
 
