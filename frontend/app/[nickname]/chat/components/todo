@@ -33,17 +33,14 @@ check cookies after msg sent (DONE)
 update online status realtime (DONE)
 filter userdm list by blocked users (DONE)
 
+add notifications for every action (DONE)
 
-
-
-change grp image to fit with blueStrong and darken
-
-add notifications for every action
-
-add ? in every room.find
+add ? in every room.find (DONE)
 
 display muted once ( or in worst case disable input )
 
 clean context
 
 scroll to bottom when clicking conv
+
+delete messages the 100th msg in db

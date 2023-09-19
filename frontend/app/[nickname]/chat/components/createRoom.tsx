@@ -75,6 +75,7 @@ const RoomForm:React.FC<RoomFormProps> = ( { showForm, setShowForm, setConvs, se
             }
             set_room_created(old => !old)
         })
+        return () => socket.off('new-room')
     }, [])
 
     // const unvalidUsers = () => {
@@ -124,7 +125,7 @@ const RoomForm:React.FC<RoomFormProps> = ( { showForm, setShowForm, setConvs, se
             <div className='absolute top-[6%] text-center text-2xl mb-2 drop-shadow-[0px_0px_5px_rgba(150,150,150,0.7)]'><h1>Create Chatroom</h1></div>
             <form noValidate id="roomform" onSubmit={confirmForm}>
                 <div className="relative z-0 w-full mb-6 group">
-                    <input aria-required='true' autoComplete='off' value={roomName} type="text" name="floating_text" id="floating_text" className="text-gray-300 block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required 
+                    <input maxLength={20} aria-required='true' autoComplete='off' value={roomName} type="text" name="floating_text" id="floating_text" className="text-gray-300 block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required 
                     onChange={(e) => {setName(e.target.value)}}/>
                     <label htmlFor="floating_text" className="text-xs lg:text-sm peer-focus:font-medium absolute text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Name</label>
                 </div>
@@ -136,7 +137,7 @@ const RoomForm:React.FC<RoomFormProps> = ( { showForm, setShowForm, setConvs, se
                         handleSpaceDown(e)
                     }}/>
                     <label htmlFor="user" className="text-xs lg:text-sm peer-focus:font-medium absolute text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Search user by nickname</label>
-                    <button className='ml-[10%] w-[40%] px-1 relative bg-sky-900 text-gray-300 rounded-full' onClick={addUser}>Add user</button>
+                    <button type="button" className='ml-[10%] w-[40%] px-1 relative bg-sky-900 text-gray-300 rounded-full' onClick={addUser}>Add user</button>
                 </div>
 
                 <AddedUsersForm users={users} setUsers={setUsers}/>
@@ -147,7 +148,7 @@ const RoomForm:React.FC<RoomFormProps> = ( { showForm, setShowForm, setConvs, se
                 </div>
 
                 {showPassInput && <div className="flex relative z-0 w-full mb-6 group">
-                    <input disabled={isPrivate? true : false} value={pass} type="password" name="password" id="password" className="text-gray-300 block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required
+                    <input maxLength={20} disabled={isPrivate? true : false} value={pass} type="password" name="password" id="password" className="text-gray-300 block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required
                     onChange={
                         (e) => {
                             setRoomType('PROTECTED')

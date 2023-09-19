@@ -207,8 +207,9 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
   }
 
   const unMuteUser = (res) => {
+    console.log(res)
     setRooms((_rooms: Room[]) => {
-      if (_rooms.find(o => o.name === res.roomId.room_name)?.users?.find(o => o.id === res.mutedUser.userId)?.isMuted)
+      if (_rooms.find(o => o.name === res.roomId.room_name)?.users?.find(o => o.id === res.unMutedUser.userId)?.isMuted)
         _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.unMutedUser.userId).isMuted = 'UNMUTED'
       else internalError('Internal error when trying to unmute user')
       setConvs([..._rooms])
@@ -226,6 +227,18 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
     socket.on('onUnMute', unMuteUser)
     socket.on('change-room-name', changeRoomName)
     socket.on('change-room-password', changeRoomPass)
+
+    return () => {
+      socket.off('onPromote', promoteUser)
+      socket.off('onDemote', demoteUser)
+      socket.off('onKick', kickUser)
+      socket.off('onBan', banUser)
+      socket.off('onLeave', leaveUser)
+      socket.off('onMute', muteUser)
+      socket.off('onUnMute', unMuteUser)
+      socket.off('change-room-name', changeRoomName)
+      socket.off('change-room-password', changeRoomPass)
+    }
 }, []) 
 
   return (

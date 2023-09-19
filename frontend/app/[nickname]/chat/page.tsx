@@ -100,6 +100,11 @@ export default function Chat() {
 			_users.splice(_users.indexOf(_users.find(o => o.id === res.unblockedUser.unblockedUser.id)), 1)
 			return _users
 		}); setRefresh(old => !old)})
+
+		return () => {
+			socket.off('blocked-user')
+			socket.off('unblocked-user')
+		}
 	}, [])
 
 	// useEffect ( () => {

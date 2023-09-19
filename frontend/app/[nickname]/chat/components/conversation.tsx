@@ -55,13 +55,14 @@ const Conversation:React.FC<ConversationProps> = ( { activeUserConv, deviceType,
     }, [chatBoxMessages])
 
     const addmsg = (msg) => {
+        console.log(msg)
         setRooms(_rooms => {
           let temp = _rooms.find(o => o.id === msg.roomId)
           if (temp) {
               temp?.msgs.push({userId:msg.user, msg:msg.msg})
               temp.lastmsg = {userId:msg.userId, msg:msg.msg}
           }
-            
+
           setConvs(_rooms)
           return _rooms
         })
@@ -117,7 +118,7 @@ const Conversation:React.FC<ConversationProps> = ( { activeUserConv, deviceType,
                             <GrEmoji size={30}/>
                         </div>
                         <form onSubmit={sendMessage} id='form' className='w-[98%]'>
-                            <input ref={msgInputRef} onFocus={e => e.target.placeholder = ''} onBlur={e => {e.target.placeholder = 'Type a message...'}} autoComplete="off" placeholder='Type a message...' type="text" id="message" className="transition-all delay-100 duration-100 outline outline-0 bg-transparent  p-5 text-gray-100 text-xs sm:text-base focus:ring-blue-500 focus:border-blue-500 w-[100%]"/>
+                            <input maxLength={1000} ref={msgInputRef} onFocus={e => e.target.placeholder = ''} onBlur={e => {e.target.placeholder = 'Type a message...'}} autoComplete="off" placeholder='Type a message...' type="text" id="message" className="transition-all delay-100 duration-100 outline outline-0 bg-transparent  p-5 text-gray-100 text-xs sm:text-base focus:ring-blue-500 focus:border-blue-500 w-[100%]"/>
                         </form>
                         <div className='transition-all hover:scale-110 w-12 h-11 flex items-center justify-center'>
                             <button type='submit' form='form' className=' border-blue-500 border-[6px] w-11 h-9 bg-blue-500 rounded-full mr-3 flex items-center justify-end cursor-pointer'>
