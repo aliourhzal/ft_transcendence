@@ -49,9 +49,12 @@ const ConvList:React.FC<ConvListProps> = ({activeUserConv, setActiveUserConv}) =
     })
     setConvs(rooms)
   }
-  
+
   useEffect( () => {
     socket.on('list-rooms',fillUserList)
+    return () => {
+      socket.off('list-rooms',fillUserList)
+    }
   }, [])
   
   const AddUserToRoom = (res) => {
@@ -113,6 +116,7 @@ const ConvList:React.FC<ConvListProps> = ({activeUserConv, setActiveUserConv}) =
             
     useEffect(() => {
       socket.on('users-join', AddUserToRoom)
+      return () => socket.off('users-join', AddUserToRoom)
     }, [])
 
     const convsFilter = (needle = '') => {

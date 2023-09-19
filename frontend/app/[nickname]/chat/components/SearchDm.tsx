@@ -75,7 +75,7 @@ const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersF
 
   return (
     <Popup isOpen={showSearchUsersForm} modalAppearance={hide}>
-        <h1 className='absolute top-7 text-center text-2xl mb-2 drop-shadow-[0px_0px_5px_rgba(150,150,150,0.7)]'>Search for users</h1>
+        <h1 className='absolute top-7 text-center text-2xl mb-2 drop-shadow-[0_1.2px_1.2px_rgba(255,255,255,0.8)] font-bold'>Search for users</h1>
         <div onClick={() => setShowList(true)} className='-mt-5'><Search _Filter={filerList} type={'dm'}/></div>
         {showList &&
         <div className='transition-all flex flex-col justify-start items-center h-[14rem] bg-darken-100 gap-2 rounded-xl overflow-y-auto pt-1 scrollbar-thin scrollbar-track-darken-300 scrollbar-thumb-whiteSmoke scrollbar-corner-black'>

@@ -93,7 +93,6 @@ export default function Chat() {
 		if (dmId)
 			socket.emit('start-dm', {reciverUserId: dmId})
 		socket.emit('get-rooms', null)
-		// socket.on('all-blocked-users', (res) => {console.log(res); setBlockedUsers(res.allUsersBlockedByMe)})
 		getBlockedUsers(userData.id, setBlockedUsers)
 		socket.on('blocked-user', (res) => {console.log(res); setBlockedUsers(old => [...old, res.blockedUser.blockedUser])})
 		socket.on('unblocked-user', (res) => {console.log(res); setBlockedUsers((_users: any[]) => {
