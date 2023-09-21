@@ -81,7 +81,8 @@ export default function ProfileInfo(props: {data: UniversalData, currentUser: bo
 						</div>
 					</div>
 					<div className=" w-[90%] rounded-full bg-darken-300 h-9">
-						<div className="flex items-center justify-end bg-blue-600 text-xs h-full font-medium text-blue-100 text-center p-2 leading-none rounded-full" style={{width: levelProgress}}>{levelProgress}</div>
+						<div className="flex items-center justify-end bg-blue-600 text-xs h-full font-medium text-blue-100 text-center p-2 leading-none rounded-full"
+                        style={{width: (parseInt(props.data.level.toString().split('.')[1]) > 10 ? levelProgress : '6%')}}>{levelProgress}</div>
 					</div>
 					{
 						!props.currentUser && showSendRequest && 
