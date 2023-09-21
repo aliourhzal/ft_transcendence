@@ -108,7 +108,7 @@ export default function Chat() {
 
 	const [rooms, setRooms] = useState<Room[]>([])
 
-	const [chatBoxMessages, setChatBoxMessages] = useState<{userId:string, msg:string, roomId?: string, id?:string}[]>([])
+	const [chatBoxMessages, setChatBoxMessages] = useState<{userId:string, msg:string, roomId?: string, id:string}[]>([])
 
 	const [showForm, setShowForm] = useState(false)
 	const [showJoinForm, setShowJoinForm] = useState(false)

@@ -12,18 +12,18 @@ const ChatBox:React.FC<ChatBoxProps> = ( { activeUserConv } ) => {
   
   const {scrollToBottom, ref, chatBoxMessages, userData, rooms} = useContext(Context)
 
-  // let temp = document.getElementById('chatbox')
-
   useEffect ( () => {
     scrollToBottom();
   }, [])
+
+  console.log(chatBoxMessages)
 
   return (
     chatBoxMessages.length != 0 &&
     <div className='z-0' ref={ref}>
         {chatBoxMessages.map ((BoxMessage) =>
           BoxMessage.userId != 'bot' ?
-              (BoxMessage.userId == userData.id ? <SelfChatBox msg={BoxMessage.msg} user={rooms.find(o => o.id === activeUserConv.id)?.users.find(o => o.id === BoxMessage.userId)} key={gimmeRandom()}/>
+              (BoxMessage.userId == userData.id ? <SelfChatBox msg={BoxMessage} user={rooms.find(o => o.id === activeUserConv.id)?.users.find(o => o.id === BoxMessage.userId)} key={gimmeRandom()}/>
               : <OthersChatBox msg={BoxMessage.msg} user={rooms.find(o => o.id === activeUserConv.id)?.users.find(o => o.id === BoxMessage.userId)} key={gimmeRandom()}/>)
           : <BotChatBox msg={BoxMessage.msg} key={gimmeRandom()} />
         )}
