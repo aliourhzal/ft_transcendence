@@ -6,6 +6,7 @@ import {Avatar} from '@nextui-org/react'
 import { LuMessagesSquare } from 'react-icons/lu'
 import { GrEmoji } from 'react-icons/gr'
 import Emojis from './Emojis'
+import {useRouter} from 'next/navigation'
 
 interface ConversationProps {
     activeUserConv: any
@@ -54,8 +55,11 @@ const Conversation:React.FC<ConversationProps> = ( { activeUserConv, deviceType,
         }
     }, [chatBoxMessages])
 
+    const _router = useRouter()
+
     const addmsg = (msg) => {
         console.log(msg)
+        localStorage.setItem('notifyChat', userData.id)
         setRooms(_rooms => {
           let temp = _rooms.find(o => o.id === msg.roomId)
           if (temp) {
@@ -72,6 +76,13 @@ const Conversation:React.FC<ConversationProps> = ( { activeUserConv, deviceType,
         else{
             if (rooms.find(o => o.id === msg.roomId)) rooms.find(o => o.id === msg.roomId).pending = true
             setRefresh(old => !old)
+        }
+        console.log(activeUserConv)
+        if (msg.msg === '%GameInvite%' && activeUserConv.type === 'DM'){
+            let id = rooms.find(o => o.id === activeUserConv.id)?.users[0].id
+            if (id === userData.id)
+                id = rooms.find(o => o.id === activeUserConv.id)?.users[1].id
+            _router.push(`/${userData.nickname}/game?id=${id}`)
         }
     }
     

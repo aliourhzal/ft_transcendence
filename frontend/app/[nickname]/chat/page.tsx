@@ -12,12 +12,10 @@ import ButtomButtons from "./components/ButtomButtons";
 import SearchDm from "./components/SearchDm";
 import Notification from "./components/Notification";
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useCookies } from "react-cookie";
 import "./style.css"
 import UserInfo from "./components/UserInfo";
 import MyAlert from "./components/MyAlert";
 import axios from "axios";
-import { setRef } from "@mui/material";
 import Context from "./components/Context";
 
 export interface conversation {
@@ -29,7 +27,7 @@ export interface conversation {
 	readonly pending?: boolean
 }
 
-
+const _cookie = getCookie('access_token')
 
 export interface Room {
 	msgs: {userId:string, msg:string}[],
@@ -50,9 +48,6 @@ export interface Room {
 	}[],
 	pending: boolean
 }
-
-
-const _cookie = getCookie('access_token')
 
 const socket = io(`ws://${process.env.NEXT_PUBLIC_BACK}:3004`,{
 	extraHeaders: {
@@ -75,11 +70,10 @@ const getBlockedUsers = async (userId: string, setter: any) => {
 	}
 }
 
+
 export default function Chat() {
 
 	const router = useRouter()
-	// alert('')
-	const [cookies, setCookie, removeCookie] = useCookies();
 	
 	const searchParams = useSearchParams();
 	
@@ -88,7 +82,6 @@ export default function Chat() {
 	const [blockedUsers, setBlockedUsers] = useState([])
 
 	useEffect( () => {
-		console.log('test')
 		const dmId = searchParams.get('id');
 		if (dmId)
 			socket.emit('start-dm', {reciverUserId: dmId})
@@ -105,20 +98,6 @@ export default function Chat() {
 			socket.off('unblocked-user')
 		}
 	}, [])
-
-	// useEffect ( () => {
-		// setInterval(() => {
-		// 	console.log("---->", cookies.access_token)
-		// }, 5000);
-		// console.log('useeeffect')
-		// if (cookies.access_token != _cookie){
-		// 	console.log('cookie changed !')
-		// 	// document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
-		// 	removeCookie('access_token')
-		// 	const router = useRouter()
-		// 	router.push('/')
-		// }
-	// }, [cookies.access_token])
 
 	const ref = useRef(null);
 	const msgInputRef = useRef(null);
@@ -217,10 +196,12 @@ export default function Chat() {
 		}, 1000)
 	}
 
-	if (!getCookie('access_token')) {
+	if (getCookie('access_token') != _cookie) {
 		document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
 		router.push('/')
 	}
+
+	console.log(window.location.pathname)
 
 	return (
 		<main className='select-none h-full w-full relative'>

@@ -87,8 +87,14 @@ const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersF
                 // setActiveUserConv(rooms.find(o => o.name === user.nickname))
               }
               else {
-                setActiveUserConv(rooms.find(o => o.name === user.nickname))
-                getDm(rooms.find(o => o.name === user.nickname))
+                if (rooms.filter(o => o.name === user.nickname)[0].type === 'DM') {
+                  setActiveUserConv(rooms.find(o => o.name === user.nickname))
+                  getDm(rooms.find(o => o.name === user.nickname))
+                }
+                else {
+                  setActiveUserConv(rooms.filter(o => o.name === user.nickname)[1])
+                  getDm(rooms.filter(o => o.name === user.nickname)[1])
+                }
               }
               hide()
             }}>

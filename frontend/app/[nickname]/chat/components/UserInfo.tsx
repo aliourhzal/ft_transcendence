@@ -41,7 +41,7 @@ const UserInfo:React.FC<UserInfoProps> = ( {id, showUserInfos, setShowUserInfos,
             <div className='flex gap-4 scale-110 text-whiteSmoke w-32 h-8 rounded-2xl items-center justify-center bg-darken-200'>
                 <BiConversation className='transition-all hover:scale-110' title='DM' aria-label='DM' cursor="pointer" size={25} onClick={ () => {
                     setShowUserInfos(false)
-                    if (!rooms.find(o => o.name === nickname)) {
+                    if (!rooms.find(o => o.name === nickname) && rooms.find(o => o.name === nickname)?.type != 'DM') {
                         socket.emit('start-dm', {reciverUserId: id})
                         setActiveUserConv({
                             name: '.',
@@ -54,18 +54,35 @@ const UserInfo:React.FC<UserInfoProps> = ( {id, showUserInfos, setShowUserInfos,
                         // setActiveUserConv(rooms.find(o => o.name === user.nickname))
                       }
                       else {
-                        setActiveUserConv(rooms.find(o => o.name === nickname))
-                        setShowConv(true)
-                        setChatBoxMessages(rooms.find(o => o.name === nickname)?.msgs)
+                        if (rooms.filter(o => o.name === nickname)[0].type === 'DM') {
+                            setActiveUserConv(rooms.find(o => o.name === nickname))
+                            setShowConv(true)
+                            setChatBoxMessages(rooms.find(o => o.name === nickname)?.msgs)
+                        }
+                        else {
+                            setActiveUserConv(rooms.filter(o => o.name === nickname)[1])
+                            setShowConv(true)
+                            setChatBoxMessages(rooms.filter(o => o.name === nickname)[1]?.msgs)
+                        }
                       }
                 }}/>
                 <FaRegUser className='transition-all hover:scale-110' title='profile' aria-label='profile' cursor="pointer" size={20} onClick={() => {
                     _router.push(`/${nickname}`)
                 }}/>
+                { rooms.find(o => o.id === activeUserConv.id)?.type === 'DM' &&
                 <PiGameControllerBold  className='transition-all hover:scale-110' title='profile' aria-label='invite to game' cursor="pointer" size={23} onClick={() => {
-                    socket.emit('send-message', {message:`${userData.nickname} invited you to a pong game %GameInvit%`, roomId:rooms.find(o => o.id === activeUserConv.id)?.id})
-                    _router.push(`/${userData.nickname}/game?id=${id}`)
-                }}/>
+                    if (rooms.find(o => o.id === activeUserConv.id)?.type === 'DM') {
+                        socket.emit('send-message', {message:`%GameInvite%`, roomId:rooms.find(o => o.id === activeUserConv.id)?.id})
+                        _router.push(`/${userData.nickname}/game?id=${id}`)
+                    }
+                    else {
+                        if (rooms.find(o => o.id === activeUserConv.id)?.name === nickname && rooms.find(o => o.id === activeUserConv.id)?.type === 'DM')
+                            socket.emit('send-message', {message: '%GameInvite%', roomId:rooms.find(o => o.id === activeUserConv.id)?.id})
+                        else
+                            socket.emit('start-dm', {reciverUserId: id})
+                    }
+                    setShowUserInfos(false)
+                }}/>}
             </div>
         </div>
     </Popup>
