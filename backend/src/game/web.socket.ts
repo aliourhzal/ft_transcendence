@@ -13,7 +13,7 @@ import { Player, userNode, roomT, Ball, Specials, msgFromPlayer, planedGame } fr
 export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 {
 	@WebSocketServer()
-	server:Server;
+    server: Server;
 
 	private connectedUsers: {socket: Socket, id: string}[] = [];
 	private gameQueue: userNode[] = [];
@@ -52,10 +52,11 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 				}
 				else
 					this.server.to(room.roomId).emit("gameOver", "draw");
-			}
+            }
 			clearInterval(this.rooms.find(x => 
 				x.player1.socket === socket || x.player2.socket === socket
-			).loop);
+                ).loop);
+            this.rooms.splice(this.rooms.indexOf(room), 1);
 		}
 		catch(e){}
 		const disconnectedUser = this.connectedUsers.findIndex(x => x.socket.id === socket.id);
