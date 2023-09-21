@@ -11,8 +11,8 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
     let bgColor = "#353D49";
 	let color = "#50CFED";
     const ball = new Ball();
-	const player = new Player(0, 0, "#2978F2");
-	const com = new Player(0, 0, "#fff");
+	let player = new Player(0, 0, "#2978F2");
+	let com = new Player(0, 0, "#fff");
 	let special = new Special(props.specials);
 	const phoneSize = useRef(false);
 
@@ -208,7 +208,7 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		com.setPos(canvas.width - com.width, player.y);
 		ball.setRadius(canvas.width * 10 / 800);
 		special.radius = canvas.width * 20 / 800;
-		StartGame(canvas, ctx);
+		// StartGame(canvas, ctx);
 		if (canvas.height === 337)
 			phoneSize.current = true
 		// listening to the mouse
@@ -281,6 +281,7 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 		});
 
         props.socket.on('game_Data', data => {
+			console.log(player.y);
             ball.x = canvas.height * data.x / 450;
 			ball.y = canvas.width * data.y / 800;
 			player.height = data.ph * canvas.height / 450;
@@ -333,8 +334,10 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 				com.score = data.p1;
 				player.score = data.p2;
 			}
-			player.setPos(0, canvas.height / 2 - player.height / 2);
-			com.setPos(canvas.width - com.width, canvas.height / 2 - player.height / 2);
+		});
+		return (() => {
+			player = undefined;
+			com = undefined;
 		});
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
