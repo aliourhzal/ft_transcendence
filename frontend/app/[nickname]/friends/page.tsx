@@ -72,7 +72,7 @@ export default function Friends(props: any) {
 				return old;
 			});
 		})
-	}, [friends, socket])
+	}, [socket])
 
 	return (
 		<main className='h-full w-full bg-darken-200 overflow-y-auto relative'>
