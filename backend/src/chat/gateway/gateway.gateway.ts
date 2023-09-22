@@ -33,6 +33,7 @@ import { getRooms } from 'src/dto/getRooms.dto';
 import { MakeRoomProtected } from 'src/dto/makeRoomProtected.dto';
 import { Block } from 'src/dto/block.dto';
 import { UnBlock } from 'src/dto/unBlock.dto';
+import { deleteMsg } from 'src/dto/deleteMsg';
  
 
 @WebSocketGateway(3004)
@@ -1032,6 +1033,12 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                 console.log(error)
             } 
         }
+
+    @SubscribeMessage('delete-msg') 
+    @UsePipes(new ValidationPipe()) // need room id ,   user id who want to send it.
+    async deleteMsg(@MessageBody() dto:deleteMsg , @ConnectedSocket() socket: Socket) {
+        console.log(dto)
+    }
 
     @SubscribeMessage('user-block') 
     @UsePipes(new ValidationPipe())     

@@ -6,7 +6,7 @@ import {FaTableTennis} from "react-icons/fa";
 import {FaUserFriends} from "react-icons/fa";
 import { RiLogoutBoxFill } from "react-icons/ri"
 import MyModal from "./modalPopup";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { userDataContext } from "../../contexts/UniversalData";
 import { useRouter } from "next/navigation";
 import { useCookies } from "react-cookie"
@@ -23,6 +23,9 @@ interface SideBarProps {
 }
 
 export function NavOption(props: any) {
+
+	// const [chatNotif, setChatNotif] = useState(localStorage.getItem('notifyChat') == props.id ? true : false)
+	// console.log(localStorage.getItem('notifyChat'))
 	const [cookies, setCookie, removeCookie] = useCookies(["access_token", "login"]);
 	const socket = useContext(InvitationSocketContext);
 	const logout = () => {
@@ -39,12 +42,15 @@ export function NavOption(props: any) {
 				logout();
 				return ;
 			}
-			localStorage.removeItem('notifyChat')
+			if (props.location === 'chat') {
+				localStorage.removeItem('notifyChat')
+				// setChatNotif(false)
+			}
 			// props.router.push(props.nickname + props.location);
 			// props.router.push(`http://${process.env.NEXT_PUBLIC_FRONT}:3001/` + props.nickname + '/' + (props.location ?? ''));
 		}}>
 			<props.icon  style={{color: 'white', fontSize: '24px'}}/>
-			{localStorage.getItem('notifyChat') == props.id && props.location === 'chat' && <span className='animate-pulse rounded-full bg-red-500 opacity-90 border-2 border-red-500 w-2 h-2 z-10 -top-2 -left-2 absolute'></span>}
+			{ props.location === 'chat' && <span className='animate-pulse rounded-full bg-red-500 opacity-90 border-2 border-red-500 w-2 h-2 z-10 -top-2 -left-2 absolute'></span>}
 			<span className="text-md text-whiteSmoke hidden sm:inline capitalize">{props.location ?? 'profile'}</span>
 		</Link>
 	);
