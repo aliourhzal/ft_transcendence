@@ -80,9 +80,10 @@ const Conversation:React.FC<ConversationProps> = ( { activeUserConv, deviceType,
         console.log(activeUserConv)
         if (msg.msg === '%GameInvite%' && activeUserConv.type === 'DM'){
             let id = rooms.find(o => o.id === activeUserConv.id)?.users[0].id
-            if (id === userData.id)
+            if (id === userData.id) {
                 id = rooms.find(o => o.id === activeUserConv.id)?.users[1].id
-            _router.push(`/${userData.nickname}/game?id=${id}`)
+                _router.push(`/${userData.nickname}/game?id=${id}`)
+            }
         }
     }
     
