@@ -58,20 +58,20 @@ export default function FriendCard({user, setPlay}: {
 				</Container>
 				<Container className="flex flex-row items-center justify-evenly relative overflow-hidden">
 						<Link href={`/${user.nickname}`}>
-							<HiExternalLink size="1.75rem" color="white" cursor="pointer"/>
+							<HiExternalLink size="28px" color="white" cursor="pointer"/>
 						</Link>
-						<Link href={`/${loggedUser.nickname}/game?id=${user.id}`}>
-							<RiPingPongFill size="1.5rem" color="white" cursor="pointer"/>
-						</Link>
+						{
+							user.status !== 'offline' &&
+							<Link href={`/${loggedUser.nickname}/game?id=${user.id}`}>
+								<RiPingPongFill size="24px" color="white" cursor="pointer"/>
+							</Link>
+						}
 						<Link href={`/${loggedUser.nickname}/chat?id=${user.id}`}>
-							<BiSolidMessageSquareDots size="1.5rem" color="white" cursor="pointer"/>
+							<BiSolidMessageSquareDots size="24px" color="white" cursor="pointer"/>
 						</Link>
 						<button onClick={removeFriend}>
-							<RiDeleteBin6Fill size="1.5rem" color="white" cursor="pointer"/>
+							<RiDeleteBin6Fill size="24px" color="white" cursor="pointer"/>
 						</button>
-						{
-							user.status === 'offline' && <div className="absolute top-0 left-0 h-full w-full z-10 bg-black opacity-50"></div>
-						}
 				</Container>
 			</div>
 		</>
