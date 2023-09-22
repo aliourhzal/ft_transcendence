@@ -351,11 +351,23 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
                             const muteExpiresAt = new Date(Date.now() + dto.duration); // because date of now less then 1h
                             
                             // set exporation time
-                                
+                            
                             const mutedUser = await this.roomService.muteUser(muteExpiresAt, dto.mutedUserId , rtn.room.id , 'MUTEDFORLIMITEDTIME' );
-                             
+                            
                             await this.emmiteEventesToUsers(socket, rtn.room.id  ,"onMute", { roomId: rtn.room , mutedUser })
                             
+                            setTimeout( async () => {
+                                const user  = await this.utils.verifyToken(token); // // if has error will catch it
+                                if (user) {
+                                    const rtn = await this.gatewayService.checkUnMuteUser( user['sub'] , dto.roomName , dto.mutedUserId);
+                                    if (rtn) {
+                                        await this.emmiteEventesToUsers(socket, rtn.room.id ,"onUnMute", { roomId: rtn.room , unMutedUser : mutedUser })
+                                        console.log("unmuted after time finished")
+                                    }
+                                }
+                                return clearTimeout
+                            }, dto.duration)
+
                             console.log('muted succufly')
                         
                         }
