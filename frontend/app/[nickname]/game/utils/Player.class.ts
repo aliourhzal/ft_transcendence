@@ -30,4 +30,18 @@ export default class Player {
 		this.y = y;
 	}
 
+	destructor() {
+		delete this.x;
+		delete this.y;
+		delete this.pos;
+		delete this.top;
+		delete this.bottom;
+		delete this.left;
+		delete this.right;
+		delete this.height;
+		delete this.width;
+		delete this.score;
+		delete this.color;
+	}
+
 }
