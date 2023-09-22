@@ -334,10 +334,15 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 				com.score = data.p1;
 				player.score = data.p2;
 			}
+			com.x = canvas.width - com.width;
+			player.x = 0;
+			player.y = 0;
 		});
 		return (() => {
-			player = undefined;
-			com = undefined;
+			player.destructor();
+			com.destructor();
+			special.destructor();
+			ball.destructor();
 		});
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
