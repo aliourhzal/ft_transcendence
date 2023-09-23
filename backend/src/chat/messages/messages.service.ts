@@ -50,7 +50,7 @@ export class MessagesService
                 
                 const msg: AllMessages = {
                     userId: (await this.findUserById(messages.messages[i].userId)).id,
-                    msg: messages.messages[i].text
+                    msg: messages.messages[i]
                 };
                 allMessages.push(msg);
             }
