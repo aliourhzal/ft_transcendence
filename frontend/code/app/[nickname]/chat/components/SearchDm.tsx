@@ -26,7 +26,7 @@ const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersF
 
   const getUsers = async () => {
     try {
-      return await axios.get('http://127.0.0.1:3000/users/users', {withCredentials: true})
+      return await axios.get(`${process.env.NEXT_PUBLIC_BACK}:3000/users/users`, {withCredentials: true})
     } catch(error) {
       // alert(error)
       // setShowSearchUsersForm(false)
@@ -57,7 +57,7 @@ const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersF
 
   const getDm = async (data) => {
     try {
-      await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomId:rooms.find(o => o.id === data.id)?.id}, {
+      await axios.post(`${process.env.NEXT_PUBLIC_BACK}:3000/rooms/select-room`, {roomId:rooms.find(o => o.id === data.id)?.id}, {
         withCredentials: true,
         headers: {
           'Authorization': `Bearer ${getCookie('access_token')}`,

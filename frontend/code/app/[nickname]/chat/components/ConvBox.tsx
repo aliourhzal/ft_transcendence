@@ -38,7 +38,7 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, setActiveUserConv, activeUserCon
       convsFilter('')
       // if (new_msg_notif.name == activeUserConv.name)
       //   notify_conv_msg(false, '')
-        await axios.post(`http://${process.env.NEXT_PUBLIC_BACK}:3000/rooms/select-room`, {roomId:rooms.find(o => o.name === data.name).id}, {
+        await axios.post(`${process.env.NEXT_PUBLIC_BACK}:3000/rooms/select-room`, {roomId:rooms.find(o => o.name === data.name).id}, {
           withCredentials: true,
           headers: {
             'Authorization': `Bearer ${getCookie('access_token')}`,
@@ -69,7 +69,7 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, setActiveUserConv, activeUserCon
   const getStatus = async () => {
     try {
       const userId = rooms.find(o => o.id === data.id)?.users.find(o => o.nickName === data.name)?.id
-      setUserStatus((await axios.post('http://127.0.0.1:3000/users/userStatus', {userId}, {withCredentials: true})).data)
+      setUserStatus((await axios.post(`${process.env.NEXT_PUBLIC_BACK}:3000/users/userStatus`, {userId}, {withCredentials: true})).data)
     } catch (error) {
       console.log(error)
     }

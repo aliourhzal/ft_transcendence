@@ -5,7 +5,7 @@ import RoomOptions from './RoomOptions'
 import { IoIosArrowDown } from 'react-icons/io'
 import Context from './Context'
 import { useRouter } from 'next/navigation'
-import { AiFillStar } from 'react-icons/Ai'
+import { AiFillStar } from 'react-icons/ai'
 import { userInfo } from 'os'
 import axios from 'axios'
 
@@ -30,7 +30,7 @@ const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin,
   const getStatus = async () => {
     try {
     const userId = user.id
-      setUserStatus((await axios.post('http://127.0.0.1:3000/users/userStatus', {userId}, {withCredentials: true})).data)
+      setUserStatus((await axios.post(`${process.env.NEXT_PUBLIC_BACK}:3000/users/userStatus`, {userId}, {withCredentials: true})).data)
     } catch (error) {
       console.log(error)
     }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { _Notification } from '../page'
 import { gimmeRandom } from './Context'
-import {ImCheckmark} from 'react-icons/Im'
+import {ImCheckmark} from 'react-icons/im'
 import { GiCrossMark } from 'react-icons/gi'
 
 interface NotificationProps {
