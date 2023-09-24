@@ -317,8 +317,7 @@ export class UtilsService {
       }
     
       async verifyToken(token: string)
-       {
-
+      {
         const decoded = this.jwtService.verify(token , { secret: process.env.JWT_SECRET });
         return decoded;
          
