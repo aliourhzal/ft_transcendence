@@ -6,12 +6,14 @@ import {FaTableTennis} from "react-icons/fa";
 import {FaUserFriends} from "react-icons/fa";
 import { RiLogoutBoxFill } from "react-icons/ri"
 import MyModal from "./modalPopup";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { userDataContext } from "../../contexts/UniversalData";
 import { useRouter } from "next/navigation";
 import { useCookies } from "react-cookie"
 import { InvitationSocketContext } from "@/app/contexts/InvitationWebSocket";
 import Link from "next/link";
+import { io } from "socket.io-client";
+import { getCookie } from "../layout";
 
 interface SideBarProps {
 	nickname: string,
@@ -22,9 +24,15 @@ interface SideBarProps {
 	changeAvatar: Function
 }
 
+const socket = io(`ws://${process.env.NEXT_PUBLIC_BACK}:3004`,{
+	extraHeaders: {
+		Authorization: `Bearer ${getCookie('access_token')}`,
+    },
+})
+
 export function NavOption(props: any) {
 
-	// const [chatNotif, setChatNotif] = useState(localStorage.getItem('notifyChat') == props.id ? true : false)
+	const [chatNotif, setChatNotif] = useState(false)
 	// console.log(localStorage.getItem('notifyChat'))
 	const [cookies, setCookie, removeCookie] = useCookies(["access_token", "login"]);
 	const socket = useContext(InvitationSocketContext);
@@ -35,6 +43,10 @@ export function NavOption(props: any) {
 		props.router.push(`http://${process.env.NEXT_PUBLIC_FRONT}:3001/`);
 	}
 
+	useEffect(() => {
+		socket.on('notifyChat', () => { setChatNotif(true) })
+	}, [])
+
 	return (
 		<Link href={`http://${process.env.NEXT_PUBLIC_FRONT}:3001/` + props.nickname + '/' + (props.location ?? '')} 
 			className="cursor-pointer flex flex-col md:flex-row items-center gap-5 relative" onClick={()=>{
@@ -42,15 +54,13 @@ export function NavOption(props: any) {
 				logout();
 				return ;
 			}
-			if (props.location === 'chat') {
-				localStorage.removeItem('notifyChat')
-				// setChatNotif(false)
-			}
+			if (props.location === 'chat')
+				setChatNotif(false)
 			// props.router.push(props.nickname + props.location);
 			// props.router.push(`http://${process.env.NEXT_PUBLIC_FRONT}:3001/` + props.nickname + '/' + (props.location ?? ''));
 		}}>
 			<props.icon  style={{color: 'white', fontSize: '24px'}}/>
-			{ props.location === 'chat' && <span className='animate-pulse rounded-full bg-red-500 opacity-90 border-2 border-red-500 w-2 h-2 z-10 -top-2 -left-2 absolute'></span>}
+			{ props.location === 'chat' && chatNotif && <span className='animate-pulse rounded-full bg-red-500 opacity-90 border-2 border-red-500 w-2 h-2 z-10 -top-2 -left-2 absolute'></span>}
 			<span className="text-md text-whiteSmoke hidden sm:inline capitalize">{props.location ?? 'profile'}</span>
 		</Link>
 	);
