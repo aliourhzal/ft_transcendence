@@ -7,13 +7,16 @@ import { UsersService } from 'src/users/users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { error } from 'console';
 import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller('qr')
 export class QrController {
 
 	constructor (
         private readonly twoFactorAuth: twoFactorAuth,
-        private readonly userServices: UsersService
+        private readonly userServices: UsersService,
+        private readonly authService: AuthService
+
     ){}
 
     @UseGuards(AuthGuard('jwt'))
@@ -57,11 +60,23 @@ export class QrController {
         return {twoFa:(user ? user.twoFactorAuth : undefined)};
     }
 
-    @UseGuards(AuthGuard('jwt'))
     @Post('TokenCheck')
-    async verifyToekn(@Req() req: any, @Body('tokenCode') tok: string)
+    async verifyToekn(@Req() req: any, @Body('tokenCode') tok: string, @Res() response: Response)
     {
-        return {valid:await this.twoFactorAuth.verifyCode(req.user.sub, tok), nickname:req.user.nickname}; // return true if tokn valid false otherwise
+        const userId = req.cookies.userId;
+        const user = await this.userServices.findOneById(userId);
+        const valid = await this.twoFactorAuth.verifyCode(userId, tok);
+        if (valid)
+        {
+            response.clearCookie("userId");
+            const { access_token: jwt_access_token } = await this.authService.login(user);//*
+            //create the cookie
+            response.cookie('access_token', jwt_access_token);
+            response.cookie('login', user.nickname);
+            response.send({valid, nickname:user.nickname});
+        }
+        else
+            response.send({valid, nickname:user.nickname}); // return true if tokn valid false otherwise
         // else
         //     throw new ImATeapotException("error wrong Token !!!");
     }
