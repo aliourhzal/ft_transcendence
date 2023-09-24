@@ -45,10 +45,8 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, setActiveUserConv, activeUserCon
             'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
           })
         .then((res) => {
-          console.log(res.data.msg, "____")
           setChatBoxMessages([])
             res.data.msg.map((_msg) => {
-              console.log(_msg, "******")
               setChatBoxMessages(old => [...old, {userId:_msg.msg.userId, msg: _msg.msg.text, roomId: _msg.msg.roomId, id:_msg.msg.id}])
             })
         })
@@ -79,9 +77,6 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, setActiveUserConv, activeUserCon
 
   if (rooms.find(o => o.id === data.id)?.type === 'DM')
     getStatus()
-
-
-  console.log(lastmsg, "eewhrop ")
 
   return (
     <div tabIndex={_tabIndex} className={'transition-all ' + (activeUserConv.id === data.id ? 'bg-blueStrong' : 'bg-zinc-800 hover:bg-zinc-700') + " cursor-pointer convGroup z-0 focus:bg-blueStrong w-[70%] left-[15%] h-[100px] gap-4 relative my-3 rounded-md active:bg-blue-500 flex items-center justify-start text-[16px]"} onClick={handleClick} onFocus={handleClick}>

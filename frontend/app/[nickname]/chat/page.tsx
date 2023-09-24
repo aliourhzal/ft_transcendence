@@ -87,8 +87,8 @@ export default function Chat() {
 			socket.emit('start-dm', {reciverUserId: dmId})
 		socket.emit('get-rooms', null)
 		getBlockedUsers(userData.id, setBlockedUsers)
-		socket.on('blocked-user', (res) => {console.log(res); setBlockedUsers(old => [...old, res.blockedUser.blockedUser])})
-		socket.on('unblocked-user', (res) => {console.log(res); setBlockedUsers((_users: any[]) => {
+		socket.on('blocked-user', (res) => {setBlockedUsers(old => [...old, res.blockedUser.blockedUser])})
+		socket.on('unblocked-user', (res) => {setBlockedUsers((_users: any[]) => {
 			_users.splice(_users.indexOf(_users.find(o => o.id === res.unblockedUser.unblockedUser.id)), 1)
 			return _users
 		}); setRefresh(old => !old)})
@@ -200,8 +200,6 @@ export default function Chat() {
 		document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
 		router.push('/')
 	}
-
-	console.log(window.location.pathname)
 
 	return (
 		<main className='select-none h-full w-full relative'>

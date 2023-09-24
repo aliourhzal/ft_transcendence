@@ -26,14 +26,12 @@ const SelfChatBox:React.FC<SelfChatBoxProps> = ({user, msg, activeUserConv}) => 
         clearTimeout(clickHoldTimer);
     }
 
-    console.log(msg)
-
     return (
         <div className={'z-0 flex items-start justify-end gap-3 m-2 my-4'} key={gimmeRandom()}>
             <div className={"mt-4 "+ (msg.msg.indexOf(' ') > 0 ? 'break-before-all' : 'break-all') + " max-w-[70%] min-w-[40px] text-sm font-semibold py-2 bg-blueStrong rounded-l-3xl rounded-br-3xl p-5 flex items-center justify-center flex-wrap relative hover:scale- transition-all"} onMouseOver={
                 () => setShowOption(true)} onMouseLeave={() => {setShowOption(false)}} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onClick={() => setShowOption(false)}>
                     {showOption && <BsFillTrashFill size={4} className="cursor-pointer absolute -bottom-4 -left-4 w-8 h-8 bg-gray-500 rounded-full border-8 border-gray-500 hover:scale-110 transition-all" onClick={
-                        () => {console.log(msg); socket.emit('delete-msg', {msgId: msg.id, roomId: activeUserConv?.id})}
+                        () => {socket.emit('delete-msg', {msgId: msg.id, roomId: activeUserConv?.id})}
                     }/>}
                 {
                     msg.msg === "%GameInvite%" ?
