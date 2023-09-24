@@ -43,17 +43,21 @@ export class AuthController {
 	async intra42AuthRedirect(@Request() request: any, @Res() response: Response)
 	{//request contains user_data, response used to bake cookies
 		// pass the user data to the function that signs the jwt token
-		await this.achievementsService.giveWelcome(request.user.id);
-		const { access_token: jwt_access_token } = await this.authService.login(request.user);
-		//create the cookie
-       
-		response.cookie('access_token', jwt_access_token);
-		response.cookie('login', request.user.nickname);
-		// to ridrect the user to the profile page
 		if (await this.authService.checkTwoFA(request.user.id) === true)
+        {
+            response.cookie('userId', request.user.id);
 			response.redirect(`${process.env.FRONT_HOST}/Qr_Checker`);
-		else
-			response.redirect(`${process.env.FRONT_HOST}/${request.user.nickname}`);
+        }
+        else
+        {
+            await this.achievementsService.giveWelcome(request.user.id);
+            const { access_token: jwt_access_token } = await this.authService.login(request.user);
+            //create the cookie
+            response.cookie('access_token', jwt_access_token);
+            response.cookie('login', request.user.nickname);
+            // to ridrect the user to the profile page
+            response.redirect(`${process.env.FRONT_HOST}/${request.user.nickname}`);
+        }
 	}
 
 	
