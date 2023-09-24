@@ -34,14 +34,7 @@ export function NavOption(props: any) {
 
 	const [chatNotif, setChatNotif] = useState(false)
 	// console.log(localStorage.getItem('notifyChat'))
-	const [cookies, setCookie, removeCookie] = useCookies(["access_token", "login"]);
 	const socket = useContext(InvitationSocketContext);
-	const logout = () => {
-		removeCookie('access_token')
-		socket.emit('logout');
-		removeCookie('login');
-		props.router.push(`http://${process.env.NEXT_PUBLIC_FRONT}:3001/`);
-	}
 
 	useEffect(() => {
 		socket.on('notifyChat', () => { setChatNotif(true) })
@@ -50,10 +43,6 @@ export function NavOption(props: any) {
 	return (
 		<Link href={`http://${process.env.NEXT_PUBLIC_FRONT}:3001/` + props.nickname + '/' + (props.location ?? '')} 
 			className="cursor-pointer flex flex-col md:flex-row items-center gap-5 relative" onClick={()=>{
-			if (props.location === 'logout') {
-				logout();
-				return ;
-			}
 			if (props.location === 'chat')
 				setChatNotif(false)
 			// props.router.push(props.nickname + props.location);
@@ -70,6 +59,14 @@ export default function SideBar(props: any)
 {
 	const router = useRouter();
 	const userData = useContext(userDataContext);
+	const socket = useContext(InvitationSocketContext);
+	const [cookies, setCookie, removeCookie] = useCookies(["access_token", "login"]);
+	const logout = () => {
+		removeCookie('access_token')
+		socket.emit('logout');
+		removeCookie('login');
+		router.push(`http://${process.env.NEXT_PUBLIC_FRONT}:3001/`);
+	}
 	return (
 			<section className="h-full py-4 bg-darken-100 flex flex-col items-center w-[20vw] max-w-[150px]">
 				<div className="flex flex-col items-center pt-[20%] gap-5">
@@ -84,7 +81,11 @@ export default function SideBar(props: any)
 				</div>
 				<div className="h-full w-[44%] flex flex-col justify-end items-center gap-9 pt-9">
 					<MyModal dispatch={props.dispatch}/>
-					<NavOption icon={RiLogoutBoxFill} router={router} nickname={userData.nickname} id={userData.id} location='logout'/>
+					<button onClick={() => logout()} className="cursor-pointer flex flex-col md:flex-row items-center gap-5 relative">
+						<RiLogoutBoxFill style={{color: 'white', fontSize: '24px'}}/>
+						<span className="text-md text-whiteSmoke hidden sm:inline capitalize">Logout</span>
+					</button>
+					{/* <NavOption icon={RiLogoutBoxFill} router={router} nickname={userData.nickname} id={userData.id} location='logout'/> */}
 				</div>
 			</section>
 	);

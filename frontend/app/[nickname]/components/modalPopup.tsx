@@ -54,24 +54,17 @@ export default function MyModal(props: any) {
 
 	function setImage(e: any)
 	{
-		const reader = new FileReader();
-		reader.onload = async function(ev) {
-			avatarElement.current.src = e.target!.result as string;
-			const formData = new FormData();
-			formData.append('avatar', e.target.files[0])
-			await axios.put(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/profile/avatar`, formData, {
-				withCredentials: true,
-			}).then(res => props.dispatch({type: ACTIONS.UPDATE_AVATAR, payload: res.data}));
-		}
-		reader.readAsDataURL(e.target.files[0]);
+		const formData = new FormData();
+		formData.append('avatar', e.target.files[0]);
+		axios.put(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/profile/avatar`, formData, {
+			withCredentials: true,
+		}).then(res => props.dispatch({type: ACTIONS.UPDATE_AVATAR, payload: res.data}));
 	}
 
 	function setCover(e: any)
 	{
 		const reader = new FileReader();
 		reader.onload = async function(ev) {
-			coverElement.current.src = e.target!.result as string;
-			props.dispatch({type: ACTIONS.UPDATE_COVER, payload: ev.target!.result});
 			const formData = new FormData();
 			formData.append('cover', e.target.files[0])
 			await axios.put(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/profile/cover`, formData, {
