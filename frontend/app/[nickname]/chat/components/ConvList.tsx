@@ -27,7 +27,7 @@ const ConvList:React.FC<ConvListProps> = ({activeUserConv, setActiveUserConv}) =
         }
         rooms.unshift({
           name: _name,
-          lastmsg: {msg: room.msg[room.msg.length - 1].msg.text, userId:room.msg[room.msg.length - 1].msg.userId},
+          lastmsg: room.msg[room.msg.length - 1],
           msgs: room.msg,
           id: room.room.room.id,
           users: getUsersInfo(room.usersInRoom),
@@ -38,7 +38,7 @@ const ConvList:React.FC<ConvListProps> = ({activeUserConv, setActiveUserConv}) =
       else {
         rooms.unshift({
           name: room.room.room.room_name,
-          lastmsg: {msg: room.msg[room.msg.length - 1].msg.text, userId:room.msg[room.msg.length - 1].msg.userId},
+          lastmsg: room.msg[room.msg.length - 1],
           msgs: room.msg,
           id: room.room.room.id,
           users: getUsersInfo(room.usersInRoom),

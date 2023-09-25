@@ -16,6 +16,8 @@ const ChatBox:React.FC<ChatBoxProps> = ( { activeUserConv } ) => {
     scrollToBottom();
   }, [])
 
+  console.log(chatBoxMessages)
+
   return (
     chatBoxMessages.length != 0 &&
     <div className='z-0' ref={ref}>

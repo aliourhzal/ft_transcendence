@@ -82,7 +82,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
         }   
         catch (error) 
         {
-            console.log(error)
+            socket.disconnect();
+            socket.emit("error", new UnauthorizedException());
         }
     }
    
@@ -1038,22 +1039,6 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect
     @UsePipes(new ValidationPipe()) // need room id ,   user id who want to send it.
     async deleteMsg(@MessageBody() dto:deleteMsg , @ConnectedSocket() socket: Socket) {
         console.log(dto)
-        try {
-            const token = this.utils.verifyJwtFromHeader(socket.handshake.headers.authorization);
-
-            if (token) {
-                const user  = await this.utils.verifyToken(token); // // if has error will catch it   
-                const rtn = await this.gatewayService.checkSendMessage( user['sub'] , dto.roomId);
-                if (rtn.error) {
-                    console.log(rtn.error)
-                    return ;
-                }
-                
-            } else
-                console.log("invalid jwt")
-        } catch (error) {
-            console.log(error)
-        }
     }
 
     @SubscribeMessage('user-block') 

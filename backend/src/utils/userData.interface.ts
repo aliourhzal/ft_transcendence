@@ -56,12 +56,7 @@ export enum UserTypRoomType {
 
 export interface AllMessages {
     userId: string;
-    msg: {
-        id: string;
-        text: string;
-        userId: string;
-        roomId: string;
-    };
+    msg: string;
   }
 
 export interface BannedAndUnbannedUsers {

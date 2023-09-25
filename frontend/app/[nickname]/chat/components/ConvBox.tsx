@@ -45,10 +45,8 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, setActiveUserConv, activeUserCon
             'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
           })
         .then((res) => {
-          setChatBoxMessages([])
-            res.data.msg.map((_msg) => {
-              setChatBoxMessages(old => [...old, {userId:_msg.msg.userId, msg: _msg.msg.text, roomId: _msg.msg.roomId, id:_msg.msg.id}])
-            })
+          console.log(res.data.msg)
+          setChatBoxMessages(res.data.msg)
         })
         if (data.id != activeUserConv.id && msgInputRef?.current)
         msgInputRef.current.value = ''
