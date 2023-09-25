@@ -70,7 +70,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	}
 
 	async update(room: roomT) {
-		if (room.player1.ball.x - room.ballDynamics.radius < -20)//
+		if (room.player1.ball.x - room.ballDynamics.radius < -25)//
 		{
 			room.player2.score += 1;
 			room.player2.height = room.canvas.height / 4;
@@ -79,7 +79,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 			this.server.to(room.roomId).emit("score", {soc:room.player2.socket.id, p1:room.player2.score, p2:room.player1.score});
 		}
 		
-		else if (room.player1.ball.x + room.ballDynamics.radius > room.canvas.width + 20)
+		else if (room.player1.ball.x + room.ballDynamics.radius > room.canvas.width + 25)
 		{
 			room.player1.score += 1;
 			room.player2.height = room.canvas.height / 4;
@@ -197,7 +197,7 @@ export class myGateAway implements OnGatewayConnection, OnGatewayDisconnect
 	async startGame(room: roomT) {
 		room.player1.score = 0;
 		room.player2.score = 0;
-		let framePerSecond = 50;
+		let framePerSecond = 60;
 		if (room.specialsMode)
 			room.specials.activateSpecial();
 		room.loop = setInterval(() => {
