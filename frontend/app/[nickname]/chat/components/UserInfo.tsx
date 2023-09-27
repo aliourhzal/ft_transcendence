@@ -6,6 +6,8 @@ import { FaRegUser } from 'react-icons/fa'
 import { PiGameControllerBold } from 'react-icons/pi'
 import Context from './Context'
 import { useRouter } from 'next/navigation'
+import axios from 'axios'
+import { getCookie } from '../../layout'
 
 interface UserInfoProps {
     showUserInfos: any,
@@ -23,6 +25,24 @@ const UserInfo:React.FC<UserInfoProps> = ( {id, showUserInfos, setShowUserInfos,
     const {socket, rooms, userData} = useContext(Context)
 
     const _router = useRouter()
+
+    const getDm = async (data) => {
+        try {
+          await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomId:rooms.find(o => o.id === data.id)?.id}, {
+            withCredentials: true,
+            headers: {
+              'Authorization': `Bearer ${getCookie('access_token')}`,
+              'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
+            })
+          .then((res) => {
+            setChatBoxMessages(res.data.msg)
+          })
+        } catch(error) {
+          // alert(error)
+          console.log(error)
+        }
+        setShowConv(true)
+      }
 
   return (
     nickname && id &&
@@ -56,13 +76,11 @@ const UserInfo:React.FC<UserInfoProps> = ( {id, showUserInfos, setShowUserInfos,
                       else {
                         if (rooms.filter(o => o.name === nickname)[0].type === 'DM') {
                             setActiveUserConv(rooms.find(o => o.name === nickname))
-                            setShowConv(true)
-                            setChatBoxMessages(rooms.find(o => o.name === nickname)?.msgs)
+                            getDm(rooms.find(o => o.name === nickname))
                         }
                         else {
                             setActiveUserConv(rooms.filter(o => o.name === nickname)[1])
-                            setShowConv(true)
-                            setChatBoxMessages(rooms.filter(o => o.name === nickname)[1]?.msgs)
+                            getDm(rooms.filter(o => o.name === nickname)[1])
                         }
                       }
                 }}/>

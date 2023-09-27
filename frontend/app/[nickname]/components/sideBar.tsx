@@ -32,24 +32,24 @@ const socket = io(`ws://${process.env.NEXT_PUBLIC_BACK}:3004`,{
 
 export function NavOption(props: any) {
 
-	const [chatNotif, setChatNotif] = useState(false)
+	// const [chatNotif, setChatNotif] = useState(false)
 	// console.log(localStorage.getItem('notifyChat'))
 	const socket = useContext(InvitationSocketContext);
 
-	useEffect(() => {
-		socket.on('notifyChat', () => { setChatNotif(true) })
-	}, [])
+	// useEffect(() => {
+	// 	socket.on('notifyChat', () => { setChatNotif(true) })
+	// }, [])
 
 	return (
 		<Link href={`http://${process.env.NEXT_PUBLIC_FRONT}:3001/` + props.nickname + '/' + (props.location ?? '')} 
 			className="cursor-pointer flex flex-col md:flex-row items-center gap-5 relative" onClick={()=>{
-			if (props.location === 'chat')
-				setChatNotif(false)
+			// if (props.location === 'chat')
+			// 	setChatNotif(false)
 			// props.router.push(props.nickname + props.location);
 			// props.router.push(`http://${process.env.NEXT_PUBLIC_FRONT}:3001/` + props.nickname + '/' + (props.location ?? ''));
 		}}>
 			<props.icon  style={{color: 'white', fontSize: '24px'}}/>
-			{ props.location === 'chat' && chatNotif && <span className='animate-pulse rounded-full bg-red-500 opacity-90 border-2 border-red-500 w-2 h-2 z-10 -top-2 -left-2 absolute'></span>}
+			{/* { props.location === 'chat' && chatNotif && <span className='animate-pulse rounded-full bg-red-500 opacity-90 border-2 border-red-500 w-2 h-2 z-10 -top-2 -left-2 absolute'></span>} */}
 			<span className="text-md text-whiteSmoke hidden sm:inline capitalize">{props.location ?? 'profile'}</span>
 		</Link>
 	);
