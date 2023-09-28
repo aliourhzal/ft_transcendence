@@ -1,0 +1,15 @@
+FROM node:latest
+
+COPY ./code /home/code
+
+WORKDIR /home/code/src
+
+EXPOSE 3000
+
+RUN npm i -g @nestjs/cli
+RUN npm i
+RUN npx prisma generate
+
+
+CMD ["npx", "prisma", "generate", ";", "npx", "prisma", "migrate", "dev", "--schema", "/home/code/src/prisma/schema.prisma"]
+ENTRYPOINT [ "npm", "run", "start" ]

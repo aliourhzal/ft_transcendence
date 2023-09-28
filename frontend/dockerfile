@@ -1,0 +1,11 @@
+FROM node:latest
+
+COPY ./code /home/frontend
+
+EXPOSE 80
+
+WORKDIR /home/frontend
+
+RUN npm i ; npm run build
+
+CMD [ "npm", "run", "start" ]
