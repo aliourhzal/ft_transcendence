@@ -33,7 +33,6 @@ const socket = io(`ws://${process.env.NEXT_PUBLIC_BACK}:3004`,{
 export function NavOption(props: any) {
 
 	// const [chatNotif, setChatNotif] = useState(false)
-	// console.log(localStorage.getItem('notifyChat'))
 	const socket = useContext(InvitationSocketContext);
 
 	// useEffect(() => {

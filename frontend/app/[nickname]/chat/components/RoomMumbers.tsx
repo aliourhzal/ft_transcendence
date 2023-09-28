@@ -32,7 +32,6 @@ const RoomMumbers:React.FC<RoomMumbersProps> = ( { info, user, isOwner, isAdmin,
     const userId = user.id
       setUserStatus((await axios.post('http://127.0.0.1:3000/users/userStatus', {userId}, {withCredentials: true})).data)
     } catch (error) {
-      console.log(error)
     }
   }
 

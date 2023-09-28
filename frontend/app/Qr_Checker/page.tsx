@@ -39,7 +39,6 @@ export default function TwoFa()
 		}
 		catch(err)
 		{
-			console.log("error wrong token try again !")
 		}
 	}
 	

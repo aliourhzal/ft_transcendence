@@ -64,7 +64,6 @@ export function MatchHistory(props: any) {
         .then(res => {
             res.data.map(x => {
                 // const m: matchTemplate = { ...matchTemplatee };
-                // console.log("m",m);
                 // m.player1.avatar = x.player1.avatar;
                 // m.player1.nickname = x.player1.nickname;
                 // m.player1.score = x.player1.score;
@@ -89,7 +88,6 @@ export function MatchHistory(props: any) {
             setHistory(his);
         })
         .catch(e => {
-            console.log(e);
         })
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -157,7 +155,6 @@ export function GameStats(props) {
         scoreL : 0
     });
 
-    // console.log(userData);
     useEffect(()=>{
         axios.get(`http://${process.env.NEXT_PUBLIC_BACK}:3000/users/profile/stats`,{
             params: {
@@ -171,11 +168,9 @@ export function GameStats(props) {
             setdata(res.data);
         })
         .catch(e => {
-            console.log(e);
         })
     }
     , [props.currentUser, props.data.nickname]);
-    console.log(data);
     return (
         <Container>
             <h2 className='text-white'>Statistics</h2>

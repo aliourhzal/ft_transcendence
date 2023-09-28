@@ -15,7 +15,6 @@ export default function RequestCard({request}) {
 					requestId
 				})
 			} catch (err) {
-				console.log(err);
 			}
 		})
 	}
@@ -27,7 +26,6 @@ export default function RequestCard({request}) {
 					requestId
 				})
 			} catch (err) {
-				console.log(err);
 			}
 		})
 	}

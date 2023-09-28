@@ -110,6 +110,9 @@ export class UsersService {
 	// this function inserts the user data into the database and return the user data except the password
 	async createNewUser(userData: UserData) {
 		let user: any;
+		let random = Date.now().toString();
+		random = random.substring(random.length - 5);
+		console.log("random: ", random);
 		try {
 			user = await this.prisma.user.create(
 			{
@@ -117,7 +120,7 @@ export class UsersService {
 					intra_id: userData.intra_id,
 					firstName: userData.firstName,
 					lastName: userData.lastName,
-					nickname: userData.login,
+					nickname: userData.login + `${random}`,
 					email: userData.email,
 					wallet: userData.wallet,
 					points: 0,

@@ -58,7 +58,6 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
       else internalError('Internal error when trying to demote')
       setInfoUpdate(old => !old)
     } catch (error) {
-      console.log(error)
     }
   }
   
@@ -89,7 +88,6 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
       })
       setInfoUpdate(old => !old)
     } catch (error) {
-      console.log(error)
     }
   }
 
@@ -119,7 +117,6 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
       })
       setInfoUpdate(old => !old)
     } catch (error) {
-      console.log(error)
     }
   }
 
@@ -156,7 +153,6 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
       else internalError('Internal error when trying to leave room')
       setInfoUpdate(old => !old)
     } catch (error) {
-      console.log(error)
     }
   }
 
@@ -207,7 +203,6 @@ const SocketComponent:React.FC<SocketComponentProps> = ( { setRooms, setInfoUpda
   }
 
   const unMuteUser = (res) => {
-    console.log(res)
     setRooms((_rooms: Room[]) => {
       if (_rooms.find(o => o.name === res.roomId.room_name)?.users?.find(o => o.id === res.unMutedUser.userId)?.isMuted)
         _rooms.find(o => o.name === res.roomId.room_name).users.find(o => o.id === res.unMutedUser.userId).isMuted = 'UNMUTED'

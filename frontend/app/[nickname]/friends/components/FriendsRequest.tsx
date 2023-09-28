@@ -20,7 +20,7 @@ export default function FriendsRequests() {
 		}).then(res => {
 			setRequestArray(res.data);
 			setRequestCounter(res.data.length);
-		}).catch(err => console.log(err));
+		}).catch();
 		socket.on('receive-request', (data) => {
 			setRequestCounter(data.length);
 			setRequestArray(data);

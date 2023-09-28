@@ -45,7 +45,6 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, setActiveUserConv, activeUserCon
             'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
           })
         .then((res) => {
-          console.log(res.data.msg)
           setChatBoxMessages(res.data.msg)
         })
         if (data.id != activeUserConv.id && msgInputRef?.current)
@@ -53,8 +52,6 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, setActiveUserConv, activeUserCon
       msgInputRef.current?.focus()
       setRefresh(old => !old)
     } catch(error) {
-      // alert(error)
-      console.log(error)
     }
     // const response = await fetch('http://127.0.0.1:3000/rooms/join-room', {method:'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({roomName:data.data.name, auth: socket.auth['token'], socket:socket.id})}).then((response) => response.json())
   }
@@ -69,7 +66,6 @@ const ConvBox: React.FC<ConvBoxProps> = ({data, setActiveUserConv, activeUserCon
       const userId = rooms.find(o => o.id === data.id)?.users.find(o => o.nickName === data.name)?.id
       setUserStatus((await axios.post('http://127.0.0.1:3000/users/userStatus', {userId}, {withCredentials: true})).data)
     } catch (error) {
-      console.log(error)
     }
   }
 

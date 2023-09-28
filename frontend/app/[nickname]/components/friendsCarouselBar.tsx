@@ -87,9 +87,7 @@ export default function FriendCarouselBar()
 			})
 		});
 		socket.on('friend-deleted', data => {
-			console.log(data);
 			const friendIndex = friends.findIndex((friend => friend.nickname === data.friend));
-			console.log(friendIndex);
 			setFriends(friends => {
 				const old = [...friends];
 				old.splice(friendIndex, 1);

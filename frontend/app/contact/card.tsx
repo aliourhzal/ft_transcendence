@@ -18,7 +18,6 @@ export default function Card(props: {n : number, fullName: string, github: strin
     const [contact, setContact] = useState(false);
     function show(e: any)
     {
-        // console.log(e.target.getAttribute('name'));//setAttribute
         if (e.target.getAttribute('name') === 'email')
         {
             setContact(true);
@@ -26,7 +25,6 @@ export default function Card(props: {n : number, fullName: string, github: strin
     }
     function hide(e: any)
     {
-        // console.log(e.target.getAttribute('name'));//setAttribute
         if (e.target.getAttribute('name') === 'email')
         {
             setContact(false);

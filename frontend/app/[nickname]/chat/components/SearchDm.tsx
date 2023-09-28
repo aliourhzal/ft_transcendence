@@ -28,9 +28,6 @@ const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersF
     try {
       return await axios.get('http://127.0.0.1:3000/users/users', {withCredentials: true})
     } catch(error) {
-      // alert(error)
-      // setShowSearchUsersForm(false)
-      console.log(error)
     }
     return ;
   }
@@ -67,8 +64,6 @@ const SearchDm:React.FC<SearchDmProps> = ( { setActiveUserConv, showSearchUsersF
         setChatBoxMessages(res.data.msg)
       })
     } catch(error) {
-      // alert(error)
-      console.log(error)
     }
     setShowConv(true)
   }

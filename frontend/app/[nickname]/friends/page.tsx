@@ -42,9 +42,7 @@ export default function Friends(props: any) {
 			setFriends(res.data);
 		})
 		socket.on('receive-friends', data => {
-			console.log('new friend: ', data.nickname);
 			setFriends(oldFriends => {
-				console.log('old Friends: ', oldFriends.length);
 				return ([...oldFriends, data]);
 			});
 		});
@@ -68,7 +66,6 @@ export default function Friends(props: any) {
 			setFriends(friends => {
 				const old = [...friends];
 				old.splice(friendIndex, 1);
-				console.log('friends length: ', old.length);
 				return old;
 			});
 		})

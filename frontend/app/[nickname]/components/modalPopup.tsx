@@ -103,7 +103,6 @@ export default function MyModal(props: any) {
 				}
 				catch(err)
 				{
-					console.log("error while disabling 2FA")
 				}
 		}
 		setQr(prev => !prev);
@@ -211,7 +210,6 @@ export default function MyModal(props: any) {
 		}
 		catch(err)
 		{
-			console.log("Token miss match !");
 		}
 	}
 
@@ -220,11 +218,10 @@ export default function MyModal(props: any) {
 		await axios.get(`http://${process.env.NEXT_PUBLIC_BACK}:3000/qr/code`, {
 			withCredentials: true
 		}).then(res => {
-			console.log(res.data);
 			if (res.data.Qr)
 				setSrc(res.data.Qr);
 			setScanned(res.data.active);
-		}).catch(err => {console.log("error getting the Qr data !!!")});
+		}).catch();
 	}
 
 	async function checkQrActivity() {
@@ -241,7 +238,7 @@ export default function MyModal(props: any) {
 				setQr(false);
 				setScanned(false);
 			}
-		}).catch(err => {console.log("unknown 2FA active or not.")});
+		}).catch();
 	}
 
 	useEffect(() => {

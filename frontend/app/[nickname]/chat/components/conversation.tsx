@@ -58,7 +58,6 @@ const Conversation:React.FC<ConversationProps> = ( { activeUserConv, deviceType,
     const _router = useRouter()
 
     const addmsg = (msg) => {
-        console.log(msg)
         localStorage.setItem('notifyChat', userData.id)
         setRooms(_rooms => {
           let temp = _rooms.find(o => o.id === msg.roomId)
@@ -77,7 +76,6 @@ const Conversation:React.FC<ConversationProps> = ( { activeUserConv, deviceType,
             if (rooms.find(o => o.id === msg.roomId)) rooms.find(o => o.id === msg.roomId).pending = true
             setRefresh(old => !old)
         }
-        console.log(activeUserConv)
         if (msg.msg === '%GameInvite%' && activeUserConv.type === 'DM'){
             let id = rooms.find(o => o.id === activeUserConv.id)?.users[0].id
             if (id === userData.id) {

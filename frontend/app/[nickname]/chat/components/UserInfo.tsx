@@ -38,8 +38,6 @@ const UserInfo:React.FC<UserInfoProps> = ( {id, showUserInfos, setShowUserInfos,
             setChatBoxMessages(res.data.msg)
           })
         } catch(error) {
-          // alert(error)
-          console.log(error)
         }
         setShowConv(true)
       }

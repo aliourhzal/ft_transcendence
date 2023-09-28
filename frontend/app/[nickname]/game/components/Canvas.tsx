@@ -183,7 +183,6 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 
 		if (special.active && special.ready && effectCollision()) {
 			special.ready = false;
-			console.log('effect consumed!!');
 			props.socket.emit('consume-special');
 		}
 
@@ -270,18 +269,15 @@ export default function Canvas(props: {socket:Socket, themeN: number, ball: bool
 				return ;
 		}
 		props.socket.on('send_canva_W_H', () => {
-			console.log('start game');
 			props.opData(oldata => {
 				const update = {...oldata};
 				update.loading = false;
 				return (update);
 			})
-			console.log({w:canvas.width, h:canvas.height});
 			props.socket.emit("startGame", {w:canvas.width, h:canvas.height, hell: props.hell, specials: special.active});
 		});
 
         props.socket.on('game_Data', data => {
-			console.log(player.y);
             ball.x = canvas.height * data.x / 450;
 			ball.y = canvas.width * data.y / 800;
 			player.height = data.ph * canvas.height / 450;
