@@ -13,10 +13,8 @@ services:
       image: postgres:13
       ports:
         - 5434:5432 #host:container
-      environment:
-        - POSTGRES_USER=postgres
-        - POSTGRES_PASSWORD=123
-        - POSTGRES_DB=pong_db
+      env_file:
+        - ./.env
       networks:
         - pongy
       restart: always
@@ -46,5 +44,6 @@ services:
       depends_on:
         - db
       ports:
-        - 8080:3000 #host:container
+        - 3000:3000 #host:container
+        - 5555:5555 #host:container
       restart: always

@@ -2,14 +2,15 @@ FROM node:latest
 
 COPY ./code /home/code
 
+COPY script.sh /home/script.sh
 WORKDIR /home/code/src
 
 EXPOSE 3000
-
+# RUN cd /home/code/src
+RUN npm install @prisma/client
 RUN npm i -g @nestjs/cli
 RUN npm i
-RUN npx prisma generate
 
 
-CMD ["npx", "prisma", "generate", ";", "npx", "prisma", "migrate", "dev", "--schema", "/home/code/src/prisma/schema.prisma"]
-ENTRYPOINT [ "npm", "run", "start" ]
+
+CMD [ "/home/script.sh" ]

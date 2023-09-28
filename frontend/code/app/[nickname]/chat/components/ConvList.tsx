@@ -3,8 +3,8 @@ import { conversation } from "../page"
 import Context, { gimmeRandom, getUsersInfo } from "./Context"
 import ConvBox from "./ConvBox"
 import Search from "./search"
-import { AiOutlineUsergroupAdd } from "react-icons/Ai"
-import { LiaUsersSolid } from "react-icons/Lia"
+import { AiOutlineUsergroupAdd } from "react-icons/ai"
+import { LiaUsersSolid } from "react-icons/lia"
 import { TbMessage2Search } from "react-icons/tb"
 
 interface ConvListProps {

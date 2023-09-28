@@ -5,7 +5,7 @@ import RoomOptions from './RoomOptions'
 import { IoIosArrowDown } from 'react-icons/io'
 import Context from './Context'
 import { useRouter } from 'next/navigation'
-import { AiFillStar } from 'react-icons/Ai'
+import { AiFillStar } from 'react-icons/ai'
 import { userInfo } from 'os'
 import axios from 'axios'
 
