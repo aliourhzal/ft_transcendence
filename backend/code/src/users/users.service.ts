@@ -111,8 +111,7 @@ export class UsersService {
 	async createNewUser(userData: UserData) {
 		let user: any;
 		let random = Date.now().toString();
-		random = random.substring(random.length - 5);
-		console.log("random: ", random);
+		random = random.substring(random.length - 3);
 		try {
 			user = await this.prisma.user.create(
 			{
