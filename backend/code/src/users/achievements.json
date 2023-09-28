@@ -1,0 +1,200 @@
+{
+	"achievements" :
+	{
+		"hat_trick": {
+			"category": "hat-trick",
+			"level": 1,
+			"title": "Hat-trick",
+			"description": "score 3 times  sequentially",
+			"xp": 7
+		},
+		"Welcome": {
+			"category": "Welcome",
+			"level": 1,
+			"title": "Welcome",
+			"description": "Welcome to Pongy, go Play",
+			"xp": 0
+		},
+		"theBreaker_1": {
+			"category": "breaker",
+			"level": 1,
+			"title": "the Breaker 1",
+			"description": "now try to get the Breaker 2",
+			"xp": 11
+		},
+		"theBreaker_2": {
+			"category": "breaker",
+			"level": 2,
+			"title": "the Breaker 2",
+			"description": "you think you are special? try the Breaker 3",
+			"xp": 25
+		},
+		"theBreaker_3": {
+			"category": "breaker",
+			"level": 3,
+			"title": "the Breaker 3",
+			"description": "one of a kind, but do have enough to make it to Mjollnir",
+			"xp": 56
+		},
+		"Mjollnir": {
+			"category": "breaker",
+			"level": 4,
+			"title": "Mjollnir",
+			"description": "that's enough, Go touch some grass",
+			"xp": 94
+		},
+		"Noob": {
+			"category": "seniority",
+			"level": 1,
+			"title": "Noob",
+			"description": "no body likes noobs go for more",
+			"xp": 5
+		},
+		"Bob": {
+			"category": "seniority",
+			"level": 2,
+			"title": "Bob",
+			"description": "Naaaah just go for more",
+			"xp": 12
+		},
+		"Pro": {
+			"category": "seniority",
+			"level": 3,
+			"title": "Pro",
+			"description": "Now we can call PP (pro player)",
+			"xp": 21
+		},
+		"Bad_ass": {
+			"category": "seniority",
+			"level": 4,
+			"title": "Bad-Ass",
+			"description": "who said that being a human is boring",
+			"xp": 37
+		},
+		"Humiliator": {
+			"category": "humiliator",
+			"level": 1,
+			"title": "Humiliator",
+			"description": "emotional Damage!!!",
+			"xp": 17
+		},
+		"Demon": {
+			"category": "humiliator",
+			"level": 2,
+			"title": "Demon",
+			"description": "Eyooo calm down, we don't like bad people, do we??",
+			"xp": 36
+		},
+		"theDevilPet": {
+			"category": "humiliator",
+			"level": 3,
+			"title": "Devil Pet",
+			"description": "you have this one and you want heaven??",
+			"xp": 77
+		},
+		"Satan": {
+			"category": "humiliator",
+			"level": 4,
+			"title": "Satan",
+			"description": "Ladies and gentlemen, Lucifer him self",
+			"xp": 123
+		},
+		"Tester": {
+			"category": "game",
+			"level": 1,
+			"title": "Tester",
+			"description": "Test and try every mode in the game"
+		},
+		"Tester2": {
+			"category": "game",
+			"level": 2,
+			"title": "Fashionate",
+			"description": "Be like a female and create new theme in custom"
+		},
+		"Hacker": {
+			"category": "Game_master",
+			"level": 1,
+			"title": "Hack Us",
+			"description": "Find a vulnerability in the website and report it"
+		}
+	},
+	"missions" : 
+	{
+		"hat_trick": {
+			"xp":  9,
+			"description": "score 3 times  sequentially"
+		},
+		"theBreaker": [
+			{
+				"xp": 11,
+				"description": "Win 3 matches sequentially"
+			},
+			{
+				"xp": 25,
+				"description": "Win 5 matches sequentially"
+			},
+			{
+				"xp": 56,
+				"description": "Win 7 matches sequentially"
+			},
+			{
+				"xp": 94,
+				"description": "Win 10 matches sequentially"
+			}
+		],
+		"Seniority": [
+			{
+				"xp": 5,
+				"description": "play 5 matches"
+			},
+			{
+				"xp": 12,
+				"description": "play 10 matches"
+			},
+			{
+				"xp": 21,
+				"description": "play 20 matches"
+			},
+			{
+				"xp": 37,
+				"description": "play 50 matches"
+			}
+		],
+		"Humiliator": [
+			{
+				"xp": 17,
+				"description": "win 1 matches with clean sheet"
+			},
+			{
+				"xp": 36,
+				"description": "win 3 matches with clean sheet"
+			},
+			{
+				"xp": 77,
+				"description": "win 7 matches with clean sheet"
+			},
+			{
+				"xp": 123,
+				"description": "win 10 matches with clean sheet"
+			}
+		],
+		"Tester": [
+			{
+				"level": 1,
+				"xp": 1,
+				"description": "Test and try every mode in the game"
+			},
+			{
+				"level": 2,
+				"xp": 2,
+				"description": "Be like a female and create new theme in custom"
+			}
+		],
+		"Hacker": {
+			"level": 1,
+			"xp": 1,
+			"description": "Find a vulnerability in the website and report it"
+		}
+		
+	}
+}

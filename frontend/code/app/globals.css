@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Shantell+Sans:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@500;900&family=Roboto:wght@500&family=Shantell+Sans:wght@500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    box-sizing: border-box;
+}
+
+@layer components {
+    ::-webkit-scrollbar {
+      width: 0;
+      background: transparent;
+    }
+}
+
+.outlineT{
+	color: black;
+  border: none;
+  box-shadow: none;
+	text-shadow: -1px 1px 2px #fff,
+				  1px 1px 2px #fff,
+				  1px -1px 0 #fff,
+				  -1px -1px 0 #fff;
+}

@@ -1,0 +1,163 @@
+datasource db {
+	provider = "postgresql"
+	url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model User {
+	id				            String          @id @default(uuid())
+	intra_id		            Int	            @unique
+	firstName		            String
+	lastName		            String
+	nickname		            String          @unique
+	email			            String
+	wallet			            Int
+	points			            Int
+	password		            String
+	profilePic		            String
+	coverPic		            String
+	level			            Float
+	grade			            String
+	status						String
+    twoFactorAuth               Boolean     @default(false)
+    AsciiSecretQr               String?
+	
+	userFriends                 User[]              @relation("friends")
+    friendOfUser                User[]              @relation("friends")
+    
+    blockedBy      User[]      @relation("block")
+
+    blockedUsers   User[]      @relation("block")
+
+	messages                    Messages[]
+    rooms                   JoinedTable[]
+    bannedUsers                   BlackList[]
+
+	matches					Match[]
+	sentRequests			FriendRequest[] @relation("sender")
+	receivedRequest			FriendRequest[] @relation("target")
+	achievements	Achievements[]
+}
+
+model Room{
+
+    id              String      @id @default(uuid())
+    room_name       String?      @unique    
+    password        String?
+
+	roomType    RoomType  ?   	@default(PUBLIC)
+
+	messages                    Messages[]
+
+    users                       JoinedTable[]
+    bannedusers                       BlackList[]
+}
+ 
+
+model Messages {
+
+    id                  String          @id @default(uuid())
+    text                String
+
+    user                User	 @relation(fields: [userId], references: [id])
+    userId              String  
+    
+    room                Room @relation(fields: [roomId], references: [id])
+    roomId              String  
+
+}
+
+model JoinedTable{  
+
+    user                User       @relation(fields: [userId], references: [id])
+    userId              String  
+	userType    UserType     	@default(USER)
+
+    room                Room        @relation(fields: [roomId], references: [id]) // not compile in the query
+    roomId              String 
+
+ 
+    isMuted              UserMUTE    	@default(UNMUTED)
+
+    muteExpiresAt        DateTime?
+
+    createdAt  DateTime   @default(now())  // Add this field to track creation date
+
+    @@id([userId, roomId])
+}
+
+model BlackList{
+    
+    user                User       @relation(fields: [userId], references: [id])
+    userId              String  
+	userType    UserType     	@default(USER)
+
+    room                Room        @relation(fields: [roomId], references: [id]) // not compile in the query
+    roomId              String 
+
+    isBanned            UserBnned     	@default(UNBANNED)
+    isMuted              UserMUTE    	@default(UNMUTED)
+
+    banExpiresAt        DateTime?
+    muteExpiresAt        DateTime?
+
+    createdAt  DateTime   @default(now())  // Add this field to track creation date
+
+    @@id([userId, roomId])
+}
+
+model Match {
+	id			String @id @default(uuid())
+	players		User[]
+	scores		Int[]
+	score1		Json[]
+	score2		Json[]
+	playerAt	DateTime @default(now())
+}
+
+model FriendRequest {
+    
+	id			String @id @default(uuid())
+	target		User @relation("target", fields: [targetId], references: [id])
+	sender		User @relation("sender", fields: [senderId], references: [id])
+	targetId	String
+	senderId	String
+}
+
+model Achievements {
+	id			String @id @default(uuid())
+	category	String
+	level		Int
+	title		String @unique
+	description	String
+	users		User[]
+}
+
+enum RoomType {
+    PUBLIC 
+    PROTECTED 
+    PRIVATE 
+    DM
+}
+
+enum UserType {
+    USER
+    ADMIN
+    OWNER
+}
+
+
+enum UserBnned {
+    BANNEDFORLIMMITED_TIME
+    BANNEDUNLIMMITED_TIME
+    UNBANNED
+}
+
+enum UserMUTE {
+    MUTEDFORLIMITEDTIME
+    MUTEDFOREVER
+    UNMUTED
+}

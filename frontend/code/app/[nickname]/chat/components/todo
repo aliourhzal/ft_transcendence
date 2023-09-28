@@ -1,0 +1,46 @@
+fix notification icon (DONE)
+emit dm and close popup on dm usermember (DONE)
+user pop ups (DONE)
+link to profile through popup (DONE)
+ERROR when creating room and adding users and accessing their data not found (DONE)
+remove absolute from convbox (DONE)
+add status green point on avatar (DONE)
+fix user photo disappear after muting or kicking and coming back (DONE not sure !)
+open dm conv if already exist (DONE)
+focus input after selecting room (DONE)
+userinfo popup after clicking on icon in roommembers (contain dm and profile url) (DONE)
+empty input after switching rooms (DONE)
+
+fix msg not displayed because of activeUserConv value not changing after selecting a room from dm (DONE BUT WIERD SOLUTION)
+
+open dm conv if already exist from room and from profile as well (DONE)
+style users search + dont show current user (DONE)
+add block user to search dm (DONE)
+fix messages from room with the same name as user (DONE)
+change edit room icons design (DONE)
+phone responsiveness (DONE)
+request room data once page loads (DONE)
+add last msg to convbox (DONE)
+mark room with new message (DONE)
+ask ali for the popup in top for errors (DONE)
+room from public to protected (DONE)
+add emojis (DONE)
+get blocked users on load to compare when looking for dms (DONE)
+use id instead of nickname in every backend communication (DONE)
+fix search dm bug (DONE)
+fix bug msg sent twice after opening dm from search (DONE)
+check cookies after msg sent (DONE)
+update online status realtime (DONE)
+filter userdm list by blocked users (DONE)
+
+add notifications for every action (DONE)
+
+add ? in every room.find (DONE)
+
+display muted once ( or in worst case disable input )
+
+clean context
+
+scroll to bottom when clicking conv
+
+delete messages the 100th msg in db
