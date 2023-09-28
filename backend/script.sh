@@ -1,8 +1,7 @@
 #!/bin/sh
 
-cd /home/code/src
-
+cd /home/code/src/
 npx prisma generate
 npx prisma migrate dev
 
-exec npm run start
+npm run start

@@ -14,7 +14,7 @@ services:
       ports:
         - 5434:5432 #host:container
       env_file:
-        - ./.env
+        - .env
       networks:
         - pongy
       restart: always
@@ -30,7 +30,7 @@ services:
       depends_on:
         - backend
       ports:
-        - 80:3001 #host:container
+        - 3001:3001 #host:container
       restart: always
 
   backend:
@@ -45,5 +45,8 @@ services:
         - db
       ports:
         - 3000:3000 #host:container
-        - 5555:5555 #host:container
+        - 5555:5555
+        - 3004:3004
+        - 3003:3003
+        - 3030:3030
       restart: always

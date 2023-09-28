@@ -62,11 +62,12 @@ export interface _Notification {
 
 const getBlockedUsers = async (userId: string, setter: any) => {
 	try {
-		await axios.post('http://127.0.0.1:3000/users/blockedUsers', {userId: userId}, {withCredentials: true}).then(
+		await axios.post(`http://${process.env.NEXT_PUBLIC_FRONT}:3000/users/blockedUsers`, {userId: userId}, {withCredentials: true})
+		.then(
 			res => {setter(res.data)}
 		)
 	} catch (error) {
-		alert(error)
+		// alert(error)
 	}
 }
 

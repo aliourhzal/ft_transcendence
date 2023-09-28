@@ -28,7 +28,7 @@ const UserInfo:React.FC<UserInfoProps> = ( {id, showUserInfos, setShowUserInfos,
 
     const getDm = async (data) => {
         try {
-          await axios.post('http://127.0.0.1:3000/rooms/select-room', {roomId:rooms.find(o => o.id === data.id)?.id}, {
+          await axios.post(`http://${process.env.NEXT_PUBLIC_FRONT}:3000/rooms/select-room`, {roomId:rooms.find(o => o.id === data.id)?.id}, {
             withCredentials: true,
             headers: {
               'Authorization': `Bearer ${getCookie('access_token')}`,

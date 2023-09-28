@@ -170,7 +170,7 @@ export function GameStats(props) {
         .catch(e => {
         })
     }
-    , [props.currentUser, props.data.nickname]);
+    , []);
     return (
         <Container>
             <h2 className='text-white'>Statistics</h2>

@@ -50,7 +50,7 @@ export default function Profile(props) {
 			fetchUserData(props.params.nickname);
 		else 
 			setCompleted(true);
-	},[currentUser, props.params.nickname, socket])
+	},[])
 	return (
 		<main className='h-full w-full bg-darken-200 overflow-y-auto'>
 			<div className="flex flex-col items-center gap-[2vh] flex-grow h-full overflow-y-auto relative">

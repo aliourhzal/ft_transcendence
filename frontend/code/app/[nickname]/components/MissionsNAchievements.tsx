@@ -129,7 +129,7 @@ export function Missions(props) {
 		})
 		.then(res => setMissions(res.data))
 		.catch();
-	}, [props.currentUser, props.data.nickname])
+	}, [])
 	return (
 		<Container className='p-5 bg-darken-100 rounded-xl flex flex-col gap-5'>
 			<h2 className='text-white'>Missions</h2>
@@ -157,7 +157,7 @@ export function Achievements(props) {
 		})
 		.then(res => setAchievements(res.data))
 		.catch();
-	}, [props.currentUser, props.data.nickname])
+	}, [])
 	return (
 		<Container className='p-5 bg-darken-100 rounded-xl flex flex-col gap-5'>
 			<h2 className='text-white'>Achievements</h2>

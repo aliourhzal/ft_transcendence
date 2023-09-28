@@ -24,12 +24,6 @@ interface SideBarProps {
 	changeAvatar: Function
 }
 
-const socket = io(`ws://${process.env.NEXT_PUBLIC_BACK}:3004`,{
-	extraHeaders: {
-		Authorization: `Bearer ${getCookie('access_token')}`,
-    },
-})
-
 export function NavOption(props: any) {
 
 	// const [chatNotif, setChatNotif] = useState(false)
